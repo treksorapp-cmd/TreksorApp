@@ -1,7 +1,7 @@
 export default {
   expo: {
     name: "Treksor",
-    slug: "Treksor",
+    slug: "treksorapp",
     version: "1.0.3",
     orientation: "portrait",
     icon: "./assets/images/appicon-treksor.png",
@@ -87,7 +87,7 @@ export default {
     extra: {
       router: {},
       eas: {
-        projectId: "67c51458-b4bc-49a9-a9a9-c9117a576b2d"
+        projectId: "14f7500b-1aba-4cea-9c2b-ded2c67821e2"
       }
     },
   },
