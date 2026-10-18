@@ -22,7 +22,6 @@ import {
 export default function TrackingScreen() {
   const { trackingData, fetchTrackingData, loading } = useTrackingStore();
 
-  const [period, setPeriod] = useState<"Week" | "Month" | "Year">("Week");
   const [showAddTracker, setShowAddTracker] = useState(false);
   const [showActivityLog, setShowActivityLog] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -69,8 +68,8 @@ export default function TrackingScreen() {
       <StatusBar style="light" />
 
       <Text style={styles.premiumTitle}>Tracking</Text>
-      <View style={styles.periodRow}>{(["Week", "Month", "Year"] as const).map(item => <TouchableOpacity key={item} onPress={() => setPeriod(item)} style={[styles.periodButton, period === item && styles.periodActive]}><Text style={[styles.periodText, period === item && styles.periodTextActive]}>{item}</Text></TouchableOpacity>)}</View>
-      <Text style={styles.periodNote}>{period} overview · your recorded activities</Text>
+      <View style={styles.periodRow}>{(["Week", "Month", "Year"] as const).map(item => <TouchableOpacity key={item} disabled={item !== "Week"} style={[styles.periodButton, item === "Week" && styles.periodActive]}><Text style={[styles.periodText, item === "Week" && styles.periodTextActive]}>{item}</Text></TouchableOpacity>)}</View>
+      <Text style={styles.periodNote}>Current tracking overview · monthly and yearly views coming later</Text>
       {/* Streak Section */}
       <View style={styles.streakContainer}>
         <View style={styles.streakContent}>
