@@ -22,6 +22,7 @@ import {
 export default function TrackingScreen() {
   const { trackingData, fetchTrackingData, loading } = useTrackingStore();
 
+  const [period, setPeriod] = useState<"Week" | "Month" | "Year">("Week");
   const [showAddTracker, setShowAddTracker] = useState(false);
   const [showActivityLog, setShowActivityLog] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -67,6 +68,9 @@ export default function TrackingScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
 
+      <Text style={styles.premiumTitle}>Tracking</Text>
+      <View style={styles.periodRow}>{(["Week", "Month", "Year"] as const).map(item => <TouchableOpacity key={item} onPress={() => setPeriod(item)} style={[styles.periodButton, period === item && styles.periodActive]}><Text style={[styles.periodText, period === item && styles.periodTextActive]}>{item}</Text></TouchableOpacity>)}</View>
+      <Text style={styles.periodNote}>{period} overview · your recorded activities</Text>
       {/* Streak Section */}
       <View style={styles.streakContainer}>
         <View style={styles.streakContent}>
@@ -95,6 +99,7 @@ export default function TrackingScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        <Text style={styles.sectionHeading}>Pillars</Text>
         {trackingData.map((data, index) => (
           <TrackingCard
             key={index}
@@ -130,9 +135,17 @@ export default function TrackingScreen() {
 }
 
 const styles = StyleSheet.create({
+  premiumTitle: { color: "#fff", fontSize: 25, fontWeight: "800", textAlign: "center", marginTop: 12, marginBottom: 20 },
+  periodRow: { flexDirection: "row", marginHorizontal: 18, backgroundColor: "#1D1D1D", borderRadius: 10, padding: 4 },
+  periodButton: { flex: 1, paddingVertical: 11, alignItems: "center", borderRadius: 8 },
+  periodActive: { backgroundColor: "#F5BC4F" },
+  periodText: { color: "#aaa", fontWeight: "600" },
+  periodTextActive: { color: "#111" },
+  periodNote: { color: "#999", fontSize: 12, textAlign: "center", marginTop: 15 },
+  sectionHeading: { color: "#fff", fontSize: 17, fontWeight: "700", marginBottom: 16 },
   container: {
     flex: 1,
-    backgroundColor: "#02050C",
+    backgroundColor: "#050505",
   },
   streakContainer: {
     flexDirection: "row",
