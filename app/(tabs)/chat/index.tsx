@@ -89,6 +89,8 @@ export default function ChatScreen() {
     <SafeAreaView style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom + 80 }]}>
       <StatusBar style="light" />
 
+      <View style={styles.premiumHeader}><TouchableOpacity onPress={handleBack}><Ionicons name="arrow-back" size={23} color="#fff" /></TouchableOpacity><View style={styles.premiumHeaderCenter}><Text style={styles.premiumHeaderTitle}>Treksor AI</Text><Text style={styles.beta}>BETA</Text></View><Ionicons name="ellipsis-horizontal" color="#fff" size={23} /></View>
+      {messages.length === 0 && <View style={styles.welcomeAI}><Text style={styles.welcomeAIText}>Hi {user?.name?.split(" ")[0] || "there"} 👋{"\n"}I'm your Treksor AI coach.{"\n"}I'm here to help you be more focused, consistent and intentional.</Text></View>}
       {/* Header */}
       {/* <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
@@ -176,9 +178,16 @@ export default function ChatScreen() {
 }
 
 const styles = StyleSheet.create({
+  premiumHeader: { height: 56, flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: "#242424" },
+  premiumHeaderCenter: { flexDirection: "row", alignItems: "center", gap: 8 },
+  premiumHeaderTitle: { fontSize: 19, fontWeight: "700", color: "#fff" },
+  beta: { color: "#161008", fontSize: 10, fontWeight: "800", backgroundColor: "#F5BC4F", paddingHorizontal: 9, paddingVertical: 4, borderRadius: 9 },
+  welcomeAI: { backgroundColor: "#202020", marginHorizontal: 20, marginTop: 18, padding: 16, borderRadius: 14 },
+  welcomeAIText: { color: "#F0F0F0", fontSize: 14, lineHeight: 22 },
+
   container: {
     flex: 1,
-    backgroundColor: "#02050C",
+    backgroundColor: "#050505",
   },
   header: {
     flexDirection: "row",
@@ -342,7 +351,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "rgba(255, 255, 255, 0.1)",
     gap: 12,
-    backgroundColor: "#02050C",
+    backgroundColor: "#050505",
   },
   textInput: {
     flex: 1,
