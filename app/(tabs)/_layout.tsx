@@ -42,7 +42,7 @@ export default function TabLayout() {
         screenOptions={{
           animation: "shift",
           sceneStyle: {
-            backgroundColor: "#02050C",
+            backgroundColor: "#050505",
           },
           tabBarStyle: Platform.select({
             ios: {
@@ -53,7 +53,10 @@ export default function TabLayout() {
               backgroundColor: "#02050C",
             },
           }),
-          tabBarActiveTintColor: "#EFB33F",
+          tabBarActiveTintColor: "#F5BC4F",
+          tabBarInactiveTintColor: "#888888",
+          tabBarLabelStyle: { fontSize: 11, fontWeight: "600", marginTop: 2 },
+          tabBarItemStyle: { paddingVertical: 3 },
           headerShown: false,
         }}
       >
