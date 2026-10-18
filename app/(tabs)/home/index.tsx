@@ -1,481 +1,64 @@
-"use client";
-
 import { useNotifications } from "@/hooks/useNotifications";
-import { ritualCards } from "@/mock/rituals";
-import { useArticleStore } from "@/store/article-store";
 import { useAuthStore } from "@/store/auth-store";
 import { usePowerThoughtStore } from "@/store/thought-store";
+import { useArticleStore } from "@/store/article-store";
 import { useUserStore } from "@/store/user-store";
-import { PowerThought } from "@/types/powerThought";
-import { RitualCard } from "@/types/ritualCard";
 import { Ionicons } from "@expo/vector-icons";
-import { BlurView } from "expo-blur";
-import { ImageBackground } from "expo-image";
+import { Image, ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
-import { useEffect, useRef, useState } from "react";
-import {
-  Dimensions,
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import {
-  SafeAreaView
-} from "react-native-safe-area-context";
+import { router, type Href } from "expo-router";
+import { useEffect } from "react";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const { width } = Dimensions.get("window");
-const cardWidth = (width - 60) / 2; // Account for padding and gap
-
+const pillars: { name: string; route: Href; image: number; caption: string }[] = [
+  { name: "BODY", route: "/body", image: require("@/assets/images/body-ritual.png"), caption: "Train your strength" },
+  { name: "MIND", route: "/mental", image: require("@/assets/images/mental-ritual.png"), caption: "Build your focus" },
+  { name: "SPIRITUAL", route: "/spiritual", image: require("@/assets/images/spiritual-ritual.png"), caption: "Find your balance" },
+  { name: "PURPOSE", route: "/purpose", image: require("@/assets/images/purpose-home.png"), caption: "Live with intention" },
+];
 export default function HomeScreen() {
-  const {powerThoughts, fetchPowerThoughts, markPowerThoughtAsRead} = usePowerThoughtStore();
-  const [currentThoughtIndex, setCurrentThoughtIndex] = useState(0);
-  const [homePowerThoughts, setHomePowerThoughts] = useState<PowerThought[]>([]);
-  const thoughtsRef = useRef<FlatList>(null);
-  const [expandedThoughts, setExpandedThoughts] = useState<Set<string>>(new Set());
-  const {pushToken, notification} = useNotifications();
-  const {getUnreadArticlesCount} = useArticleStore();
-  const {savePushToken} = useUserStore();
-  const { login, loading, getCurrentUser, requestOtp, signInWithThirdParty } =
-      useAuthStore();
-
-  useEffect(() => {
-    getCurrentUser();
-  }, []);
-  
-  useEffect(()=>{
-    if(pushToken && pushToken?.data) {
-      savePushToken({ pushToken:pushToken?.data });
-    }
-  },[pushToken,savePushToken])
-
-  useEffect(()=>{
-    fetchPowerThoughts();
-    getUnreadArticlesCount();
-  },[fetchPowerThoughts]);
-
-  useEffect(() => {
-    if(powerThoughts){      
-      const firstUnreadThoughts = powerThoughts.filter(thought => !thought.isRead).slice(0, 3);
-      const todayThought = powerThoughts.find(thought => thought.isToday);
-      
-      if (todayThought) {
-        setHomePowerThoughts([todayThought, ...firstUnreadThoughts]);
-      } else {
-        setHomePowerThoughts(firstUnreadThoughts);
-      }
-    }
-  },[powerThoughts])
-
-  const toggleExpand = (id: string) => {
-    setExpandedThoughts(prev => {
-      const newSet = new Set(prev);
-      newSet.has(id) ? newSet.delete(id) : newSet.add(id);
-      return newSet;
-    });
-  };
-
-  const handleMarkAsRead = () => {
-    const currentThought = homePowerThoughts[currentThoughtIndex];
-    markPowerThoughtAsRead(currentThought._id);
-    // setReadThoughts((prev) => new Set([...prev, currentThought._id]));
-  };
-
-  const handleRitualPress = (ritual: RitualCard) => {
-    if (ritual.isLocked) {
-      return; // Don't navigate if locked
-    }
-    router.push(ritual.route);
-  };
-
-  const renderRitualCard = (ritual: RitualCard) => {
-    return (
-      <TouchableOpacity
-        key={ritual.id}
-        style={[styles.ritualCard, { backgroundColor: ritual.backgroundColor }]}
-        onPress={() => handleRitualPress(ritual)}
-        activeOpacity={0.8}
-      >
-        {ritual.isLocked ? (
-          <ImageBackground
-            source={ritual.image}
-            style={styles.cardImage}
-            imageStyle={styles.cardImageStyle}
-          >
-            <BlurView intensity={20} style={styles.blurOverlay}>
-              <View style={styles.lockedCard}>
-                <View style={styles.cardContent}>
-                  <Text style={[styles.cardTitle, { marginBottom: 15 }]}>
-                    {ritual.title}
-                  </Text>
-                  <Text style={styles.lockedText}>{ritual.availableDate}</Text>
-                </View>
-              </View>
-            </BlurView>
-          </ImageBackground>
-        ) : (
-          <ImageBackground
-            source={ritual.image}
-            style={styles.cardImage}
-            imageStyle={styles.cardImageStyle}
-          >
-            <LinearGradient
-              colors={["transparent", "rgba(0,0,0,0.7)"]}
-              style={styles.cardGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-            >
-              <View style={styles.cardContent}>
-                <Text style={styles.cardTitle}>{ritual.title}</Text>
-                <View style={styles.ritualProgress}>
-                  <View style={styles.progressBadge}>
-                    <Text style={styles.progressNumber}>
-                      {ritual.ritualsCompleted}
-                    </Text>
-                  </View>
-                  <Text style={styles.progressText}>Rituals Done</Text>
-                </View>
-              </View>
-            </LinearGradient>
-          </ImageBackground>
-        )}
-      </TouchableOpacity>
-    );
-  };
-
-  const renderPowerThought = ({
-    item,
-    index,
-  }: {
-    item: PowerThought;
-    index: number;
-  }) => {
-    const isRead = item.isRead;
-    const isExpanded = expandedThoughts.has(item._id);
-
-    return (
-      <View style={styles.powerThoughtCard}>
-        {/* Outer LinearGradient for the border */}
-        <LinearGradient
-          colors={["rgba(255, 255, 255, 0.3)", "rgba(255, 255, 255, 0.4)"]}
-          start={{ x: 0.2, y: 0 }}
-          end={{ x: 0.8, y: 1 }}
-          style={styles.borderGradient}
-        >
-          {/* Inner LinearGradient for the button background */}
-          <LinearGradient
-            colors={["#262626", "#0a0a0a"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.innerGradient}
-          >
-            <View>
-              <Text style={styles.powerThoughtCategory}>Power Thought</Text>
-              <Text style={styles.powerThoughtContent} onPress={() => toggleExpand(item._id)} numberOfLines={isExpanded ? undefined: 3}>{item.thought}</Text>
-            </View>
-            <TouchableOpacity
-              style={[
-                styles.markAsReadButton,
-                isRead && styles.markAsReadButtonRead,
-              ]}
-              onPress={handleMarkAsRead}
-              disabled={isRead}
-            >
-              <Ionicons
-                name={"checkmark"}
-                size={10}
-                color={isRead ? "#000" : "#000"}
-                style={{
-                  backgroundColor: "#EFB33F",
-                  borderRadius: 6,
-                  borderColor: "#EFB33F",
-                }}
-              />
-              <Text
-                style={[
-                  styles.markAsReadText,
-                  isRead && styles.markAsReadTextRead,
-                ]}
-              >
-                {isRead ? "Read" : "Mark as read"}
-              </Text>
-            </TouchableOpacity>
-          </LinearGradient>
-        </LinearGradient>
-      </View>
-    );
-  };
-
-  return (
-    <SafeAreaView style={styles.container} edges={["bottom"]}>
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Welcome Section */}
-        <View style={styles.welcomeSection}/>
-          {/* <View style={styles.streakContainer}>
-            <Text style={styles.streakEmoji}>🔥</Text>
-            <Text style={styles.streakText}>4-Day Streak</Text>
-          </View>
-        </View> */}
-
-        {/* Ritual Cards Grid */}
-        <View style={styles.ritualsGrid}>
-          <View style={styles.ritualsRow}>
-            {renderRitualCard(ritualCards[0])}
-            {renderRitualCard(ritualCards[1])}
-          </View>
-          <View style={styles.ritualsRow}>
-            {renderRitualCard(ritualCards[2])}
-            {renderRitualCard(ritualCards[3])}
-          </View>
-        </View>
-
-        {/* Power Thought Section */}
-        <View style={styles.powerThoughtSection}>
-          <FlatList
-            ref={thoughtsRef}
-            data={homePowerThoughts}
-            renderItem={renderPowerThought}
-            keyExtractor={(item) => item._id}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            onMomentumScrollEnd={(event) => {
-              const index = Math.round(
-                event.nativeEvent.contentOffset.x / width
-              );
-              setCurrentThoughtIndex(index);
-            }}
-          />
-
-          {/* Pagination Dots */}
-          <View style={styles.paginationContainer}>
-            {homePowerThoughts.map((_, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.paginationDot,
-                  index === currentThoughtIndex && styles.paginationDotActive,
-                ]}
-              />
-            ))}
-          </View>
-
-          {/* Power Thought Icon */}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+  const { user, getCurrentUser } = useAuthStore();
+  const { powerThoughts, fetchPowerThoughts } = usePowerThoughtStore();
+  const { getUnreadArticlesCount } = useArticleStore();
+  const { pushToken } = useNotifications();
+  const { savePushToken, setShowPackages } = useUserStore();
+  useEffect(() => { getCurrentUser(); fetchPowerThoughts(); getUnreadArticlesCount(); }, []);
+  useEffect(() => { if (pushToken?.data) savePushToken({ pushToken: pushToken.data }); }, [pushToken?.data]);
+  const thought = powerThoughts?.find(item => item.isToday)?.thought ?? powerThoughts?.[0]?.thought;
+  const firstName = user?.name?.split(" ")[0] || "there";
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  return <SafeAreaView style={styles.screen} edges={["top"]}>
+    <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <View style={styles.top}><View style={styles.brand}><Image source={require("@/assets/images/appicon-treksor.png")} style={styles.logo} /><Text style={styles.brandText}>Treksor</Text></View>
+        <TouchableOpacity onPress={() => router.push("/profile")} accessibilityLabel="Profile and notifications"><Ionicons name="notifications-outline" color="white" size={24} /></TouchableOpacity></View>
+      {!user?.plan && <TouchableOpacity onPress={() => setShowPackages(true)} style={styles.premium}><Text style={styles.premiumText}>🔥 Explore Treksor Premium</Text><View style={styles.premiumPill}><Text style={styles.premiumPillText}>Go Premium</Text></View></TouchableOpacity>}
+      <Text style={styles.greeting}>{greeting},{"\n"}{firstName}</Text><Text style={styles.tagline}>Small steps. Big changes.</Text>
+      <View style={styles.grid}>{pillars.map(pillar => <TouchableOpacity key={pillar.name} onPress={() => router.push(pillar.route)} style={styles.tile}>
+        <ImageBackground source={pillar.image} contentFit="cover" style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={["transparent", "rgba(0,0,0,0.94)"]} style={StyleSheet.absoluteFill} />
+        <View style={styles.tileBottom}><Text style={styles.tileTitle}>{pillar.name}</Text><Text style={styles.tileCaption}>{pillar.caption}</Text></View>
+      </TouchableOpacity>)}</View>
+      <TouchableOpacity style={styles.thought} onPress={() => router.push("/mental/thoughts")}><Ionicons name="flash-outline" color="#F5BC4F" size={23} /><View style={{ flex: 1 }}><Text style={styles.thoughtText} numberOfLines={2}>{thought || "Discipline today creates the freedom you want tomorrow."}</Text><Text style={styles.thoughtHint}>Your daily Power Thought</Text></View><Ionicons name="chevron-forward" color="#F5BC4F" size={18} /></TouchableOpacity>
+    </ScrollView>
+  </SafeAreaView>;
 }
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-  },
-  welcomeSection: {
-    paddingHorizontal: 10,
-    paddingBottom: 10,
-    paddingTop: 10,
-  },
-  welcomeText: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-    marginBottom: 15,
-  },
-  streakContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  streakEmoji: {
-    fontSize: 20,
-    marginRight: 8,
-  },
-  streakText: {
-    fontSize: 18,
-    color: "#FFFFFF",
-    fontWeight: "500",
-  },
-  ritualsGrid: {
-    paddingHorizontal: 10,
-    marginBottom: 30,
-  },
-  ritualsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 15,
-  },
-  ritualCard: {
-    width: cardWidth,
-    height: 180,
-    borderRadius: 16,
-    overflow: "hidden",
-  },
-  cardImage: {
-    flex: 1,
-    justifyContent: "flex-end",
-  },
-  cardImageStyle: {
-    borderRadius: 16,
-  },
-  cardGradient: {
-    flex: 1,
-    justifyContent: "flex-end",
-  },
-  cardContent: {
-    padding: 16,
-  },
-  cardTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-    marginBottom: 8,
-  },
-  ritualProgress: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  progressBadge: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 8,
-    borderColor: "#EFB33F",
-    borderWidth: 1,
-  },
-  progressNumber: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: "#EFB33F",
-  },
-  progressText: {
-    fontSize: 14,
-    color: "#FFFFFF",
-    opacity: 0.9,
-  },
-  lockedCard: {
-    flex: 1,
-    justifyContent: "flex-end",
-  },
-  blurOverlay: {
-    flex: 1,
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  lockIcon: {
-    marginBottom: 8,
-    opacity: 0.7,
-  },
-  lockedText: {
-    color: "#FFFFFF",
-    fontSize: 12,
-    textAlign: "center",
-    opacity: 0.7,
-  },
-  powerThoughtSection: {
-    position: "relative",
-    marginBottom: 100,
-  },
-  powerThoughtCard: {
-    minHeight: 200,
-    width: width - 40,
-    // backgroundColor: "#1A1A1A",
-    borderRadius: 16,
-    // padding: 20,
-    marginHorizontal: 20,
-    // borderColor:"gray",
-    // borderWidth:1
-  },
-  powerThoughtCategory: {
-    fontSize: 16,
-    color: "#EFB33F",
-    fontWeight: "600",
-    marginBottom: 12,
-  },
-  powerThoughtContent: {
-    fontSize: 24,
-    color: "#FFFFFF",
-    fontWeight: "600",
-    lineHeight: 32,
-    marginBottom: 20,
-    overflow: "hidden",
-  },
-  markAsReadButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "flex-end",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 5,
-  },
-  markAsReadButtonRead: {
-    backgroundColor: "rgba(243, 156, 18, 0.2)",
-  },
-  markAsReadText: {
-    color: "#FFFFFF",
-    fontSize: 10,
-    marginLeft: 6,
-  },
-  markAsReadTextRead: {
-    color: "#000000",
-  },
-  paginationContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 15,
-  },
-  paginationDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
-    marginHorizontal: 4,
-  },
-  paginationDotActive: {
-    backgroundColor: "#F39C12",
-  },
-  powerThoughtIcon: {
-    position: "absolute",
-    bottom: -10,
-    left: 10,
-  },
-  iconGradient: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  borderGradient: {
-    borderRadius: 12,
-    padding: 1, // This creates the border thickness
-    minHeight: 200,
-  },
-  innerGradient: {
-    // flexDirection: "row",
-    // justifyContent: "center",
-    // alignItems: "center",
-    borderRadius: 11, // Slightly smaller than outer radius
-    padding: 10,
-    minHeight: 200,
-    justifyContent:'space-between',
-  },
-  checkmarkContainer: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: "#F39C12",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 8,
-  },
+  screen: { flex: 1, backgroundColor: "#050505" }, content: { paddingHorizontal: 18, paddingBottom: 110 },
+  top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 9, marginBottom: 17 },
+  brand: { flexDirection: "row", alignItems: "center", gap: 9 }, logo: { width: 37, height: 37, borderRadius: 9 }, brandText: { color: "#fff", fontSize: 22, fontWeight: "700" },
+  premium: { backgroundColor: "#F5BC4F", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 12, flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 },
+  premiumText: { color: "#17120A", fontSize: 12, fontWeight: "700", flexShrink: 1 },
+  premiumPill: { backgroundColor: "#090909", borderRadius: 20, paddingHorizontal: 11, paddingVertical: 7 },
+  premiumPillText: { color: "#F5BC4F", fontSize: 10, fontWeight: "700" },
+  greeting: { color: "#fff", fontSize: 27, lineHeight: 31, fontWeight: "800" },
+  tagline: { color: "#AAA", fontSize: 13, marginTop: 5, marginBottom: 21 },
+  grid: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
+  tile: { width: "48%", aspectRatio: 0.91, borderRadius: 14, overflow: "hidden", borderWidth: 1, borderColor: "#303030", backgroundColor: "#151515" },
+  tileBottom: { flex: 1, justifyContent: "flex-end", padding: 12 },
+  tileTitle: { color: "#fff", fontSize: 19, fontWeight: "800" },
+  tileCaption: { color: "#F5BC4F", fontSize: 11, marginTop: 4 },
+  thought: { flexDirection: "row", gap: 12, alignItems: "center", backgroundColor: "#161616", borderWidth: 1, borderColor: "#4B3921", borderRadius: 13, marginTop: 16, padding: 16 },
+  thoughtText: { color: "#F5F5F5", fontSize: 13, lineHeight: 19 }, thoughtHint: { color: "#B99553", fontSize: 10, marginTop: 5 },
 });
