@@ -98,15 +98,7 @@ export default function Login() {
     Keyboard.dismiss();
 
     if (validateForm()) {
-      login({ email: email?.toLowerCase(), password }).then(() => {
-        getCurrentUser().then((isVerified) => {
-          if (!isVerified) {
-            requestOtp({ email: email?.toLowerCase() }).then(() => {
-                router.push({ pathname: "/(auth)/verify-otp", params: { email } });
-            });
-          }
-        });
-      });
+      login({ email: email.toLowerCase(), password });
     }
   };
 
