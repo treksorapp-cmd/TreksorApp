@@ -139,7 +139,7 @@ const OtpInput = ({ codeLength = 4, onCodeFilled, error = false }: OtpInputProps
           })
 
           return (
-            <View key={index} style={styles.inputContainer}>
+            <View key={index} style={[styles.inputContainer, { width: Math.min(60, (width - 80 - (codeLength - 1) * 6) / codeLength) }]}>
               {/* Focus glow effect */}
               {focusedIndex === index && (
                 <Animated.View
