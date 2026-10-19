@@ -81,6 +81,7 @@ export const useMediationStore = create<MediationState>()(
       },
 
       markMediationAsRead: (id) => {
+        if (get().locked.includes(id)) return;
         const existingMediations = get().mediation.map(item => ({ ...item }));
         const mediationIndex = existingMediations.findIndex(thought => thought.id === id)
         if (mediationIndex < 0) return;
