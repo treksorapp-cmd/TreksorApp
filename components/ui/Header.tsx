@@ -31,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({
   const { user } = useAuthStore();
   const {setShowPackages} = useUserStore();
 
-  console.log("user", user);
+
 
 //   const daysLeft = user?.createdAt
 //   ? Math.max(0, 7 - Math.floor((Date.now() - new Date(user.createdAt)) / 86400000))
