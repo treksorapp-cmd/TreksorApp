@@ -13,7 +13,6 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
@@ -86,7 +85,7 @@ export default function ChatScreen() {
   )
 
   return (
-    <SafeAreaView style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom + 80 }]}>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : undefined} keyboardVerticalOffset={0}>
       <StatusBar style="light" />
 
       <View style={styles.premiumHeader}><TouchableOpacity onPress={handleBack}><Ionicons name="arrow-back" size={23} color="#fff" /></TouchableOpacity><View style={styles.premiumHeaderCenter}><Text style={styles.premiumHeaderTitle}>Treksor AI</Text><Text style={styles.beta}>BETA</Text></View><Ionicons name="ellipsis-horizontal" color="#fff" size={23} /></View>
@@ -172,8 +171,7 @@ export default function ChatScreen() {
             )}
           </TouchableOpacity>
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   )
 }
 
