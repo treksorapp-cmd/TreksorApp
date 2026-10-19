@@ -30,6 +30,7 @@ export default function VerifyOtp() {
   const [error, setError] = useState("")
   const [timeLeft, setTimeLeft] = useState(30)
   const [canResend, setCanResend] = useState(false)
+  const [resendNotice, setResendNotice] = useState("")
   const timerRef = useRef<number | null>(null)
 
   // Animation values
@@ -90,6 +91,7 @@ export default function VerifyOtp() {
     }
 
     setError("")
+    setResendNotice("")
 
     verifyOtp({ email: email as string, otp, type: purpose as string }).then((token)=>{
       if(purpose === 'reset-password')
@@ -105,17 +107,22 @@ export default function VerifyOtp() {
   }
 
   const handleResendCode = () => {
-    if (!canResend) return
+    if (!canResend || loading) return
+    setError("")
+    setResendNotice("")
 
     const resend = purpose === "reset-password"
       ? requestResetPassword({ email: email as string })
       : requestOtp({ email: email as string })
     resend.then(() => {
-      if (!useAuthStore.getState().error) {
-        setOtp("")
-        setError("")
-        startTimer()
+      const resendError = useAuthStore.getState().error
+      if (resendError) {
+        setError(resendError)
+        return
       }
+      setOtp("")
+      setResendNotice("Request accepted. Email delivery is not guaranteed. Check your inbox and spam folder.")
+      startTimer()
     })
   }
 
@@ -149,13 +156,14 @@ export default function VerifyOtp() {
 
           <Text style={styles.heading}>Verification Code</Text>
           <Text style={styles.subHeading}>
-            We've sent a {codeLength}-digit code to {email}. Enter the code below to verify your{" "}
+            If a code was issued, it will be sent to {email}. Enter the {codeLength}-digit code to verify your{" "}
             {purpose === "reset-password" ? "identity" : "account"}.
           </Text>
 
           <OtpInput codeLength={codeLength} onCodeFilled={setOtp} error={!!error} />
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          {resendNotice ? <Text style={styles.noticeText}>{resendNotice}</Text> : null}
 
           <Button onPress={handleVerify} loading={loading}>
             VERIFY
@@ -226,6 +234,12 @@ const styles = StyleSheet.create({
     color: "#ff6b6b",
     fontSize: 14,
     marginBottom: 20,
+    textAlign: "center",
+  },
+  noticeText: {
+    color: "rgba(255, 255, 255, 0.7)",
+    fontSize: 13,
+    marginBottom: 16,
     textAlign: "center",
   },
   resendContainer: {
