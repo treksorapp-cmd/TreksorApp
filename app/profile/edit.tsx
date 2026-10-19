@@ -132,21 +132,21 @@ export default function EditProfile() {
       await updateProfile({
         name,
         avatar: tempAvatarFile,
-      }).then(()=>{
-        getCurrentUser();
       })
 
       // Navigate back after successful update
       router.back()
     } catch (error) {
       console.error("Error updating profile:", error)
-      Alert.alert("Error", "Failed to update profile. Please try again.")
+      Alert.alert("Unable to save profile", error instanceof Error ? error.message : "Please try again.")
     }
   }
 
   const handleChangePassword = () => {
     requestResetPassword({ email: user.email, isChangePassword: true })
         .then(() => {
+            const requestError = useAuthStore.getState().error;
+            if (requestError) { Alert.alert("Unable to send code", requestError); return; }
             router.push({ pathname: "/(auth)/verify-otp", params: { email:user.email, purpose: 'reset-password' } });
         })
   }
