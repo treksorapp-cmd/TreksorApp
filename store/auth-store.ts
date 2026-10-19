@@ -1,4 +1,5 @@
 import { api } from "@/api/axios";
+import { supabaseAuth } from "@/api/supabase-auth";
 import { errorHandler } from "@/lib/utils";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { ImagePickerAsset } from "expo-image-picker";
@@ -88,6 +89,7 @@ interface AuthState {
     plan: string;
   };
   token: string | null;
+  refreshToken: string | null;
   loading: boolean;
   error: string | null;
   login: (data: LoginRequest) => Promise<void>;
@@ -128,37 +130,43 @@ export const useAuthStore = create<AuthState>()(
         role: "",
       },
       token: null,
+      refreshToken: null,
       loading: false,
       error: null,
 
-      login: async (data: LoginRequest) => {
+      login: async ({ email, password }) => {
+        set({ loading: true, error: null });
         try {
-          set({ loading: true, error: null });
-          const {data:response} = await api.post<AuthResponse>("auth/login", data);
+          const response = await supabaseAuth.signIn(email, password);
+          if (!response.access_token) throw new Error("Confirmá tu correo electrónico para iniciar sesión.");
+          const u = response.user;
           set({
-            token: response.data.token,
+            token: response.access_token,
+            refreshToken: response.refresh_token ?? null,
             isAuthenticated: true,
-            loading: false,
+            isVerified: !!u?.email_confirmed_at,
+            user: { id: u?.id ?? "", email: u?.email ?? email, name: u?.user_metadata?.name ?? "", role: "user", createdAt: "", daysLeft: "1", plan: "" },
           });
-        } catch (error: any) {
-          console.error("login error:", { error:error?.response?.data ?? error?.message });
-          set({ error: (error?.response?.data?.message || (error?.code === "ECONNABORTED" ? "El servidor no respondió a tiempo." : "No se pudo conectar al servidor de Treksor.")), loading: false });
-          errorHandler(error);
-        }
+        } catch (error) {
+          set({ error: (error instanceof Error ? error.message : "No se pudo conectar al servidor de autenticación."), isAuthenticated: false });
+        } finally { set({ loading: false }); }
       },
 
-      register: async (data: RegisterRequest) => {
+      register: async ({ name, email, password }) => {
+        set({ loading: true, error: null });
         try {
-          set({ loading: true, error: null });
-          await api.post<void>("auth/register", data);
-          set({
-            loading: false,
-          });
-        } catch (error: any) {
-          console.error("register error:", {error:error?.response?.data ?? error?.message });
-          set({ error: (error?.response?.data?.message || (error?.code === "ECONNABORTED" ? "El servidor no respondió a tiempo." : "No se pudo conectar al servidor de Treksor.")), loading: false });
-          errorHandler(error);
-        }
+          const response = await supabaseAuth.signUp(name, email, password);
+          if (response.access_token) {
+            set({
+              token: response.access_token,
+              refreshToken: response.refresh_token ?? null,
+              isAuthenticated: true,
+              isVerified: !!response.user?.email_confirmed_at,
+              user: { id: response.user?.id ?? "", name, email, role: "user", createdAt: "", daysLeft: "1", plan: "" },
+            });
+          }
+        } catch (error) { set({ error: (error instanceof Error ? error.message : "No se pudo conectar al servidor de autenticación.") }); }
+        finally { set({ loading: false }); }
       },
 
       signInWithThirdParty: async (data: ThirdPartyAuthRequest) => {
@@ -187,6 +195,7 @@ export const useAuthStore = create<AuthState>()(
           isVerified: false,
           user: { id: "", name: "", email: "", role: "" },
           token: null,
+          refreshToken: null,
         });
         useArticleStore.getState().clearData();
         // useChatStore.getState().clearData();
@@ -198,71 +207,68 @@ export const useAuthStore = create<AuthState>()(
         useWorkoutStore.getState().clearData();
       },
 
-      requestResetPassword: async (data: RequestResetPasswordRequest) => {
+      requestResetPassword: async ({ email, isChangePassword }) => {
+        set({ loading: true, error: null });
         try {
-          set({ loading: true, error: null });
-          await api.post<void>("auth/request-reset-password", data);
-          set({ loading: false, isChangePassword: data.isChangePassword });
-        } catch (error: any) {
-          console.error("requestResetPassword error:", {error:error?.response?.data ?? error?.message });
-          set({ error: (error?.response?.data?.message || (error?.code === "ECONNABORTED" ? "El servidor no respondió a tiempo." : "No se pudo conectar al servidor de Treksor.")), loading: false });
-          errorHandler(error);
-        }
+          await supabaseAuth.resetPassword(email);
+          set({ isChangePassword: !!isChangePassword });
+        } catch (error) { set({ error: (error instanceof Error ? error.message : "No se pudo conectar al servidor de autenticación.") }); }
+        finally { set({ loading: false }); }
       },
 
-      resetPassword: async (data: ResetPasswordRequest) => {
-        try {
-          set({ loading: true, error: null });
-          await api.post<void>("auth/reset-password", data);
-          set({ loading: false });
-        } catch (error: any) {
-          console.error("resetPassword error:", {error:error?.response?.data ?? error?.message });
-          set({ error: (error?.response?.data?.message || (error?.code === "ECONNABORTED" ? "El servidor no respondió a tiempo." : "No se pudo conectar al servidor de Treksor.")), loading: false });
-          errorHandler(error);
-        }
+      resetPassword: async ({ token, password }) => {
+        set({ loading: true, error: null });
+        try { await supabaseAuth.updatePassword(token, password); }
+        catch (error) { set({ error: (error instanceof Error ? error.message : "No se pudo conectar al servidor de autenticación.") }); }
+        finally { set({ loading: false }); }
       },
 
-      requestOtp: async (data: RequestOtpRequest) => {
-        try {
-          set({ loading: true, error: null });
-          await api.post<void>("auth/request-otp", data);
-          set({ loading: false });
-        } catch (error: any) {
-          console.error("requestOtp error:", {error:error?.response?.data ?? error?.message });
-          set({ error: (error?.response?.data?.message || (error?.code === "ECONNABORTED" ? "El servidor no respondió a tiempo." : "No se pudo conectar al servidor de Treksor.")), loading: false });
-          errorHandler(error);
-        }
+      requestOtp: async ({ email }) => {
+        set({ loading: true, error: null });
+        try { await supabaseAuth.resetPassword(email); }
+        catch (error) { set({ error: (error instanceof Error ? error.message : "No se pudo conectar al servidor de autenticación.") }); }
+        finally { set({ loading: false }); }
       },
 
-      verifyOtp: async (data: VerifyOtpRequest) => {
+      verifyOtp: async ({ email, otp, type }) => {
+        set({ loading: true, error: null });
         try {
-          set({ loading: true, error: null });
-          const {data:response} = await api.post<AuthResponse>("auth/verify-otp", data);
-          if(response.data.resetToken)
-          {
-            set({ loading: false, isChangePassword: false, isVerified: false, isAuthenticated:false });
-            return response.data.resetToken;
-          }      
-          set({ loading: false, token: response.data.token, isAuthenticated: true });
-        } catch (error: any) {
-          console.error("verifyOtp error:", {error:error?.response?.data ?? error?.message });
-          set({ error: (error?.response?.data?.message || (error?.code === "ECONNABORTED" ? "El servidor no respondió a tiempo." : "No se pudo conectar al servidor de Treksor.")), loading: false });
-          errorHandler(error);
-        }
+          const response = type === "reset-password"
+            ? await supabaseAuth.verifyRecovery(email, otp)
+            : await supabaseAuth.verifySignup(email, otp);
+          if (type === "reset-password") return response.access_token;
+          if (response.access_token) set({ token: response.access_token, refreshToken: response.refresh_token ?? null, isAuthenticated: true, isVerified: true });
+        } catch (error) { set({ error: (error instanceof Error ? error.message : "No se pudo conectar al servidor de autenticación.") }); }
+        finally { set({ loading: false }); }
       },
 
       getCurrentUser: async () => {
+        set({ loading: true, error: null });
         try {
-          set({ loading: true, error: null });
-          const {data:response} = await api.get<AuthResponse>("user/me");
-          console.log("getCurrentUser", response?.data);
-          set({ loading: false, user: response.data.user, isVerified: response.data.user?.isVerified });
-          return response.data.user?.isVerified;
-        } catch (error: any) {
-          console.error("getCurrentUser error:", {error:error?.response?.data ?? error?.message });
-          set({ error: (error?.response?.data?.message || (error?.code === "ECONNABORTED" ? "El servidor no respondió a tiempo." : "No se pudo conectar al servidor de Treksor.")), loading: false });
-          errorHandler(error);
-        }
+          let token = get().token;
+          if (!token) return false;
+          let response;
+          try { response = await supabaseAuth.currentUser(token); }
+          catch (error) {
+            const refreshToken = get().refreshToken;
+            if (!refreshToken) throw error;
+            const refreshed = await supabaseAuth.refresh(refreshToken);
+            if (!refreshed.access_token) throw error;
+            token = refreshed.access_token;
+            set({ token, refreshToken: refreshed.refresh_token ?? refreshToken });
+            response = await supabaseAuth.currentUser(token);
+          }
+          const u = response.user ?? (response as any);
+          const verified = !!u?.email_confirmed_at;
+          set({
+            isAuthenticated: true, isVerified: verified,
+            user: { ...get().user, id: u.id, email: u.email ?? "", name: u.user_metadata?.name ?? get().user.name, role: "user", daysLeft: "1" },
+          });
+          return verified;
+        } catch (error) {
+          set({ error: (error instanceof Error ? error.message : "No se pudo conectar al servidor de autenticación."), isAuthenticated: false, isVerified: false, token: null, refreshToken: null });
+          return false;
+        } finally { set({ loading: false }); }
       },
 
       updateProfile: async (data: updateProfileRequest) => {
@@ -305,6 +311,7 @@ export const useAuthStore = create<AuthState>()(
         isAuthenticated: state.isAuthenticated,
         isVerified: state.isVerified,
         token: state.token,
+        refreshToken: state.refreshToken,
       }),
     }
   )
