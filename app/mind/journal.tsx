@@ -25,10 +25,9 @@ export default function MindJournalScreen(){
   }catch{Alert.alert("Export unavailable","Please try again.")}
  }
  const stats=moodAverage(entries,period)
- const today=localDate()
  const days=period==="week"?7:period==="month"?30:365
  const chart=Array.from({length:days},(_,i)=>{const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-(days-i-1));const date=localDate(d);return {date,mood:entries.find(e=>e.date===date)?.mood||0}})
- const grouped=period==="year"?Array.from({length:53},(_,i)=>chart.slice(i*7,i*7+7)).filter(group=>group.length>0).map(group=>({date:group[0].date,mood:group.reduce((sum,e)=>sum+e.mood,0)/Math.max(1,group.filter(e=>e.mood>0).length)})):chart
+ const grouped=period==="year"?Array.from({length:53},(_,i)=>chart.slice(i*7,i*7+7)).filter(group=>group.length>0).map(group=>({date:group[0].date,mood:group.filter(e=>e.mood>0).reduce((sum,e)=>sum+e.mood,0)/Math.max(1,group.filter(e=>e.mood>0).length)})):chart
  return <ScrollView style={styles.screen} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
   <Text style={styles.eyebrow}>TREKSOR · MIND</Text><Text style={styles.heading}>Personal Journal</Text>
   <Text style={styles.subtitle}>A private space to reflect on how you feel.</Text>
