@@ -34,7 +34,7 @@ export function moodAverage(entries: JournalEntry[], period: "week"|"month"|"yea
 }
 
 export async function deleteEntry(userId: string, date: string): Promise<void> {
-  if (!userId || !/^\\d{4}-\\d{2}-\\d{2}$/.test(date)) throw new Error("Invalid entry")
+  if (!userId || date.length !== 10 || !Number.isFinite(Date.parse(date))) throw new Error("Invalid entry")
   await SecureStore.deleteItemAsync(key(userId,date))
   const dates = JSON.parse((await SecureStore.getItemAsync(indexKey(userId))) || "[]") as string[]
   await SecureStore.setItemAsync(indexKey(userId),JSON.stringify(dates.filter(d=>d!==date)))
