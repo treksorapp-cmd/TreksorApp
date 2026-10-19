@@ -1,11 +1,14 @@
+const isIphoneDev = process.env.EAS_BUILD_PROFILE === "iphone-dev" || process.env.TREKSOR_IPHONE_DEV === "1";
+
 export default {
   expo: {
-    name: "Treksor",
-    slug: "Treksor",
+    name: isIphoneDev ? "Treksor Dev" : "Treksor",
+    slug: isIphoneDev ? "treksorapp" : "Treksor",
+    ...(isIphoneDev ? { owner: "treksorapps-team" } : {}),
     version: "1.0.3",
     orientation: "portrait",
     icon: "./assets/images/appicon-treksor.png",
-    scheme: "treksorapp",
+    scheme: isIphoneDev ? "treksor-dev" : "treksorapp",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     splash: {
@@ -15,7 +18,7 @@ export default {
     },
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "com.treksor.prod",
+      bundleIdentifier: isIphoneDev ? "com.treksor.dev" : "com.treksor.prod",
       googleServicesFile: process.env.GOOGLE_SERVICES_INFOPLIST,
       buildNumber: "3",
       infoPlist: {
@@ -87,7 +90,7 @@ export default {
     extra: {
       router: {},
       eas: {
-        projectId: "67c51458-b4bc-49a9-a9a9-c9117a576b2d"
+        projectId: isIphoneDev ? "14f7500b-1aba-4cea-9c2b-ded2c67821e2" : "67c51458-b4bc-49a9-a9a9-c9117a576b2d"
       }
     },
   },
