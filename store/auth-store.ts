@@ -272,32 +272,21 @@ export const useAuthStore = create<AuthState>()(
       },
 
       updateProfile: async (data: updateProfileRequest) => {
+        set({ loading: true, error: null });
         try {
-          set({ loading: true, error: null });
-          const formData = new FormData();
-          if (data.avatar) {
-            if (data.avatar.uri) {
-              formData.append("avatar",  {
-                uri: data.avatar.uri,
-                name: data.avatar.fileName || 'photo.jpg',
-                type: data.avatar.type,
-              } as any);
-            }
-          }
-          if (data.name) {
-            formData.append("name", data.name);
-          }
-          const config = {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          };
-          await api.patch<AuthResponse>("user/profile", formData, config);
+          if (data.avatar) throw new Error("Profile photo uploads are not available yet.");
+          const token = get().token;
+          if (!token) throw new Error("Please sign in again.");
+          const name = data.name?.trim();
+          if (!name) throw new Error("Please enter your name.");
+          await supabaseAuth.updateName(token, name);
+          set({ user: { ...get().user, name } });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "Unable to update profile.";
+          set({ error: message });
+          throw error;
+        } finally {
           set({ loading: false });
-        } catch (error: any) {
-          console.error("updateProfile error:", {error:error?.response?.data ?? error?.message });
-          set({ error: (error?.response?.data?.message || (error?.code === "ECONNABORTED" ? "El servidor no respondió a tiempo." : "No se pudo conectar al servidor de Treksor.")), loading: false });
-          errorHandler(error);
         }
       },
 
