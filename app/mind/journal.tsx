@@ -1,5 +1,5 @@
 import { useAuthStore } from "@/store/auth-store"
-import { getEntries, localDate, moodAverage, saveEntry, type JournalEntry, type Mood } from "@/lib/mood-journal"
+import { deleteEntry, getEntries, localDate, moodAverage, saveEntry, type JournalEntry, type Mood } from "@/lib/mood-journal"
 import { useFocusEffect } from "expo-router"
 import { useCallback, useState } from "react"
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
@@ -16,6 +16,7 @@ export default function MindJournalScreen(){
  const load=useCallback(async()=>{if(!userId)return;try{const all=await getEntries(userId);setEntries(all);const entry=all.find(e=>e.date===selectedDate);setMood(entry?.mood||3);setNote(entry?.note||"")}catch{Alert.alert("Journal unavailable","Unable to read your saved entries.")}},[userId,selectedDate])
  useFocusEffect(useCallback(()=>{void load()},[load]))
  async function save(){if(!userId)return;setBusy(true);try{await saveEntry(userId,mood,note,selectedDate);await load();Alert.alert("Saved","Your private entry was saved on this device.")}catch{Alert.alert("Unable to save","Please try again.")}finally{setBusy(false)}}
+ async function remove(){if(!userId)return;Alert.alert("Delete entry?","This cannot be undone.",[{text:"Cancel",style:"cancel"},{text:"Delete",style:"destructive",onPress:async()=>{try{await deleteEntry(userId,selectedDate);await load();setNote("");setMood(3);Alert.alert("Deleted","Entry removed from this device.")}catch{Alert.alert("Unable to delete","Please try again.")}}}])}
  const stats=moodAverage(entries,period)
  return <ScrollView style={styles.screen} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
   <Text style={styles.eyebrow}>TREKSOR · MIND</Text><Text style={styles.heading}>Personal Journal</Text>
@@ -24,9 +25,10 @@ export default function MindJournalScreen(){
    <Text style={styles.section}>How are you feeling?</Text><Text style={styles.date}>{selectedDate}</Text>
    <View style={styles.moods}>{labels.map((label,i)=><TouchableOpacity accessibilityRole="button" accessibilityState={{selected:mood===i+1}} key={label} onPress={()=>setMood((i+1) as Mood)} style={[styles.mood,mood===i+1&&styles.active]}><Text style={[styles.moodText,mood===i+1&&styles.activeText]}>{label}</Text></TouchableOpacity>)}</View>
    <Text style={styles.section}>Why do you feel this way?</Text>
-   <TextInput accessibilityLabel="Private journal entry" multiline maxLength={1200} placeholder="Write what's on your mind..." placeholderTextColor="#777" value={note} onChangeText={setNote} style={styles.input} textAlignVertical="top"/>
+   <TextInput accessibilityLabel="Private journal entry" multiline maxLength={450} placeholder="Write what's on your mind..." placeholderTextColor="#777" value={note} onChangeText={setNote} style={styles.input} textAlignVertical="top"/>
    <Text style={styles.privacy}>Private on this device · Not yet synced to your web account</Text>
    <TouchableOpacity disabled={busy||!userId} style={styles.button} onPress={()=>void save()}><Text style={styles.buttonText}>{busy?"Saving...":"Save entry"}</Text></TouchableOpacity>
+   {entries.some(e=>e.date===selectedDate)&&<TouchableOpacity onPress={()=>void remove()} style={{padding:14,alignItems:"center"}}><Text style={{color:"#C99A9A"}}>Delete this entry</Text></TouchableOpacity>}
   </View>
   <View style={styles.card}><Text style={styles.section}>Emotional Wellbeing</Text><View style={styles.moods}>{(["week","month","year"] as const).map(p=><TouchableOpacity key={p} onPress={()=>setPeriod(p)} style={[styles.period,period===p&&styles.active]}><Text style={[styles.moodText,period===p&&styles.activeText]}>{p==="week"?"7 days":p==="month"?"30 days":"365 days"}</Text></TouchableOpacity>)}</View>
   <Text style={styles.average}>{stats.average===null?"—":stats.average.toFixed(1)} <Text style={styles.outOf}>/ 5</Text></Text><Text style={styles.subtitle}>{stats.days} recorded {stats.days===1?"day":"days"} · Missing days are not scored</Text></View>
