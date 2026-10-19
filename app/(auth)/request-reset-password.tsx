@@ -62,7 +62,7 @@ export default function ForgotPassword() {
 
     if (validateEmail()) {
       requestResetPassword({ email }).then(() => {
-        router.push({ pathname: "/(auth)/verify-otp", params: { email,purpose:'reset-password' } });
+        if (!useAuthStore.getState().error) router.push({ pathname: "/(auth)/verify-otp", params: { email,purpose:'reset-password' } });
       })
     }
   }
