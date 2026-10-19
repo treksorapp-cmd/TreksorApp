@@ -1,4 +1,6 @@
 import { api } from "@/api/axios";
+import axios from "axios";
+const CONTENT_FEED = "https://treksor-admin-production.up.railway.app/api/public/content";
 import { errorHandler } from "@/lib/utils";
 import { PowerThought, PowerThoughtResponse } from "@/types/powerThought";
 import { create } from "zustand";
@@ -20,30 +22,28 @@ export const usePowerThoughtStore = create<PowerThoughtState>()(
       error: null,
 
       fetchPowerThoughts: async () => {
+        set({ loading: true, error: null });
         try {
-          set({ loading: true, error: null });
-          const {data:response} = await api.get<PowerThoughtResponse>(`power-thought?date=${new Date().toISOString().split('T')[0]}`);
-          const existingThoughts = get().powerThoughts;
-          const existingIds = new Set(existingThoughts.map(t => t._id));
-          
-          const newThoughts = response.data
-            .filter(thought => !existingIds.has(thought._id))
-            .map(thought => ({
-              ...thought,
-              isRead: false,
-              date: new Date(thought.date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              }),
-              isToday: new Date(thought.date).toISOString().split('T')[0] == new Date().toISOString().split('T')[0],
-            }));            
-            const updatedThoughts = [...newThoughts, ...existingThoughts].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-          set({ loading: false, powerThoughts: updatedThoughts});
-        } catch (error: any) {
-          console.error("fetchPowerThoughts error:", {error:error.response.data });
-          set({ error: error.response.data.message, loading: false });
-          errorHandler(error);
+          const results = await Promise.allSettled([
+            api.get<PowerThoughtResponse>(`power-thought?date=${new Date().toISOString().split("T")[0]}`),
+            axios.get<PowerThoughtResponse>(`${CONTENT_FEED}?type=thoughts`, { timeout: 12000 }),
+          ]);
+          if (results.every(result => result.status === "rejected")) throw new Error("Unable to load thoughts");
+          const legacy = results[0].status === "fulfilled" ? results[0].value.data.data : [];
+          const editorial = results[1].status === "fulfilled" ? results[1].value.data.data : [];
+          const existing = get().powerThoughts;
+          const unique = Array.from(new Map([...editorial, ...legacy].map(thought => [thought._id, thought])).values());
+          const today = new Date().toISOString().slice(0,10);
+          const updated = unique.map(thought => ({
+            ...thought,
+            isRead: existing.find(old => old._id === thought._id)?.isRead ?? false,
+            isToday: thought.date.slice(0,10) === today,
+            date: new Date(thought.date + (thought.date.length === 10 ? "T12:00:00Z" : "")).toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" }),
+          }));
+          set({ loading:false, powerThoughts:updated });
+        } catch (error) {
+          console.error("Thought sync failed", error);
+          set({ loading:false, error:"Unable to load thoughts" });
         }
       },
 
