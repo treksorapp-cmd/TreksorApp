@@ -225,7 +225,7 @@ export const useAuthStore = create<AuthState>()(
 
       requestOtp: async ({ email }) => {
         set({ loading: true, error: null });
-        try { await supabaseAuth.resetPassword(email); }
+        try { await supabaseAuth.resendSignup(email); }
         catch (error) { set({ error: (error instanceof Error ? error.message : "No se pudo conectar al servidor de autenticación.") }); }
         finally { set({ loading: false }); }
       },
