@@ -12,8 +12,8 @@ export type WorkoutItem = {
   rest_seconds: number
 }
 type Props = { exercises: WorkoutItem[]; days: number; location: "Gym" | "Home" }
-type Saved = { days: number; location: "Gym" | "Home"; selected: string[]; completed: string[] }
-const KEY = "treksor.workout.plan.v1"
+type Saved = { selected: string[]; completed: string[] }
+const KEY = "treksor.workout.plan.v2"
 const groups: Record<string, string[]> = {
   "Full Body": ["Legs", "Chest", "Back", "Shoulders", "Core", "Glutes", "Arms"],
   "Upper Body": ["Chest", "Back", "Shoulders", "Arms", "Core"],
@@ -32,21 +32,23 @@ export default function WorkoutPlanner({ exercises, days, location }: Props) {
   const [selected, setSelected] = useState<string[]>([])
   const [completed, setCompleted] = useState<string[]>([])
   const [ready, setReady] = useState(false)
+  const storageKey = KEY + "." + location + "." + days
   const [message, setMessage] = useState("")
   useEffect(() => {
     let active = true
-    AsyncStorage.getItem(KEY).then(raw => {
+    setReady(false)
+    AsyncStorage.getItem(storageKey).then(raw => {
       if (!active) return
       if (raw) {
         const saved: Saved = JSON.parse(raw)
-        if (saved.days === days && saved.location === location) {
-          setSelected(Array.isArray(saved.selected) ? saved.selected : [])
-          setCompleted(Array.isArray(saved.completed) ? saved.completed : [])
-        } else { setSelected([]); setCompleted([]) }
+        setSelected(Array.isArray(saved.selected) ? saved.selected : [])
+        setCompleted(Array.isArray(saved.completed) ? saved.completed : [])
+      } else {
+        setSelected([]); setCompleted([])
       }
     }).catch(() => setMessage("Could not restore saved plan")).finally(() => { if (active) setReady(true) })
     return () => { active = false }
-  }, [days, location])
+  }, [storageKey])
   const available = useMemo(() => exercises.filter(e => e.location === location || e.location === "Both"), [exercises, location])
   const split = splitFor(days)
   const sessions = split.map((name, index) => {
@@ -61,14 +63,14 @@ export default function WorkoutPlanner({ exercises, days, location }: Props) {
   async function persist(nextSelected: string[], nextCompleted: string[]) {
     setSelected(nextSelected); setCompleted(nextCompleted)
     try {
-      await AsyncStorage.setItem(KEY, JSON.stringify({ days, location, selected: nextSelected, completed: nextCompleted }))
+      await AsyncStorage.setItem(storageKey, JSON.stringify({ selected: nextSelected, completed: nextCompleted }))
       setMessage("Saved on this device")
     } catch { setMessage("Unable to save on this device") }
   }
   if (!ready) return null
   return <View style={{ marginTop: 28 }}>
     <Text style={{ color: "white", fontSize: 22, fontWeight: "700", marginBottom: 8 }}>Your Weekly Plan</Text>
-    <Text style={{ color: "#AEB4BC", marginBottom: 16 }}>Select exercises and mark sets as completed. Your choices are stored on this device.</Text>
+    <Text style={{ color: "#AEB4BC", marginBottom: 16 }}>Select exercises and mark each exercise complete. Your choices are stored on this device.</Text>
     {sessions.map((session, day) => <View key={day} style={{ backgroundColor: "#1A1D22", borderRadius: 14, padding: 16, marginBottom: 12 }}>
       <Text style={{ color: "#D6AE67", fontWeight: "700", fontSize: 17, marginBottom: 10 }}>Day {day + 1} · {session.name}</Text>
       {!session.exercises.length && <Text style={{ color: "#AEB4BC" }}>Exercises will appear when they are published in the library.</Text>}
@@ -77,7 +79,7 @@ export default function WorkoutPlanner({ exercises, days, location }: Props) {
         const included = selected.includes(itemKey)
         const done = completed.includes(itemKey)
         return <View key={itemKey} style={{ paddingVertical: 9, borderTopWidth: 1, borderColor: "#35373B" }}>
-          <TouchableOpacity accessibilityRole="checkbox" accessibilityState={{ checked: included }} onPress={() => void persist(included ? selected.filter(v => v !== itemKey) : [...selected, itemKey], completed.filter(v => v !== itemKey || !included))}>
+          <TouchableOpacity accessibilityRole="checkbox" accessibilityState={{ checked: included }} onPress={() => void persist(included ? selected.filter(v => v !== itemKey) : [...selected, itemKey], completed.filter(v => v !== itemKey))}>
             <Text style={{ color: included ? "#D6AE67" : "white", fontWeight: "600" }}>{included ? "☑" : "☐"} {exercise.name}</Text>
           </TouchableOpacity>
           <Text style={{ color: "#BFC2C5", marginTop: 4 }}>{exercise.sets} sets · {exercise.reps} reps · {exercise.rest_seconds}s rest</Text>
