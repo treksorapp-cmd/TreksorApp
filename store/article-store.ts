@@ -1,4 +1,6 @@
 import { api } from "@/api/axios";
+import axios from "axios";
+const CONTENT_FEED = "https://treksor-admin-production.up.railway.app/api/public/content";
 import { countRead, errorHandler } from "@/lib/utils";
 import { Article } from "@/types/article";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -38,34 +40,27 @@ export const useArticleStore = create<ArticleState>()(
       error: null,
 
       fetchArticles: async (query) => {
+        set({ loading: true, error: null });
+        const params = new URLSearchParams(query);
+        const category = params.get("category") || "default";
+        const key = category === "all" ? "All Articles" : category;
         try {
-          set({ loading: true, error: null });
-          const { data: response } = await api.get<ArticleResponse>(`article?${query}&date=${new Date().toISOString().split('T')[0]}`);
-          const params = new URLSearchParams(query);
-          const category = params.get("category") || "default";
-          const key = category === 'all' ? 'All Articles' : category;
-          const existingArticles = get().articles[key] || [];
-        
-          if(response.data.length === 0) {
-            set(() => ({
-              loading: false,
-              articles: {}
-            }));            
-          }
-          const newArticles = response.data.filter(
-            newItem => !existingArticles.some(existing => existing._id === newItem._id)
-          );
+          const results = await Promise.allSettled([
+            api.get<ArticleResponse>(`article?${query}&date=${new Date().toISOString().split("T")[0]}`),
+            axios.get<ArticleResponse>(`${CONTENT_FEED}?type=articles`, { timeout: 12000 }),
+          ]);
+          const legacy = results[0].status === "fulfilled" ? results[0].value.data.data : [];
+          const editorial = results[1].status === "fulfilled" ? results[1].value.data.data : [];
+          if (results.every(result => result.status === "rejected")) throw new Error("Unable to load articles");
+          const merged = [...editorial.filter(article => category === "all" || category === "default" || article.category === category), ...legacy];
+          const unique = Array.from(new Map(merged.map(article => [article._id, article])).values());
           set(state => ({
             loading: false,
-            articles: {
-              ...state.articles,
-              [key]: [...existingArticles, ...newArticles],
-            }
+            articles: { ...state.articles, [key]: unique.map(article => ({ ...article, isRead: state.articles[key]?.find(old => old._id === article._id)?.isRead ?? false })) }
           }));
-        } catch (error: any) {
-          console.error("fetchArticles error:", { error: error.response.data });
-          set({ error: error.response.data.message, loading: false });
-          errorHandler(error);
+        } catch (error) {
+          set({ loading: false, error: "Unable to load articles" });
+          console.error("Article sync failed", error);
         }
       },
 
