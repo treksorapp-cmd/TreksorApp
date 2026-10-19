@@ -25,6 +25,7 @@ export default function VerifyOtp() {
   const params = useLocalSearchParams()
   const { email, purpose = "registration" } = params
 
+  const codeLength = purpose === "reset-password" ? 8 : 6
   const [otp, setOtp] = useState("")
   const [error, setError] = useState("")
   const [timeLeft, setTimeLeft] = useState(30)
@@ -83,8 +84,8 @@ export default function VerifyOtp() {
   const handleVerify = () => {
     Keyboard.dismiss()
 
-    if (!otp || otp.length !== 6) {
-      setError("Please enter a valid 6-digit code")
+    if (!otp || otp.length !== codeLength) {
+      setError(`Please enter a valid ${codeLength}-digit code`)
       return
     }
 
@@ -98,19 +99,24 @@ export default function VerifyOtp() {
       else if (useAuthStore.getState().isAuthenticated) {
         getCurrentUser();
       }
+      const authError = useAuthStore.getState().error
+      if (authError) setError(authError)
     })
   }
 
   const handleResendCode = () => {
     if (!canResend) return
 
-    if(purpose === 'reset-password')
-    {
-      requestResetPassword({ email: email as string })
-    }
-    else{
-      requestOtp({ email: email as string });
-    }
+    const resend = purpose === "reset-password"
+      ? requestResetPassword({ email: email as string })
+      : requestOtp({ email: email as string })
+    resend.then(() => {
+      if (!useAuthStore.getState().error) {
+        setOtp("")
+        setError("")
+        startTimer()
+      }
+    })
   }
 
   const formatTime = (seconds: number) => {
@@ -143,11 +149,11 @@ export default function VerifyOtp() {
 
           <Text style={styles.heading}>Verification Code</Text>
           <Text style={styles.subHeading}>
-            We've sent a 6-digit code to {email}. Enter the code below to verify your{" "}
+            We've sent a {codeLength}-digit code to {email}. Enter the code below to verify your{" "}
             {purpose === "reset-password" ? "identity" : "account"}.
           </Text>
 
-          <OtpInput codeLength={6} onCodeFilled={setOtp} error={!!error} />
+          <OtpInput codeLength={codeLength} onCodeFilled={setOtp} error={!!error} />
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
