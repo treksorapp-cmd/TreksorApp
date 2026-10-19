@@ -89,7 +89,7 @@ export default function ResetPassword() {
         token: token as string,
         password: password
       }).then(() => {
-        setSuccess(true)
+        if (!useAuthStore.getState().error) setSuccess(true)
       });
     }
   }
