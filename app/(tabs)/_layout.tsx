@@ -104,6 +104,7 @@ export default function TabLayout() {
           }}
         />
 
+        <Tabs.Screen name="community" options={{title:"Community",tabBarIcon:({color})=><MaterialIcons name="groups" size={24} color={color}/>}} />
         <Tabs.Screen name="index" redirect />
       </Tabs>
     </View>
