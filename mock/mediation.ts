@@ -3,7 +3,7 @@ import { Mediation } from "@/types/mediation";
 export const mediations: Mediation[] = [
   {
     id: "beginner",
-    title: "PRANAYAMA (Beginner)",
+    title: "BEGINNER",
     source: "Source: A simple, fast way to reduce stress",
     url: "https://www.mayoclinic.org/tests-procedures/meditation/in-depth/meditation/art-20045858",
     audioUrl: "https://app.treksor.com/uploads/MEDITATION_BEGGINER.mp3",
@@ -20,7 +20,7 @@ export const mediations: Mediation[] = [
   },
   {
     id: "intermediate",
-    title: "CHAKRAS (Intermediate)",
+    title: "INTERMEDIATE",
     audioUrl: "https://app.treksor.com/uploads/MEDITATION_INTERMEDIATE.mp3",
     content: {
       description:
@@ -37,7 +37,7 @@ export const mediations: Mediation[] = [
   },
   {
     id: "advanced",
-    title: "VIYARA (Advanced)",
+    title: "ADVANCED",
     audioUrl: "https://app.treksor.com/uploads/MEDITATION_ADVANCE.mp3",
     content: {
       description:
