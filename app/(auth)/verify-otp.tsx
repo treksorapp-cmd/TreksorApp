@@ -147,7 +147,7 @@ export default function VerifyOtp() {
             {purpose === "reset-password" ? "identity" : "account"}.
           </Text>
 
-          <OtpInput codeLength={4} onCodeFilled={setOtp} error={!!error} />
+          <OtpInput codeLength={6} onCodeFilled={setOtp} error={!!error} />
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
