@@ -141,8 +141,8 @@ export const useAuthStore = create<AuthState>()(
             loading: false,
           });
         } catch (error: any) {
-          console.error("login error:", { error:error.response.data });
-          set({ error: error.response.data.message, loading: false });
+          console.error("login error:", { error:error?.response?.data ?? error?.message });
+          set({ error: (error?.response?.data?.message || (error?.code === "ECONNABORTED" ? "El servidor no respondió a tiempo." : "No se pudo conectar al servidor de Treksor.")), loading: false });
           errorHandler(error);
         }
       },
@@ -155,8 +155,8 @@ export const useAuthStore = create<AuthState>()(
             loading: false,
           });
         } catch (error: any) {
-          console.error("register error:", {error:error.response.data });
-          set({ error: error.response.data.message, loading: false });
+          console.error("register error:", {error:error?.response?.data ?? error?.message });
+          set({ error: (error?.response?.data?.message || (error?.code === "ECONNABORTED" ? "El servidor no respondió a tiempo." : "No se pudo conectar al servidor de Treksor.")), loading: false });
           errorHandler(error);
         }
       },
@@ -171,8 +171,8 @@ export const useAuthStore = create<AuthState>()(
             loading: false,
           });
         } catch (error: any) {
-          console.error("register error:", {error:error.response.data });
-          set({ error: error.response.data.message, loading: false });
+          console.error("register error:", {error:error?.response?.data ?? error?.message });
+          set({ error: (error?.response?.data?.message || (error?.code === "ECONNABORTED" ? "El servidor no respondió a tiempo." : "No se pudo conectar al servidor de Treksor.")), loading: false });
           errorHandler(error);
         }
       },
@@ -204,8 +204,8 @@ export const useAuthStore = create<AuthState>()(
           await api.post<void>("auth/request-reset-password", data);
           set({ loading: false, isChangePassword: data.isChangePassword });
         } catch (error: any) {
-          console.error("requestResetPassword error:", {error:error.response.data });
-          set({ error: error.response.data.message, loading: false });
+          console.error("requestResetPassword error:", {error:error?.response?.data ?? error?.message });
+          set({ error: (error?.response?.data?.message || (error?.code === "ECONNABORTED" ? "El servidor no respondió a tiempo." : "No se pudo conectar al servidor de Treksor.")), loading: false });
           errorHandler(error);
         }
       },
@@ -216,8 +216,8 @@ export const useAuthStore = create<AuthState>()(
           await api.post<void>("auth/reset-password", data);
           set({ loading: false });
         } catch (error: any) {
-          console.error("resetPassword error:", {error:error.response.data });
-          set({ error: error.response.data.message, loading: false });
+          console.error("resetPassword error:", {error:error?.response?.data ?? error?.message });
+          set({ error: (error?.response?.data?.message || (error?.code === "ECONNABORTED" ? "El servidor no respondió a tiempo." : "No se pudo conectar al servidor de Treksor.")), loading: false });
           errorHandler(error);
         }
       },
@@ -228,8 +228,8 @@ export const useAuthStore = create<AuthState>()(
           await api.post<void>("auth/request-otp", data);
           set({ loading: false });
         } catch (error: any) {
-          console.error("requestOtp error:", {error:error.response.data });
-          set({ error: error.response.data.message, loading: false });
+          console.error("requestOtp error:", {error:error?.response?.data ?? error?.message });
+          set({ error: (error?.response?.data?.message || (error?.code === "ECONNABORTED" ? "El servidor no respondió a tiempo." : "No se pudo conectar al servidor de Treksor.")), loading: false });
           errorHandler(error);
         }
       },
@@ -245,8 +245,8 @@ export const useAuthStore = create<AuthState>()(
           }      
           set({ loading: false, token: response.data.token, isAuthenticated: true });
         } catch (error: any) {
-          console.error("verifyOtp error:", {error:error.response.data });
-          set({ error: error.response.data.message, loading: false });
+          console.error("verifyOtp error:", {error:error?.response?.data ?? error?.message });
+          set({ error: (error?.response?.data?.message || (error?.code === "ECONNABORTED" ? "El servidor no respondió a tiempo." : "No se pudo conectar al servidor de Treksor.")), loading: false });
           errorHandler(error);
         }
       },
@@ -259,8 +259,8 @@ export const useAuthStore = create<AuthState>()(
           set({ loading: false, user: response.data.user, isVerified: response.data.user?.isVerified });
           return response.data.user?.isVerified;
         } catch (error: any) {
-          console.error("getCurrentUser error:", {error:error.response.data });
-          set({ error: error.response.data.message, loading: false });
+          console.error("getCurrentUser error:", {error:error?.response?.data ?? error?.message });
+          set({ error: (error?.response?.data?.message || (error?.code === "ECONNABORTED" ? "El servidor no respondió a tiempo." : "No se pudo conectar al servidor de Treksor.")), loading: false });
           errorHandler(error);
         }
       },
@@ -289,8 +289,8 @@ export const useAuthStore = create<AuthState>()(
           await api.patch<AuthResponse>("user/profile", formData, config);
           set({ loading: false });
         } catch (error: any) {
-          console.error("updateProfile error:", {error:error.response.data });
-          set({ error: error.response.data.message, loading: false });
+          console.error("updateProfile error:", {error:error?.response?.data ?? error?.message });
+          set({ error: (error?.response?.data?.message || (error?.code === "ECONNABORTED" ? "El servidor no respondió a tiempo." : "No se pudo conectar al servidor de Treksor.")), loading: false });
           errorHandler(error);
         }
       },
