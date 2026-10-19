@@ -2,6 +2,7 @@ import React,{useEffect,useState} from "react"
 import {ActivityIndicator,ScrollView,Text,TouchableOpacity,View} from "react-native"
 import axios from "axios"
 import ExerciseVideo from "@/components/workout/ExerciseVideo"
+import WorkoutPlanner from "@/components/workout/WorkoutPlanner"
 type Exercise={id:string;name:string;muscle_group:string;location:string;equipment:string;instructions:string;video_path:string|null;sets:number;reps:string;rest_seconds:number}
 const muscles=["Chest","Back","Shoulders","Arms","Legs","Glutes","Core"]
 export default function WorkoutGuide(){
@@ -22,6 +23,7 @@ export default function WorkoutGuide(){
   <View style={{flexDirection:"row",gap:8}}>{[2,3,4,5,6].map(v=><TouchableOpacity key={v} onPress={()=>setDays(v)} style={{padding:14,borderRadius:10,backgroundColor:days===v?"#D6AE67":"#25282D"}}><Text style={{color:days===v?"#111":"white",fontWeight:"700"}}>{v}</Text></TouchableOpacity>)}</View>
   <Text style={{color:"#D6AE67",fontSize:15,marginTop:28,marginBottom:10}}>SUGGESTED WEEKLY SPLIT</Text>
   {split.map((name,i)=><View key={i} style={{padding:14,backgroundColor:"#1A1D22",borderRadius:12,marginBottom:8}}><Text style={{color:"white",fontWeight:"700"}}>Day {i+1} · {name}</Text></View>)}
+  <WorkoutPlanner exercises={exercises} days={days} location={location}/>
   <Text style={{color:"white",fontSize:22,fontWeight:"700",marginTop:28}}>Explore Muscle Groups</Text>
   <Text style={{color:"#ADB0B4",marginVertical:8}}>Select a muscle to see matching exercises.</Text>
   <View style={{flexDirection:"row",flexWrap:"wrap",gap:8,marginVertical:12}}>{muscles.map(m=><TouchableOpacity key={m} onPress={()=>setMuscle(m)} style={{padding:12,borderRadius:10,backgroundColor:muscle===m?"#D6AE67":"#25282D"}}><Text style={{color:muscle===m?"#111":"white"}}>{m}</Text></TouchableOpacity>)}</View>
