@@ -39,3 +39,12 @@ export async function deleteEntry(userId: string, date: string): Promise<void> {
   const dates = JSON.parse((await SecureStore.getItemAsync(indexKey(userId))) || "[]") as string[]
   await SecureStore.setItemAsync(indexKey(userId),JSON.stringify(dates.filter(d=>d!==date)))
 }
+
+export async function clearJournal(userId: string): Promise<void> {
+  if (!userId) return
+  const dates = JSON.parse((await SecureStore.getItemAsync(indexKey(userId))) || "[]") as string[]
+  for (const date of dates) {
+    await SecureStore.deleteItemAsync(key(userId,date))
+  }
+  await SecureStore.deleteItemAsync(indexKey(userId))
+}
