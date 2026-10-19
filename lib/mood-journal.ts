@@ -18,7 +18,7 @@ export async function getEntries(userId: string): Promise<JournalEntry[]> {
 }
 export async function saveEntry(userId: string, mood: Mood, note: string, date = localDate()): Promise<void> {
   if (!userId || !/^\d{4}-\d{2}-\d{2}$/.test(date) || ![1,2,3,4,5].includes(mood)) throw new Error("Invalid journal entry")
-  if (note.length > 1200) throw new Error("Maximum 1200 characters")
+  if (new TextEncoder().encode(note).length > 1500) throw new Error("Maximum 1500 UTF-8 bytes")
   await SecureStore.setItemAsync(key(userId,date),JSON.stringify({date,mood,note,updatedAt:new Date().toISOString()}))
   const dates = JSON.parse((await SecureStore.getItemAsync(indexKey(userId))) || "[]") as string[]
   if (!dates.includes(date)) await SecureStore.setItemAsync(indexKey(userId),JSON.stringify([...dates,date].sort()))
@@ -31,4 +31,11 @@ export function moodAverage(entries: JournalEntry[], period: "week"|"month"|"yea
   const first=localDate(start),last=localDate(now)
   const included=entries.filter(e=>e.date>=first&&e.date<=last)
   return {average:included.length?included.reduce((sum,e)=>sum+e.mood,0)/included.length:null,days:included.length}
+}
+
+export async function deleteEntry(userId: string, date: string): Promise<void> {
+  if (!userId || !/^\\d{4}-\\d{2}-\\d{2}$/.test(date)) throw new Error("Invalid entry")
+  await SecureStore.deleteItemAsync(key(userId,date))
+  const dates = JSON.parse((await SecureStore.getItemAsync(indexKey(userId))) || "[]") as string[]
+  await SecureStore.setItemAsync(indexKey(userId),JSON.stringify(dates.filter(d=>d!==date)))
 }
