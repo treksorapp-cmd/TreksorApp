@@ -25,7 +25,7 @@ interface MediationState {
 export const useMediationStore = create<MediationState>()(
   persist(
     (set, get) => ({
-      mediation: mediations,
+      mediation: mediations.map(item => ({ ...item, isRead: false })),
       locked: ["intermediate", "advanced"],
       loading: false,
       error: null,
@@ -85,8 +85,9 @@ export const useMediationStore = create<MediationState>()(
       },
 
       markMediationAsRead: (id) => {
-        const existingMediations = get().mediation;
+        const existingMediations = get().mediation.map(item => ({ ...item }));
         const mediationIndex = existingMediations.findIndex(thought => thought.id === id)
+        if (mediationIndex < 0) return;
         existingMediations[mediationIndex].isRead = true;
         const locked: string[] = [];
         const beginnerMediation = existingMediations.find((mediation) => mediation.id === "beginner");
@@ -102,7 +103,7 @@ export const useMediationStore = create<MediationState>()(
 
       clearData: () => {
         set({
-          mediation: mediations,
+          mediation: mediations.map(item => ({ ...item, isRead: false })),
           locked: ["intermediate", "advanced"],
           loading: false,
           error: null,
