@@ -83,8 +83,8 @@ export default function VerifyOtp() {
   const handleVerify = () => {
     Keyboard.dismiss()
 
-    if (!otp || otp.length !== 4) {
-      setError("Please enter a valid 4-digit code")
+    if (!otp || otp.length !== 6) {
+      setError("Please enter a valid 6-digit code")
       return
     }
 
@@ -93,9 +93,9 @@ export default function VerifyOtp() {
     verifyOtp({ email: email as string, otp, type: purpose as string }).then((token)=>{
       if(purpose === 'reset-password')
       {
-        router.push({ pathname: "/(auth)/reset-password", params: { token } });
+        if (token) router.push({ pathname: "/(auth)/reset-password", params: { token } });
       }
-      else {
+      else if (useAuthStore.getState().isAuthenticated) {
         getCurrentUser();
       }
     })
@@ -143,7 +143,7 @@ export default function VerifyOtp() {
 
           <Text style={styles.heading}>Verification Code</Text>
           <Text style={styles.subHeading}>
-            We've sent a 4-digit code to {email}. Enter the code below to verify your{" "}
+            We've sent a 6-digit code to {email}. Enter the code below to verify your{" "}
             {purpose === "reset-password" ? "identity" : "account"}.
           </Text>
 
