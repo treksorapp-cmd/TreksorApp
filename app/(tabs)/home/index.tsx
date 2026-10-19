@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const pillars: { name: string; route: Href; image: number; caption: string }[] = [
   { name: "BODY", route: "/body", image: require("@/assets/images/body-ritual.png"), caption: "Train your strength" },
   { name: "MIND", route: "/mental", image: require("@/assets/images/mental-ritual.png"), caption: "Build your focus" },
-  { name: "SPIRITUAL", route: "/spiritual", image: require("@/assets/images/spiritual-ritual.png"), caption: "Find your balance" },
+  { name: "BALANCE", route: "/spiritual", image: require("@/assets/images/spiritual-ritual.png"), caption: "Find your balance" },
   { name: "PURPOSE", route: "/purpose", image: require("@/assets/images/purpose-home.png"), caption: "Live with intention" },
 ];
 export default function HomeScreen() {
@@ -23,8 +23,8 @@ export default function HomeScreen() {
   const { getUnreadArticlesCount } = useArticleStore();
   const { pushToken } = useNotifications();
   const { savePushToken, setShowPackages } = useUserStore();
-  useEffect(() => { getCurrentUser(); fetchPowerThoughts(); getUnreadArticlesCount(); }, []);
-  useEffect(() => { if (pushToken?.data) savePushToken({ pushToken: pushToken.data }); }, [pushToken?.data]);
+  useEffect(() => { fetchPowerThoughts(); getUnreadArticlesCount(); }, []);
+
   const thought = powerThoughts?.find(item => item.isToday)?.thought ?? powerThoughts?.[0]?.thought;
   const firstName = user?.name?.split(" ")[0] || "there";
   const hour = new Date().getHours();
