@@ -39,6 +39,7 @@ const Selection = () => {
           <View style={styles.headerSpacer} />
         </View>
         <View style={[styles.content, { paddingBottom: insets.bottom + 30 }]}>
+          <TouchableOpacity onPress={()=>router.push("/body/workout/guide")} style={styles.gymButtonContainer}><Text style={styles.gymButtonText}>BUILD MY PLAN</Text></TouchableOpacity>
           <TouchableOpacity
             onPress={() =>
               router.push({
