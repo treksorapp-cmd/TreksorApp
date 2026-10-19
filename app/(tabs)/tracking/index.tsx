@@ -6,6 +6,7 @@ import TrackingCard from "@/components/TrackingCard";
 import CalendarModal from "@/components/ui/CalendarModal";
 import { useTrackingStore } from "@/store/tracking-store";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { useFocusEffect } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useState } from "react";
@@ -98,6 +99,7 @@ export default function TrackingScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        <TouchableOpacity onPress={() => router.push("/mind/journal")} style={{backgroundColor:"#1A1D22",borderColor:"#D6AE67",borderWidth:1,borderRadius:15,padding:18,marginBottom:20}}><Text style={{color:"#D6AE67",fontWeight:"700",letterSpacing:1}}>MIND · MOOD TRACKING</Text><Text style={{color:"#fff",fontSize:19,fontWeight:"700",marginTop:8}}>My Journal & Emotional Wellbeing →</Text><Text style={{color:"#aaa",marginTop:6}}>Daily check-ins and 7, 30, 365-day averages</Text></TouchableOpacity>
         <Text style={styles.sectionHeading}>Pillars</Text>
         {trackingData.map((data, index) => (
           <TrackingCard
