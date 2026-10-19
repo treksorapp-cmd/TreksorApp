@@ -39,6 +39,7 @@ export const supabaseAuth = {
   resetPassword: (email: string) => request("/recover", "POST", { email }),
   verifyRecovery: (email: string, token: string) => request("/verify", "POST", { email, token, type: "recovery" }),
   updatePassword: (token: string, password: string) => request("/user", "PUT", { password }, token),
+  updateName: (token: string, name: string) => request("/user", "PUT", { data: { name } }, token),
   verifySignup: (email: string, token: string) => request("/verify", "POST", { email, token, type: "signup" }),
   resendSignup: (email: string) => request("/resend", "POST", { email, type: "signup" }),
 };
