@@ -18,7 +18,7 @@ export async function getEntries(userId: string): Promise<JournalEntry[]> {
 }
 export async function saveEntry(userId: string, mood: Mood, note: string, date = localDate()): Promise<void> {
   if (!userId || !/^\d{4}-\d{2}-\d{2}$/.test(date) || ![1,2,3,4,5].includes(mood)) throw new Error("Invalid journal entry")
-  if (new TextEncoder().encode(note).length > 1500) throw new Error("Maximum 1500 UTF-8 bytes")
+  if (note.length > 450) throw new Error("Maximum 450 characters")
   await SecureStore.setItemAsync(key(userId,date),JSON.stringify({date,mood,note,updatedAt:new Date().toISOString()}))
   const dates = JSON.parse((await SecureStore.getItemAsync(indexKey(userId))) || "[]") as string[]
   if (!dates.includes(date)) await SecureStore.setItemAsync(indexKey(userId),JSON.stringify([...dates,date].sort()))
