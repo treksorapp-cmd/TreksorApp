@@ -20,8 +20,8 @@ export default function MindJournalScreen(){
  async function exportJournal(){
   try {
    if(entries.length===0){Alert.alert("Nothing to export","Add a journal entry first.");return}
-   const content=entries.map(e=>e.date+" | "+labels[e.mood-1]+" ("+e.mood+"/5)"+(e.note?"\\n"+e.note:"")).join("\\n\\n")
-   await Share.share({message:"TREKSOR · MY PRIVATE JOURNAL\\n\\n"+content})
+   const content=entries.map(e=>e.date+" | "+labels[e.mood-1]+" ("+e.mood+"/5)"+(e.note?"\n"+e.note:"")).join("\n\n")
+   await Share.share({message:"TREKSOR · MY PRIVATE JOURNAL\n\n"+content})
   }catch{Alert.alert("Export unavailable","Please try again.")}
  }
  const stats=moodAverage(entries,period)
