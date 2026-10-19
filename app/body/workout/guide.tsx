@@ -2,7 +2,7 @@ import React,{useEffect,useState} from "react"
 import {ActivityIndicator,ScrollView,Text,TouchableOpacity,View} from "react-native"
 import axios from "axios"
 import ExerciseVideo from "@/components/workout/ExerciseVideo"
-type Exercise={id:string;name:string;muscle_group:string;location:string;equipment:string;instructions:string;video_path:string|null}
+type Exercise={id:string;name:string;muscle_group:string;location:string;equipment:string;instructions:string;video_path:string|null;sets:number;reps:string;rest_seconds:number}
 const muscles=["Chest","Back","Shoulders","Arms","Legs","Glutes","Core"]
 export default function WorkoutGuide(){
  const [days,setDays]=useState(3)
@@ -26,7 +26,7 @@ export default function WorkoutGuide(){
   <Text style={{color:"#ADB0B4",marginVertical:8}}>Select a muscle to see matching exercises.</Text>
   <View style={{flexDirection:"row",flexWrap:"wrap",gap:8,marginVertical:12}}>{muscles.map(m=><TouchableOpacity key={m} onPress={()=>setMuscle(m)} style={{padding:12,borderRadius:10,backgroundColor:muscle===m?"#D6AE67":"#25282D"}}><Text style={{color:muscle===m?"#111":"white"}}>{m}</Text></TouchableOpacity>)}</View>
   {loading?<ActivityIndicator color="#D6AE67"/>:exercises.filter(e=>e.muscle_group===muscle&&(e.location===location||e.location==="Both")).map(e=><View key={e.id} style={{padding:16,backgroundColor:"#1A1D22",borderRadius:12,marginBottom:10}}>
-    <Text style={{color:"white",fontSize:17,fontWeight:"700"}}>{e.name}</Text><Text style={{color:"#D6AE67",marginTop:5}}>{e.equipment||"No equipment"}</Text><Text style={{color:"#BDC0C4",marginTop:8}}>{e.instructions}</Text>
+    <Text style={{color:"white",fontSize:17,fontWeight:"700"}}>{e.name}</Text><Text style={{color:"#D6AE67",marginTop:5}}>{e.equipment||"No equipment"}</Text><Text style={{color:"#D6AE67",marginTop:8}}>{e.sets} sets · {e.reps} reps · {e.rest_seconds}s rest</Text><Text style={{color:"#BDC0C4",marginTop:8}}>{e.instructions}</Text>
     {e.video_path?<ExerciseVideo exerciseId={e.id}/>:<Text style={{color:"#888",marginTop:8}}>Video coming soon</Text>}
   </View>)}
   <Text style={{color:"#94999E",fontSize:12,marginTop:20}}>Suggested splits are examples, not personalized prescriptions. Adapt exercise intensity and recovery to your needs.</Text>
