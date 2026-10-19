@@ -2,7 +2,7 @@ import { useAuthStore } from "@/store/auth-store"
 import { deleteEntry, getEntries, localDate, moodAverage, saveEntry, type JournalEntry, type Mood } from "@/lib/mood-journal"
 import { useFocusEffect } from "expo-router"
 import { useCallback, useState } from "react"
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { Alert, ScrollView, Share, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 
 const labels=["Very low","Low","Okay","Good","Great"]
 export default function MindJournalScreen(){
@@ -17,7 +17,18 @@ export default function MindJournalScreen(){
  useFocusEffect(useCallback(()=>{void load()},[load]))
  async function save(){if(!userId)return;setBusy(true);try{await saveEntry(userId,mood,note,selectedDate);await load();Alert.alert("Saved","Your private entry was saved on this device.")}catch{Alert.alert("Unable to save","Please try again.")}finally{setBusy(false)}}
  async function remove(){if(!userId)return;Alert.alert("Delete entry?","This cannot be undone.",[{text:"Cancel",style:"cancel"},{text:"Delete",style:"destructive",onPress:async()=>{try{await deleteEntry(userId,selectedDate);await load();setNote("");setMood(3);Alert.alert("Deleted","Entry removed from this device.")}catch{Alert.alert("Unable to delete","Please try again.")}}}])}
+ async function exportJournal(){
+  try {
+   if(entries.length===0){Alert.alert("Nothing to export","Add a journal entry first.");return}
+   const content=entries.map(e=>e.date+" | "+labels[e.mood-1]+" ("+e.mood+"/5)"+(e.note?"\\n"+e.note:"")).join("\\n\\n")
+   await Share.share({message:"TREKSOR · MY PRIVATE JOURNAL\\n\\n"+content})
+  }catch{Alert.alert("Export unavailable","Please try again.")}
+ }
  const stats=moodAverage(entries,period)
+ const today=localDate()
+ const days=period==="week"?7:period==="month"?30:365
+ const chart=Array.from({length:days},(_,i)=>{const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-(days-i-1));const date=localDate(d);return {date,mood:entries.find(e=>e.date===date)?.mood||0}})
+ const grouped=period==="year"?Array.from({length:53},(_,i)=>chart.slice(i*7,i*7+7)).filter(group=>group.length>0).map(group=>({date:group[0].date,mood:group.reduce((sum,e)=>sum+e.mood,0)/Math.max(1,group.filter(e=>e.mood>0).length)})):chart
  return <ScrollView style={styles.screen} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
   <Text style={styles.eyebrow}>TREKSOR · MIND</Text><Text style={styles.heading}>Personal Journal</Text>
   <Text style={styles.subtitle}>A private space to reflect on how you feel.</Text>
@@ -31,8 +42,9 @@ export default function MindJournalScreen(){
    {entries.some(e=>e.date===selectedDate)&&<TouchableOpacity onPress={()=>void remove()} style={{padding:14,alignItems:"center"}}><Text style={{color:"#C99A9A"}}>Delete this entry</Text></TouchableOpacity>}
   </View>
   <View style={styles.card}><Text style={styles.section}>Emotional Wellbeing</Text><View style={styles.moods}>{(["week","month","year"] as const).map(p=><TouchableOpacity key={p} onPress={()=>setPeriod(p)} style={[styles.period,period===p&&styles.active]}><Text style={[styles.moodText,period===p&&styles.activeText]}>{p==="week"?"7 days":p==="month"?"30 days":"365 days"}</Text></TouchableOpacity>)}</View>
+  <View accessible accessibilityLabel="Mood history chart" style={{flexDirection:"row",height:85,alignItems:"flex-end",gap:2,marginTop:16}}>{grouped.map((item,i)=><View key={item.date+"-"+i} style={{flex:1,height:item.mood>0?Math.max(5,item.mood/5*80):3,backgroundColor:item.mood>0?"#D6AE67":"#454545",borderRadius:2}} />)}</View>
   <Text style={styles.average}>{stats.average===null?"—":stats.average.toFixed(1)} <Text style={styles.outOf}>/ 5</Text></Text><Text style={styles.subtitle}>{stats.days} recorded {stats.days===1?"day":"days"} · Missing days are not scored</Text></View>
-  <Text style={styles.section}>Past entries</Text>
+  <View style={{flexDirection:"row",justifyContent:"space-between",alignItems:"center",marginVertical:18}}><Text style={styles.section}>Past entries</Text><TouchableOpacity accessibilityRole="button" onPress={()=>void exportJournal()}><Text style={{color:"#D6AE67",fontWeight:"700"}}>Export my journal ↗</Text></TouchableOpacity></View>
   {entries.length===0?<Text style={styles.subtitle}>Your entries will appear here.</Text>:entries.map(entry=><TouchableOpacity key={entry.date} style={styles.history} onPress={()=>setSelectedDate(entry.date)}><View><Text style={styles.date}>{entry.date} · {labels[entry.mood-1]}</Text><Text numberOfLines={2} style={styles.subtitle}>{entry.note||"No written reflection"}</Text></View><Text style={styles.arrow}>›</Text></TouchableOpacity>)}
   {selectedDate!==localDate()&&<TouchableOpacity onPress={()=>setSelectedDate(localDate())}><Text style={styles.return}>Return to today →</Text></TouchableOpacity>}
  </ScrollView>
