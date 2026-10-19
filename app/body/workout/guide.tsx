@@ -5,6 +5,15 @@ import ExerciseVideo from "@/components/workout/ExerciseVideo"
 import WorkoutPlanner from "@/components/workout/WorkoutPlanner"
 type Exercise={id:string;name:string;muscle_group:string;location:string;equipment:string;instructions:string;video_path:string|null;sets:number;reps:string;rest_seconds:number}
 const muscles=["Chest","Back","Shoulders","Arms","Legs","Glutes","Core"]
+const descriptions:Record<string,string>={
+ Chest:"The pectorals assist pushing and pressing movements. Balance chest work with back training.",
+ Back:"Back muscles assist pulling and support posture. Rows and pulldowns are common choices.",
+ Shoulders:"The deltoids move and stabilize the arms. Presses and controlled raises are common choices.",
+ Arms:"Biceps help bend the elbow and triceps help extend it.",
+ Legs:"Quadriceps and hamstrings help with squats, lunges and hip hinges.",
+ Glutes:"Gluteal muscles contribute to hip extension and lower-body stability.",
+ Core:"Abdominal and trunk muscles help stabilize the spine during movement."
+}
 export default function WorkoutGuide(){
  const [days,setDays]=useState(3)
  const [location,setLocation]=useState<"Gym"|"Home">("Gym")
@@ -27,10 +36,12 @@ export default function WorkoutGuide(){
   <Text style={{color:"white",fontSize:22,fontWeight:"700",marginTop:28}}>Explore Muscle Groups</Text>
   <Text style={{color:"#ADB0B4",marginVertical:8}}>Select a muscle to see matching exercises.</Text>
   <View style={{flexDirection:"row",flexWrap:"wrap",gap:8,marginVertical:12}}>{muscles.map(m=><TouchableOpacity key={m} onPress={()=>setMuscle(m)} style={{padding:12,borderRadius:10,backgroundColor:muscle===m?"#D6AE67":"#25282D"}}><Text style={{color:muscle===m?"#111":"white"}}>{m}</Text></TouchableOpacity>)}</View>
+  <Text style={{color:"#AEB4BC",lineHeight:21,marginBottom:16}}>{descriptions[muscle]}</Text>
   {loading?<ActivityIndicator color="#D6AE67"/>:exercises.filter(e=>e.muscle_group===muscle&&(e.location===location||e.location==="Both")).map(e=><View key={e.id} style={{padding:16,backgroundColor:"#1A1D22",borderRadius:12,marginBottom:10}}>
     <Text style={{color:"white",fontSize:17,fontWeight:"700"}}>{e.name}</Text><Text style={{color:"#D6AE67",marginTop:5}}>{e.equipment||"No equipment"}</Text><Text style={{color:"#D6AE67",marginTop:8}}>{e.sets} sets · {e.reps} reps · {e.rest_seconds}s rest</Text><Text style={{color:"#BDC0C4",marginTop:8}}>{e.instructions}</Text>
     {e.video_path?<ExerciseVideo exerciseId={e.id}/>:<Text style={{color:"#888",marginTop:8}}>Video coming soon</Text>}
   </View>)}
+  {!loading&&!exercises.some(e=>e.muscle_group===muscle&&(e.location===location||e.location==="Both"))&&<Text style={{color:"#BFC2C5",marginBottom:12}}>No published exercises for this selection yet.</Text>}
   <Text style={{color:"#94999E",fontSize:12,marginTop:20}}>Suggested splits are examples, not personalized prescriptions. Adapt exercise intensity and recovery to your needs.</Text>
  </ScrollView>
 }
