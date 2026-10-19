@@ -1,6 +1,8 @@
 "use client";
 
 import ActivityLogModal from "@/components/ActivityLogModal";
+import { getEntries, moodAverage } from "@/lib/mood-journal";
+import { useAuthStore } from "@/store/auth-store";
 import AddTrackerModal from "@/components/AddTrackerModal";
 import TrackingCard from "@/components/TrackingCard";
 import CalendarModal from "@/components/ui/CalendarModal";
@@ -22,6 +24,9 @@ import {
 
 export default function TrackingScreen() {
   const { trackingData, fetchTrackingData, loading } = useTrackingStore();
+  const userId = useAuthStore(s => s.user?.id);
+  const [moodPeriod, setMoodPeriod] = useState<"week"|"month"|"year">("week");
+  const [moodSummary, setMoodSummary] = useState<{average:number|null;days:number}>({average:null,days:0});
 
   const [showAddTracker, setShowAddTracker] = useState(false);
   const [showActivityLog, setShowActivityLog] = useState(false);
@@ -39,6 +44,8 @@ export default function TrackingScreen() {
       fetchTrackingData();
     }, [])
   );
+
+  useFocusEffect(useCallback(() => { let active = true; if (userId) { getEntries(userId).then(entries => { if (active) setMoodSummary(moodAverage(entries,moodPeriod)); }).catch(() => { if (active) setMoodSummary({average:null,days:0}); }); } return () => { active=false; }; }, [userId,moodPeriod]));
 
   const handleDateSelect = (date: string) => {   
     setSelectedDate(date);
@@ -100,6 +107,14 @@ export default function TrackingScreen() {
         showsVerticalScrollIndicator={false}
       >
         <TouchableOpacity onPress={() => router.push("/mind/journal")} style={{backgroundColor:"#1A1D22",borderColor:"#D6AE67",borderWidth:1,borderRadius:15,padding:18,marginBottom:20}}><Text style={{color:"#D6AE67",fontWeight:"700",letterSpacing:1}}>MIND · MOOD TRACKING</Text><Text style={{color:"#fff",fontSize:19,fontWeight:"700",marginTop:8}}>My Journal & Emotional Wellbeing →</Text><Text style={{color:"#aaa",marginTop:6}}>Daily check-ins and 7, 30, 365-day averages</Text></TouchableOpacity>
+        <View style={{flexDirection:"row",gap:8,marginBottom:12}}>
+          {(["week","month","year"] as const).map(period => (
+            <TouchableOpacity key={period} onPress={() => setMoodPeriod(period)} style={{padding:10,borderRadius:9,backgroundColor:moodPeriod===period?"#D6AE67":"#1A1D22"}}>
+              <Text style={{color:moodPeriod===period?"#111":"#fff"}}>{period==="week"?"7 days":period==="month"?"30 days":"365 days"}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <Text style={{color:"#D6AE67",fontSize:22,fontWeight:"700",marginBottom:8}}>{moodSummary.average === null ? "No mood entries yet" : moodSummary.average.toFixed(1) + " / 5 · " + moodSummary.days + " check-ins"}</Text>
         <Text style={styles.sectionHeading}>Pillars</Text>
         {trackingData.map((data, index) => (
           <TrackingCard
