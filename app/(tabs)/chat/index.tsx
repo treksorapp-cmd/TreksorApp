@@ -145,11 +145,7 @@ export default function ChatScreen() {
       )}
 
       {/* Input */}
-      <KeyboardAvoidingView 
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? -(insets.bottom + 30) : 20}
-      >
-        <View style={[styles.inputContainer,{paddingBottom: insets.bottom + 40}]}>
+      <View style={[styles.inputContainer, { paddingBottom: insets.bottom + 12 }]}>
           <TextInput
             style={styles.textInput}
             placeholder="Type your message here..."
@@ -170,7 +166,7 @@ export default function ChatScreen() {
               <Ionicons name="send" size={20} color={inputText.trim() ? "#EFB33F" : "#666"} />
             )}
           </TouchableOpacity>
-        </View>
+      </View>
     </KeyboardAvoidingView>
   )
 }
