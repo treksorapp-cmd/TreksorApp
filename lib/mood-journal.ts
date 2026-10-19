@@ -2,6 +2,7 @@ import * as SecureStore from "expo-secure-store"
 
 export type Mood = 1 | 2 | 3 | 4 | 5
 export type JournalEntry = { date: string; mood: Mood; note: string; updatedAt: string }
+// Local-only journal: never send records to API, analytics, or cloud services.
 const prefix = "treksor-journal-v1"
 const key = (userId: string, date: string) => `${prefix}:${userId}:${date}`
 const indexKey = (userId: string) => `${prefix}:${userId}:dates`
@@ -12,7 +13,11 @@ export async function getEntries(userId: string): Promise<JournalEntry[]> {
   const dates = JSON.parse((await SecureStore.getItemAsync(indexKey(userId))) || "[]") as string[]
   const records = await Promise.all(dates.map(async date => {
     const raw = await SecureStore.getItemAsync(key(userId,date))
-    return raw ? JSON.parse(raw) as JournalEntry : null
+    if (!raw) return null
+    try {
+      const entry = JSON.parse(raw) as JournalEntry
+      return entry.date === date && [1,2,3,4,5].includes(entry.mood) && typeof entry.note === "string" ? entry : null
+    } catch { return null }
   }))
   return records.filter((entry): entry is JournalEntry => entry !== null).sort((a,b)=>b.date.localeCompare(a.date))
 }
