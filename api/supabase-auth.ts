@@ -3,7 +3,7 @@
 const base = "https://niakfwerfqmrmhuypkpd.supabase.co/auth/v1";
 const publishableKey = "sb_publishable_WxFupUF8wM6SuEcTXYuqHw_dRoSpLs8";
 
-type AuthResult = { access_token?: string; refresh_token?: string; user?: { id: string; email?: string; user_metadata?: { name?: string }; email_confirmed_at?: string | null }; error?: string; msg?: string; error_description?: string };
+type AuthResult = { access_token?: string; refresh_token?: string; user?: { id: string; email?: string; user_metadata?: { name?: string; avatar_url?: string }; email_confirmed_at?: string | null }; error?: string; msg?: string; error_description?: string };
 export type AuthSession = { accessToken: string; refreshToken: string };
 
 async function request(path: string, method: string, body?: unknown, token?: string): Promise<AuthResult> {
@@ -40,6 +40,7 @@ export const supabaseAuth = {
   verifyRecovery: (email: string, token: string) => request("/verify", "POST", { email, token, type: "recovery" }),
   updatePassword: (token: string, password: string) => request("/user", "PUT", { password }, token),
   updateName: (token: string, name: string) => request("/user", "PUT", { data: { name } }, token),
+  updateProfileMetadata: (token: string, data: {name:string;avatar_url?:string}) => request("/user","PUT",{data},token),
   verifySignup: (email: string, token: string) => request("/verify", "POST", { email, token, type: "signup" }),
   resendSignup: (email: string) => request("/resend", "POST", { email, type: "signup" }),
 };
