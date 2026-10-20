@@ -11,6 +11,7 @@ interface WorkoutState {
     saveTrainingPlan: (plan:TrainingPlan)=>void;
     resetTrainingPlan: ()=>void;
     checkIn: (week:string)=>void;
+    undoCheckIn: (week:string)=>void;
     workouts: Workout[];
     workoutContent: WorkoutContent;
     getWorkoutExercies:(id:string)=>Exercise[] | undefined;
@@ -24,9 +25,10 @@ export const useWorkoutStore = create<WorkoutState>()(
     (set,get) => ({
         trainingPlan: null,
         checkIns: {},
-        saveTrainingPlan: plan=>set({trainingPlan:plan,checkIns:{}}),
+        saveTrainingPlan: plan=>set({trainingPlan:plan}),
         resetTrainingPlan: ()=>set({trainingPlan:null,checkIns:{}}),
         checkIn: week=>set(state=>({checkIns:{...state.checkIns,[week]:[...(state.checkIns[week]||[]),new Date().toISOString()]}})),
+        undoCheckIn: week=>set(state=>({checkIns:{...state.checkIns,[week]:(state.checkIns[week]||[]).slice(0,-1)}})),
         workouts: WorkoutsData,
         workoutContent: workoutContent,
 
