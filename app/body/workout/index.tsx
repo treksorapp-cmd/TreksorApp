@@ -51,42 +51,6 @@ const Selection = () => {
           <TouchableOpacity onPress={()=>router.push("/body/workout/my-plan")} style={styles.gymButtonContainer}><Text style={styles.gymButtonText}>MY PLAN</Text></TouchableOpacity>
           <TouchableOpacity onPress={()=>router.push("/body/workout/guide")} style={styles.gymButtonContainer}><Text style={styles.gymButtonText}>BUILD MY PLAN</Text></TouchableOpacity>
           <TouchableOpacity onPress={()=>router.push("/body/workout/library")} style={styles.gymButtonContainer}><Text style={styles.gymButtonText}>EXERCISE LIBRARY</Text></TouchableOpacity>
-          <TouchableOpacity
-            onPress={() =>
-              router.push({
-                pathname: "/body/workout/exercises",
-                params: { workoutId: "push" },
-              })
-            }
-            style={styles.gymButtonContainer}
-          >
-            <Text style={styles.gymButtonText}>PUSH</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() =>
-              router.push({
-                pathname: "/body/workout/exercises",
-                params: { workoutId: "pull" },
-              })
-            }
-            style={styles.gymButtonContainer}
-          >
-            <Text style={styles.gymButtonText}>PULL</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() =>
-              router.push({
-                pathname: "/body/workout/exercises",
-                params: { workoutId: "legs" },
-              })
-            }
-            style={styles.gymButtonContainer}
-          >
-            <Text style={styles.gymButtonText}>LEGS</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.otherButtonContainer}>
-            <Text style={styles.otherButtonText}>REST</Text>
-          </TouchableOpacity>
           <Text style={{ color: "#fff", textAlign: "center", marginTop: 20 }}>
             Disclaimer: These workouts are intended for general fitness purposes
             only. Always consult your doctor before starting any new exercise
