@@ -4,7 +4,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+export type TrainingPlan = { days:number; location:"Gym"|"Home"; savedAt:string };
 interface WorkoutState {
+    trainingPlan: TrainingPlan | null;
+    checkIns: Record<string,string[]>;
+    saveTrainingPlan: (plan:TrainingPlan)=>void;
+    resetTrainingPlan: ()=>void;
+    checkIn: (week:string)=>void;
     workouts: Workout[];
     workoutContent: WorkoutContent;
     getWorkoutExercies:(id:string)=>Exercise[] | undefined;
@@ -16,6 +22,11 @@ interface WorkoutState {
 export const useWorkoutStore = create<WorkoutState>()(
   persist(
     (set,get) => ({
+        trainingPlan: null,
+        checkIns: {},
+        saveTrainingPlan: plan=>set({trainingPlan:plan,checkIns:{}}),
+        resetTrainingPlan: ()=>set({trainingPlan:null,checkIns:{}}),
+        checkIn: week=>set(state=>({checkIns:{...state.checkIns,[week]:[...(state.checkIns[week]||[]),new Date().toISOString()]}})),
         workouts: WorkoutsData,
         workoutContent: workoutContent,
 
@@ -27,6 +38,7 @@ export const useWorkoutStore = create<WorkoutState>()(
         markExerciseAsRead: (workoutId: string, exerciseId: string) => {
           const existingWorkouts = get().workouts;
           const existingWorkoutIndex = existingWorkouts.findIndex((workout) => workout.id === workoutId);
+          if (existingWorkoutIndex < 0) return;
           const updatedExercises = existingWorkouts[existingWorkoutIndex].exercises.map((exercise) => {
             if (exercise.id === exerciseId) {
               return { ...exercise, completed: true };
