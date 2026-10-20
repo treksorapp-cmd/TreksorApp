@@ -75,13 +75,12 @@ export default function TrackingScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
 
-      <Text style={styles.premiumTitle}>Tracking</Text>
-      <Text style={styles.periodNote}>Your habits, at a glance.</Text>
+      <Text style={styles.premiumTitle}>Your progress</Text>
+      <Text style={styles.periodNote}>Small steps. Real momentum.</Text>
       {/* Streak Section */}
       <View style={styles.streakContainer}>
         <View style={styles.streakContent}>
-          {/* <Ionicons name="flame" size={24} color="#EFB33F" /> */}
-          {/* <Text style={styles.streakText}>4-Day Streak</Text> */}
+          <Text style={{color:"#E8B44D",fontWeight:"700",fontSize:13}}>LOG YOUR DAY</Text>
         </View>
         <View style={{ flexDirection: "row", gap: 5 }}>
           <TouchableOpacity
@@ -105,7 +104,7 @@ export default function TrackingScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <TouchableOpacity onPress={() => router.push("/mind/journal")} style={{backgroundColor:"#1A1D22",borderColor:"#D6AE67",borderWidth:1,borderRadius:15,padding:18,marginBottom:20}}><Text style={{color:"#D6AE67",fontWeight:"700",letterSpacing:1}}>MIND · MOOD TRACKING</Text><Text style={{color:"#fff",fontSize:19,fontWeight:"700",marginTop:8}}>My Journal & Emotional Wellbeing →</Text><Text style={{color:"#aaa",marginTop:6}}>Daily check-ins and 7, 30, 365-day averages</Text></TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("/mind/journal")} style={{backgroundColor:"#1A1D22",borderColor:"#E8B44D",borderWidth:1,borderRadius:15,padding:18,marginBottom:20}}><Text style={{color:"#E8B44D",fontWeight:"700",letterSpacing:1}}>DAILY CHECK-IN</Text><Text style={{color:"#fff",fontSize:19,fontWeight:"700",marginTop:8}}>How are you feeling today? →</Text><Text style={{color:"#aaa",marginTop:6}}>Reflect, record and see your progress over time</Text></TouchableOpacity>
         <Text style={styles.sectionHeading}>Your progress</Text>
         {trackingData.map((data, index) => (
           <TrackingCard
@@ -142,13 +141,13 @@ export default function TrackingScreen() {
 }
 
 const styles = StyleSheet.create({
-  premiumTitle: { color: "#fff", fontSize: 26, fontWeight: "600", textAlign: "center", marginTop: 12, marginBottom: 20 },
+  premiumTitle: { color: "#fff", fontSize: 28, fontWeight: "700", textAlign: "left", marginHorizontal: 20, marginTop: 20, marginBottom: 4 },
   periodRow: { flexDirection: "row", marginHorizontal: 18, backgroundColor: "#1D1D1D", borderRadius: 10, padding: 4 },
   periodButton: { flex: 1, paddingVertical: 11, alignItems: "center", borderRadius: 8 },
   periodActive: { backgroundColor: "#F5BC4F" },
   periodText: { color: "#aaa", fontWeight: "600" },
   periodTextActive: { color: "#111" },
-  periodNote: { color: "#999", fontSize: 12, textAlign: "center", marginTop: 4, marginBottom: 12 },
+  periodNote: { color: "#999", fontSize: 12, textAlign: "left", marginHorizontal: 20, marginTop: 4, marginBottom: 12 },
   sectionHeading: { color: "#fff", fontSize: 17, fontWeight: "700", marginBottom: 16 },
   container: {
     flex: 1,
@@ -183,8 +182,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 10,
-    paddingBottom: 100,
+    paddingHorizontal: 20,
+    paddingBottom: 120,
   },
   loadingContainer: {
     flex: 1,
