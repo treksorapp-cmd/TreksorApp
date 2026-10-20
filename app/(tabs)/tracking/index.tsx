@@ -76,8 +76,7 @@ export default function TrackingScreen() {
       <StatusBar style="light" />
 
       <Text style={styles.premiumTitle}>Tracking</Text>
-      <View style={styles.periodRow}>{(["Week", "Month", "Year"] as const).map(item => <TouchableOpacity key={item} disabled={item !== "Week"} style={[styles.periodButton, item === "Week" && styles.periodActive]}><Text style={[styles.periodText, item === "Week" && styles.periodTextActive]}>{item}</Text></TouchableOpacity>)}</View>
-      <Text style={styles.periodNote}>Current tracking overview · monthly and yearly views coming later</Text>
+      <Text style={styles.periodNote}>Your habits, at a glance.</Text>
       {/* Streak Section */}
       <View style={styles.streakContainer}>
         <View style={styles.streakContent}>
@@ -107,15 +106,7 @@ export default function TrackingScreen() {
         showsVerticalScrollIndicator={false}
       >
         <TouchableOpacity onPress={() => router.push("/mind/journal")} style={{backgroundColor:"#1A1D22",borderColor:"#D6AE67",borderWidth:1,borderRadius:15,padding:18,marginBottom:20}}><Text style={{color:"#D6AE67",fontWeight:"700",letterSpacing:1}}>MIND · MOOD TRACKING</Text><Text style={{color:"#fff",fontSize:19,fontWeight:"700",marginTop:8}}>My Journal & Emotional Wellbeing →</Text><Text style={{color:"#aaa",marginTop:6}}>Daily check-ins and 7, 30, 365-day averages</Text></TouchableOpacity>
-        <View style={{flexDirection:"row",gap:8,marginBottom:12}}>
-          {(["week","month","year"] as const).map(period => (
-            <TouchableOpacity key={period} onPress={() => setMoodPeriod(period)} style={{padding:10,borderRadius:9,backgroundColor:moodPeriod===period?"#D6AE67":"#1A1D22"}}>
-              <Text style={{color:moodPeriod===period?"#111":"#fff"}}>{period==="week"?"7 days":period==="month"?"30 days":"365 days"}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        <Text style={{color:"#D6AE67",fontSize:22,fontWeight:"700",marginBottom:8}}>{moodSummary.average === null ? "No mood entries yet" : moodSummary.average.toFixed(1) + " / 5 · " + moodSummary.days + " check-ins"}</Text>
-        <Text style={styles.sectionHeading}>Pillars</Text>
+        <Text style={styles.sectionHeading}>Your progress</Text>
         {trackingData.map((data, index) => (
           <TrackingCard
             key={index}
@@ -151,13 +142,13 @@ export default function TrackingScreen() {
 }
 
 const styles = StyleSheet.create({
-  premiumTitle: { color: "#fff", fontSize: 25, fontWeight: "800", textAlign: "center", marginTop: 12, marginBottom: 20 },
+  premiumTitle: { color: "#fff", fontSize: 26, fontWeight: "600", textAlign: "center", marginTop: 12, marginBottom: 20 },
   periodRow: { flexDirection: "row", marginHorizontal: 18, backgroundColor: "#1D1D1D", borderRadius: 10, padding: 4 },
   periodButton: { flex: 1, paddingVertical: 11, alignItems: "center", borderRadius: 8 },
   periodActive: { backgroundColor: "#F5BC4F" },
   periodText: { color: "#aaa", fontWeight: "600" },
   periodTextActive: { color: "#111" },
-  periodNote: { color: "#999", fontSize: 12, textAlign: "center", marginTop: 15 },
+  periodNote: { color: "#999", fontSize: 12, textAlign: "center", marginTop: 4, marginBottom: 12 },
   sectionHeading: { color: "#fff", fontSize: 17, fontWeight: "700", marginBottom: 16 },
   container: {
     flex: 1,
@@ -167,7 +158,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     paddingVertical: 16,
   },
   streakContent: {
