@@ -19,8 +19,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const BeveragesHome = () => {
   const insets = useSafeAreaInsets();
   const { type } = useLocalSearchParams();
-  const { backgroundImage, data, route, headerTitle } =
-    Nutritions[type as string];
+  const category = Nutritions[typeof type === "string" ? type as keyof typeof Nutritions : "beverages"];
+  const { backgroundImage, data, route, headerTitle } = category ?? Nutritions.beverages;
     const { user } = useAuthStore();
 
   return (
@@ -34,7 +34,7 @@ const BeveragesHome = () => {
       >
         {/* Header */}
          {!user?.plan && <Header showTitle={false} showBackButton={false} showAvatar={false} />}
-        <View style={[styles.header, { paddingTop: user?.plan && (insets.top + 10), position: !user?.plan ? "relative": "absolute" }]}>
+        <View style={[styles.header, { paddingTop: user?.plan ? insets.top + 10 : 0, position: !user?.plan ? "relative" : "absolute" }]}>
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => router.back()}
@@ -52,7 +52,7 @@ const BeveragesHome = () => {
               onPress={() =>
                 router.push({ pathname: route, params: { id: item.id } })
               }
-              icon={item.icon}
+              icon={"icon" in item ? item.icon : undefined}
             >
               {item.name}
             </Button>
