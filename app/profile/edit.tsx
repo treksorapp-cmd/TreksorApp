@@ -81,6 +81,7 @@ export default function EditProfile() {
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
         setTempAvatar(result.assets[0].uri)
+        setTempAvatarFile(result.assets[0])
       }
     } catch (error) {
       console.error("Error taking photo:", error)
@@ -117,22 +118,11 @@ export default function EditProfile() {
 
   const handleSave = async () => {
     try {
-      if (tempAvatar) {
-        setIsUploading(true)
-        // In a real app, you would upload the image to your server here
-        // and get back a URL to store in the user profile
-
-        // Simulate upload delay
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        setAvatar(tempAvatar)
-        setIsUploading(false)
+      if (tempAvatarFile) {
+        Alert.alert("Photo upload not available", "Your selected photo has not been uploaded. You can still save your name. Photo storage needs to be configured before profile pictures can be saved.");
+        return;
       }
-
-      // Update profile with new data
-      await updateProfile({
-        name,
-        avatar: tempAvatarFile,
-      })
+      await updateProfile({ name, avatar: null });
 
       // Navigate back after successful update
       router.back()
@@ -169,7 +159,7 @@ export default function EditProfile() {
                 </View>
               )}
               <View style={styles.editIconContainer}>
-                <LinearGradient colors={["#3498db", "#2980b9"]} style={styles.editIconGradient}>
+                <LinearGradient colors={["#E8B44D", "#A87720"]} style={styles.editIconGradient}>
                   <Ionicons name="camera" size={14} color="#FFFFFF" />
                 </LinearGradient>
               </View>
@@ -250,7 +240,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: "#3498db",
+    backgroundColor: "#3B2C15",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -282,7 +272,7 @@ const styles = StyleSheet.create({
     borderColor: "#121212",
   },
   changePhotoText: {
-    color: "#3498db",
+    color: "#E8B44D",
     fontSize: 16,
     marginTop: 12,
   },
