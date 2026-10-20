@@ -139,7 +139,7 @@ const BeveragesDetails = () => {
       >
         {/* Header */}
          {!user?.plan && <Header showTitle={false} showBackButton={false} showAvatar={false} />}
-        <View style={[styles.header, { paddingTop: user?.plan && (insets.top + 10), position: !user?.plan ? "relative": "absolute" }]}>
+        <View style={[styles.header, { paddingTop: user?.plan ? insets.top + 10 : 0, position: !user?.plan ? "relative" : "absolute" }]}>
           <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
             <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
           </TouchableOpacity>
@@ -154,7 +154,7 @@ const BeveragesDetails = () => {
           showsVerticalScrollIndicator={false}
         >
           <View style={{ width: '100%' }}>
-            <Text style={{ color: "#FFFFFF", fontSize: 18, marginBottom: 20, fontWeight: 'bold', fontFamily: 'Nunito-Regular' }}>{beverage.description}</Text>
+            <Text style={{ color: "#FFFFFF", fontSize: 18, marginBottom: 20, fontWeight: 'bold',  }}>{beverage.description}</Text>
           </View>
         
           <LinearGradient
@@ -180,24 +180,24 @@ const BeveragesDetails = () => {
         
           {beverage.footNote && (
             <View style={{ width: '100%', marginTop: 10 }}>
-              <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: '400', fontFamily: 'Nunito-Regular' }}>{beverage.footNote}</Text>
+              <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: '400',  }}>{beverage.footNote}</Text>
             </View>
           )}
           {(beverage.source_1 || beverage.source_2 || beverage.source_3) && (
             <View style={{ width: '100%', marginTop: 10 }}>
               {beverage.source_1 && beverage.url_1 && (
-                <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: '400', fontFamily: 'Nunito-Regular' }}>
-                  <Text style={{ textDecorationLine: 'underline', color: '#3498db' }} onPress={() => Linking.openURL(beverage.url_1!)}>Source 1: {beverage.source_1}</Text>
+                <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: '400',  }}>
+                  <Text style={{ textDecorationLine: 'underline', color: '#E8B44D' }} onPress={() => Linking.openURL(beverage.url_1!)}>Source 1: {beverage.source_1}</Text>
                 </Text>
               )}
               {beverage.source_2 && beverage.url_2 && (
-                <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: '400', fontFamily: 'Nunito-Regular' }}>
-                  <Text style={{ textDecorationLine: 'underline', color: '#3498db' }} onPress={() => Linking.openURL(beverage.url_2!)}>Source 2: {beverage.source_2}</Text>
+                <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: '400',  }}>
+                  <Text style={{ textDecorationLine: 'underline', color: '#E8B44D' }} onPress={() => Linking.openURL(beverage.url_2!)}>Source 2: {beverage.source_2}</Text>
                 </Text>
               )}
               {beverage.source_3 && beverage.url_3 && (
-                <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: '400', fontFamily: 'Nunito-Regular' }}>
-                  <Text style={{ textDecorationLine: 'underline', color: '#3498db' }} onPress={() => Linking.openURL(beverage.url_3!)}>Source 3: {beverage.source_3}</Text>
+                <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: '400',  }}>
+                  <Text style={{ textDecorationLine: 'underline', color: '#E8B44D' }} onPress={() => Linking.openURL(beverage.url_3!)}>Source 3: {beverage.source_3}</Text>
                 </Text>
               )}
             </View>
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     textShadowColor: "rgba(0, 0, 0, 0.5)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
-    fontFamily: 'Nunito-Regular'
+    
   },
   gridContainer: {
     paddingBottom: 10,
@@ -312,14 +312,14 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     marginBottom: 4,
     lineHeight: 20,
-    fontFamily: 'Nunito-Regular'
+    
   },
   ingredientMeasurement: {
     fontSize: 14,
     color: "#F39C12",
     fontWeight: "500",
     lineHeight: 18,
-    fontFamily: 'Nunito-Regular'
+    
   },
   scrollView: {
     flex: 1,
