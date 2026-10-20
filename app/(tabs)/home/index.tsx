@@ -8,11 +8,11 @@ import { useEffect } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const GOLD = "#F3BF64";
+const GOLD = "#C9A66B";
 const pillars: { name: string; subtitle: string; route: Href; image: number; icon: keyof typeof Ionicons.glyphMap; index: string }[] = [
   { name: "BODY", subtitle: "Strength & movement", route: "/body", image: require("@/assets/images/body-ritual.png"), icon: "barbell-outline", index: "01" },
-  { name: "MIND", subtitle: "Clarity & focus", route: "/mental", image: require("@/assets/images/mental-ritual.png"), icon: "sparkles-outline", index: "02" },
-  { name: "BALANCE", subtitle: "Calm & wellbeing", route: "/spiritual", image: require("@/assets/images/spiritual-ritual.png"), icon: "leaf-outline", index: "03" },
+  { name: "MIND", subtitle: "Clarity & focus", route: "/mental", image: require("@/assets/images/mental-ritual.png"), icon: "book-outline", index: "02" },
+  { name: "BALANCE", subtitle: "Calm & wellbeing", route: "/spiritual", image: require("@/assets/images/spiritual-ritual.png"), icon: "fitness-outline", index: "03" },
   { name: "PURPOSE", subtitle: "Direction & growth", route: "/purpose", image: require("@/assets/images/purpose-home.png"), icon: "compass-outline", index: "04" },
 ];
 
@@ -25,7 +25,7 @@ export default function HomeScreen() {
   const firstName = user?.name?.trim().split(" ")[0] || "Explorer";
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-  const thought = powerThoughts?.find(item => item.isToday)?.thought || powerThoughts?.[0]?.thought || "Small steps, taken consistently, create extraordinary change.";
+  const thought = powerThoughts?.find(item => item.isToday)?.thought || powerThoughts?.[0]?.thought || "Consistency makes the difference.";
 
   return (
     <SafeAreaView style={styles.screen} edges={["top"]}>
@@ -35,7 +35,7 @@ export default function HomeScreen() {
             <Image source={require("@/assets/images/appicon-treksor.png")} style={styles.logo} />
             <View>
               <Text style={styles.brandText}>TREKSOR</Text>
-              <Text style={styles.brandCaption}>BECOME MORE</Text>
+              <Text style={styles.brandCaption}>BUILT WITH PURPOSE</Text>
             </View>
           </View>
           <TouchableOpacity onPress={() => router.push("/profile")} style={styles.profile} accessibilityLabel="Open profile">
@@ -44,9 +44,9 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.intro}>
-          <Text style={styles.eyebrow}>YOUR SPACE TO GROW</Text>
+          <Text style={styles.eyebrow}>A MORE INTENTIONAL LIFE</Text>
           <Text style={styles.greeting}>{greeting},{"\n"}<Text style={styles.name}>{firstName}.</Text></Text>
-          <Text style={styles.subtitle}>Every day is a chance to become more.</Text>
+          <Text style={styles.subtitle}>Build strength. Think clearly. Live with purpose.</Text>
         </View>
 
         <View style={styles.sectionHeader}>
@@ -76,14 +76,14 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.thoughtSection}>
-          <View style={styles.thoughtHeading}><Ionicons name="sunny-outline" color={GOLD} size={19} /><Text style={styles.thoughtLabel}>A MOMENT OF INSPIRATION</Text></View>
+          <View style={styles.thoughtHeading}><Ionicons name="sunny-outline" color={GOLD} size={19} /><Text style={styles.thoughtLabel}>TODAY’S PERSPECTIVE</Text></View>
           <TouchableOpacity style={styles.thoughtCard} activeOpacity={0.85} onPress={() => router.push("/mental/thoughts")}>
             <Text style={styles.quoteMark}>“</Text>
             <Text style={styles.thoughtText} numberOfLines={4}>{thought}</Text>
             <View style={styles.thoughtFooter}><Text style={styles.thoughtLink}>TODAY'S THOUGHT</Text><Ionicons name="arrow-forward" color={GOLD} size={18} /></View>
           </TouchableOpacity>
         </View>
-        <Text style={styles.footer}>YOUR JOURNEY. YOUR PACE.</Text>
+        <Text style={styles.footer}>PROGRESS THROUGH CONSISTENCY.</Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   logo: { width: 38, height: 38, borderRadius: 11 },
   brandText: { color: "#FFFFFF", fontSize: 17, fontWeight: "800", letterSpacing: 3 },
   brandCaption: { color: "#947F5A", fontSize: 8, fontWeight: "700", letterSpacing: 2.4, marginTop: 3 },
-  profile: { height: 42, width: 42, borderRadius: 21, backgroundColor: "#25201A", borderColor: "#685131", borderWidth: 1, alignItems: "center", justifyContent: "center" },
+  profile: { height: 42, width: 42, borderRadius: 21, backgroundColor: "#1D1B18", borderColor: "#514737", borderWidth: 1, alignItems: "center", justifyContent: "center" },
   profileLetter: { color: GOLD, fontWeight: "800", fontSize: 17 },
   intro: { marginBottom: 34 },
   eyebrow: { color: GOLD, fontSize: 10, fontWeight: "800", letterSpacing: 2.7, marginBottom: 12 },
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   thoughtSection: { marginTop: 33 },
   thoughtHeading: { flexDirection: "row", alignItems: "center", gap: 9, marginBottom: 14 },
   thoughtLabel: { color: GOLD, fontSize: 10, fontWeight: "800", letterSpacing: 1.8 },
-  thoughtCard: { borderRadius: 20, borderWidth: 1, borderColor: "#493C29", backgroundColor: "#171512", padding: 22 },
+  thoughtCard: { borderRadius: 20, borderWidth: 1, borderColor: "#493C29", backgroundColor: "#151513", padding: 22 },
   quoteMark: { color: GOLD, fontSize: 42, fontWeight: "700", height: 38 },
   thoughtText: { color: "#F4EEE5", fontSize: 18, lineHeight: 28, fontWeight: "600", marginTop: 4 },
   thoughtFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 22 },
