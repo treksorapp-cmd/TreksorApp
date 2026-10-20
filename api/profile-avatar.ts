@@ -17,7 +17,7 @@ export async function uploadProfileAvatar(asset: ImagePickerAsset, userId: strin
   const controller = new AbortController();
   const timeout = setTimeout(()=>controller.abort(),25000);
   try {
-    const response = await fetch(endpoint,{method:"POST",headers:{"apikey":KEY,"Authorization":"Bearer "+token,"Content-Type":"image/jpeg","cache-control":"3600"},body:bytes as any,signal:controller.signal});
+    const response = await fetch(endpoint,{method:"POST",headers:{"apikey":KEY,"Authorization":"Bearer "+token,"Content-Type":"image/jpeg","cache-control":"3600"},body:bytes.buffer as any,signal:controller.signal});
     if (!response.ok) {
       const data=await response.json().catch(()=>({}));
       throw new Error(data.message||data.error||"Unable to upload profile photo.");
