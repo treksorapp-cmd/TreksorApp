@@ -2,10 +2,11 @@ import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
 export const errorHandler = (error: any) => {
-    error = JSON.parse(error.message);
-    if (error.errorCode === 401) {
-        localStorage.removeItem("auth-storage");
-        router.replace("/(auth)/login");
+    // Network and native errors are not necessarily JSON. Never crash while reporting one.
+    const status = error?.response?.status ?? error?.status ?? error?.errorCode;
+    if (status === 401) {
+        // Session refresh is handled by the auth store; avoid touching browser-only localStorage.
+        console.warn("Unauthorized request; authentication may need refreshing.");
     }
 }
 
