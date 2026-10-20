@@ -1,5 +1,6 @@
 import { api } from "@/api/axios";
 import { supabaseAuth } from "@/api/supabase-auth";
+import { uploadProfileAvatar } from "@/api/profile-avatar";
 import { errorHandler } from "@/lib/utils";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { ImagePickerAsset } from "expo-image-picker";
@@ -145,7 +146,7 @@ export const useAuthStore = create<AuthState>()(
             refreshToken: response.refresh_token ?? null,
             isAuthenticated: true,
             isVerified: !!u?.email_confirmed_at,
-            user: { id: u?.id ?? "", email: u?.email ?? email, name: u?.user_metadata?.name ?? "", role: "user", createdAt: "", daysLeft: "1", plan: "" },
+            user: { id: u?.id ?? "", email: u?.email ?? email, name: u?.user_metadata?.name ?? "", avatar: u?.user_metadata?.avatar_url ?? "", role: "user", createdAt: "", daysLeft: "1", plan: "" },
           });
         } catch (error) {
           set({ error: (error instanceof Error ? error.message : "No se pudo conectar al servidor de autenticación."), isAuthenticated: false });
@@ -262,7 +263,7 @@ export const useAuthStore = create<AuthState>()(
           const verified = !!u?.email_confirmed_at;
           set({
             isAuthenticated: true, isVerified: verified,
-            user: { ...get().user, id: u.id, email: u.email ?? "", name: u.user_metadata?.name ?? get().user.name, role: "user", daysLeft: "1" },
+            user: { ...get().user, id: u.id, email: u.email ?? "", name: u.user_metadata?.name ?? get().user.name, avatar: u.user_metadata?.avatar_url ?? get().user.avatar, role: "user", daysLeft: "1" },
           });
           return verified;
         } catch (error) {
@@ -274,13 +275,37 @@ export const useAuthStore = create<AuthState>()(
       updateProfile: async (data: updateProfileRequest) => {
         set({ loading: true, error: null });
         try {
-          if (data.avatar) throw new Error("Profile photo uploads are not available yet.");
-          const token = get().token;
+          let token = get().token;
           if (!token) throw new Error("Please sign in again.");
           const name = data.name?.trim();
           if (!name) throw new Error("Please enter your name.");
-          await supabaseAuth.updateName(token, name);
-          set({ user: { ...get().user, name } });
+          const refreshSession = async () => {
+            const refreshToken = get().refreshToken;
+            if (!refreshToken) throw new Error("Your session expired. Please sign in again.");
+            const session = await supabaseAuth.refresh(refreshToken);
+            if (!session.access_token) throw new Error("Unable to refresh your session.");
+            token = session.access_token;
+            set({token,refreshToken:session.refresh_token??refreshToken});
+          };
+          let avatarUrl = get().user.avatar;
+          if (data.avatar) {
+            try { avatarUrl = await uploadProfileAvatar(data.avatar,get().user.id,token); }
+            catch(error) {
+              if (error instanceof Error && /401|JWT|expired|Unauthorized/i.test(error.message)) {
+                await refreshSession();
+                avatarUrl = await uploadProfileAvatar(data.avatar,get().user.id,token);
+              } else throw error;
+            }
+          }
+          const metadata={name,avatar_url:avatarUrl||""};
+          try { await supabaseAuth.updateProfileMetadata(token,metadata); }
+          catch(error) {
+            if (error instanceof Error && /JWT|expired|401|Unauthorized/i.test(error.message)) {
+              await refreshSession();
+              await supabaseAuth.updateProfileMetadata(token,metadata);
+            } else throw error;
+          }
+          set({ user: { ...get().user, name, avatar: avatarUrl } });
         } catch (error) {
           const message = error instanceof Error ? error.message : "Unable to update profile.";
           set({ error: message });
