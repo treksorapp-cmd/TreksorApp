@@ -28,7 +28,7 @@ const Selection = () => {
       >
         {/* Header */}
         {!user?.plan && <Header showTitle={false} showBackButton={false} showAvatar={false} />}
-        <View style={[styles.header, { paddingTop: user?.plan && (insets.top + 10), position: !user?.plan ? "relative": "absolute" }]}>
+        <View style={[styles.header, { paddingTop: user?.plan ? insets.top + 10 : 0, position: !user?.plan ? "relative" : "absolute" }]}>
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => router.back()}
