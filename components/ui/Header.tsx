@@ -68,7 +68,7 @@ const Header: React.FC<HeaderProps> = ({
       style={[styles.container, { paddingTop: insets.top }]}
     >
       {/* free trial banner  */}
-      {!user.plan && <View
+      {!user?.plan && <View
         style={{
           paddingVertical: 6,
           paddingHorizontal: 16,
@@ -76,7 +76,7 @@ const Header: React.FC<HeaderProps> = ({
           alignItems: "center",
           justifyContent: "space-between",
           zIndex: 9999,
-          backgroundColor: "#EFB33F",
+          backgroundColor: "#E8B44D",
           marginBottom: "2%"
         }}
       >
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     overflow: "hidden",
-    backgroundColor: "#3498db",
+    backgroundColor: "#3A2D16",
     justifyContent: "center",
     alignItems: "center",
   },
