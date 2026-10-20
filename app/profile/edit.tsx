@@ -33,6 +33,8 @@ export default function EditProfile() {
   const [tempAvatarFile, setTempAvatarFile] = useState<ImagePicker.ImagePickerAsset | null>(null)
   const [isUploading, setIsUploading] = useState(false)
 
+  useEffect(() => { if (user?.name) setName(user.name); if (user?.avatar) setAvatar(user.avatar) }, [user?.name,user?.avatar])
+
   useEffect(() => {
     // Request permission for image library
     const requestPermission = async () => {
@@ -48,10 +50,11 @@ export default function EditProfile() {
   const handlePickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images"],
+        base64: true,
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.8,
+        quality: 0.65,
       })
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
@@ -74,6 +77,7 @@ export default function EditProfile() {
       }
 
       const result = await ImagePicker.launchCameraAsync({
+        base64: true,
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
@@ -118,22 +122,23 @@ export default function EditProfile() {
 
   const handleSave = async () => {
     try {
-      if (tempAvatarFile) {
-        Alert.alert("Photo upload not available", "Your selected photo has not been uploaded. You can still save your name. Photo storage needs to be configured before profile pictures can be saved.");
-        return;
-      }
-      await updateProfile({ name, avatar: null });
+      if (!name.trim()) { Alert.alert("Name required","Please enter your name."); return; }
+      setIsUploading(true)
+      await updateProfile({ name: name.trim(), avatar: tempAvatarFile });
+      setTempAvatar(null)
+      setTempAvatarFile(null)
+      Alert.alert("Profile updated","Your changes were saved successfully.")
 
       // Navigate back after successful update
       router.back()
     } catch (error) {
       console.error("Error updating profile:", error)
       Alert.alert("Unable to save profile", error instanceof Error ? error.message : "Please try again.")
-    }
+    } finally { setIsUploading(false) }
   }
 
   const handleChangePassword = () => {
-    requestResetPassword({ email: user.email, isChangePassword: true })
+    requestResetPassword({ email: user?.email || "", isChangePassword: true })
         .then(() => {
             const requestError = useAuthStore.getState().error;
             if (requestError) { Alert.alert("Unable to send code", requestError); return; }
