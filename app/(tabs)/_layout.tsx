@@ -53,8 +53,8 @@ export default function TabLayout() {
               backgroundColor: "#02050C",
             },
           }),
-          tabBarActiveTintColor: "#F5BC4F",
-          tabBarInactiveTintColor: "#888888",
+          tabBarActiveTintColor: "#E8B44D",
+          tabBarInactiveTintColor: "#BABABA",
           tabBarLabelStyle: { fontSize: 11, fontWeight: "600", marginTop: 2 },
           tabBarItemStyle: { paddingVertical: 3 },
           headerShown: false,
@@ -83,26 +83,14 @@ export default function TabLayout() {
         <Tabs.Screen
           name="tracking"
           options={{
-            title: "Tracking",
+            title: "Progress",
             tabBarIcon: ({ color }) => (
               <SimpleLineIcons name="graph" size={24} color={color} />
             ),
           }}
         />
 
-        <Tabs.Screen
-          name="articles"
-          options={() => {
-            const badge = useArticleStore.getState().unreadArticlesCount;
-            return {
-              title: "Articles",
-              tabBarIcon: ({ color }) => (
-                <MaterialIcons name="article" size={24} color={color} />
-              ),
-              tabBarBadge: badge > 0 ? badge : undefined,
-            };
-          }}
-        />
+        <Tabs.Screen name="articles" options={{href:null}} />
 
         <Tabs.Screen name="community" options={{title:"Community",tabBarIcon:({color})=><MaterialIcons name="groups" size={24} color={color}/>}} />
         <Tabs.Screen name="index" redirect />
