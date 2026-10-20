@@ -21,7 +21,7 @@ export default function WorkoutGuide(){
  const saveTrainingPlan=useWorkoutStore(s=>s.saveTrainingPlan)
  const resetTrainingPlan=useWorkoutStore(s=>s.resetTrainingPlan)
  const [days,setDays]=useState(trainingPlan?.days??3)
- const [location,setLocation]=useState<"Gym"|"Home">(trainingPlan?.location??"Gym")
+ const [location,setLocation]=useState<"Gym"|"Home">("Gym")
  const [muscle,setMuscle]=useState("Chest")
  const [exercises,setExercises]=useState<Exercise[]>([])
  const [loading,setLoading]=useState(true)
@@ -30,9 +30,9 @@ export default function WorkoutGuide(){
  return <ScrollView style={{flex:1,backgroundColor:"#080b0f"}} contentContainerStyle={{padding:22,paddingBottom:60}}>
   <Text style={{color:"#E8B44D",fontSize:12,letterSpacing:3,marginTop:28}}>TREKSOR / WORKOUT</Text>
   <Text style={{color:"white",fontSize:32,fontWeight:"700",marginTop:8}}>Build Your Plan</Text>
-  <Text style={{color:"#ADB0B4",marginTop:10}}>Choose your training days and location. Explore the muscles and available exercises.</Text>
-  <Text style={{color:"white",fontSize:18,marginTop:28,marginBottom:12}}>Where do you train?</Text>
-  <View style={{flexDirection:"row",gap:10}}>{(["Gym","Home"] as const).map(v=><TouchableOpacity key={v} onPress={()=>setLocation(v)} style={{padding:14,borderRadius:12,backgroundColor:location===v?"#E8B44D":"#25282D"}}><Text style={{color:location===v?"#111":"white",fontWeight:"700"}}>{v}</Text></TouchableOpacity>)}</View>
+  <Text style={{color:"#ADB0B4",marginTop:10}}>Choose your weekly gym schedule and explore available exercises.</Text>
+  <Text style={{color:"white",fontSize:18,marginTop:28,marginBottom:12}}>TRAINING LOCATION</Text>
+  <View style={{flexDirection:"row",gap:10}}>{(["Gym"] as const).map(v=><TouchableOpacity key={v} onPress={()=>setLocation(v)} style={{padding:14,borderRadius:12,backgroundColor:location===v?"#E8B44D":"#25282D"}}><Text style={{color:location===v?"#111":"white",fontWeight:"700"}}>{v}</Text></TouchableOpacity>)}</View>
   <Text style={{color:"white",fontSize:18,marginTop:26,marginBottom:12}}>Days per week</Text>
   <View style={{flexDirection:"row",gap:8}}>{[2,3,4,5,6].map(v=><TouchableOpacity key={v} onPress={()=>setDays(v)} style={{padding:14,borderRadius:10,backgroundColor:days===v?"#E8B44D":"#25282D"}}><Text style={{color:days===v?"#111":"white",fontWeight:"700"}}>{v}</Text></TouchableOpacity>)}</View>
   <Text style={{color:"#E8B44D",fontSize:15,marginTop:28,marginBottom:10}}>SUGGESTED WEEKLY SPLIT</Text>
