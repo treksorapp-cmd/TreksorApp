@@ -8,11 +8,11 @@ import { useEffect } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const GOLD = "#C9A66B";
+const GOLD = "#E8B44D";
 const pillars: { name: string; subtitle: string; route: Href; image: number; icon: keyof typeof Ionicons.glyphMap; index: string }[] = [
   { name: "BODY", subtitle: "Strength & movement", route: "/body", image: require("@/assets/images/body-ritual.png"), icon: "barbell-outline", index: "01" },
   { name: "MIND", subtitle: "Clarity & focus", route: "/mental", image: require("@/assets/images/mental-ritual.png"), icon: "book-outline", index: "02" },
-  { name: "BALANCE", subtitle: "Recovery & presence", route: "/spiritual", image: require("@/assets/images/spiritual-ritual.png"), icon: "water-outline", index: "03" },
+  { name: "BALANCE", subtitle: "Recovery & presence", route: "/spiritual", image: require("@/assets/images/spiritual-ritual.png"), icon: "shield-outline", index: "03" },
   { name: "PURPOSE", subtitle: "Direction & intention", route: "/purpose", image: require("@/assets/images/purpose-home.png"), icon: "compass-outline", index: "04" },
 ];
 
@@ -57,17 +57,15 @@ export default function HomeScreen() {
             <Text style={styles.sectionEyebrow}>THE TREKSOR METHOD</Text>
             <Text style={styles.sectionTitle}>Four pillars. One direction.</Text>
           </View>
-          <Text style={styles.sectionCount}>01 — 04</Text>
         </View>
 
         <View style={styles.grid}>
           {pillars.map(pillar => (
             <TouchableOpacity key={pillar.name} activeOpacity={0.84} style={styles.tile} onPress={() => router.push(pillar.route)} accessibilityRole="button" accessibilityLabel={pillar.name + ": " + pillar.subtitle}>
-              <ImageBackground source={pillar.image} contentFit="cover" style={StyleSheet.absoluteFill} />
+              <ImageBackground source={pillar.image} contentFit="cover" style={StyleSheet.absoluteFill} transition={180} cachePolicy="memory-disk" />
               <LinearGradient colors={["rgba(0,0,0,0.20)", "rgba(0,0,0,0.22)", "rgba(0,0,0,0.95)"]} locations={[0, 0.34, 1]} style={StyleSheet.absoluteFill} />
               <View style={styles.tileTop}>
                 <View style={styles.tileIcon}><Ionicons name={pillar.icon} color="#FFFFFF" size={18} /></View>
-                <Text style={styles.tileIndex}>{pillar.index}</Text>
               </View>
               <View style={styles.tileBottom}>
                 <Text style={styles.tileTitle}>{pillar.name}</Text>
@@ -81,9 +79,9 @@ export default function HomeScreen() {
         <View style={styles.thoughtSection}>
           <View style={styles.thoughtHeading}><Ionicons name="sunny-outline" color={GOLD} size={19} /><Text style={styles.thoughtLabel}>TODAY ON TREKSOR</Text></View>
           <TouchableOpacity style={styles.thoughtCard} activeOpacity={0.85} onPress={() => router.push("/mental/thoughts")}>
-            <Text style={styles.quoteMark}>“</Text>
+            <View style={{flexDirection:"row",alignItems:"center",gap:8,marginBottom:10}}><Ionicons name="sparkles-outline" size={17} color={GOLD}/><Text style={{color:GOLD,fontSize:11,fontWeight:"700",letterSpacing:1.4}}>DAILY PERSPECTIVE</Text></View>
             <Text style={styles.thoughtText} numberOfLines={4}>{thought}</Text>
-            <View style={styles.thoughtFooter}><Text style={styles.thoughtLink}>READ MORE</Text><Ionicons name="arrow-forward" color={GOLD} size={18} /></View>
+            <View style={styles.thoughtFooter}><Text style={styles.thoughtLink}>EXPLORE THOUGHTS</Text><Ionicons name="arrow-forward" color={GOLD} size={18} /></View>
           </TouchableOpacity>
         </View>
         <Text style={styles.footer}>TREKSOR · BUILT WITH PURPOSE</Text>
@@ -104,7 +102,7 @@ const styles = StyleSheet.create({
   brand: { flexDirection: "row", alignItems: "center", gap: 10 },
   logo: { width: 38, height: 38, borderRadius: 11 },
   brandText: { color: "#FFFFFF", fontSize: 16, fontWeight: "700", letterSpacing: 4.2 },
-  brandCaption: { color: "#947F5A", fontSize: 8, fontWeight: "700", letterSpacing: 2.4, marginTop: 3 },
+  brandCaption: { color: "#C6A568", fontSize: 8, fontWeight: "700", letterSpacing: 2.4, marginTop: 3 },
   profile: { height: 42, width: 42, borderRadius: 21, backgroundColor: "#1D1B18", borderColor: "#514737", borderWidth: 1, alignItems: "center", justifyContent: "center" },
   profileLetter: { color: GOLD, fontWeight: "800", fontSize: 17 },
   intro: { marginBottom: 34 },
@@ -113,7 +111,7 @@ const styles = StyleSheet.create({
   name: { color: GOLD },
   subtitle: { color: "#A9A7A4", fontSize: 14, lineHeight: 21, marginTop: 12 },
   sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 17 },
-  sectionEyebrow: { color: "#96876D", fontSize: 10, letterSpacing: 2.1, fontWeight: "600", marginBottom: 7 },
+  sectionEyebrow: { color: "#C6AE84", fontSize: 10, letterSpacing: 2.1, fontWeight: "600", marginBottom: 7 },
   sectionTitle: { color: "#FFFFFF", fontSize: 22, fontWeight: "600", letterSpacing: -0.5 },
   fourBadge: { width: 37, height: 37, borderRadius: 19, borderWidth: 1, borderColor: "#514332", alignItems: "center", justifyContent: "center" },
   fourBadgeText: { color: GOLD, fontSize: 12, fontWeight: "800" },
@@ -130,10 +128,10 @@ const styles = StyleSheet.create({
   thoughtSection: { marginTop: 33 },
   thoughtHeading: { flexDirection: "row", alignItems: "center", gap: 9, marginBottom: 14 },
   thoughtLabel: { color: GOLD, fontSize: 10, fontWeight: "800", letterSpacing: 1.8 },
-  thoughtCard: { borderRadius: 13, borderWidth: 1, borderColor: "#493C29", backgroundColor: "#151513", padding: 22 },
+  thoughtCard: { borderRadius: 13, borderWidth: 1, borderColor: "#66502B", backgroundColor: "#181714", padding: 24 },
   quoteMark: { color: GOLD, fontSize: 42, fontWeight: "700", height: 38 },
-  thoughtText: { color: "#F4EEE5", fontSize: 19, lineHeight: 29, fontWeight: "400", marginTop: 4 },
+  thoughtText: { color: "#F4EEE5", fontSize: 21, lineHeight: 31, fontWeight: "400", marginTop: 4 },
   thoughtFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 22 },
   thoughtLink: { color: GOLD, fontSize: 9, fontWeight: "800", letterSpacing: 1.6 },
-  footer: { color: "#71695D", textAlign: "center", marginTop: 29, fontSize: 9, fontWeight: "700", letterSpacing: 2.2 },
+  footer: { color: "#A99D88", textAlign: "center", marginTop: 29, fontSize: 9, fontWeight: "700", letterSpacing: 2.2 },
 });
