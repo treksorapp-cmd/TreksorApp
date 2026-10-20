@@ -12,8 +12,8 @@ const GOLD = "#C9A66B";
 const pillars: { name: string; subtitle: string; route: Href; image: number; icon: keyof typeof Ionicons.glyphMap; index: string }[] = [
   { name: "BODY", subtitle: "Strength & movement", route: "/body", image: require("@/assets/images/body-ritual.png"), icon: "barbell-outline", index: "01" },
   { name: "MIND", subtitle: "Clarity & focus", route: "/mental", image: require("@/assets/images/mental-ritual.png"), icon: "book-outline", index: "02" },
-  { name: "BALANCE", subtitle: "Calm & wellbeing", route: "/spiritual", image: require("@/assets/images/spiritual-ritual.png"), icon: "fitness-outline", index: "03" },
-  { name: "PURPOSE", subtitle: "Direction & growth", route: "/purpose", image: require("@/assets/images/purpose-home.png"), icon: "compass-outline", index: "04" },
+  { name: "BALANCE", subtitle: "Recovery & presence", route: "/spiritual", image: require("@/assets/images/spiritual-ritual.png"), icon: "water-outline", index: "03" },
+  { name: "PURPOSE", subtitle: "Direction & intention", route: "/purpose", image: require("@/assets/images/purpose-home.png"), icon: "compass-outline", index: "04" },
 ];
 
 export default function HomeScreen() {
@@ -43,18 +43,21 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.intro}>
-          <Text style={styles.eyebrow}>A MORE INTENTIONAL LIFE</Text>
-          <Text style={styles.greeting}>{greeting},{"\n"}<Text style={styles.name}>{firstName}.</Text></Text>
-          <Text style={styles.subtitle}>Build strength. Think clearly. Live with purpose.</Text>
+        <View style={styles.hero}>
+          <ImageBackground source={require("@/assets/images/spiritual-ritual.png")} contentFit="cover" style={StyleSheet.absoluteFill} />
+          <LinearGradient colors={["rgba(8,9,11,0.08)", "rgba(8,9,11,0.45)", "#08090B"]} locations={[0, 0.4, 1]} style={StyleSheet.absoluteFill} />
+          <View style={styles.heroContent}>
+            <Text style={styles.eyebrow}>{greeting.toUpperCase()} · {firstName.toUpperCase()}</Text>
+            <Text style={styles.heroTitle}>Move with{"\n"}<Text style={styles.name}>intention.</Text></Text>
+            <Text style={styles.heroSub}>Strength. Clarity. Balance. Purpose.</Text>
+          </View>
         </View>
-
         <View style={styles.sectionHeader}>
           <View>
             <Text style={styles.sectionEyebrow}>THE TREKSOR METHOD</Text>
-            <Text style={styles.sectionTitle}>Explore your pillars</Text>
+            <Text style={styles.sectionTitle}>Four pillars. One direction.</Text>
           </View>
-          <View style={styles.fourBadge}><Text style={styles.fourBadgeText}>04</Text></View>
+          <Text style={styles.sectionCount}>01 — 04</Text>
         </View>
 
         <View style={styles.grid}>
@@ -69,21 +72,21 @@ export default function HomeScreen() {
               <View style={styles.tileBottom}>
                 <Text style={styles.tileTitle}>{pillar.name}</Text>
                 <Text style={styles.tileCaption}>{pillar.subtitle}</Text>
-                <View style={styles.tileFooter}><Text style={styles.explore}>EXPLORE</Text><Ionicons name="arrow-forward" size={16} color={GOLD} /></View>
+
               </View>
             </TouchableOpacity>
           ))}
         </View>
 
         <View style={styles.thoughtSection}>
-          <View style={styles.thoughtHeading}><Ionicons name="sunny-outline" color={GOLD} size={19} /><Text style={styles.thoughtLabel}>TODAY’S PERSPECTIVE</Text></View>
+          <View style={styles.thoughtHeading}><Ionicons name="sunny-outline" color={GOLD} size={19} /><Text style={styles.thoughtLabel}>TODAY ON TREKSOR</Text></View>
           <TouchableOpacity style={styles.thoughtCard} activeOpacity={0.85} onPress={() => router.push("/mental/thoughts")}>
             <Text style={styles.quoteMark}>“</Text>
             <Text style={styles.thoughtText} numberOfLines={4}>{thought}</Text>
-            <View style={styles.thoughtFooter}><Text style={styles.thoughtLink}>TODAY'S THOUGHT</Text><Ionicons name="arrow-forward" color={GOLD} size={18} /></View>
+            <View style={styles.thoughtFooter}><Text style={styles.thoughtLink}>READ MORE</Text><Ionicons name="arrow-forward" color={GOLD} size={18} /></View>
           </TouchableOpacity>
         </View>
-        <Text style={styles.footer}>PROGRESS THROUGH CONSISTENCY.</Text>
+        <Text style={styles.footer}>TREKSOR · BUILT WITH PURPOSE</Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -92,7 +95,12 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: "#08090B" },
   content: { paddingHorizontal: 20, paddingTop: 13, paddingBottom: 118 },
-  top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 32 },
+  hero: { height: 310, marginHorizontal: -20, marginTop: -8, marginBottom: 26, overflow: "hidden", backgroundColor: "#151715" },
+  heroContent: { flex: 1, justifyContent: "flex-end", paddingHorizontal: 24, paddingBottom: 28 },
+  heroTitle: { color: "#F7F5F0", fontSize: 43, lineHeight: 46, fontWeight: "600", letterSpacing: -1.7 },
+  heroSub: { color: "#D0C8B9", fontSize: 12, letterSpacing: 0.7, marginTop: 13 },
+  sectionCount: { color: GOLD, fontSize: 10, fontWeight: "700", letterSpacing: 1.5 },
+  top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 15 },
   brand: { flexDirection: "row", alignItems: "center", gap: 10 },
   logo: { width: 38, height: 38, borderRadius: 11 },
   brandText: { color: "#FFFFFF", fontSize: 17, fontWeight: "800", letterSpacing: 3 },
@@ -106,23 +114,23 @@ const styles = StyleSheet.create({
   subtitle: { color: "#A9A7A4", fontSize: 14, lineHeight: 21, marginTop: 12 },
   sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 17 },
   sectionEyebrow: { color: "#96876D", fontSize: 9, letterSpacing: 2, fontWeight: "800", marginBottom: 7 },
-  sectionTitle: { color: "#FFFFFF", fontSize: 23, fontWeight: "800", letterSpacing: -0.5 },
+  sectionTitle: { color: "#FFFFFF", fontSize: 21, fontWeight: "700", letterSpacing: -0.5 },
   fourBadge: { width: 37, height: 37, borderRadius: 19, borderWidth: 1, borderColor: "#514332", alignItems: "center", justifyContent: "center" },
   fourBadgeText: { color: GOLD, fontSize: 12, fontWeight: "800" },
   grid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", rowGap: 13 },
-  tile: { width: "48.3%", aspectRatio: 0.76, borderRadius: 21, overflow: "hidden", backgroundColor: "#191919", borderWidth: 1, borderColor: "#34302B" },
+  tile: { width: "48.3%", aspectRatio: 0.88, borderRadius: 13, overflow: "hidden", backgroundColor: "#191919", borderWidth: 1, borderColor: "#34302B" },
   tileTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 13 },
   tileIcon: { height: 34, width: 34, borderRadius: 11, backgroundColor: "rgba(0,0,0,0.40)", borderWidth: 1, borderColor: "rgba(255,255,255,0.22)", alignItems: "center", justifyContent: "center" },
   tileIndex: { color: "#FFFFFF", fontSize: 10, fontWeight: "700", opacity: 0.85 },
   tileBottom: { flex: 1, justifyContent: "flex-end", padding: 13 },
-  tileTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "900", letterSpacing: 0.5 },
+  tileTitle: { color: "#FFFFFF", fontSize: 18, fontWeight: "800", letterSpacing: 0.5 },
   tileCaption: { color: "#E4DBCA", fontSize: 11, marginTop: 5 },
   tileFooter: { marginTop: 14, paddingTop: 10, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.25)", flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   explore: { color: GOLD, fontSize: 9, fontWeight: "800", letterSpacing: 1.6 },
   thoughtSection: { marginTop: 33 },
   thoughtHeading: { flexDirection: "row", alignItems: "center", gap: 9, marginBottom: 14 },
   thoughtLabel: { color: GOLD, fontSize: 10, fontWeight: "800", letterSpacing: 1.8 },
-  thoughtCard: { borderRadius: 20, borderWidth: 1, borderColor: "#493C29", backgroundColor: "#151513", padding: 22 },
+  thoughtCard: { borderRadius: 13, borderWidth: 1, borderColor: "#493C29", backgroundColor: "#151513", padding: 22 },
   quoteMark: { color: GOLD, fontSize: 42, fontWeight: "700", height: 38 },
   thoughtText: { color: "#F4EEE5", fontSize: 18, lineHeight: 28, fontWeight: "600", marginTop: 4 },
   thoughtFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 22 },
