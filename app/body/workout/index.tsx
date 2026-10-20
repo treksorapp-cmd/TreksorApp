@@ -5,6 +5,8 @@ import { ImageBackground } from "expo-image";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
+import {useWorkoutStore} from "@/store/workout-store";
+import {Alert} from "react-native";
 import {
   Dimensions,
   StyleSheet,
@@ -17,6 +19,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const Selection = () => {
   const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
+  const plan=useWorkoutStore(s=>s.trainingPlan);
+  const checkIns=useWorkoutStore(s=>s.checkIns);
+  const checkIn=useWorkoutStore(s=>s.checkIn);
+  const now=new Date();const monday=new Date(now);monday.setDate(now.getDate()-(now.getDay()+6)%7);monday.setHours(0,0,0,0);
+  const week=monday.toISOString().slice(0,10);
+  const completed=(checkIns[week]||[]).length;
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
@@ -39,6 +47,7 @@ const Selection = () => {
           <View style={styles.headerSpacer} />
         </View>
         <View style={[styles.content, { paddingBottom: insets.bottom + 30 }]}>
+          {plan&&<View style={{width:width-40,padding:16,borderRadius:15,backgroundColor:"rgba(10,12,12,.88)",borderWidth:1,borderColor:"#9B793F",marginBottom:12}}><Text style={{color:"#E8B44D",fontWeight:"800",letterSpacing:1.5}}>YOUR WEEKLY GOAL</Text><Text style={{color:"white",fontSize:21,fontWeight:"700",marginTop:8}}>{completed} / {plan.days} sessions completed</Text><Text style={{color:"#CFC8BB",marginTop:5}}>{plan.location} · Monday to Sunday</Text><TouchableOpacity disabled={completed>=plan.days} onPress={()=>{checkIn(week);Alert.alert(completed+1>=plan.days?"🏆 WEEKLY GOAL ACHIEVED!":"✨ SESSION COMPLETE",completed+1>=plan.days?"You did it! Every session counts.":"Great work. Keep your momentum going!")}} style={{backgroundColor:completed>=plan.days?"#26362C":"#E8B44D",padding:13,borderRadius:11,marginTop:14,alignItems:"center"}}><Text style={{color:completed>=plan.days?"#B7DCC0":"#17130B",fontWeight:"800"}}>{completed>=plan.days?"✓ WEEK COMPLETE":"✓ CHECK IN · SESSION DONE"}</Text></TouchableOpacity></View>}
           <TouchableOpacity onPress={()=>router.push("/body/workout/guide")} style={styles.gymButtonContainer}><Text style={styles.gymButtonText}>BUILD MY PLAN</Text></TouchableOpacity>
           <TouchableOpacity
             onPress={() =>
@@ -118,7 +127,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: "hidden",
     marginVertical: 10,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#E8B44D",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -140,7 +149,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   otherButtonText: {
-    color: "#EFB33F",
+    color: "#E8B44D",
     fontSize: 18,
     fontWeight: "bold",
     letterSpacing: 1,
