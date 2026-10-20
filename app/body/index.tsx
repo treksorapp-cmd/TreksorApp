@@ -4,6 +4,5 @@ export default function BodyScreen() {
     { label: "Workout", icon: "barbell-outline", href: "/body/workout/selection" },
     { label: "Nutrition", icon: "nutrition-outline", href: "/body/nutrition" },
     { label: "Progress Tracking", icon: "stats-chart-outline", href: "/(tabs)/tracking" },
-    { label: "Articles", icon: "document-text-outline", href: "/body/articles" },
   ]} />;
 }
