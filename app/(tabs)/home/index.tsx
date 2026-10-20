@@ -20,12 +20,14 @@ export default function HomeScreen() {
   const user = useAuthStore(state => state.user);
   const powerThoughts = usePowerThoughtStore(state => state.powerThoughts);
   const fetchPowerThoughts = usePowerThoughtStore(state => state.fetchPowerThoughts);
+  const markRead = usePowerThoughtStore(state => state.markPowerThoughtAsRead);
   useEffect(() => { fetchPowerThoughts(); }, [fetchPowerThoughts]);
 
   const firstName = user?.name?.trim().split(" ")[0] || "Explorer";
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-  const thought = powerThoughts?.find(item => item.isToday)?.thought || powerThoughts?.[0]?.thought || "Consistency makes the difference.";
+  const todayThought = powerThoughts?.find(item => item.isToday);
+  const thought = todayThought?.thought || "Your daily perspective will appear here when published.";
 
   return (
     <SafeAreaView style={styles.screen} edges={["top"]}>
@@ -78,11 +80,11 @@ export default function HomeScreen() {
 
         <View style={styles.thoughtSection}>
           <View style={styles.thoughtHeading}><Ionicons name="sunny-outline" color={GOLD} size={19} /><Text style={styles.thoughtLabel}>TODAY ON TREKSOR</Text></View>
-          <TouchableOpacity style={styles.thoughtCard} activeOpacity={0.85} onPress={() => router.push("/mental/thoughts")}>
+          <View style={styles.thoughtCard}>
             <View style={{flexDirection:"row",alignItems:"center",gap:8,marginBottom:10}}><Ionicons name="sparkles-outline" size={17} color={GOLD}/><Text style={{color:GOLD,fontSize:11,fontWeight:"700",letterSpacing:1.4}}>DAILY PERSPECTIVE</Text></View>
             <Text style={styles.thoughtText} numberOfLines={4}>{thought}</Text>
-            <View style={styles.thoughtFooter}><Text style={styles.thoughtLink}>EXPLORE THOUGHTS</Text><Ionicons name="arrow-forward" color={GOLD} size={18} /></View>
-          </TouchableOpacity>
+            <View style={styles.thoughtFooter}><TouchableOpacity onPress={() => router.push("/mental/thoughts")}><Text style={styles.thoughtLink}>EXPLORE THOUGHTS →</Text></TouchableOpacity><TouchableOpacity disabled={!todayThought || !!todayThought.isRead} accessibilityRole="checkbox" accessibilityState={{checked:!!todayThought?.isRead}} onPress={()=>todayThought&&markRead(todayThought._id)} style={{flexDirection:"row",alignItems:"center",gap:8,backgroundColor:todayThought?.isRead?"#24382D":GOLD,paddingHorizontal:13,paddingVertical:11,borderRadius:12}}><Ionicons name={todayThought?.isRead?"checkmark-circle":"checkmark-circle-outline"} size={19} color={todayThought?.isRead?"#B8E5C4":"#17130B"}/><Text style={{color:todayThought?.isRead?"#B8E5C4":"#17130B",fontWeight:"800",fontSize:12}}>{todayThought?.isRead?"READ TODAY":"MARK AS READ"}</Text></TouchableOpacity></View>
+          </View>
         </View>
         <Text style={styles.footer}>TREKSOR · BUILT WITH PURPOSE</Text>
       </ScrollView>
