@@ -46,7 +46,7 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.hero}>
-          <ImageBackground source={require("@/assets/images/spiritual-ritual.png")} contentFit="cover" style={StyleSheet.absoluteFill} />
+          <ImageBackground source={require("@/assets/images/purpose-background.png")} contentFit="cover" cachePolicy="memory-disk" style={StyleSheet.absoluteFill} />
           <LinearGradient colors={["rgba(8,9,11,0.08)", "rgba(8,9,11,0.45)", "#08090B"]} locations={[0, 0.4, 1]} style={StyleSheet.absoluteFill} />
           <View style={styles.heroContent}>
             <Text style={styles.eyebrow}>{greeting.toUpperCase()} · {firstName.toUpperCase()}</Text>
