@@ -152,7 +152,7 @@ export default function ChatScreen() {
       )}
 
       {/* Input */}
-      <View style={[styles.inputContainer, { paddingBottom: keyboardHeight > 0 ? 10 : insets.bottom + 12 }]}>
+      <View style={[styles.inputContainer, { paddingBottom: keyboardHeight > 0 ? 12 : insets.bottom + 82, marginBottom: keyboardHeight > 0 ? 12 : 0 }]}>
           <TextInput
             style={styles.textInput}
             placeholder="Type your message here..."
@@ -171,7 +171,7 @@ export default function ChatScreen() {
             {loading ? (
               <View style={styles.loadingDot} />
             ) : (
-              <Ionicons name="send" size={20} color={inputText.trim() ? "#EFB33F" : "#666"} />
+              <Ionicons name="send" size={20} color={inputText.trim() ? "#E8B44D" : "#666"} />
             )}
           </TouchableOpacity>
       </View>
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#E8B44D",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#E8B44D",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#E8B44D",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 4,
   },
   userBubble: {
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#E8B44D",
     borderBottomRightRadius: 4,
   },
   messageText: {
@@ -382,6 +382,6 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#E8B44D",
   },
 })
