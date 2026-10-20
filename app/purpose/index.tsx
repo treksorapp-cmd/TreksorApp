@@ -4,6 +4,5 @@ export default function PurposeScreen() {
     { label: "Goal Setting · My Space", icon: "locate-outline", href: "/mental/myspace" },
     { label: "Habit & Progress Tracking", icon: "checkmark-circle-outline", href: "/(tabs)/tracking" },
     { label: "Vision & Reflection", icon: "images-outline", href: "/mental/myspace/new-entry" },
-    { label: "Articles", icon: "document-text-outline", href: "/(tabs)/articles" },
   ]} />;
 }
