@@ -26,7 +26,7 @@ export default function HomeScreen() {
   const firstName = user?.name?.trim().split(" ")[0] || "Explorer";
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-  const todayThought = powerThoughts?.find(item => item.isToday);
+  const todayThought = powerThoughts?.find(item => item.isToday) || powerThoughts?.[0];
   const thought = todayThought?.thought || "Your daily perspective will appear here when published.";
 
   return (
@@ -83,7 +83,7 @@ export default function HomeScreen() {
           <View style={styles.thoughtCard}>
             <View style={{flexDirection:"row",alignItems:"center",gap:8,marginBottom:10}}><Ionicons name="sparkles-outline" size={17} color={GOLD}/><Text style={{color:GOLD,fontSize:11,fontWeight:"700",letterSpacing:1.4}}>DAILY PERSPECTIVE</Text></View>
             <Text style={styles.thoughtText} numberOfLines={4}>{thought}</Text>
-            <View style={styles.thoughtFooter}><TouchableOpacity onPress={() => router.push("/mental/thoughts")}><Text style={styles.thoughtLink}>EXPLORE THOUGHTS →</Text></TouchableOpacity><TouchableOpacity disabled={!todayThought || !!todayThought.isRead} accessibilityRole="checkbox" accessibilityState={{checked:!!todayThought?.isRead}} onPress={()=>todayThought&&markRead(todayThought._id)} style={{flexDirection:"row",alignItems:"center",gap:8,backgroundColor:todayThought?.isRead?"#24382D":GOLD,paddingHorizontal:13,paddingVertical:11,borderRadius:12}}><Ionicons name={todayThought?.isRead?"checkmark-circle":"checkmark-circle-outline"} size={19} color={todayThought?.isRead?"#B8E5C4":"#17130B"}/><Text style={{color:todayThought?.isRead?"#B8E5C4":"#17130B",fontWeight:"800",fontSize:12}}>{todayThought?.isRead?"READ TODAY":"MARK AS READ"}</Text></TouchableOpacity></View>
+            <View style={styles.thoughtFooter}><TouchableOpacity onPress={() => router.push("/mental/thoughts")}><Text style={styles.thoughtLink}>EXPLORE THOUGHTS →</Text></TouchableOpacity><TouchableOpacity disabled={!todayThought || !!todayThought.isRead} accessibilityRole="checkbox" accessibilityState={{checked:!!todayThought?.isRead}} onPress={()=>todayThought&&markRead(todayThought._id)} style={{flexDirection:"row",alignItems:"center",gap:8,backgroundColor:todayThought?.isRead?GOLD:"#292823",paddingHorizontal:13,paddingVertical:11,borderRadius:12,borderWidth:1,borderColor:GOLD}}><Ionicons name={todayThought?.isRead?"checkmark-circle":"checkmark-circle-outline"} size={19} color={todayThought?.isRead?"#17130B":GOLD}/><Text style={{color:todayThought?.isRead?"#17130B":GOLD,fontWeight:"800",fontSize:12}}>{todayThought?.isRead?"READ TODAY":"MARK AS READ"}</Text></TouchableOpacity></View>
           </View>
         </View>
         <Text style={styles.footer}>TREKSOR · BUILT WITH PURPOSE</Text>
