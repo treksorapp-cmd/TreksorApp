@@ -4,6 +4,5 @@ export default function SpiritualScreen() {
     { label: "Beginner Meditation", icon: "leaf-outline", href: "/spiritual/mediation/beginner" },
     { label: "Intermediate Meditation", icon: "leaf-outline", href: "/spiritual/mediation/intermediate" },
     { label: "Advanced Meditation", icon: "leaf-outline", href: "/spiritual/mediation/advanced" },
-    { label: "Articles", icon: "document-text-outline", href: "/spiritual/articles" },
   ]} />;
 }
