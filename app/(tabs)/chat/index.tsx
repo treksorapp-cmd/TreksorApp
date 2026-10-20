@@ -10,6 +10,7 @@ import { StatusBar } from "expo-status-bar"
 import { useEffect, useRef, useState } from "react"
 import {
   Dimensions,
+  Keyboard,
   FlatList,
   KeyboardAvoidingView,
   Platform,
@@ -28,11 +29,17 @@ export default function ChatScreen() {
   const {getMessages,sendMessage, loading, error, setUserId } = useChatStore()
   const messages = getMessages();
   const [inputText, setInputText] = useState("")
+  const [keyboardHeight, setKeyboardHeight] = useState(0)
+  useEffect(() => {
+    const show = Keyboard.addListener("keyboardWillShow", e => setKeyboardHeight(e.endCoordinates.height))
+    const hide = Keyboard.addListener("keyboardWillHide", () => setKeyboardHeight(0))
+    return () => { show.remove(); hide.remove() }
+  }, [])
   const flatListRef = useRef<FlatList>(null)
   const { user } = useAuthStore()
 
   useEffect(()=>{
-    setUserId(useAuthStore.getState().user.id)
+    if (useAuthStore.getState().user?.id) setUserId(useAuthStore.getState().user.id)
   },[setUserId])
 
   useEffect(() => {
@@ -145,7 +152,7 @@ export default function ChatScreen() {
       )}
 
       {/* Input */}
-      <View style={[styles.inputContainer, { paddingBottom: insets.bottom + 12 }]}>
+      <View style={[styles.inputContainer, { paddingBottom: keyboardHeight > 0 ? 10 : insets.bottom + 12 }]}>
           <TextInput
             style={styles.textInput}
             placeholder="Type your message here..."
@@ -153,6 +160,7 @@ export default function ChatScreen() {
             value={inputText}
             onChangeText={setInputText}
             multiline
+            scrollEnabled
             maxLength={500}
           />
           <TouchableOpacity
