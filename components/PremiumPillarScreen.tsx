@@ -6,7 +6,7 @@ import React from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const GOLD = "#F5BC4F";
+const GOLD = "#C9A66B";
 type Action = { label: string; icon: React.ComponentProps<typeof Ionicons>["name"]; href: Href };
 type Props = { title: string; headline: string; subtitle: string; image: number; actions: Action[]; align?: "bottom" | "middle" };
 
@@ -34,10 +34,10 @@ const styles = StyleSheet.create({
   back: { width: 35, justifyContent: "center" },
   title: { fontSize: 19, fontWeight: "700", color: "white" },
   scroll: { flexGrow: 1, paddingHorizontal: 20, paddingBottom: 32 },
-  headline: { fontSize: 31, lineHeight: 35, fontWeight: "800", color: "white", maxWidth: 330, textTransform: "uppercase" },
-  poetic: { fontFamily: "serif", fontSize: 28, lineHeight: 34, fontWeight: "400", textTransform: "none" },
+  headline: { fontSize: 30, lineHeight: 36, fontWeight: "600", color: "white", maxWidth: 330, textTransform: "uppercase" },
+  poetic: { fontSize: 28, lineHeight: 34, fontWeight: "400", textTransform: "none" },
   subtitle: { fontSize: 14, lineHeight: 22, color: "#E2DEDA", marginTop: 8, marginBottom: 23 },
   actions: { gap: 9 },
-  action: { minHeight: 60, flexDirection: "row", alignItems: "center", gap: 16, paddingHorizontal: 17, borderRadius: 12, backgroundColor: "rgba(17,18,18,0.91)", borderWidth: 1, borderColor: "#353535" },
+  action: { minHeight: 64, flexDirection: "row", alignItems: "center", gap: 16, paddingHorizontal: 17, borderRadius: 12, backgroundColor: "rgba(17,18,18,0.91)", borderWidth: 1, borderColor: "#353535" },
   actionText: { color: "#F8F8F8", fontSize: 15, flex: 1, fontWeight: "500" },
 });
