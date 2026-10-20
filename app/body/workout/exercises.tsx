@@ -14,7 +14,7 @@ import {
   useNavigation,
 } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useLayoutEffect, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 import {
   Alert,
   Dimensions,
@@ -34,11 +34,10 @@ export default function WorkoutDetailScreen() {
   const [workout, setWorkout] = useState<Exercise[]>();
   const {user} = useAuthStore();
 
-  useFocusEffect(() => {
-    if (workoutId) {
-      setWorkout(getWorkoutExercies(workoutId as string));
-    }
-  });
+  useFocusEffect(useCallback(() => {
+    const id = Array.isArray(workoutId) ? workoutId[0] : workoutId;
+    if (id) setWorkout(getWorkoutExercies(id) ?? []);
+  }, [workoutId, getWorkoutExercies]));
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -179,7 +178,7 @@ export default function WorkoutDetailScreen() {
       >
         <StatusBar style="light" />
         {!user?.plan && <Header showTitle={false} showBackButton={false} showAvatar={false} />}
-        <View style={[styles.header, { paddingTop: user?.plan && (insets.top + 10), position: !user?.plan ? "relative": "absolute" }]}>
+        <View style={[styles.header, { paddingTop: user?.plan ? insets.top + 10 : 0, position: !user?.plan ? "relative": "absolute" }]}>
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => router.back()}
@@ -300,7 +299,7 @@ const styles = StyleSheet.create({
   },
   exerciseDetails: {
     fontSize: 14,
-    color: "#F39C12",
+    color: "#E8B44D",
     fontWeight: "500",
   },
   borderGradient: {
