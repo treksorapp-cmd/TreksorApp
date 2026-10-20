@@ -10,10 +10,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const GOLD = "#E8B44D";
 const pillars: { name: string; subtitle: string; route: Href; image: number; icon: keyof typeof Ionicons.glyphMap; index: string }[] = [
-  { name: "BODY", subtitle: "Strength & movement", route: "/body", image: require("@/assets/images/body-ritual.png"), icon: "barbell-outline", index: "01" },
-  { name: "MIND", subtitle: "Clarity & focus", route: "/mental", image: require("@/assets/images/mental-ritual.png"), icon: "book-outline", index: "02" },
+  { name: "BODY", subtitle: "Strength & movement", route: "/body", image: require("@/assets/images/Body_2.png"), icon: "barbell-outline", index: "01" },
+  { name: "MIND", subtitle: "Clarity & focus", route: "/mental", image: require("@/assets/images/mental-home-bg.jpeg"), icon: "book-outline", index: "02" },
   { name: "BALANCE", subtitle: "Recovery & presence", route: "/spiritual", image: require("@/assets/images/spiritual-ritual.png"), icon: "shield-outline", index: "03" },
-  { name: "PURPOSE", subtitle: "Direction & intention", route: "/purpose", image: require("@/assets/images/purpose-home.png"), icon: "compass-outline", index: "04" },
+  { name: "PURPOSE", subtitle: "Direction & intention", route: "/purpose", image: require("@/assets/images/purpose-background.png"), icon: "compass-outline", index: "04" },
 ];
 
 export default function HomeScreen() {
