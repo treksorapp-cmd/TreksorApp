@@ -5,13 +5,15 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 export type GymSet = { id:string; exerciseId:string; exerciseName:string; day:number; kg:number; reps:number; recordedAt:string };
-export type TrainingPlan = { days:number; location:"Gym"|"Home"; savedAt:string };
+export type TrainingPlan = { days:number; location:"Gym"|"Home"; savedAt:string; age?:number; heightCm?:number; weightKg?:number; goal?:"strength"|"muscle"|"definition"; experience?:"beginner"|"intermediate"|"advanced" };
 interface WorkoutState {
     trainingPlan: TrainingPlan | null;
     gymSets: GymSet[];
     addGymSet: (entry:GymSet)=>void;
     removeGymSet: (id:string)=>void;
     checkIns: Record<string,string[]>;
+    exerciseOverrides: Record<string,string[]>;
+    setDayExercises: (day:number,exerciseIds:string[])=>void;
     saveTrainingPlan: (plan:TrainingPlan)=>void;
     resetTrainingPlan: ()=>void;
     checkIn: (week:string)=>void;
@@ -32,8 +34,10 @@ export const useWorkoutStore = create<WorkoutState>()(
         addGymSet: entry=>set(state=>({gymSets:[...(state.gymSets||[]),entry]})),
         removeGymSet: id=>set(state=>({gymSets:(state.gymSets||[]).filter(e=>e.id!==id)})),
         checkIns: {},
+        exerciseOverrides: {},
+        setDayExercises: (day,exerciseIds)=>set(state=>({exerciseOverrides:{...state.exerciseOverrides,[String(day)]:exerciseIds}})),
         saveTrainingPlan: plan=>set({trainingPlan:plan}),
-        resetTrainingPlan: ()=>set({trainingPlan:null,checkIns:{}}),
+        resetTrainingPlan: ()=>set({trainingPlan:null,exerciseOverrides:{}}),
         checkIn: week=>set(state=>({checkIns:{...state.checkIns,[week]:[...(state.checkIns[week]||[]),new Date().toISOString()]}})),
         undoCheckIn: week=>set(state=>({checkIns:{...state.checkIns,[week]:(state.checkIns[week]||[]).slice(0,-1)}})),
         workouts: WorkoutsData,
