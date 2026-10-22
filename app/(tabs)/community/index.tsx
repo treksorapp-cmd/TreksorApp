@@ -40,7 +40,7 @@ export default function Community() {
    <Text style={{color:"#F8F5ED",fontSize:18,fontWeight:"700",marginTop:9}}>{loading?"Finding what's happening...":thisWeek.length?thisWeek.length+" Treksor "+(thisWeek.length===1?"activity":"activities")+" this week":"Your next experience starts here."}</Text>
   </View>
   <View style={{flexDirection:"row",flexWrap:"wrap",justifyContent:"space-between",gap:12,marginTop:25}}>
-  {activities.map((a,index)=><TouchableOpacity key={a.label} onPress={()=>search(a.keyword)} style={{width:"48%",minHeight:105,borderRadius:14,,backgroundColor:ACTIVITY_TINTS[index],padding:15,justifyContent:"space-between"}}>
+  {activities.map((a,index)=><TouchableOpacity key={a.label} onPress={()=>search(a.keyword)} style={{width:"48%",minHeight:105,borderRadius:14,backgroundColor:ACTIVITY_TINTS[index],padding:15,justifyContent:"space-between"}}>
     <View style={{width:38,height:38,borderRadius:11,backgroundColor:"rgba(190,225,244,0.09)",alignItems:"center",justifyContent:"center"}}><Ionicons name={a.icon as any} size={21} color={ACTIVITY_ICON_TINTS[index]}/></View><View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between",gap:5}}><Text style={{color:"#F5F1E9",fontSize:12,fontWeight:"700",letterSpacing:0.55,flex:1}}>{a.label.toUpperCase()}</Text><Ionicons name="arrow-up-outline" size={15} color={ACTIVITY_ICON_TINTS[index]} style={{transform:[{rotate:"45deg"}]}}/></View>
   </TouchableOpacity>)}
   </View>
