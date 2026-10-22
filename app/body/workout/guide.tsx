@@ -1,3 +1,4 @@
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React,{useState} from "react";
 import {Alert,KeyboardAvoidingView,Platform,ScrollView,Text,TextInput,TouchableOpacity,View} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
@@ -6,6 +7,7 @@ import {useWorkoutStore,TrainingPlan} from "@/store/workout-store";
 const GOLD="#F5BD4F";
 const options=[{id:"strength",title:"Build Strength",description:"Progressively lift heavier"},{id:"muscle",title:"Build Muscle",description:"Increase muscle size"},{id:"definition",title:"Get Defined",description:"Train to preserve muscle and improve conditioning"}] as const;
 export default function WorkoutGuide(){
+ const insets=useSafeAreaInsets();
  const plan=useWorkoutStore(s=>s.trainingPlan),save=useWorkoutStore(s=>s.saveTrainingPlan),reset=useWorkoutStore(s=>s.resetTrainingPlan);
  const [age,setAge]=useState(plan?.age?String(plan.age):""),[height,setHeight]=useState(plan?.heightCm?String(plan.heightCm):""),[weight,setWeight]=useState(plan?.weightKg?String(plan.weightKg):"");
  const [error,setError]=useState("");
@@ -13,9 +15,9 @@ export default function WorkoutGuide(){
  const field=(label:string,value:string,change:(v:string)=>void,unit:string,hint:string)=><View style={{marginBottom:15}}><Text style={{color:"#F2EDE4",fontSize:13,fontWeight:"700",marginBottom:8}}>{label} <Text style={{color:"#BAA88A",fontWeight:"400"}}>· {unit}</Text></Text><TextInput keyboardType={label==="Age"?"number-pad":"decimal-pad"} returnKeyType="done" value={value} onChangeText={v=>{change(v.replace(/[^0-9.,]/g,""));if(error)setError("")}} placeholder={hint} placeholderTextColor="#938B7C" style={{color:"white",borderWidth:1,borderColor:error?"#B9854E":"#655640",backgroundColor:"rgba(80,85,86,0.32)",borderRadius:12,paddingHorizontal:16,paddingVertical:14,fontSize:18,minHeight:53}}/><Text style={{color:"#AFA79A",fontSize:11,marginTop:5}}>{hint}</Text></View>;
  const parse=(v:string)=>Number(v.trim().replace(/,/g,"."));
  const submit=()=>{const a=parse(age),h=parse(height),w=parse(weight);let issue="";if(!age.trim()||!Number.isInteger(a)||a<16||a>100)issue="Enter your age in years, between 16 and 100.";else if(!height.trim()||!Number.isFinite(h)||h<100||h>240)issue="Enter your height in centimetres, between 100 and 240 (example: 175).";else if(!weight.trim()||!Number.isFinite(w)||w<25||w>350)issue="Enter your weight in kilograms, between 25 and 350 (example: 75.5).";if(issue){setError(issue);return}setError("");save({days,location:"Gym",age:a,heightCm:h,weightKg:w,goal,experience,savedAt:new Date().toISOString()});Alert.alert("Plan saved","Your training preferences are ready. You can adjust the exercises in My Plan.",[{text:"OPEN MY PLAN",onPress:()=>router.replace("/body/workout/my-plan")}])};
- return <KeyboardAvoidingView style={{flex:1,backgroundColor:"#090A0B"}} behavior={Platform.OS==="ios"?"padding":undefined}><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{padding:22,paddingTop:55,paddingBottom:100}}>
+ return <KeyboardAvoidingView style={{flex:1,backgroundColor:"#090A0B"}} behavior={Platform.OS==="ios"?"padding":undefined}><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:100}}>
  <TouchableOpacity onPress={()=>router.back()}><Ionicons name="arrow-back" size={24} color="white"/></TouchableOpacity>
- <Text style={{color:GOLD,fontSize:11,letterSpacing:2,fontWeight:"800",marginTop:27}}>BODY · GYM</Text><Text style={{color:"white",fontSize:32,fontWeight:"800",marginTop:8}}>Build My Plan</Text>
+ <Text style={{color:GOLD,fontSize:11,letterSpacing:2,fontWeight:"800",marginTop:0}}>BODY / WORKOUT</Text><Text style={{color:"white",fontSize:32,fontWeight:"800",marginTop:8}}>BUILD MY PLAN</Text>
  <Text style={{color:"#C9C4B9",lineHeight:21,marginTop:10}}>Three simple steps. Tell us about yourself, choose your goal, and get a routine you can customize.</Text>
  <View style={{flexDirection:"row",gap:8,marginTop:20}}>{["01 · PROFILE","02 · GOAL","03 · ROUTINE"].map((step,i)=><View key={step} style={{flex:1,borderTopWidth:2,borderTopColor:i===0?GOLD:"#5A4B33",paddingTop:9}}><Text style={{color:i===0?GOLD:"#AAA397",fontSize:10,fontWeight:"800"}}>{step}</Text></View>)}</View>
  <View style={{backgroundColor:"rgba(67,72,72,0.30)",borderRadius:16,borderWidth:1,borderColor:"rgba(242,215,164,0.32)",padding:17,marginTop:26}}>
