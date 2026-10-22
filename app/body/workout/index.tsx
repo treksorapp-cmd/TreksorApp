@@ -7,6 +7,7 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import {useWorkoutStore} from "@/store/workout-store";
 import {Alert} from "react-native";
+import {playCompletionFeedback} from "@/lib/completion-feedback";
 import {
   Dimensions,
   StyleSheet,
@@ -23,7 +24,7 @@ const Selection = () => {
   const checkIns=useWorkoutStore(s=>s.checkIns);
   const checkIn=useWorkoutStore(s=>s.checkIn);
   const now=new Date();const monday=new Date(now);monday.setDate(now.getDate()-(now.getDay()+6)%7);monday.setHours(0,0,0,0);
-  const week=monday.toISOString().slice(0,10);
+  const week=[monday.getFullYear(),String(monday.getMonth()+1).padStart(2,"0"),String(monday.getDate()).padStart(2,"0")].join("-");
   const completed=(checkIns[week]||[]).length;
   return (
     <View style={styles.container}>
@@ -47,7 +48,7 @@ const Selection = () => {
           <View style={styles.headerSpacer} />
         </View>
         <View style={[styles.content, { paddingBottom: insets.bottom + 30 }]}>
-          {plan&&<View style={{width:width-40,padding:16,borderRadius:15,backgroundColor:"rgba(10,12,12,.88)",borderWidth:1,borderColor:"#9B793F",marginBottom:12}}><Text style={{color:"#E8B44D",fontWeight:"800",letterSpacing:1.5}}>YOUR WEEKLY GOAL</Text><Text style={{color:"white",fontSize:21,fontWeight:"700",marginTop:8}}>{completed} / {plan.days} sessions completed</Text><Text style={{color:"#CFC8BB",marginTop:5}}>{plan.location} · Monday to Sunday</Text><TouchableOpacity disabled={completed>=plan.days} onPress={()=>{checkIn(week);Alert.alert(completed+1>=plan.days?"🏆 WEEKLY GOAL ACHIEVED!":"✨ SESSION COMPLETE",completed+1>=plan.days?"You did it! Every session counts.":"Great work. Keep your momentum going!")}} style={{backgroundColor:completed>=plan.days?"#26362C":"#E8B44D",padding:13,borderRadius:11,marginTop:14,alignItems:"center"}}><Text style={{color:completed>=plan.days?"#B7DCC0":"#17130B",fontWeight:"800"}}>{completed>=plan.days?"✓ WEEK COMPLETE":"✓ CHECK IN · SESSION DONE"}</Text></TouchableOpacity></View>}
+          {plan&&<View style={{width:width-40,padding:16,borderRadius:15,backgroundColor:"rgba(10,12,12,.88)",borderWidth:1,borderColor:"#9B793F",marginBottom:12}}><Text style={{color:"#E8B44D",fontWeight:"800",letterSpacing:1.5}}>YOUR WEEKLY GOAL</Text><Text style={{color:"white",fontSize:21,fontWeight:"700",marginTop:8}}>{completed} / {plan.days} sessions completed</Text><Text style={{color:"#CFC8BB",marginTop:5}}>{plan.location} · Monday to Sunday</Text><TouchableOpacity disabled={completed>=plan.days} onPress={()=>{checkIn(week);void playCompletionFeedback();Alert.alert(completed+1>=plan.days?"🏆 WEEKLY GOAL ACHIEVED!":"✨ SESSION COMPLETE",completed+1>=plan.days?"You did it! Every session counts.":"Great work. Keep your momentum going!")}} style={{backgroundColor:completed>=plan.days?"#26362C":"#E8B44D",padding:13,borderRadius:11,marginTop:14,alignItems:"center"}}><Text style={{color:completed>=plan.days?"#B7DCC0":"#17130B",fontWeight:"800"}}>{completed>=plan.days?"✓ WEEK COMPLETE":"✓ CHECK IN · SESSION DONE"}</Text></TouchableOpacity></View>}
           <View style={{width:width-40,backgroundColor:"rgba(12,13,13,.94)",padding:14,borderRadius:17,borderWidth:1,borderColor:"#665334"}}>
             <Text style={{color:"#F4F0E8",fontWeight:"800",fontSize:17,marginBottom:12,letterSpacing:1}}>GYM</Text>
             {[
@@ -74,15 +75,15 @@ const Selection = () => {
 
 export default Selection;
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   backgroundImage: {
-    width,
-    height,
+    width: "100%",
+    flex: 1,
   },
   imageStyle: {
     opacity: 1,
