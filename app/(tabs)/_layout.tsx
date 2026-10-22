@@ -59,7 +59,7 @@ export default function TabLayout() {
           options={{
             title: "Home",
             tabBarIcon: ({ color }) => (
-              <View style={[styles.iconHalo, color === "#E8B44D" && styles.iconHaloActive]}><AntDesign name="home" size={24} color={color} /></View>
+              <View style={styles.iconContainer}><AntDesign name="home" size={24} color={color} /></View>
             ),
           }}
         />
@@ -69,7 +69,7 @@ export default function TabLayout() {
           options={{
             title: "Chat",
             tabBarIcon: ({ color }) => (
-              <View style={[styles.iconHalo, color === "#E8B44D" && styles.iconHaloActive]}><Octicons name="dependabot" size={24} color={color} /></View>
+              <View style={styles.iconContainer}><Octicons name="dependabot" size={24} color={color} /></View>
             ),
           }}
         />
@@ -79,14 +79,14 @@ export default function TabLayout() {
           options={{
             title: "Progress",
             tabBarIcon: ({ color }) => (
-              <View style={[styles.iconHalo, color === "#E8B44D" && styles.iconHaloActive]}><SimpleLineIcons name="graph" size={24} color={color} /></View>
+              <View style={styles.iconContainer}><SimpleLineIcons name="graph" size={24} color={color} /></View>
             ),
           }}
         />
 
         <Tabs.Screen name="articles" options={{href:null}} />
 
-        <Tabs.Screen name="community" options={{title:"Community",tabBarIcon:({color})=><View style={[styles.iconHalo, color === "#E8B44D" && styles.iconHaloActive]}><MaterialIcons name="groups" size={24} color={color} /></View>}} />
+        <Tabs.Screen name="community" options={{title:"Community",tabBarIcon:({color})=><View style={styles.iconContainer}><MaterialIcons name="groups" size={24} color={color} /></View>}} />
         <Tabs.Screen name="index" redirect />
       </Tabs>
     </View>
@@ -99,8 +99,7 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   goldDivider: { position: "absolute", top: 0, left: 0, right: 0, height: 1, backgroundColor: "rgba(232,180,77,0.14)" },
-  iconHalo: { width: 42, height: 42, borderRadius: 21, alignItems: "center", justifyContent: "center" },
-  iconHaloActive: { backgroundColor: "rgba(232,180,77,0.11)" },
+  iconContainer: { width: 42, height: 42, alignItems: "center", justifyContent: "center" },
   modalOverlay: {
     position: "absolute",
     top: 0,
