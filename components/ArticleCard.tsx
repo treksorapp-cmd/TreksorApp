@@ -27,14 +27,14 @@ const ArticleCard = ({
     >
       {/* Outer LinearGradient for the border */}
       <LinearGradient
-        colors={["rgba(255, 255, 255, 0.3)", "rgba(255, 255, 255, 0.4)"]}
+        colors={["rgba(205,235,248,0.22)", "rgba(205,235,248,0.09)"]}
         start={{ x: 0.2, y: 0 }}
         end={{ x: 0.8, y: 1 }}
         style={styles.borderGradient}
       >
         {/* Inner LinearGradient for the button background */}
         <LinearGradient
-          colors={["#262626", "#0a0a0a"]}
+          colors={["rgba(183,221,240,0.10)", "rgba(183,221,240,0.045)"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.innerGradient}
@@ -69,9 +69,9 @@ const { width } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   articleCard: {
-    width: width - 20, // Full width minus margins
-    height: 180,
-    borderRadius: 12,
+    width: "100%", // Full width minus margins
+    minHeight: 165,
+    borderRadius: 18,
     overflow: "hidden",
   },
   borderGradient: {
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 11, // Slightly smaller than outer radius
+    borderRadius: 17, // Slightly smaller than outer radius
   },
   cardContent: {
     flexDirection: "row",
@@ -102,19 +102,20 @@ const styles = StyleSheet.create({
   textContent: {
     flex: 1,
     // justifyContent: "space-between",
-    height:150,
+    minHeight:145,
+    justifyContent:"center",
     gap:8,
     textAlign:'left',
     marginHorizontal:16
   },
   articleTitle: {
-    fontSize: 24,
+    fontSize: 17,
     fontWeight: "bold",
     color: "#FFFFFF",
-    lineHeight: 28,
+    lineHeight: 23,
   },
   articleDescription: {
-    fontSize: 16,
+    fontSize: 12,
     color: "#FFFFFF",
     lineHeight: 28,
   },
