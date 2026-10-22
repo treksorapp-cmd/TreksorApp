@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   premiumHeaderCenter: { flexDirection: "row", alignItems: "center", gap: 8 },
   premiumHeaderTitle: { fontSize: 28, fontWeight: "700", color: "#F5F1E8", letterSpacing: 0.2 },
   beta: { color: "#161008", fontSize: 10, fontWeight: "800", backgroundColor: "#F5BC4F", paddingHorizontal: 9, paddingVertical: 4, borderRadius: 9 },
-  welcomeAI: { backgroundColor: "#191A18", marginHorizontal: 20, marginTop: 24, padding: 22, borderRadius: 18, borderWidth: 1, borderColor: "#343028" },
+  welcomeAI: { backgroundColor: "rgba(56,62,62,0.30)", marginHorizontal: 20, marginTop: 24, padding: 22, borderRadius: 18, borderWidth: 1, borderColor: "rgba(255,238,197,0.24)" },
   welcomeEyebrow: { color: "#E8B44D", fontSize: 10, fontWeight: "700", letterSpacing: 2.4, marginBottom: 12 },
   welcomeTitle: { color: "#F5F1E8", fontSize: 24, fontWeight: "700", marginBottom: 12 },
   welcomeNote: { color: "#A9A397", fontSize: 11, lineHeight: 16, marginTop: 18 },
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   aiBubble: {
-    backgroundColor: "#2a2a2a",
+    backgroundColor: "rgba(67,72,74,0.45)",
     borderBottomLeftRadius: 4,
   },
   userBubble: {
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 15,
     borderTopWidth: 1,
-    borderTopColor: "rgba(255, 255, 255, 0.1)",
+    borderTopColor: "rgba(232,180,77,0.24)",
     gap: 12,
     backgroundColor: "#050505",
   },
