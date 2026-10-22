@@ -23,6 +23,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 const { width } = Dimensions.get("window")
+const CAMPFIRE_URL = "https://niakfwerfqmrmhuypkpd.supabase.co/storage/v1/object/public/treksor-atmosphere/chat/campfire.jpg"
 
 export default function ChatScreen() {
   const insets = useSafeAreaInsets()
@@ -102,8 +103,8 @@ export default function ChatScreen() {
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : undefined} keyboardVerticalOffset={0}>
       <StatusBar style="light" />
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-        <ImageBackground source={require("@/assets/images/mental-home-bg.jpeg")} contentFit="cover" style={StyleSheet.absoluteFill} />
-        <LinearGradient colors={["rgba(5,5,5,0.94)","rgba(5,5,5,0.88)","rgba(5,5,5,0.97)"]} style={StyleSheet.absoluteFill} />
+        <ImageBackground source={{ uri: CAMPFIRE_URL }} contentFit="cover" style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={["rgba(5,5,5,0.90)","rgba(5,5,5,0.78)","rgba(5,5,5,0.94)"]} style={StyleSheet.absoluteFill} />
       </View>
 
       {messages.length === 0 && (
