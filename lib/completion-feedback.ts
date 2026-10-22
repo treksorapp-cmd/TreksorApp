@@ -1,6 +1,6 @@
 import { Audio } from "expo-av";
 import * as Haptics from "expo-haptics";
-import { encode } from "base-64";
+
 
 /** Small, locally generated two-note success chime. No network or extra asset required. */
 function chimeUri(): string {
@@ -38,7 +38,14 @@ function chimeUri(): string {
   for (let i = 0; i < bytes.length; i += 8192) {
     binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
   }
-  return "data:audio/wav;base64," + encode(binary);
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  let base64 = "";
+  for (let i = 0; i < binary.length; i += 3) {
+    const a = binary.charCodeAt(i), b = i + 1 < binary.length ? binary.charCodeAt(i + 1) : 0, c = i + 2 < binary.length ? binary.charCodeAt(i + 2) : 0;
+    const triple = (a << 16) | (b << 8) | c;
+    base64 += alphabet[(triple >>> 18) & 63] + alphabet[(triple >>> 12) & 63] + (i + 1 < binary.length ? alphabet[(triple >>> 6) & 63] : "=") + (i + 2 < binary.length ? alphabet[triple & 63] : "=");
+  }
+  return "data:audio/wav;base64," + base64;
 }
 
 let sound: Audio.Sound | null = null;
