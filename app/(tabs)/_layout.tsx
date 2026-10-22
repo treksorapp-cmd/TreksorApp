@@ -48,9 +48,11 @@ export default function TabLayout() {
           tabBarBackground: () => (
             <View pointerEvents="none" style={StyleSheet.absoluteFill}>
               <View style={styles.goldDivider} />
-              <Animated.View style={[styles.glowTrack, { width: width / 4, transform: [{ translateX: glowPosition.interpolate({ inputRange: [0, 3], outputRange: [0, width * 0.75] }) }] }]}>
-                <LinearGradient colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.025)", "rgba(232,180,77,0.075)", "rgba(232,180,77,0.13)", "rgba(232,180,77,0.075)", "rgba(232,180,77,0.025)", "rgba(232,180,77,0)"]} start={{x:0,y:0}} end={{x:1,y:0}} style={styles.glowHalo} />
-                <LinearGradient colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.035)", "rgba(232,180,77,0.12)", "rgba(255,232,177,0.38)", "rgba(232,180,77,0.12)", "rgba(232,180,77,0.035)", "rgba(232,180,77,0)"]} start={{x:0,y:0}} end={{x:1,y:0}} style={styles.glowLine} />
+              <Animated.View style={[styles.glowTrack, { width: width / 2, left: -width / 8, transform: [{ translateX: glowPosition.interpolate({ inputRange: [0, 3], outputRange: [0, width * 0.75] }) }] }]}>
+                <LinearGradient colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.06)", "rgba(232,180,77,0.17)", "rgba(232,180,77,0.06)", "rgba(232,180,77,0)"]} start={{x:0,y:0}} end={{x:0,y:1}} style={styles.glowHalo}>
+                  <LinearGradient colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.18)", "rgba(255,222,154,0.62)", "rgba(232,180,77,0.18)", "rgba(232,180,77,0)"]} start={{x:0,y:0}} end={{x:1,y:0}} style={StyleSheet.absoluteFill} />
+                </LinearGradient>
+                <LinearGradient colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.07)", "rgba(255,227,161,0.56)", "rgba(232,180,77,0.07)", "rgba(232,180,77,0)"]} start={{x:0,y:0}} end={{x:1,y:0}} style={styles.glowLine} />
               </Animated.View>
             </View>
           ),
@@ -116,10 +118,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "black",
   },
-  goldDivider: { position: "absolute", top: 0, left: 0, right: 0, height: 1, backgroundColor: "rgba(232,180,77,0.12)" },
-  glowTrack: { position: "absolute", top: -17, height: 44, alignItems: "center" },
-  glowHalo: { position: "absolute", top: 0, width: "100%", height: 43, opacity: 0.64 },
-  glowLine: { position: "absolute", top: 17, width: "100%", height: 1, borderRadius: 3 },
+  goldDivider: { position: "absolute", top: 0, left: 0, right: 0, height: 1, backgroundColor: "rgba(232,180,77,0.14)" },
+  glowTrack: { position: "absolute", top: -15, height: 46, alignItems: "center" },
+  glowHalo: { position: "absolute", top: 0, width: "100%", height: 46, opacity: 0.92 },
+  glowLine: { position: "absolute", top: 15, width: "100%", height: 1, opacity: 0.7 },
   modalOverlay: {
     position: "absolute",
     top: 0,
