@@ -8,7 +8,7 @@ import Button from "@/components/ui/Button";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import axios from "axios";
 import {useWorkoutStore} from "@/store/workout-store";
-const GOLD="#E8B44D";
+const GOLD="#D7B877";
 const GLASS="rgba(183,221,240,0.075)";
 
 type Exercise={id:string;name:string;muscle_group:string;location:string;sets:number;reps:string;rest_seconds:number};
