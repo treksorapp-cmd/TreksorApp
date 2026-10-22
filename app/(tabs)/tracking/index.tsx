@@ -141,7 +141,7 @@ export default function TrackingScreen() {
 
 const styles = StyleSheet.create({
   premiumTitle: { color: "#F5F1E8", fontSize: 28, fontWeight: "700", textAlign: "left", marginHorizontal: 20, marginTop: 20, marginBottom: 4 },
-  trackingSubtitle: { color:"#F5F1E8",fontSize:16,fontWeight:"700",letterSpacing:2,marginHorizontal:20,marginBottom:3 },
+  trackingSubtitle: { color:"#F5F1E8",fontSize:16,fontWeight:"600",letterSpacing:-1.2,marginHorizontal:20,marginBottom:3 },
   periodHeading: { color:"#F5F1E8",fontSize:20,fontWeight:"700",marginHorizontal:20,marginTop:18,marginBottom:12 },
   periodRow: { flexDirection: "row", marginHorizontal: 18, backgroundColor: "rgba(255,255,255,0.06)", borderRadius: 10, padding: 4 },
   periodButton: { flex: 1, paddingVertical: 11, alignItems: "center", borderRadius: 8 },
