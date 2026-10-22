@@ -1,331 +1,115 @@
-"use client"
+import { Nutritions } from "@/mock/nutrition";
+import { Ionicons } from "@expo/vector-icons";
+import { ImageBackground } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
+import { router, useLocalSearchParams } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import React, { useState } from "react";
+import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import Header from "@/components/ui/Header"
-import { Nutritions } from "@/mock/nutrition"
-import { useAuthStore } from "@/store/auth-store"
-import { Ionicons } from "@expo/vector-icons"
-import { ImageBackground } from "expo-image"
-import { LinearGradient } from "expo-linear-gradient"
-import { router, useLocalSearchParams } from "expo-router"
-import { StatusBar } from "expo-status-bar"
-import { useEffect, useState } from "react"
-import { Dimensions, FlatList, Linking, Animated as RNAnimated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
+const GOLD = "#E8B44D";
+const GLASS = "rgba(183,221,240,0.075)";
+const BORDER = "rgba(205,235,248,0.20)";
+type Beverage = (typeof Nutritions.beverages.data)[number];
 
-interface Ingredient {
-  id: string
-  name: string
-  measurement: string
-}
+export default function BeverageDetails() {
+  const { id } = useLocalSearchParams<{id:string}>();
+  const insets = useSafeAreaInsets();
+  const [showReferences, setShowReferences] = useState(false);
+  const beverage = Nutritions.beverages.data.find(item => item.id === id) as Beverage | undefined;
+  if (!beverage) return <View style={styles.screen}><Text style={styles.empty}>Beverage not found.</Text></View>;
 
-interface BeverageData {
-  id: string
-  name: string
-  description: string
-  backgroundImage: string
-  quantity: string
-  ingredients: Ingredient[]
-  footNote?: string
-  source_1?: string
-  url_1?: string
-  source_2?: string
-  url_2?: string
-  source_3?: string
-  url_3?: string
-}
+  const sources = [
+    {title:beverage.source_1,url:beverage.url_1},
+    {title:beverage.source_2,url:beverage.url_2},
+    {title:beverage.source_3,url:beverage.url_3},
+  ].filter((item):item is {title:string;url:string} => Boolean(item.title && item.url));
+  const paragraphs = beverage.description.replace(/\s*\n\s*/g," ").split(/(?<=[.!?])\s+/).filter(Boolean);
+  const openReference = (url:string) => { void Linking.openURL(url).catch(()=>{}); };
 
-const BeveragesDetails = () => {
-  const insets = useSafeAreaInsets()
-  const { id } = useLocalSearchParams()
-  const [beverage, setBeverage] = useState<BeverageData | null>(null)
-  const [animatedValues, setAnimatedValues] = useState<RNAnimated.Value[]>([])
-  const beveragesData = Nutritions['beverages'].data;
-  const { user } = useAuthStore();
-
-  useEffect(() => {
-    // Load beverage data based on ID
-    const beverageKey = id as keyof typeof beveragesData
-    const beverage = beveragesData.find(beverage => beverage.id === beverageKey);
-    if (beverage) {
-      const beverageInfo = beverage as BeverageData
-      setBeverage(beverageInfo)
-
-      // Create animated values for each ingredient
-      const animValues = beverageInfo.ingredients.map(() => new RNAnimated.Value(0))
-      setAnimatedValues(animValues)
-
-      // Start staggered animations
-      const animations = animValues.map((animValue, index) =>
-        RNAnimated.timing(animValue, {
-          toValue: 1,
-          duration: 600,
-          delay: index * 100,
-          useNativeDriver: true,
-        }),
-      )
-
-      RNAnimated.stagger(80, animations).start()
-    }
-  }, [id])
-
-  const handleBackPress = () => {
-    router.back()
-  }
-
-  const renderIngredientCard = ({ item, index }: { item: Ingredient; index: number }) => {
-    const animatedValue = animatedValues[index]
-
-    if (!animatedValue) return null
-
-    const translateY = animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [30, 0],
-    })
-
-    const opacity = animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 1],
-    })
-
-    const scale = animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0.9, 1],
-    })
-
-    return (
-      <RNAnimated.View
-        style={[
-          styles.ingredientCard,
-          {
-            opacity,
-            transform: [{ translateY }, { scale }],
-          },
-        ]}
-      >
-        <TouchableOpacity style={styles.cardTouchable} activeOpacity={0.8}>
-          <LinearGradient
-            colors={["rgba(0, 0, 0, 0.6)", "rgba(0, 0, 0, 0.8)"]}
-            style={styles.cardGradient}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-          >
-            <Text style={styles.ingredientName}>{item.name}</Text>
-            <Text style={styles.ingredientMeasurement}>{item.measurement}</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </RNAnimated.View>
-    )
-  }
-
-  if (!beverage) {
-    return (
-      <View style={styles.container}>
-        <StatusBar style="light" />
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading beverage...</Text>
+  return <View style={styles.screen}>
+    <StatusBar style="light"/>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:insets.bottom+48}}>
+      <View style={styles.hero}>
+        <ImageBackground source={beverage.backgroundImage} contentFit="cover" style={StyleSheet.absoluteFill}/>
+        <LinearGradient colors={["rgba(2,5,12,0.35)","rgba(2,5,12,0.45)","#02050C"]} locations={[0,0.48,1]} style={StyleSheet.absoluteFill}/>
+        <View style={[styles.topBar,{paddingTop:insets.top+10}]}>
+          <TouchableOpacity accessibilityRole="button" accessibilityLabel="Back" onPress={()=>router.back()} style={styles.back}><Ionicons name="chevron-back" size={22} color="#FFFFFF"/></TouchableOpacity>
+          <Text style={styles.topLabel}>BEVERAGES</Text>
+          <View style={{width:42}}/>
+        </View>
+        <View style={styles.heroCopy}>
+          <Text style={styles.eyebrow}>BODY  /  NUTRITION</Text>
+          <Text style={styles.heroTitle}>{beverage.name.toUpperCase()}</Text>
+          <Text style={styles.heroCaption}>A DAILY RITUAL</Text>
         </View>
       </View>
-    )
-  }
-
-  return (
-    <View style={styles.container}>
-      <StatusBar style="light" />
-      <ImageBackground
-        source={beverage.backgroundImage}
-        contentFit="cover"
-        style={styles.backgroundImage}
-        imageStyle={styles.imageStyle}
-      >
-        {/* Header */}
-         {!user?.plan && <Header showTitle={false} showBackButton={false} showAvatar={false} />}
-        <View style={[styles.header, { paddingTop: user?.plan ? insets.top + 10 : 0, position: !user?.plan ? "relative" : "absolute" }]}>
-          <View style={styles.backButton} />
-          <Text style={styles.headerTitle}>{beverage.name}</Text>
-          <View style={styles.headerSpacer} />
+      <View style={styles.content}>
+        <View style={styles.descriptionCard}>
+          <Text style={styles.sectionEyebrow}>THE RITUAL</Text>
+          {paragraphs.map((paragraph,index)=><Text key={index} style={[styles.description,index===0&&styles.lead]}>{paragraph}</Text>)}
         </View>
-  
-        {/* Scrollable Content */}
-        <ScrollView
-          style={[styles.scrollView, { marginTop: insets.top + 60 }]} // Add marginTop to avoid overlapping
-          contentContainerStyle={[styles.scrollContentContainer, { paddingBottom: insets.bottom + 30 }]}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={{ width: '100%' }}>
-            <Text style={{ color: "#FFFFFF", fontSize: 18, marginBottom: 20, fontWeight: 'bold',  }}>{beverage.description}</Text>
-          </View>
-        
-          <LinearGradient
-            colors={["transparent", "rgba(0, 0, 0, 0.8)", "rgba(0, 0, 0, 0.95)"]}
-            style={styles.contentOverlay}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-          >
-            <View style={styles.ingredientsSection}>
-              <Text style={styles.ingredientsTitle}>Ingredients {beverage.quantity}:</Text>
-        
-              <FlatList
-          data={beverage.ingredients}
-          renderItem={renderIngredientCard}
-          keyExtractor={(item) => item.id}
-          numColumns={2}
-          columnWrapperStyle={styles.row}
-          contentContainerStyle={styles.gridContainer}
-          scrollEnabled={false}
-              />
-            </View>
-          </LinearGradient>
-        
-          {beverage.footNote && (
-            <View style={{ width: '100%', marginTop: 10 }}>
-              <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: '400',  }}>{beverage.footNote}</Text>
-            </View>
-          )}
-          {(beverage.source_1 || beverage.source_2 || beverage.source_3) && (
-            <View style={{ width: '100%', marginTop: 10 }}>
-              {beverage.source_1 && beverage.url_1 && (
-                <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: '400',  }}>
-                  <Text style={{ textDecorationLine: 'underline', color: '#E8B44D' }} onPress={() => Linking.openURL(beverage.url_1!)}>Source 1: {beverage.source_1}</Text>
-                </Text>
-              )}
-              {beverage.source_2 && beverage.url_2 && (
-                <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: '400',  }}>
-                  <Text style={{ textDecorationLine: 'underline', color: '#E8B44D' }} onPress={() => Linking.openURL(beverage.url_2!)}>Source 2: {beverage.source_2}</Text>
-                </Text>
-              )}
-              {beverage.source_3 && beverage.url_3 && (
-                <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: '400',  }}>
-                  <Text style={{ textDecorationLine: 'underline', color: '#E8B44D' }} onPress={() => Linking.openURL(beverage.url_3!)}>Source 3: {beverage.source_3}</Text>
-                </Text>
-              )}
-            </View>
-          )}
-        {/* </LinearGradient> */}
-        </ScrollView>
-      </ImageBackground>
-    </View>
-  )  
+        <View style={styles.sectionHeader}>
+          <View><Text style={styles.sectionEyebrow}>PREPARE YOUR DRINK</Text><Text style={styles.sectionTitle}>INGREDIENTS</Text></View>
+          <View style={styles.quantity}><Ionicons name="beaker-outline" color="#D6E9F2" size={16}/><Text style={styles.quantityText}>{beverage.quantity.replace(/[()]/g,"")}</Text></View>
+        </View>
+        <View style={styles.ingredients}>
+          {beverage.ingredients.map((ingredient,index)=><View key={ingredient.id} style={styles.ingredientRow}>
+            <View style={styles.numberCircle}><Text style={styles.number}>{String(index+1).padStart(2,"0")}</Text></View>
+            <Text style={styles.ingredientName}>{ingredient.name}</Text>
+            <Text style={styles.amount}>{ingredient.measurement.replace(/[()]/g,"")}</Text>
+          </View>)}
+        </View>
+        {(beverage.footNote || sources.length>0) && <View style={styles.references}>
+          <View style={styles.safetyRow}><Ionicons name="information-circle-outline" size={19} color="#C3D7E4"/><Text style={styles.safetyText}>{beverage.footNote || "Review ingredients before use."}</Text></View>
+          {sources.length>0&&<>
+            <TouchableOpacity accessibilityRole="button" accessibilityState={{expanded:showReferences}} onPress={()=>setShowReferences(v=>!v)} style={styles.sourcesToggle}>
+              <Ionicons name="document-text-outline" size={18} color="#DCECF5"/>
+              <Text style={styles.sourcesLabel}>SOURCES & REFERENCES ({sources.length})</Text>
+              <Ionicons name={showReferences?"chevron-up":"chevron-down"} size={18} color="#DCECF5"/>
+            </TouchableOpacity>
+            {showReferences&&sources.map((source,index)=><TouchableOpacity key={source.url+index} accessibilityRole="link" onPress={()=>openReference(source.url)} style={styles.sourceLink}>
+              <Text style={styles.sourceText} numberOfLines={2}>{index+1}. {source.title}</Text><Ionicons name="open-outline" color={GOLD} size={17}/>
+            </TouchableOpacity>)}
+          </>}
+        </View>}
+      </View>
+    </ScrollView>
+  </View>;
 }
 
-export default BeveragesDetails
-
-const { width, height } = Dimensions.get("window")
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  backgroundImage: {
-    width,
-    height,
-  },
-  imageStyle: {
-    opacity: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#0A0A0A",
-  },
-  loadingText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 10,
-  },
-  backButton: {
-    padding: 5,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#FFFFFF",
-    textShadowColor: "rgba(0, 0, 0, 0.5)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
-  headerSpacer: {
-    width: 34,
-  },
-  content: {
-    flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "center",
-    paddingHorizontal: 20,
-  },
-  contentOverlay: {
-    width: "100%",
-  },
-  ingredientsSection: {
-    width: "100%",
-  },
-  ingredientsTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-    marginBottom: 20,
-    textShadowColor: "rgba(0, 0, 0, 0.5)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-    
-  },
-  gridContainer: {
-    paddingBottom: 10,
-  },
-  row: {
-    justifyContent: "space-between",
-    marginBottom: 12,
-  },
-  ingredientCard: {
-    width: (width - 60) / 2, // Account for padding and gap
-    minHeight: 80,
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  cardTouchable: {
-    flex: 1,
-  },
-  cardGradient: {
-    flex: 1,
-    padding: 16,
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
-    borderRadius: 12,
-  },
-  ingredientName: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#FFFFFF",
-    marginBottom: 4,
-    lineHeight: 20,
-    
-  },
-  ingredientMeasurement: {
-    fontSize: 14,
-    color: "#F39C12",
-    fontWeight: "500",
-    lineHeight: 18,
-    
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContentContainer: {
-    flexGrow: 1,
-    paddingHorizontal: 20,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },  
-})
+const styles=StyleSheet.create({
+  screen:{flex:1,backgroundColor:"#02050C"},
+  empty:{color:"#FFFFFF",textAlign:"center",marginTop:120},
+  hero:{height:370,justifyContent:"space-between",overflow:"hidden"},
+  topBar:{paddingHorizontal:20,flexDirection:"row",alignItems:"center",justifyContent:"space-between"},
+  back:{height:42,width:42,borderRadius:14,backgroundColor:"rgba(183,221,240,0.12)",borderWidth:1,borderColor:BORDER,alignItems:"center",justifyContent:"center"},
+  topLabel:{color:"#F5F1E8",fontSize:13,fontWeight:"700",letterSpacing:2},
+  heroCopy:{paddingHorizontal:22,paddingBottom:28},
+  eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.7},
+  heroTitle:{color:"#FFFFFF",fontSize:34,fontWeight:"700",letterSpacing:1.3,marginTop:9},
+  heroCaption:{color:"#D8D6D2",fontSize:11,letterSpacing:1.7,marginTop:9,fontWeight:"600"},
+  content:{paddingHorizontal:20},
+  descriptionCard:{borderRadius:20,backgroundColor:GLASS,borderWidth:1,borderColor:BORDER,padding:20,marginBottom:28},
+  sectionEyebrow:{color:"#D7B877",fontSize:10,fontWeight:"700",letterSpacing:1.5},
+  description:{fontSize:14,color:"#C8CCD0",lineHeight:22,marginTop:10},
+  lead:{fontSize:16,color:"#FFFFFF",fontWeight:"600",lineHeight:24},
+  sectionHeader:{flexDirection:"row",alignItems:"center",justifyContent:"space-between",gap:12,marginBottom:15},
+  sectionTitle:{color:"#FFFFFF",fontSize:23,fontWeight:"700",letterSpacing:1.2,marginTop:6},
+  quantity:{maxWidth:"47%",flexDirection:"row",alignItems:"center",gap:7,backgroundColor:GLASS,borderWidth:1,borderColor:BORDER,paddingHorizontal:11,paddingVertical:9,borderRadius:14},
+  quantityText:{color:"#E1E8EC",fontSize:11,flexShrink:1},
+  ingredients:{backgroundColor:GLASS,borderWidth:1,borderColor:BORDER,borderRadius:20,paddingHorizontal:16,paddingVertical:3},
+  ingredientRow:{minHeight:66,flexDirection:"row",alignItems:"center",gap:12,borderBottomWidth:1,borderBottomColor:"rgba(220,237,248,0.1)",paddingVertical:10},
+  numberCircle:{height:32,width:32,borderRadius:11,backgroundColor:"rgba(193,227,244,0.085)",alignItems:"center",justifyContent:"center"},
+  number:{fontSize:11,fontWeight:"700",color:"#D6E8F2"},
+  ingredientName:{flex:1,color:"#FFFFFF",fontSize:14,fontWeight:"600",lineHeight:19},
+  amount:{color:"#D5C29B",fontSize:12,fontWeight:"600",textAlign:"right",maxWidth:"37%",lineHeight:17},
+  references:{marginTop:27,backgroundColor:"rgba(183,221,240,0.045)",borderRadius:18,borderWidth:1,borderColor:"rgba(205,235,248,0.13)",padding:16},
+  safetyRow:{flexDirection:"row",alignItems:"flex-start",gap:10},
+  safetyText:{color:"#B8BEC2",fontSize:12,lineHeight:18,flex:1},
+  sourcesToggle:{flexDirection:"row",alignItems:"center",gap:10,marginTop:17,paddingTop:14,borderTopWidth:1,borderTopColor:"rgba(255,255,255,0.1)"},
+  sourcesLabel:{color:"#E5E9EB",fontSize:11,fontWeight:"700",letterSpacing:0.8,flex:1},
+  sourceLink:{flexDirection:"row",alignItems:"center",gap:12,paddingVertical:12,borderBottomWidth:1,borderBottomColor:"rgba(255,255,255,0.07)"},
+  sourceText:{flex:1,color:"#C8CDD1",fontSize:12,lineHeight:18},
+});
