@@ -4,7 +4,7 @@ import { useArticleStore } from "@/store/article-store";
 import { Audio } from "expo-av";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, usePathname } from "expo-router";
 import * as Speech from 'expo-speech';
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
@@ -39,6 +39,8 @@ interface ArticlesDetailsScreenProps {
 
 export default function ArticleDetailScreen({ mode = "stack" }: ArticlesDetailsScreenProps) {
   const insets = useSafeAreaInsets();
+  const pathname = usePathname();
+  const pillarTrail = pathname.startsWith("/body/") ? "BODY / READING / ARTICLES" : pathname.startsWith("/spiritual/") ? "BALANCE / READING / ARTICLES" : "MIND / READING / ARTICLES";
   const { id, category } = useLocalSearchParams();
   const [article, setArticle] = useState<Article | null>(null);
   const [isRead, setIsRead] = useState(false)
@@ -155,7 +157,7 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: mode === 'tab' ? insets.bottom + 40 : 0}}
       >
-        <View style={{paddingTop:insets.top+12,paddingBottom:17}}><Text style={{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.6}}>MIND / READING</Text><Text style={{color:"#FFFFFF",fontSize:34,fontWeight:"700",letterSpacing:1.5,marginTop:7}}>ARTICLE</Text></View>
+        <View style={{paddingTop:insets.top+12,paddingBottom:17}}><Text style={{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.6}}>{pillarTrail}</Text><Text style={{color:"#FFFFFF",fontSize:34,fontWeight:"700",letterSpacing:1.5,marginTop:7}}>ARTICLE</Text></View>
         {/* Article Image */}
         <Image
           source={{ uri: imageUrl }}
