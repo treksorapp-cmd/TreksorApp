@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/auth-store";
 import AddTrackerModal from "@/components/AddTrackerModal";
 import CalendarModal from "@/components/ui/CalendarModal";
 import { useTrackingStore } from "@/store/tracking-store";
+import {useWorkoutStore} from "@/store/workout-store";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useFocusEffect } from "expo-router";
@@ -24,6 +25,9 @@ import {
 export default function TrackingScreen() {
   const { trackingData, fetchTrackingData, loading } = useTrackingStore();
   const userId = useAuthStore(s => s.user?.id);
+  const gymSets=useWorkoutStore(s=>s.gymSets);
+  const gymCheckIns=useWorkoutStore(s=>s.checkIns);
+  const gymSessions=Object.values(gymCheckIns||{}).reduce((n,items)=>n+items.length,0);
   const [moodPeriod, setMoodPeriod] = useState<"week"|"month"|"year">("week");
   const [moodSummary, setMoodSummary] = useState<{average:number|null;days:number}>({average:null,days:0});
 
@@ -99,6 +103,7 @@ export default function TrackingScreen() {
           </View>)}
           <Text style={{color:"#928D83",fontSize:11,marginTop:20,lineHeight:17}}>— means there is no tracking data for that pillar yet.</Text>
         </View>
+        <TouchableOpacity onPress={()=>router.push("/body/workout/progress")} style={{marginTop:18,backgroundColor:"#191A18",borderWidth:1,borderColor:"#6C5533",borderRadius:15,padding:17,flexDirection:"row",alignItems:"center",gap:12}}><Ionicons name="barbell-outline" color="#F5BD4F" size={23}/><View style={{flex:1}}><Text style={{color:"#F7F2E8",fontSize:16,fontWeight:"700"}}>Gym progress</Text><Text style={{color:"#BFB7A9",fontSize:12,marginTop:5}}>{gymSessions} sessions · {gymSets.length} sets recorded</Text></View><Ionicons name="chevron-forward" color="#F5BD4F" size={20}/></TouchableOpacity>
         {customTrackers.length>0&&<View style={{marginTop:20,backgroundColor:"#191A18",borderWidth:1,borderColor:"#544632",borderRadius:16,padding:19}}>
           <Text style={{color:"#F5F1E8",fontWeight:"700",fontSize:17,marginBottom:15}}>Your trackers</Text>
           {customTrackers.map(t=><TouchableOpacity key={t.id} onPress={()=>{setSelectedCategory(t.id);setShowActivityLog(true)}} style={{flexDirection:"row",alignItems:"center",gap:13,paddingVertical:12,borderBottomWidth:1,borderBottomColor:"#34332F"}}>
