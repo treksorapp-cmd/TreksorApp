@@ -163,7 +163,7 @@ export default function PowerThoughtsScreen() {
 const styles = StyleSheet.create({
   titleArea:{paddingHorizontal:22,paddingBottom:22},
   eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.7},
-  heroTitle:{color:"#FFFFFF",fontSize:34,fontWeight:"700",letterSpacing:1.5,marginTop:9},
+  heroTitle:{color:"#FFFFFF",fontSize:34,fontWeight:"600",letterSpacing:-1.2,marginTop:9},
   container: {
     flex: 1,
     backgroundColor: "#02050C",
