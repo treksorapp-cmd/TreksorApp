@@ -101,11 +101,6 @@ export default function ChatScreen() {
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : undefined} keyboardVerticalOffset={0}>
       <StatusBar style="light" />
 
-      <View style={styles.premiumHeader}>
-        <View style={styles.premiumHeaderCenter}>
-          <Text style={styles.premiumHeaderTitle}>Chat</Text>
-        </View>
-      </View>
       {messages.length === 0 && (
         <View style={styles.welcomeAI}>
           <Text style={styles.welcomeEyebrow}>YOUR SPACE</Text>
@@ -114,6 +109,7 @@ export default function ChatScreen() {
           <Text style={styles.welcomeNote}>AI support, not professional mental health care.</Text>
         </View>
       )}
+      {/* Single Chat title is provided by the tab navigation. */}
       {/* Messages */}
       <FlatList
         ref={flatListRef}
