@@ -119,9 +119,7 @@ export default function WorkoutInfoScreen() {
       {/* Custom Header */}
       {!user?.plan && <Header showTitle={false} showBackButton={false} showAvatar={false} />}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
-          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
+        <View style={styles.backButton} />
         <Text style={styles.headerTitle}>{workout.title}</Text>
         <View style={styles.headerSpacer} />
       </View>
