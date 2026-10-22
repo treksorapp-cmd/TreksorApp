@@ -25,7 +25,7 @@ export default function PremiumPillarScreen({ title, headline, subtitle, image, 
       <View style={{ flex: align === "middle" ? 0.8 : 1, minHeight: align === "middle" ? 160 : 240 }} />
       <Text style={styles.headline}>{normalizedHeadline}</Text>
       <Text style={styles.subtitle}>{subtitle}</Text>
-      <View style={styles.actions}>{actions.map(action => <Button key={action.label} onPress={() => router.push(action.href)} iconName={action.icon} buttonStyle={styles.action}>{action.label}</Button>)}</View>
+      <View style={styles.actions}>{actions.map(action => <Button key={action.label} onPress={() => router.push(action.href)} iconName={action.icon}>{action.label}</Button>)}</View>
     </ScrollView>
   </SafeAreaView>;
 }
@@ -38,8 +38,5 @@ const styles = StyleSheet.create({
   scroll: { flexGrow: 1, paddingHorizontal: 20, paddingBottom: 32 },
   headline: { fontSize: 30, lineHeight: 37, fontWeight: "700", letterSpacing: -0.45, color: "#F5F1E8", maxWidth: 340 },
   subtitle: { fontSize: 14, lineHeight: 22, color: "#D1CDC5", marginTop: 10, marginBottom: 24 },
-  actions: { gap: 12 },
-  action: { width: "100%", height: 64, borderRadius: 18, marginVertical: 0 },
-  actionContents: { width: "100%", flexDirection: "row", alignItems: "center", gap: 16, paddingHorizontal: 18 },
-  actionText: { color: "#F5F1E8", fontSize: 16, flex: 1, fontWeight: "600", letterSpacing: 0.1 },
+  actions: { gap: 0 },
 });
