@@ -5,7 +5,7 @@ import { useUserStore } from "@/store/user-store";
 import * as Linking from "expo-linking";
 import { router, SplashScreen, Stack, usePathname } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useEffect, useRef, useState } from "react";
 import Purchases from "react-native-purchases";
@@ -15,6 +15,8 @@ import { initRC } from "./services/revenuecat";
 export default function RootLayout() {
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
+  const isPillarDetail = /^\/(body|mental|spiritual|purpose)\//.test(pathname);
+  const hasOwnPillarIcon = pathname.startsWith("/spiritual/mediation/");
   const pillar = pathname.startsWith("/body/") ? {route:"/body",icon:"barbell-outline"} : pathname.startsWith("/mental/") ? {route:"/mental",icon:"book-outline"} : pathname.startsWith("/spiritual/") && !pathname.startsWith("/spiritual/mediation/") ? {route:"/spiritual",icon:"shield-outline"} : pathname.startsWith("/purpose/") ? {route:"/purpose",icon:"compass-outline"} : null;
   const { error, clearError, isAuthenticated, getCurrentUser } = useAuthStore();
   const [initialURL, setInitialURL] = useState<string | null>(null);
@@ -185,7 +187,10 @@ export default function RootLayout() {
           animation: "slide_from_right",
         }}
       />
-      {pillar && isAuthenticated && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Return to pillar menu" onPress={()=>router.dismissTo(pillar.route as any)} style={{position:"absolute",top:insets.top+8,right:18,width:44,height:44,borderRadius:12,backgroundColor:"rgba(183,221,240,0.075)",alignItems:"center",justifyContent:"center",zIndex:1000}}><Ionicons name={pillar.icon as any} size={23} color="#FFFFFF" /></TouchableOpacity>}
+      {isPillarDetail && isAuthenticated && <View pointerEvents="box-none" style={{position:"absolute",top:insets.top+8,right:18,flexDirection:"row",gap:9,zIndex:1000}}>
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go to Home" onPress={()=>router.dismissTo("/(tabs)/home" as any)} style={{width:44,height:44,borderRadius:12,backgroundColor:"rgba(183,221,240,0.075)",alignItems:"center",justifyContent:"center"}}><Ionicons name="home-outline" size={22} color="#FFFFFF" /></TouchableOpacity>
+        {pillar && !hasOwnPillarIcon && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Return to pillar menu" onPress={()=>router.dismissTo(pillar.route as any)} style={{width:44,height:44,borderRadius:12,backgroundColor:"rgba(183,221,240,0.075)",alignItems:"center",justifyContent:"center"}}><Ionicons name={pillar.icon as any} size={23} color="#FFFFFF" /></TouchableOpacity>}
+      </View>}
     </>
   );
 }
