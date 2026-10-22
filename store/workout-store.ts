@@ -4,9 +4,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+export type GymSet = { id:string; exerciseId:string; exerciseName:string; day:number; kg:number; reps:number; recordedAt:string };
 export type TrainingPlan = { days:number; location:"Gym"|"Home"; savedAt:string };
 interface WorkoutState {
     trainingPlan: TrainingPlan | null;
+    gymSets: GymSet[];
+    addGymSet: (entry:GymSet)=>void;
+    removeGymSet: (id:string)=>void;
     checkIns: Record<string,string[]>;
     saveTrainingPlan: (plan:TrainingPlan)=>void;
     resetTrainingPlan: ()=>void;
@@ -24,6 +28,9 @@ export const useWorkoutStore = create<WorkoutState>()(
   persist(
     (set,get) => ({
         trainingPlan: null,
+        gymSets: [],
+        addGymSet: entry=>set(state=>({gymSets:[...(state.gymSets||[]),entry]})),
+        removeGymSet: id=>set(state=>({gymSets:(state.gymSets||[]).filter(e=>e.id!==id)})),
         checkIns: {},
         saveTrainingPlan: plan=>set({trainingPlan:plan}),
         resetTrainingPlan: ()=>set({trainingPlan:null,checkIns:{}}),
