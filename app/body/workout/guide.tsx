@@ -5,7 +5,7 @@ import {Alert,KeyboardAvoidingView,Platform,ScrollView,Text,TextInput,TouchableO
 import {Ionicons} from "@expo/vector-icons";
 import {router} from "expo-router";
 import {useWorkoutStore,TrainingPlan} from "@/store/workout-store";
-const GOLD="#F5BD4F";
+const GOLD="#D7B877";
 const options=[{id:"strength",title:"Build Strength",description:"Progressively lift heavier"},{id:"muscle",title:"Build Muscle",description:"Increase muscle size"},{id:"definition",title:"Get Defined",description:"Train to preserve muscle and improve conditioning"}] as const;
 export default function WorkoutGuide(){
  const insets=useSafeAreaInsets();
@@ -23,7 +23,7 @@ export default function WorkoutGuide(){
  <View style={{flexDirection:"row",gap:8,marginTop:20}}>{["01 · PROFILE","02 · GOAL","03 · ROUTINE"].map((step,i)=><View key={step} style={{flex:1,borderTopWidth:2,borderTopColor:i===0?GOLD:"#5A4B33",paddingTop:9}}><Text style={{color:i===0?GOLD:"#AAA397",fontSize:10,fontWeight:"800"}}>{step}</Text></View>)}</View>
  <View style={{backgroundColor:"rgba(67,72,72,0.30)",borderRadius:16,borderWidth:1,borderColor:"rgba(242,215,164,0.32)",padding:17,marginTop:26}}>
  <Text style={{color:GOLD,fontSize:10,fontWeight:"800",letterSpacing:1.4,marginBottom:8}}>STEP 01 · YOUR PROFILE</Text><Text style={{color:"white",fontSize:17,fontWeight:"700",marginBottom:17}}>Your training profile</Text>
- <View>{field("Age",age,setAge,"years","Example: 28")}{field("Height",height,setHeight,"cm","Example: 175")}{field("Weight",weight,setWeight,"kg","Example: 75.5")}</View>{!!error&&<View style={{backgroundColor:"#392A21",borderRadius:10,padding:12,marginBottom:12,flexDirection:"row",gap:8,alignItems:"center"}}><Ionicons name="alert-circle-outline" color="#F5BD4F" size={20}/><Text style={{color:"#F5DFC2",flex:1,fontSize:13}}>{error}</Text></View>}
+ <View>{field("Age",age,setAge,"years","Example: 28")}{field("Height",height,setHeight,"cm","Example: 175")}{field("Weight",weight,setWeight,"kg","Example: 75.5")}</View>{!!error&&<View style={{backgroundColor:"#392A21",borderRadius:10,padding:12,marginBottom:12,flexDirection:"row",gap:8,alignItems:"center"}}><Ionicons name="alert-circle-outline" color="#D7B877" size={20}/><Text style={{color:"#F5DFC2",flex:1,fontSize:13}}>{error}</Text></View>}
  <Text style={{color:"#A9A396",fontSize:11,marginTop:12}}>Enter your measurements above. You can edit them whenever you update your plan.</Text></View>
  <Text style={{color:GOLD,fontSize:10,fontWeight:"800",letterSpacing:1.4,marginTop:28}}>STEP 02 · YOUR GOAL</Text><Text style={{color:"white",fontSize:18,fontWeight:"700",marginTop:9,marginBottom:13}}>Your primary goal</Text>
  {options.map(o=><TouchableOpacity key={o.id} onPress={()=>setGoal(o.id)} style={{borderWidth:1,borderColor:goal===o.id?"rgba(245,189,79,0.72)":"rgba(255,255,255,0.20)",backgroundColor:goal===o.id?"rgba(232,180,77,0.11)":"rgba(255,255,255,0.045)",borderRadius:13,padding:17,marginBottom:9,flexDirection:"row",alignItems:"center",gap:12}}><Ionicons name={goal===o.id?"radio-button-on":"radio-button-off"} size={21} color={goal===o.id?GOLD:"#938D82"}/><View style={{flex:1}}><Text style={{color:"white",fontWeight:"700"}}>{o.title}</Text><Text style={{color:"#B8B1A6",fontSize:12,marginTop:4}}>{o.description}</Text></View></TouchableOpacity>)}
