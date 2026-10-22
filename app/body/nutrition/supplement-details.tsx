@@ -1,3 +1,4 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 import { Nutritions } from "@/mock/nutrition";
 import { Ionicons } from "@expo/vector-icons";
 import { ImageBackground } from "expo-image";
@@ -39,13 +40,8 @@ export default function SupplementDetails() {
       <ImageBackground source={supplement.backgroundImage} contentFit="cover" style={StyleSheet.absoluteFill} />
       <LinearGradient colors={["rgba(5,5,5,0.58)", "rgba(5,5,5,0.84)", "#050505"]} locations={[0,0.48,1]} style={StyleSheet.absoluteFill} />
       <SafeAreaView style={styles.safe}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Supplements</Text>
-          <Ionicons name="leaf-outline" color={GOLD} size={22} />
-        </View>
+        <BodyPageHeading trail="BODY / NUTRITION / SUPPLEMENTS" title={supplement.name} style={{marginTop:12}} />
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-          <Text style={styles.eyebrow}>NUTRITION · ESSENTIALS</Text>
-          <Text style={styles.title}>{supplement.name}</Text>
           <View style={styles.glassCard}>
             <LinearGradient pointerEvents="none" colors={["rgba(255,255,255,0.10)", "rgba(255,255,255,0.025)"]} style={StyleSheet.absoluteFill} />
             <Text style={styles.sectionTitle}>Overview</Text>
@@ -70,15 +66,15 @@ const styles = StyleSheet.create({
   safe: { flex: 1 },
   header: { height: 62, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 24 },
   headerTitle: { color: "#F5F1E8", fontSize: 26, fontWeight: "700" },
-  scroll: { flexGrow: 1, justifyContent: "flex-end", paddingHorizontal: 22, paddingTop: 100, paddingBottom: 54 },
+  scroll: { flexGrow: 1, justifyContent: "flex-start", paddingHorizontal: 22, paddingTop: 24, paddingBottom: 54 },
   eyebrow: { color: GOLD, fontSize: 11, letterSpacing: 2, fontWeight: "700", marginBottom: 14 },
   title: { color: "#F5F1E8", fontSize: 38, fontWeight: "700", marginBottom: 24 },
-  glassCard: { overflow: "hidden", borderRadius: 20, borderWidth: 1, borderColor: "rgba(255,255,255,0.23)", backgroundColor: "rgba(255,255,255,0.05)", padding: 22 },
+  glassCard: { overflow: "hidden", borderRadius: 20,  backgroundColor: "rgba(255,255,255,0.05)", padding: 22 },
   sectionTitle: { color: "#F5F1E8", fontSize: 18, fontWeight: "700", marginBottom: 14 },
   description: { color: "#E4E0D8", fontSize: 16, lineHeight: 25 },
   note: { marginTop: 22, flexDirection: "row", alignItems: "flex-start", gap: 12, paddingHorizontal: 4 },
   noteText: { flex: 1, color: "#D5C9B7", fontSize: 13, lineHeight: 20 },
-  source: { marginTop: 22, flexDirection: "row", alignItems: "center", gap: 8, padding: 15, borderRadius: 14, borderWidth: 1, borderColor: "rgba(232,180,77,0.28)", backgroundColor: "rgba(232,180,77,0.07)" },
+  source: { marginTop: 22, flexDirection: "row", alignItems: "center", gap: 8, padding: 15, borderRadius: 14,  backgroundColor: "rgba(232,180,77,0.07)" },
   sourceText: { flex: 1, color: "#E8B44D", fontSize: 13, lineHeight: 19 },
   empty: { flex: 1, alignItems: "center", justifyContent: "center", padding: 30, gap: 16 },
   heading: { color: "#F5F1E8", fontSize: 24, fontWeight: "700" },
