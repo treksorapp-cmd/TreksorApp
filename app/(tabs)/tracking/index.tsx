@@ -4,7 +4,6 @@ import ActivityLogModal from "@/components/ActivityLogModal";
 import { getEntries, moodAverage } from "@/lib/mood-journal";
 import { useAuthStore } from "@/store/auth-store";
 import AddTrackerModal from "@/components/AddTrackerModal";
-import TrackingCard from "@/components/TrackingCard";
 import CalendarModal from "@/components/ui/CalendarModal";
 import { useTrackingStore } from "@/store/tracking-store";
 import { Ionicons } from "@expo/vector-icons";
@@ -47,6 +46,12 @@ export default function TrackingScreen() {
 
   useFocusEffect(useCallback(() => { let active = true; if (userId) { getEntries(userId).then(entries => { if (active) setMoodSummary(moodAverage(entries,moodPeriod)); }).catch(() => { if (active) setMoodSummary({average:null,days:0}); }); } return () => { active=false; }; }, [userId,moodPeriod]));
 
+  const pillarProgress = [
+    {name:"BODY",icon:"barbell-outline" as const,keys:["body","physical","fitness","workout","exercise"]},
+    {name:"MIND",icon:"book-outline" as const,keys:["mind","mental","journal","mood"]},
+    {name:"BALANCE",icon:"shield-outline" as const,keys:["balance","spiritual","meditation","recovery"]},
+    {name:"PURPOSE",icon:"compass-outline" as const,keys:["purpose","habit","goal","vision"]}
+  ].map(p=>{const matches=trackingData.filter(d=>p.keys.some(k=>d.title.toLowerCase().includes(k)));const pct=matches.length?Math.round(matches.reduce((sum,d)=>sum+Math.max(0,Math.min(100,Number(d.percentage)||0)),0)/matches.length):null;return {...p,pct}});
   const handleDateSelect = (date: string) => {   
     setSelectedDate(date);
     setShowActivityLog(true);
@@ -65,7 +70,7 @@ export default function TrackingScreen() {
   if(loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#F39C12" />
+        <ActivityIndicator size="large" color="#E8B44D" />
         <Text style={styles.loadingText}>Loading...</Text>
       </View>
     )
@@ -77,44 +82,31 @@ export default function TrackingScreen() {
 
       <Text style={styles.premiumTitle}>Your progress</Text>
       <Text style={styles.periodNote}>Small steps. Real momentum.</Text>
-      {/* Streak Section */}
-      <View style={styles.streakContainer}>
-        <View style={styles.streakContent}>
-          <Text style={{color:"#E8B44D",fontWeight:"700",fontSize:13}}>LOG YOUR DAY</Text>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={{backgroundColor:"#191A18",borderWidth:1,borderColor:"#51452F",borderRadius:18,padding:20,marginTop:17}}>
+          <Text style={{color:"#F6F2EA",fontSize:18,fontWeight:"700"}}>The four pillars</Text>
+          <Text style={{color:"#BBB5A9",fontSize:12,marginTop:6,marginBottom:23}}>Your progress, all in one place.</Text>
+          {pillarProgress.map((p,i)=><View key={p.name} style={{marginBottom:i===3?0:23}}>
+            <View style={{flexDirection:"row",alignItems:"center",marginBottom:11,gap:10}}>
+              <Ionicons name={p.icon} size={19} color="#E8B44D"/>
+              <Text style={{color:"#F3EFE8",fontSize:13,fontWeight:"700",letterSpacing:1,flex:1}}>{p.name}</Text>
+              <Text style={{color:p.pct===null?"#8C8983":"#E8B44D",fontWeight:"800",fontSize:14}}>{p.pct===null?"—":p.pct+"%"}</Text>
+            </View>
+            <View style={{height:8,backgroundColor:"#383831",borderRadius:6,overflow:"hidden"}}>
+              <View style={{height:"100%",width:`${p.pct??0}%`,backgroundColor:"#E8B44D",borderRadius:6}}/>
+            </View>
+          </View>)}
+          <Text style={{color:"#928D83",fontSize:11,marginTop:20,lineHeight:17}}>— means there is no tracking data for that pillar yet.</Text>
         </View>
-        <View style={{ flexDirection: "row", gap: 5 }}>
-          <TouchableOpacity
-            style={styles.calendarButton}
-            onPress={() => setShowAddTracker(true)}
-          >
-            <Ionicons name="add" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.calendarButton}
-            onPress={openCalendar}
-          >
-            <Ionicons name="calendar-outline" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
+        <TouchableOpacity onPress={()=>router.push("/mind/journal")} style={{marginTop:18,backgroundColor:"#171816",borderRadius:14,borderWidth:1,borderColor:"#37352E",padding:17,flexDirection:"row",alignItems:"center",gap:13}}>
+          <Ionicons name="create-outline" size={22} color="#E8B44D"/>
+          <View style={{flex:1}}><Text style={{color:"#F4F0E8",fontWeight:"700",fontSize:15}}>Daily check-in</Text><Text style={{color:"#AAA59A",marginTop:4,fontSize:12}}>How are you feeling today?</Text></View>
+          <Ionicons name="chevron-forward" color="#E8B44D" size={18}/>
+        </TouchableOpacity>
+        <View style={{flexDirection:"row",gap:12,marginTop:16}}>
+          <TouchableOpacity onPress={()=>setShowAddTracker(true)} style={{flex:1,padding:15,borderRadius:12,backgroundColor:"#24231E",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:8}}><Ionicons name="add" size={19} color="#E8B44D"/><Text style={{color:"#E8B44D",fontWeight:"700"}}>Add tracker</Text></TouchableOpacity>
+          <TouchableOpacity onPress={openCalendar} style={{flex:1,padding:15,borderRadius:12,backgroundColor:"#24231E",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:8}}><Ionicons name="calendar-outline" size={18} color="#E8B44D"/><Text style={{color:"#E8B44D",fontWeight:"700"}}>Calendar</Text></TouchableOpacity>
         </View>
-      </View>
-
-      {/* Tracking Cards */}
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <TouchableOpacity onPress={() => router.push("/mind/journal")} style={{backgroundColor:"#1A1D22",borderColor:"#E8B44D",borderWidth:1,borderRadius:15,padding:18,marginBottom:20}}><Text style={{color:"#E8B44D",fontWeight:"700",letterSpacing:1}}>DAILY CHECK-IN</Text><Text style={{color:"#fff",fontSize:19,fontWeight:"700",marginTop:8}}>How are you feeling today? →</Text><Text style={{color:"#aaa",marginTop:6}}>Reflect, record and see your progress over time</Text></TouchableOpacity>
-        <Text style={styles.sectionHeading}>Your progress</Text>
-        {trackingData.map((data, index) => (
-          <TrackingCard
-            key={index}
-            title={data.title}
-            percentage={data.percentage}
-            items={data.items}
-            custom={data.custom}
-          />
-        ))}
       </ScrollView>
       <AddTrackerModal
         visible={showAddTracker}
