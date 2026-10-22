@@ -10,7 +10,7 @@ import { Animated, AppState, Easing, ScrollView, StyleSheet, Text, TouchableOpac
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const GOLD = "#E8B44D";
-const ATMOSPHERE_ENDPOINT = "https://niakfwerfqmrmhuypkpd.supabase.co/rest/v1/atmosphere_images?select=public_url&order=published_at.desc&limit=1";
+const ATMOSPHERE_ENDPOINT = "https://niakfwerfqmrmhuypkpd.supabase.co/rest/v1/atmosphere_images?select=public_url&published_at=lte.${new Date().toISOString()}&order=published_at.desc&limit=1";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_WxFupUF8wM6SuEcTXYuqHw_dRoSpLs8";
 const DAILY_MESSAGES = [
 ["Move with","intention.","Strength. Clarity. Balance. Purpose."],
@@ -51,7 +51,7 @@ export default function HomeScreen() {
     let active=true;
     const controller=new AbortController();
     const timeout=setTimeout(()=>controller.abort(),8000);
-    fetch(ATMOSPHERE_ENDPOINT,{headers:{apikey:SUPABASE_PUBLISHABLE_KEY},signal:controller.signal})
+    fetch(ATMOSPHERE_ENDPOINT.replace("${new Date().toISOString()}",encodeURIComponent(new Date().toISOString())),{headers:{apikey:SUPABASE_PUBLISHABLE_KEY},signal:controller.signal})
       .then(async response=>response.ok?await response.json():[])
       .then(rows=>{const url=rows?.[0]?.public_url;if(active&&typeof url==="string"&&url.startsWith("https://"))setAtmosphereUrl(url)})
       .catch(()=>{})
@@ -64,7 +64,7 @@ export default function HomeScreen() {
   useEffect(()=>{Animated.timing(reveal,{toValue:1,duration:480,easing:Easing.out(Easing.cubic),useNativeDriver:true}).start()},[reveal]);
   useEffect(()=>{const refresh=()=>setNow(new Date());const timer=setInterval(refresh,60000);const sub=AppState.addEventListener("change",v=>{if(v==="active")refresh()});return()=>{clearInterval(timer);sub.remove()}},[]);
   const hour = now.getHours();
-  const dailyIndex=Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000)%DAILY_MESSAGES.length;
+  const dailyIndex=Math.floor(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate())/86400000)%DAILY_MESSAGES.length;
   const dailyMessage=DAILY_MESSAGES[dailyIndex];
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const todayThought = powerThoughts?.find(item => item.isToday) || powerThoughts?.[0];
