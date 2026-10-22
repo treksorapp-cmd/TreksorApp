@@ -48,7 +48,7 @@ export default function Community() {
   {loading&&<ActivityIndicator color={GOLD} style={{marginVertical:16}}/>}
  </>}
  ListEmptyComponent={null}
- renderItem={({item})=><View style={{padding:18,borderRadius:14,backgroundColor:GLASS,marginBottom:12,borderWidth:1,borderColor:GLASS_BORDER}}>
+ renderItem={({item})=><View style={{padding:18,borderRadius:14,backgroundColor:GLASS,marginBottom:12}}>
   <Text style={{color:GOLD,fontSize:12,fontWeight:"700"}}>{(item.category||"ACTIVITY").toUpperCase()} · {item.city}</Text>
   <Text style={{color:"#FFFFFF",fontSize:19,fontWeight:"700",marginTop:9}}>{item.title.toUpperCase()}</Text>
   <Text style={{color:"#D3D0CA",marginTop:9}}>{item.starts_at?new Date(item.starts_at).toLocaleString():"Date to be announced"}</Text>
