@@ -305,6 +305,11 @@ export const useAuthStore = create<AuthState>()(
               await supabaseAuth.updateProfileMetadata(token,metadata);
             } else throw error;
           }
+          const confirmed = await supabaseAuth.currentUser(token);
+          const confirmedUser = confirmed.user ?? (confirmed as any);
+          if (confirmedUser?.user_metadata?.name !== name || (avatarUrl && confirmedUser?.user_metadata?.avatar_url !== avatarUrl)) {
+            throw new Error("Profile changes could not be verified. Please try again.");
+          }
           set({ user: { ...get().user, name, avatar: avatarUrl } });
         } catch (error) {
           const message = error instanceof Error ? error.message : "Unable to update profile.";
