@@ -3,7 +3,7 @@ import {Alert,ScrollView,Text,TextInput,TouchableOpacity,View} from "react-nativ
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {Ionicons} from "@expo/vector-icons";
 import {router} from "expo-router";
-const GOLD="#E8B44D";
+const GOLD="#D7B877";
 const questions=[
 "What does your ideal life look like three years from now?",
 "Where do you want to live, and what does that place feel like?",
