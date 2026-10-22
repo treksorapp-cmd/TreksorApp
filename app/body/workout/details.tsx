@@ -132,19 +132,19 @@ export default function WorkoutInfoScreen() {
         >
           {/* Video/Image Section */}
           <View style={styles.videoSection}>
-            <View style={{flex:1,backgroundColor:"#171815",alignItems:"center",justifyContent:"center",padding:20}}><Ionicons name="barbell-outline" size={40} color="#E8B44D"/><Text style={{color:"#CFC9BE",textAlign:"center",marginTop:12}}>Exercise video preview temporarily unavailable</Text></View>
+            <View style={{flex:1,backgroundColor:"#171815",alignItems:"center",justifyContent:"center",padding:20}}><Ionicons name="barbell-outline" size={40} color="#D7B877"/><Text style={{color:"#CFC9BE",textAlign:"center",marginTop:12}}>Exercise video preview temporarily unavailable</Text></View>
             {/* Stats Overlay */}
             {/* <View style={styles.statsOverlay}>
               <BlurView intensity={40} style={styles.statsBlur}>
                 <View style={styles.statsContainer}>
                   <View style={styles.statItem}>
-                    <Ionicons name="flame" size={20} color="#E8B44D" />
+                    <Ionicons name="flame" size={20} color="#D7B877" />
                     <Text style={styles.statLabel}>Burn</Text>
                     <Text style={styles.statValue}>{workout.stats.burn}</Text>
                   </View>
                   <View style={styles.statDivider} />
                   <View style={styles.statItem}>
-                    <Ionicons name="time" size={20} color="#E8B44D" />
+                    <Ionicons name="time" size={20} color="#D7B877" />
                     <Text style={styles.statLabel}>Time</Text>
                     <Text style={styles.statValue}>{workout.stats.time}</Text>
                   </View>
@@ -201,7 +201,7 @@ export default function WorkoutInfoScreen() {
         >
           <LinearGradient
             colors={
-              isCompleted ? ["#4CAF50", "#45A049"] : ["#E8B44D", "#E67E22"]
+              isCompleted ? ["#4CAF50", "#45A049"] : ["#D7B877", "#E67E22"]
             }
             style={styles.buttonGradient}
             start={{ x: 0, y: 0 }}
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: "#E8B44D",
+    backgroundColor: "#D7B877",
     marginTop: 8,
     marginRight: 12,
   },
