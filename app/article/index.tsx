@@ -208,7 +208,7 @@ export default function ArticlesScreen({ mode = "tab", category = "All Articles"
 const styles = StyleSheet.create({
   pageHeading:{paddingHorizontal:22,paddingBottom:14},
   eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.6},
-  pageTitle:{color:"#FFFFFF",fontSize:36,fontWeight:"700",letterSpacing:1.5,marginTop:7},
+  pageTitle:{color:"#FFFFFF",fontSize:36,fontWeight:"600",letterSpacing:-1.2,marginTop:7},
   container: {
     flex: 1,
     backgroundColor: "#02050C",
