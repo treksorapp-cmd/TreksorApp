@@ -26,6 +26,7 @@ const { width } = Dimensions.get("window")
 
 export default function ChatScreen() {
   const insets = useSafeAreaInsets()
+  const user = useAuthStore(state => state.user)
   const chats = useChatStore(state => state.chats)
   const currentUserId = useChatStore(state => state.currentUserId)
   const loading = useChatStore(state => state.loading)
@@ -41,7 +42,6 @@ export default function ChatScreen() {
     return () => { show.remove(); hide.remove() }
   }, [])
   const flatListRef = useRef<FlatList>(null)
-  const { user } = useAuthStore()
 
   useEffect(()=>{
     if (user?.id) setUserId(user.id)
