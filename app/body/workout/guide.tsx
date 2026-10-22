@@ -1,54 +1,31 @@
-import React,{useEffect,useState} from "react"
-import {ActivityIndicator,ScrollView,Text,TouchableOpacity,View} from "react-native"
-import axios from "axios"
-import ExerciseVideo from "@/components/workout/ExerciseVideo"
-import WorkoutPlanner from "@/components/workout/WorkoutPlanner"
-import {useWorkoutStore} from "@/store/workout-store"
-import {Alert} from "react-native"
-type Exercise={id:string;name:string;muscle_group:string;location:string;equipment:string;instructions:string;video_path:string|null;sets:number;reps:string;rest_seconds:number}
-const muscles=["Chest","Back","Shoulders","Arms","Legs","Glutes","Core"]
-const descriptions:Record<string,string>={
- Chest:"The pectorals assist pushing and pressing movements. Balance chest work with back training.",
- Back:"Back muscles assist pulling and support posture. Rows and pulldowns are common choices.",
- Shoulders:"The deltoids move and stabilize the arms. Presses and controlled raises are common choices.",
- Arms:"Biceps help bend the elbow and triceps help extend it.",
- Legs:"Quadriceps and hamstrings help with squats, lunges and hip hinges.",
- Glutes:"Gluteal muscles contribute to hip extension and lower-body stability.",
- Core:"Abdominal and trunk muscles help stabilize the spine during movement."
-}
+import React,{useState} from "react";
+import {Alert,KeyboardAvoidingView,Platform,ScrollView,Text,TextInput,TouchableOpacity,View} from "react-native";
+import {Ionicons} from "@expo/vector-icons";
+import {router} from "expo-router";
+import {useWorkoutStore,TrainingPlan} from "@/store/workout-store";
+const GOLD="#F5BD4F";
+const options=[{id:"strength",title:"Build Strength",description:"Progressively lift heavier"},{id:"muscle",title:"Build Muscle",description:"Increase muscle size"},{id:"definition",title:"Get Defined",description:"Train to preserve muscle and improve conditioning"}] as const;
 export default function WorkoutGuide(){
- const trainingPlan=useWorkoutStore(s=>s.trainingPlan)
- const saveTrainingPlan=useWorkoutStore(s=>s.saveTrainingPlan)
- const resetTrainingPlan=useWorkoutStore(s=>s.resetTrainingPlan)
- const [days,setDays]=useState(trainingPlan?.days??3)
- const [location,setLocation]=useState<"Gym"|"Home">("Gym")
- const [muscle,setMuscle]=useState("Chest")
- const [exercises,setExercises]=useState<Exercise[]>([])
- const [loading,setLoading]=useState(true)
- useEffect(()=>{axios.get<{data:Exercise[]}>("https://treksor-admin-production.up.railway.app/api/public/discover?type=exercises",{timeout:12000}).then(r=>setExercises(r.data.data)).catch(()=>{}).finally(()=>setLoading(false))},[])
- const split=days===2?["Full Body A","Full Body B"]:days===3?["Full Body A","Full Body B","Full Body C"]:days===4?["Upper Body","Lower Body","Upper Body","Lower Body"]:["Push","Pull","Legs","Upper Body","Lower Body","Full Body"].slice(0,days)
- return <ScrollView style={{flex:1,backgroundColor:"#080b0f"}} contentContainerStyle={{padding:22,paddingBottom:60}}>
-  <Text style={{color:"#E8B44D",fontSize:12,letterSpacing:3,marginTop:28}}>TREKSOR / WORKOUT</Text>
-  <Text style={{color:"white",fontSize:32,fontWeight:"700",marginTop:8}}>Build Your Plan</Text>
-  <Text style={{color:"#ADB0B4",marginTop:10}}>Choose your weekly gym schedule and explore available exercises.</Text>
-  <Text style={{color:"white",fontSize:18,marginTop:28,marginBottom:12}}>TRAINING LOCATION</Text>
-  <View style={{flexDirection:"row",gap:10}}>{(["Gym"] as const).map(v=><TouchableOpacity key={v} onPress={()=>setLocation(v)} style={{padding:14,borderRadius:12,backgroundColor:location===v?"#E8B44D":"#25282D"}}><Text style={{color:location===v?"#111":"white",fontWeight:"700"}}>{v}</Text></TouchableOpacity>)}</View>
-  <Text style={{color:"white",fontSize:18,marginTop:26,marginBottom:12}}>Days per week</Text>
-  <View style={{flexDirection:"row",gap:8}}>{[2,3,4,5,6].map(v=><TouchableOpacity key={v} onPress={()=>setDays(v)} style={{padding:14,borderRadius:10,backgroundColor:days===v?"#E8B44D":"#25282D"}}><Text style={{color:days===v?"#111":"white",fontWeight:"700"}}>{v}</Text></TouchableOpacity>)}</View>
-  <Text style={{color:"#E8B44D",fontSize:15,marginTop:28,marginBottom:10}}>SUGGESTED WEEKLY SPLIT</Text>
-  {split.map((name,i)=><View key={i} style={{padding:14,backgroundColor:"#1A1D22",borderRadius:12,marginBottom:8}}><Text style={{color:"white",fontWeight:"700"}}>Day {i+1} · {name}</Text></View>)}
-  <TouchableOpacity onPress={()=>{saveTrainingPlan({days,location,savedAt:new Date().toISOString()});Alert.alert("Plan saved","Your weekly training goal is ready in Workout.")}} style={{backgroundColor:"#E8B44D",padding:17,borderRadius:13,marginTop:20,alignItems:"center"}}><Text style={{color:"#15120B",fontWeight:"800",fontSize:16}}>SAVE MY PLAN ✓</Text></TouchableOpacity>
-  <TouchableOpacity onPress={()=>Alert.alert("Reset plan","Start again with new training preferences?",[{text:"Cancel",style:"cancel"},{text:"Reset",style:"destructive",onPress:()=>{resetTrainingPlan();setDays(3);setLocation("Gym")}}])} style={{padding:14,alignItems:"center",marginTop:9}}><Text style={{color:"#D7D2C9",fontWeight:"700"}}>↺ RESET PLAN</Text></TouchableOpacity>
-  <WorkoutPlanner exercises={exercises} days={days} location={location}/>
-  <Text style={{color:"white",fontSize:22,fontWeight:"700",marginTop:28}}>Explore Muscle Groups</Text>
-  <Text style={{color:"#ADB0B4",marginVertical:8}}>Select a muscle to see matching exercises.</Text>
-  <View style={{flexDirection:"row",flexWrap:"wrap",gap:8,marginVertical:12}}>{muscles.map(m=><TouchableOpacity key={m} onPress={()=>setMuscle(m)} style={{padding:12,borderRadius:10,backgroundColor:muscle===m?"#E8B44D":"#25282D"}}><Text style={{color:muscle===m?"#111":"white"}}>{m}</Text></TouchableOpacity>)}</View>
-  <Text style={{color:"#AEB4BC",lineHeight:21,marginBottom:16}}>{descriptions[muscle]}</Text>
-  {loading?<ActivityIndicator color="#E8B44D"/>:exercises.filter(e=>e.muscle_group===muscle&&(e.location===location||e.location==="Both")).map(e=><View key={e.id} style={{padding:16,backgroundColor:"#1A1D22",borderRadius:12,marginBottom:10}}>
-    <Text style={{color:"white",fontSize:17,fontWeight:"700"}}>{e.name}</Text><Text style={{color:"#E8B44D",marginTop:5}}>{e.equipment||"No equipment"}</Text><Text style={{color:"#E8B44D",marginTop:8}}>{e.sets} sets · {e.reps} reps · {e.rest_seconds}s rest</Text><Text style={{color:"#BDC0C4",marginTop:8}}>{e.instructions}</Text>
-    {e.video_path?<ExerciseVideo exerciseId={e.id}/>:<Text style={{color:"#888",marginTop:8}}>Video coming soon</Text>}
-  </View>)}
-  {!loading&&!exercises.some(e=>e.muscle_group===muscle&&(e.location===location||e.location==="Both"))&&<Text style={{color:"#BFC2C5",marginBottom:12}}>No published exercises for this selection yet.</Text>}
-  <Text style={{color:"#94999E",fontSize:12,marginTop:20}}>Suggested splits are examples, not personalized prescriptions. Adapt exercise intensity and recovery to your needs.</Text>
- </ScrollView>
+ const plan=useWorkoutStore(s=>s.trainingPlan),save=useWorkoutStore(s=>s.saveTrainingPlan),reset=useWorkoutStore(s=>s.resetTrainingPlan);
+ const [age,setAge]=useState(plan?.age?String(plan.age):""),[height,setHeight]=useState(plan?.heightCm?String(plan.heightCm):""),[weight,setWeight]=useState(plan?.weightKg?String(plan.weightKg):"");
+ const [days,setDays]=useState(plan?.days||3),[goal,setGoal]=useState<NonNullable<TrainingPlan["goal"]>>(plan?.goal||"muscle"),[experience,setExperience]=useState<NonNullable<TrainingPlan["experience"]>>(plan?.experience||"beginner");
+ const field=(label:string,value:string,change:(v:string)=>void,unit:string)=><View style={{flex:1}}><Text style={{color:"#C7C0B2",fontSize:12,marginBottom:8}}>{label}</Text><TextInput keyboardType="numeric" value={value} onChangeText={change} placeholder={unit} placeholderTextColor="#888278" style={{color:"white",borderWidth:1,borderColor:"#514735",backgroundColor:"#22221F",borderRadius:10,padding:12,fontSize:16}}/></View>;
+ const submit=()=>{const a=Number(age),h=Number(height),w=Number(weight);if(!Number.isInteger(a)||a<16||a>100||!Number.isFinite(h)||h<100||h>240||!Number.isFinite(w)||w<25||w>350){Alert.alert("Check your profile","Enter a valid age (16–100), height (100–240 cm) and weight (25–350 kg).");return}save({days,location:"Gym",age:a,heightCm:h,weightKg:w,goal,experience,savedAt:new Date().toISOString()});Alert.alert("Plan saved","Your training preferences are ready. You can adjust the exercises in My Plan.",[{text:"OPEN MY PLAN",onPress:()=>router.replace("/body/workout/my-plan")}])};
+ return <KeyboardAvoidingView style={{flex:1,backgroundColor:"#090A0B"}} behavior={Platform.OS==="ios"?"padding":undefined}><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{padding:22,paddingTop:55,paddingBottom:100}}>
+ <TouchableOpacity onPress={()=>router.back()}><Ionicons name="arrow-back" size={24} color="white"/></TouchableOpacity>
+ <Text style={{color:GOLD,fontSize:11,letterSpacing:2,fontWeight:"800",marginTop:27}}>BODY · GYM</Text><Text style={{color:"white",fontSize:32,fontWeight:"800",marginTop:8}}>Build My Plan</Text>
+ <Text style={{color:"#C9C4B9",lineHeight:21,marginTop:10}}>A plan built around your goals. Treksor suggests the routine; you stay in control.</Text>
+ <View style={{backgroundColor:"#191A19",borderRadius:16,borderWidth:1,borderColor:"#524630",padding:17,marginTop:26}}>
+ <Text style={{color:"white",fontSize:17,fontWeight:"700",marginBottom:17}}>Your training profile</Text>
+ <View style={{flexDirection:"row",gap:10}}>{field("Age",age,setAge,"Years")}{field("Height",height,setHeight,"cm")}{field("Weight",weight,setWeight,"kg")}</View>
+ <Text style={{color:"#A9A396",fontSize:11,marginTop:12}}>These details provide context, not a medical or strength assessment.</Text></View>
+ <Text style={{color:"white",fontSize:18,fontWeight:"700",marginTop:28,marginBottom:13}}>Your primary goal</Text>
+ {options.map(o=><TouchableOpacity key={o.id} onPress={()=>setGoal(o.id)} style={{borderWidth:1,borderColor:goal===o.id?GOLD:"#464139",backgroundColor:goal===o.id?"#2A251B":"#191A19",borderRadius:13,padding:17,marginBottom:9,flexDirection:"row",alignItems:"center",gap:12}}><Ionicons name={goal===o.id?"radio-button-on":"radio-button-off"} size={21} color={goal===o.id?GOLD:"#938D82"}/><View style={{flex:1}}><Text style={{color:"white",fontWeight:"700"}}>{o.title}</Text><Text style={{color:"#B8B1A6",fontSize:12,marginTop:4}}>{o.description}</Text></View></TouchableOpacity>)}
+ <Text style={{color:"white",fontSize:18,fontWeight:"700",marginTop:22,marginBottom:13}}>Training days per week</Text>
+ <View style={{flexDirection:"row",gap:8}}>{[2,3,4,5].map(n=><TouchableOpacity key={n} onPress={()=>setDays(n)} style={{flex:1,backgroundColor:days===n?GOLD:"#262621",padding:16,borderRadius:11,alignItems:"center"}}><Text style={{color:days===n?"#18130B":"white",fontWeight:"800"}}>{n}</Text></TouchableOpacity>)}</View>
+ <Text style={{color:"white",fontSize:18,fontWeight:"700",marginTop:26,marginBottom:13}}>Your experience</Text>
+ <View style={{gap:8}}>{(["beginner","intermediate","advanced"] as const).map(v=><TouchableOpacity key={v} onPress={()=>setExperience(v)} style={{flexDirection:"row",alignItems:"center",gap:12,padding:14,borderRadius:10,backgroundColor:experience===v?"#302719":"#1B1C1A",borderWidth:1,borderColor:experience===v?GOLD:"#37362F"}}><Ionicons name={experience===v?"checkmark-circle":"ellipse-outline"} color={experience===v?GOLD:"#89857D"} size={20}/><Text style={{color:"white",textTransform:"capitalize",fontWeight:"600"}}>{v}</Text></TouchableOpacity>)}</View>
+ <TouchableOpacity onPress={submit} style={{backgroundColor:GOLD,borderRadius:13,padding:18,alignItems:"center",marginTop:30}}><Text style={{color:"#17130A",fontWeight:"800",fontSize:15}}>SAVE & VIEW MY PLAN</Text></TouchableOpacity>
+ {plan&&<TouchableOpacity onPress={()=>Alert.alert("Reset plan?","Your current plan and custom exercise selections will be cleared. Recorded gym sets will remain in your progress history.",[{text:"Cancel",style:"cancel"},{text:"Reset",style:"destructive",onPress:()=>{reset();setAge("");setHeight("");setWeight("");setDays(3);setGoal("muscle");setExperience("beginner")}}])} style={{padding:15,alignItems:"center",marginTop:9}}><Text style={{color:"#B8B1A5",fontSize:12}}>Reset plan</Text></TouchableOpacity>}
+ </ScrollView></KeyboardAvoidingView>;
 }
