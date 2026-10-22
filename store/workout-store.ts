@@ -49,17 +49,16 @@ export const useWorkoutStore = create<WorkoutState>()(
         },
 
         markExerciseAsRead: (workoutId: string, exerciseId: string) => {
-          const existingWorkouts = get().workouts;
-          const existingWorkoutIndex = existingWorkouts.findIndex((workout) => workout.id === workoutId);
-          if (existingWorkoutIndex < 0) return;
-          const updatedExercises = existingWorkouts[existingWorkoutIndex].exercises.map((exercise) => {
-            if (exercise.id === exerciseId) {
-              return { ...exercise, completed: true };
-            }
-            return exercise;
-          });
-          existingWorkouts[existingWorkoutIndex].exercises = updatedExercises;
-          set({workouts: existingWorkouts});
+          set(state => ({
+            workouts: state.workouts.map(workout =>
+              workout.id !== workoutId ? workout : {
+                ...workout,
+                exercises: workout.exercises.map(exercise =>
+                  exercise.id === exerciseId ? {...exercise,completed:true} : exercise
+                )
+              }
+            )
+          }));
         },
         
         clearData: () => {
