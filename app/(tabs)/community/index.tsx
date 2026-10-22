@@ -49,7 +49,7 @@ export default function Community() {
   </TouchableOpacity>)}
   </View>
   <Text style={{color:"#B4B0A8",fontSize:12,lineHeight:18,marginTop:12}}>External searches may include unrelated events. Always check the event description, date, location and price with the organiser.</Text>
-  <Text style={{color:"#F4F0E8",fontSize:19,fontWeight:"700",marginTop:32,marginBottom:13}}>Upcoming Treksor gatherings</Text>
+  
   {loading&&<ActivityIndicator color={GOLD} style={{marginVertical:16}}/>}
  </>}
  ListEmptyComponent={!loading?<Text style={{color:"#BBB7B0",lineHeight:21}}>{error||"No Treksor gatherings listed for this location yet. Explore community activities above."}</Text>:null}
