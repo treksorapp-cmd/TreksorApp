@@ -92,9 +92,9 @@ const { width } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    width: width - 40, // Full width minus margins
+    width: "100%", // Match parent container on every screen
     height: 56,
-    borderRadius: 16,
+    borderRadius: 18,
     overflow: "hidden",
     marginVertical: 10,
   },
@@ -103,20 +103,20 @@ const styles = StyleSheet.create({
   },
   borderGradient: {
     flex: 1,
-    borderRadius: 16,
+    borderRadius: 18,
     padding: 1, // This creates the border thickness
   },
   innerGradient: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 15, // Slightly smaller than outer radius
+    borderRadius: 17, // Slightly smaller than outer radius
   },
   buttonText: {
     color: "#FFFFFF",
     fontSize: 18,
     fontWeight: "500",
-    letterSpacing: 1,
+    letterSpacing: 0.3,
     lineHeight: 24,
   },
 });
