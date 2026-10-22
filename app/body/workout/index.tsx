@@ -10,7 +10,7 @@ import React, { useEffect, useRef } from "react";
 import { Alert, Animated, Easing, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const GOLD = "#E8B44D";
+const GOLD = "#D7B877";
 
 export default function GymScreen() {
   const insets = useSafeAreaInsets();
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   progressHeader:{flexDirection:"row",justifyContent:"space-between",alignItems:"baseline",marginTop:11,marginBottom:11},
   progressValue:{color:"#FFFFFF",fontSize:22,fontWeight:"700"},
   progressMuted:{fontSize:14,fontWeight:"400",color:"#B8B7B5"},
-  progressPercent:{color:"#E8B44D",fontWeight:"700",fontSize:13},
+  progressPercent:{color:"#D7B877",fontWeight:"700",fontSize:13},
   track:{height:7,borderRadius:7,backgroundColor:"rgba(255,255,255,0.11)",overflow:"hidden"},
   trackFill:{height:"100%",backgroundColor:GOLD,borderRadius:7},
   weekCaption:{color:"#A9A9A8",fontSize:11,marginTop:12},
