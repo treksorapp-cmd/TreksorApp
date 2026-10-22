@@ -7,7 +7,6 @@ type Event = { id:string; title:string; category:string; city:string; starts_at:
 const FEED = "https://treksor-admin-production.up.railway.app/api/public/discover?type=events";
 const GOLD = "#E8B44D";
 const GLASS = "rgba(183,221,240,0.055)";
-const GLASS_BORDER = "rgba(205,235,248,0.18)";
 const ACTIVITY_TINTS = ["rgba(94,164,143,0.17)","rgba(100,147,199,0.17)","rgba(201,163,97,0.15)","rgba(147,127,191,0.17)","rgba(191,132,154,0.16)","rgba(107,169,181,0.16)"];
 const ACTIVITY_ICON_TINTS = ["#B8E2D1","#C1DCF6","#F2D8A4","#D6C5F2","#F2C8D8","#B8E5EB"];
 const activities = [
@@ -35,13 +34,13 @@ export default function Community() {
  ListHeaderComponent={<>
   <Text style={{color:"#F5F1E8",fontSize:30,fontWeight:"700",letterSpacing:1.1,marginTop:24}}>COMMUNITY</Text>
   <Text style={{color:"#EDE9E0",fontSize:13,fontWeight:"600",marginTop:25,marginBottom:8}}>YOUR LOCATION</Text>
-  <TextInput accessibilityLabel="Search city or destination" placeholder="City or destination" placeholderTextColor="#B5B2AA" value={city} onChangeText={setCity} autoCapitalize="words" style={{color:"#FFFFFF",backgroundColor:GLASS,borderWidth:1,borderColor:GLASS_BORDER,borderRadius:13,padding:15,fontSize:16}}/>
-  <View style={{marginTop:22,padding:17,backgroundColor:GLASS,borderColor:GLASS_BORDER,borderWidth:1,borderRadius:14}}>
+  <TextInput accessibilityLabel="Search city or destination" placeholder="City or destination" placeholderTextColor="#B5B2AA" value={city} onChangeText={setCity} autoCapitalize="words" style={{color:"#FFFFFF",backgroundColor:GLASS,borderRadius:13,padding:15,fontSize:16}}/>
+  <View style={{marginTop:22,padding:17,backgroundColor:GLASS,borderRadius:14}}>
    <Text style={{color:GOLD,fontSize:11,fontWeight:"800",letterSpacing:1.3}}>YOUR WEEKLY DISCOVERY</Text>
    <Text style={{color:"#F8F5ED",fontSize:18,fontWeight:"700",marginTop:9}}>{loading?"Finding what's happening...":thisWeek.length?thisWeek.length+" Treksor "+(thisWeek.length===1?"activity":"activities")+" this week":"Your next experience starts here."}</Text>
   </View>
   <View style={{flexDirection:"row",flexWrap:"wrap",justifyContent:"space-between",gap:12,marginTop:25}}>
-  {activities.map((a,index)=><TouchableOpacity key={a.label} onPress={()=>search(a.keyword)} style={{width:"48%",minHeight:105,borderRadius:14,borderWidth:1,borderColor:GLASS_BORDER,backgroundColor:ACTIVITY_TINTS[index],padding:15,justifyContent:"space-between"}}>
+  {activities.map((a,index)=><TouchableOpacity key={a.label} onPress={()=>search(a.keyword)} style={{width:"48%",minHeight:105,borderRadius:14,,backgroundColor:ACTIVITY_TINTS[index],padding:15,justifyContent:"space-between"}}>
     <View style={{width:38,height:38,borderRadius:11,backgroundColor:"rgba(190,225,244,0.09)",alignItems:"center",justifyContent:"center"}}><Ionicons name={a.icon as any} size={21} color={ACTIVITY_ICON_TINTS[index]}/></View><View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between",gap:5}}><Text style={{color:"#F5F1E9",fontSize:12,fontWeight:"700",letterSpacing:0.55,flex:1}}>{a.label.toUpperCase()}</Text><Ionicons name="arrow-up-outline" size={15} color={ACTIVITY_ICON_TINTS[index]} style={{transform:[{rotate:"45deg"}]}}/></View>
   </TouchableOpacity>)}
   </View>
