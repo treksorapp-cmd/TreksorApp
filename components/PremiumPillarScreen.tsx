@@ -26,8 +26,8 @@ export default function PremiumPillarScreen({ title, headline, subtitle, image, 
       <Text style={styles.headline}>{normalizedHeadline}</Text>
       <Text style={styles.subtitle}>{subtitle}</Text>
       <View style={styles.actions}>{actions.map(action => <TouchableOpacity key={action.label} onPress={() => router.push(action.href)} style={styles.action} activeOpacity={0.76} accessibilityRole="button" accessibilityLabel={action.label}>
-        <BlurView intensity={32} tint="dark" pointerEvents="none" style={StyleSheet.absoluteFill} />
-        <LinearGradient pointerEvents="none" colors={["rgba(255,255,255,0.12)", "rgba(255,255,255,0.035)", "rgba(232,180,77,0.025)"]} start={{x:0,y:0}} end={{x:1,y:1}} style={StyleSheet.absoluteFill} />
+        <BlurView intensity={17} tint="dark" pointerEvents="none" style={StyleSheet.absoluteFill} />
+        <LinearGradient pointerEvents="none" colors={["rgba(255,255,255,0.15)", "rgba(255,255,255,0.055)", "rgba(255,255,255,0.015)"]} start={{x:0,y:0}} end={{x:1,y:1}} style={StyleSheet.absoluteFill} />
         <Ionicons name={action.icon} color={GOLD} size={23} /><Text style={styles.actionText}>{action.label}</Text><Ionicons name="chevron-forward" size={19} color="#E8B44D" />
       </TouchableOpacity>)}</View>
     </ScrollView>
@@ -43,6 +43,6 @@ const styles = StyleSheet.create({
   headline: { fontSize: 30, lineHeight: 37, fontWeight: "700", letterSpacing: -0.45, color: "#F5F1E8", maxWidth: 340 },
   subtitle: { fontSize: 14, lineHeight: 22, color: "#D1CDC5", marginTop: 10, marginBottom: 24 },
   actions: { gap: 9 },
-  action: { minHeight: 68, flexDirection: "row", alignItems: "center", gap: 16, paddingHorizontal: 18, borderRadius: 18, overflow: "hidden", backgroundColor: "rgba(32,34,34,0.38)", borderWidth: 1, borderColor: "rgba(245,236,214,0.25)" },
+  action: { minHeight: 68, flexDirection: "row", alignItems: "center", gap: 16, paddingHorizontal: 18, borderRadius: 18, overflow: "hidden", backgroundColor: "rgba(255,255,255,0.045)", borderWidth: 1, borderColor: "rgba(255,255,255,0.24)" },
   actionText: { color: "#F5F1E8", fontSize: 16, flex: 1, fontWeight: "600", letterSpacing: 0.1 },
 });
