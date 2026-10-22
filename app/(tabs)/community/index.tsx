@@ -30,8 +30,8 @@ export default function Community() {
  return <SafeAreaView style={{flex:1,backgroundColor:"#08090B"}}>
  <FlatList data={visible} keyExtractor={e=>String(e.id)} contentContainerStyle={{paddingHorizontal:20,paddingBottom:130}}
  ListHeaderComponent={<>
-  <Text style={{color:GOLD,fontSize:11,letterSpacing:2.2,fontWeight:"700",marginTop:24}}>EXPLORE · COMMUNITY</Text>
-  <Text style={{color:"#FAF8F3",fontSize:30,fontWeight:"700",marginTop:9}}>This week, get out there.</Text>
+  <Text style={{color:"#F5F1E8",fontSize:28,fontWeight:"700",marginTop:24}}>Community</Text>
+  <Text style={{color:"#C8C6C1",fontSize:14,lineHeight:21,marginTop:10}}>This week, get out there.</Text>
   <Text style={{color:GOLD,fontSize:12,fontWeight:"700",marginTop:10}}>ACTIVITIES THIS WEEK · {place.toUpperCase()}</Text>
   <Text style={{color:"#C8C6C1",fontSize:14,lineHeight:21,marginTop:9}}>Discover people, experiences and new places. Search your city or somewhere you're planning to visit.</Text>
   <Text style={{color:"#EDE9E0",fontSize:13,fontWeight:"600",marginTop:25,marginBottom:8}}>Where are you exploring?</Text>
