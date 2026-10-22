@@ -47,7 +47,7 @@ export default function TabLayout() {
               backgroundColor: "#050505",
             },
           }),
-          tabBarActiveTintColor: "#E8B44D",
+          tabBarActiveTintColor: "#D7B877",
           tabBarInactiveTintColor: "#BABABA",
           tabBarLabelStyle: { fontSize: 11, fontWeight: "600", marginTop: 2 },
           tabBarItemStyle: { paddingVertical: 3 },
