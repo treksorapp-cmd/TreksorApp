@@ -93,8 +93,8 @@ export default function HomeScreen() {
         <View style={styles.thoughtSection}>
           <View style={styles.thoughtHeading}><Ionicons name="sunny-outline" color={GOLD} size={19} /><Text style={styles.thoughtLabel}>TODAY ON TREKSOR</Text></View>
           <View style={styles.thoughtCard}>
-            <View style={{flexDirection:"row",alignItems:"center",gap:8,marginBottom:10}}><Ionicons name="sparkles-outline" size={17} color={GOLD}/><Text style={{color:GOLD,fontSize:11,fontWeight:"700",letterSpacing:1.4}}>DAILY PERSPECTIVE</Text></View>
-            <Text style={styles.thoughtText} numberOfLines={4}>{thought}</Text>
+            <Text style={{color:GOLD,fontSize:10,fontWeight:"800",letterSpacing:1.8,marginBottom:15}}>POWER THOUGHT · TODAY</Text>
+            <Text style={styles.thoughtText}>{thought}</Text>
             <View style={styles.thoughtFooter}><TouchableOpacity onPress={() => router.push("/mental/thoughts")}><Text style={styles.thoughtLink}>EXPLORE THOUGHTS →</Text></TouchableOpacity><TouchableOpacity disabled={!todayThought || !!todayThought.isRead} accessibilityRole="checkbox" accessibilityState={{checked:!!todayThought?.isRead}} onPress={()=>todayThought&&markRead(todayThought._id)} style={{flexDirection:"row",alignItems:"center",gap:8,backgroundColor:todayThought?.isRead?GOLD:"#292823",paddingHorizontal:13,paddingVertical:11,borderRadius:12,borderWidth:1,borderColor:GOLD}}><Ionicons name={todayThought?.isRead?"checkmark-circle":"checkmark-circle-outline"} size={19} color={todayThought?.isRead?"#17130B":GOLD}/><Text style={{color:todayThought?.isRead?"#17130B":GOLD,fontWeight:"800",fontSize:12}}>{todayThought?.isRead?"READ TODAY":"MARK AS READ"}</Text></TouchableOpacity></View>
           </View>
         </View>
@@ -145,10 +145,10 @@ const styles = StyleSheet.create({
   thoughtSection: { marginTop: 33 },
   thoughtHeading: { flexDirection: "row", alignItems: "center", gap: 9, marginBottom: 14 },
   thoughtLabel: { color: GOLD, fontSize: 10, fontWeight: "800", letterSpacing: 1.8 },
-  thoughtCard: { borderRadius: 13, borderWidth: 1, borderColor: "#66502B", backgroundColor: "#181714", padding: 24 },
+  thoughtCard: { borderRadius: 16, borderWidth: 1, borderColor: "#554632", backgroundColor: "#191A18", padding: 20 },
   quoteMark: { color: GOLD, fontSize: 42, fontWeight: "700", height: 38 },
-  thoughtText: { color: "#F4EEE5", fontSize: 21, lineHeight: 31, fontWeight: "400", marginTop: 4 },
-  thoughtFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 22 },
+  thoughtText: { color: "#F4EEE5", fontSize: 19, lineHeight: 29, fontWeight: "500", marginTop: 0 },
+  thoughtFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 15, marginTop: 22, paddingTop: 16, borderTopWidth: 1, borderTopColor: "#39362F" },
   thoughtLink: { color: GOLD, fontSize: 9, fontWeight: "800", letterSpacing: 1.6 },
   footer: { color: "#A99D88", textAlign: "center", marginTop: 29, fontSize: 9, fontWeight: "700", letterSpacing: 2.2 },
 });
