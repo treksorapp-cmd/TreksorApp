@@ -4,11 +4,20 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image, ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, type Href } from "expo-router";
-import { useEffect } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useState } from "react";
+import { AppState, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const GOLD = "#E8B44D";
+const DAILY_MESSAGES = [
+["Move with","intention.","Strength. Clarity. Balance. Purpose."],
+["Become who","you envision.","Your future begins with today's choices."],
+["Build a life","worth living.","Choose direction over distraction."],
+["Find strength","in stillness.","A clear mind changes everything."],
+["Progress is","a practice.","Show up every day with purpose."],
+["Own your","direction.","Every step shapes who you become."],
+["Live with","purpose.","Small actions. Extraordinary change."]
+] as const;
 const pillars: { name: string; subtitle: string; route: Href; image: number; icon: keyof typeof Ionicons.glyphMap; index: string }[] = [
   { name: "BODY", subtitle: "Strength & movement", route: "/body", image: require("@/assets/images/Body_2.png"), icon: "barbell-outline", index: "01" },
   { name: "MIND", subtitle: "Clarity & focus", route: "/mental", image: require("@/assets/images/mental-home-bg.jpeg"), icon: "book-outline", index: "02" },
@@ -24,7 +33,10 @@ export default function HomeScreen() {
   useEffect(() => { fetchPowerThoughts(); }, [fetchPowerThoughts]);
 
   const firstName = user?.name?.trim().split(" ")[0] || "Explorer";
-  const hour = new Date().getHours();
+  const [now,setNow]=useState(()=>new Date());
+  useEffect(()=>{const refresh=()=>setNow(new Date());const timer=setInterval(refresh,30000);const sub=AppState.addEventListener("change",v=>{if(v==="active")refresh()});return()=>{clearInterval(timer);sub.remove()}},[]);
+  const hour = now.getHours();
+  const dailyMessage=DAILY_MESSAGES[Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000)%DAILY_MESSAGES.length];
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const todayThought = powerThoughts?.find(item => item.isToday) || powerThoughts?.[0];
   const thought = todayThought?.thought || "Your daily perspective will appear here when published.";
@@ -40,18 +52,18 @@ export default function HomeScreen() {
               <Text style={styles.brandCaption}>BUILT WITH PURPOSE</Text>
             </View>
           </View>
-          <TouchableOpacity onPress={() => router.push("/profile")} style={styles.profile} accessibilityLabel="Open profile">
-            <Text style={styles.profileLetter}>{firstName.charAt(0).toUpperCase()}</Text>
-          </TouchableOpacity>
+          <View style={styles.topRight}><Text style={styles.topGreeting}>{greeting}</Text><TouchableOpacity onPress={() => router.push("/profile")} style={styles.profile} accessibilityLabel="Open profile">
+            {user?.avatar?<Image source={{uri:user.avatar}} style={styles.profileImage} cachePolicy="memory-disk"/>:<Text style={styles.profileLetter}>{firstName.charAt(0).toUpperCase()}</Text>}
+          </TouchableOpacity></View>
         </View>
 
         <View style={styles.hero}>
           <ImageBackground source={require("@/assets/images/purpose-background.png")} contentFit="cover" cachePolicy="memory-disk" style={StyleSheet.absoluteFill} />
           <LinearGradient colors={["rgba(8,9,11,0.08)", "rgba(8,9,11,0.45)", "#08090B"]} locations={[0, 0.4, 1]} style={StyleSheet.absoluteFill} />
           <View style={styles.heroContent}>
-            <Text style={styles.eyebrow}>{greeting.toUpperCase()} · {firstName.toUpperCase()}</Text>
-            <Text style={styles.heroTitle}>Move with{"\n"}<Text style={styles.name}>intention.</Text></Text>
-            <Text style={styles.heroSub}>Strength. Clarity. Balance. Purpose.</Text>
+            <Text style={styles.eyebrow}>YOUR DAILY DIRECTION</Text>
+            <Text style={styles.heroTitle}>{dailyMessage[0]}{"\n"}<Text style={styles.name}>{dailyMessage[1]}</Text></Text>
+            <Text style={styles.heroSub}>{dailyMessage[2]}</Text>
           </View>
         </View>
         <View style={styles.sectionHeader}>
@@ -101,6 +113,9 @@ const styles = StyleSheet.create({
   heroSub: { color: "#D0C8B9", fontSize: 12, letterSpacing: 0.7, marginTop: 13 },
   sectionCount: { color: GOLD, fontSize: 10, fontWeight: "700", letterSpacing: 1.5 },
   top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 15 },
+  topRight:{flexDirection:"row",alignItems:"center",gap:10},
+  topGreeting:{color:GOLD,fontSize:11,fontWeight:"700",letterSpacing:0.3},
+  profileImage:{width:40,height:40,borderRadius:20},
   brand: { flexDirection: "row", alignItems: "center", gap: 10 },
   logo: { width: 38, height: 38, borderRadius: 11 },
   brandText: { color: "#FFFFFF", fontSize: 16, fontWeight: "700", letterSpacing: 4.2 },
