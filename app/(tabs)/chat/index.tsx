@@ -33,6 +33,7 @@ export default function ChatScreen() {
   const error = useChatStore(state => state.error)
   const sendMessage = useChatStore(state => state.sendMessage)
   const setUserId = useChatStore(state => state.setUserId)
+  const loadHistory = useChatStore(state => state.loadHistory)
   const messages = currentUserId ? chats[currentUserId] || [] : [];
   const [inputText, setInputText] = useState("")
   const [keyboardHeight, setKeyboardHeight] = useState(0)
@@ -46,6 +47,10 @@ export default function ChatScreen() {
   useEffect(()=>{
     if (user?.id) setUserId(user.id)
   },[setUserId,user?.id])
+
+  useEffect(() => {
+    if (user?.id && currentUserId === user.id) void loadHistory()
+  }, [currentUserId, user?.id, loadHistory])
 
   useEffect(() => {
     flatListRef.current?.scrollToEnd({ animated: true })
@@ -101,9 +106,9 @@ export default function ChatScreen() {
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : undefined} keyboardVerticalOffset={0}>
       <StatusBar style="light" />
 
-      <View style={styles.premiumHeader}><TouchableOpacity onPress={handleBack}><Ionicons name="arrow-back" size={23} color="#fff" /></TouchableOpacity><View style={styles.premiumHeaderCenter}><Text style={styles.premiumHeaderTitle}>TREKSOR CORE</Text><Text style={styles.beta}>WELLBEING</Text></View><View style={{width:23}} /></View>
-      {messages.length === 0 && <View style={styles.welcomeAI}><Text style={styles.welcomeAIText}>Welcome to Core.{"\n"}A private space to reflect, find clarity and build healthy habits across mind, body, balance and purpose. What would you like to talk about today?</Text></View>}
-      <Text style={{color:"#A9A397",fontSize:11,lineHeight:17,marginHorizontal:20,marginTop:10}}>Core is an AI companion, not a therapist or emergency service. If you are in immediate danger, contact local emergency services.</Text>
+      <View style={styles.premiumHeader}><TouchableOpacity onPress={handleBack}><Ionicons name="arrow-back" size={23} color="#fff" /></TouchableOpacity><View style={styles.premiumHeaderCenter}><Text style={styles.premiumHeaderTitle}>TREKSOR AI</Text><Text style={styles.beta}>WELLBEING</Text></View><View style={{width:23}} /></View>
+      {messages.length === 0 && <View style={styles.welcomeAI}><Text style={styles.welcomeAIText}>Welcome to Treksor.{"\n"}A private space to reflect, find clarity and build healthy habits across mind, body, balance and purpose. What would you like to talk about today?</Text></View>}
+      <Text style={{color:"#A9A397",fontSize:11,lineHeight:17,marginHorizontal:20,marginTop:10}}>Treksor AI is a companion, not a therapist or emergency service. If you are in immediate danger, contact local emergency services.</Text>
       {/* Header */}
       {/* <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
