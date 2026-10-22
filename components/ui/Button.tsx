@@ -50,7 +50,7 @@ const Button = ({
         colors={
           disabled
             ? ["rgba(255, 255, 255, 0.1)", "rgba(255, 255, 255, 0.2)"]
-            : ["rgba(255, 255, 255, 0.3)", "rgba(255, 255, 255, 0.4)"]
+            : ["rgba(255, 245, 223, 0.48)", "rgba(232, 180, 77, 0.30)"]
         }
         start={{ x: 0.2, y: 0 }}
         end={{ x: 0.8, y: 1 }}
@@ -58,7 +58,7 @@ const Button = ({
       >
         {/* Inner LinearGradient for the button background */}
         <LinearGradient
-          colors={disabled ? ["#3a3a3a", "#1a1a1a"] : ["#262626", "#0a0a0a"]}
+          colors={disabled ? ["rgba(50, 52, 54, 0.62)", "rgba(19, 21, 24, 0.72)"] : ["rgba(79, 82, 80, 0.62)", "rgba(19, 23, 27, 0.70)"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.innerGradient}
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: width - 40, // Full width minus margins
     height: 56,
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: "hidden",
     marginVertical: 10,
   },
@@ -101,14 +101,14 @@ const styles = StyleSheet.create({
   },
   borderGradient: {
     flex: 1,
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 1, // This creates the border thickness
   },
   innerGradient: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 11, // Slightly smaller than outer radius
+    borderRadius: 15, // Slightly smaller than outer radius
   },
   buttonText: {
     color: "#FFFFFF",
