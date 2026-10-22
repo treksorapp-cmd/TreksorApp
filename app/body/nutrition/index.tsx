@@ -1,6 +1,4 @@
 import Button from "@/components/ui/Button";
-import Header from "@/components/ui/Header";
-import { useAuthStore } from "@/store/auth-store";
 import { Ionicons } from "@expo/vector-icons";
 import { ImageBackground } from "expo-image";
 import { router } from "expo-router";
@@ -11,7 +9,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const NutritionHome = () => {
   const insets = useSafeAreaInsets();
-  const { user } = useAuthStore();
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
@@ -22,14 +19,9 @@ const NutritionHome = () => {
         imageStyle={styles.imageStyle}
       >
                 {/* Header */}
-                 {!user?.plan && <Header showTitle={false} showBackButton={false} showAvatar={false} />}
-                <View style={[styles.header, { paddingTop: user?.plan ? insets.top + 10 : 0, position: !user?.plan ? "relative" : "absolute" }]}>
-          <View style={styles.backButton} />
-          <Text style={styles.headerTitle}>Nutrition</Text>
-          <View style={styles.headerSpacer} />
-        </View>
+                <View style={[styles.header, { paddingTop: insets.top + 12 }]}><Text style={styles.eyebrow}>BODY / FUEL</Text><Text style={styles.headerTitle}>NUTRITION</Text></View>
         <View style={[styles.content, { paddingBottom: insets.bottom + 30 }]}>
-          <Button onPress={()=>router.push("/body/nutrition/beverages")} icon={require("@/assets/images/beverages.png")}>BEVERAGES</Button>
+          <Button borderless onPress={()=>router.push("/body/nutrition/beverages")} icon={require("@/assets/images/beverages.png")}>BEVERAGES</Button>
           <Button onPress={()=>router.push("/body/nutrition/supplements")} icon={require("@/assets/images/supplements.png")}>SUPPLEMENTS</Button>
         </View>
       </ImageBackground>
@@ -62,12 +54,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
   },
+  eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.7,marginBottom:7},
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 0,
+    alignItems:"flex-start",
+    flexDirection:"column",
     position: "absolute",
     top: 0,
     left: 0,
@@ -78,8 +73,9 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
+    fontSize: 36,
+    fontWeight: "700",
+    letterSpacing: 1.5,
     color: "#FFFFFF",
     textShadowColor: "rgba(0, 0, 0, 0.5)",
     textShadowOffset: { width: 0, height: 1 },
