@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { Animated, AppState, Easing, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const GOLD = "#E8B44D";
+const GOLD = "#D7B877";
 const ATMOSPHERE_ENDPOINT = "https://niakfwerfqmrmhuypkpd.supabase.co/rest/v1/atmosphere_images?select=public_url&published_at=lte.&order=published_at.desc&limit=1";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_WxFupUF8wM6SuEcTXYuqHw_dRoSpLs8";
 const DAILY_MESSAGES = [
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   topRight:{flexDirection:"column",alignItems:"flex-end",gap:5},
   heroGreetingWrap:{position:"absolute",top:14,right:20,zIndex:2,flexDirection:"row",alignItems:"center",gap:7,paddingHorizontal:12,paddingVertical:8,borderRadius:20,backgroundColor:"rgba(183,221,240,0.075)"},
   pulseShell:{width:9,height:9,alignItems:"center",justifyContent:"center"},
-  pulseHalo:{position:"absolute",width:9,height:9,borderRadius:5,backgroundColor:"#E8B44D"},
+  pulseHalo:{position:"absolute",width:9,height:9,borderRadius:5,backgroundColor:"#D7B877"},
   greetingDot:{width:6,height:6,borderRadius:3,backgroundColor:"#FFE4A1"},
   heroGreeting:{color:"#F4D9A4",fontSize:11,fontWeight:"600",letterSpacing:0.55},
   profileImage:{width:40,height:40,borderRadius:20},
