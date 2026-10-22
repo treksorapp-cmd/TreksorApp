@@ -13,7 +13,7 @@ export default {
     newArchEnabled: true,
     splash: {
       image: "./assets/images/splash-treksor.png",
-      resizeMode: "contain",
+      resizeMode: "cover",
       backgroundColor: "#000000",
     },
     ios: {
