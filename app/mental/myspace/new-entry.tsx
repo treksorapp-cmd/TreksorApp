@@ -39,8 +39,12 @@ export default function NewEntryScreen() {
       Alert.alert("Error", "Please enter some text for your entry.")
       return
     }
-    addMySpace({mood,text:entryText})
-    router.push('/mental/myspace/new-entry-success');
+    try {
+      addMySpace({mood,text:entryText.trim()})
+      router.replace('/mental/myspace');
+    } catch (error) {
+      Alert.alert('Unable to save entry', 'Please try again.');
+    }
   }
 
   const selectMood = (selectedMood: string) => {
@@ -76,7 +80,7 @@ export default function NewEntryScreen() {
 
           {/* Mood Selector */}
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>Select Mood</Text>
+            <Text style={styles.sectionTitle}>SELECT MOOD</Text>
             <TouchableOpacity style={styles.dropdownButton} onPress={() => setShowMoodDropdown(!showMoodDropdown)}>
               <Text style={styles.dropdownButtonText}>{mood}</Text>
               <Ionicons name={showMoodDropdown ? "chevron-up" : "chevron-down"} size={20} color="#FFFFFF" />
@@ -107,7 +111,7 @@ export default function NewEntryScreen() {
 
           {/* Entry Text Input */}
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>Add entry text</Text>
+            <Text style={styles.sectionTitle}>TODAY'S REFLECTION</Text>
             <TextInput
               style={styles.textInput}
               multiline
