@@ -15,7 +15,7 @@ import { initRC } from "./services/revenuecat";
 export default function RootLayout() {
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
-  const pillar = pathname.startsWith("/body/") ? {route:"/body",icon:"barbell-outline"} : pathname.startsWith("/mental/") ? {route:"/mental",icon:"book-outline"} : pathname.startsWith("/spiritual/") ? null : pathname.startsWith("/purpose/") ? {route:"/purpose",icon:"compass-outline"} : null;
+  const pillar = pathname.startsWith("/body/") ? {route:"/body",icon:"barbell-outline"} : pathname.startsWith("/mental/") ? {route:"/mental",icon:"book-outline"} : pathname.startsWith("/spiritual/") && !pathname.startsWith("/spiritual/mediation/") ? {route:"/spiritual",icon:"shield-outline"} : pathname.startsWith("/purpose/") ? {route:"/purpose",icon:"compass-outline"} : null;
   const { error, clearError, isAuthenticated, getCurrentUser } = useAuthStore();
   const [initialURL, setInitialURL] = useState<string | null>(null);
   const [isNavigationReady, setIsNavigationReady] = useState(false);
