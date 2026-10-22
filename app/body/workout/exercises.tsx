@@ -143,12 +143,7 @@ export default function WorkoutDetailScreen() {
         >
           <StatusBar style="light" />
           <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-          >
-            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
+          <View style={styles.backButton} />
           <Text style={styles.headerTitle}>
             {(workoutId as string)?.charAt(0).toUpperCase() +
               (workoutId as string)?.slice(1)}
@@ -179,12 +174,7 @@ export default function WorkoutDetailScreen() {
         <StatusBar style="light" />
         {!user?.plan && <Header showTitle={false} showBackButton={false} showAvatar={false} />}
         <View style={[styles.header, { paddingTop: user?.plan ? insets.top + 10 : 0, position: !user?.plan ? "relative": "absolute" }]}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-          >
-            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
+          <View style={styles.backButton} />
           <Text style={styles.headerTitle}>
             {(workoutId as string)?.charAt(0).toUpperCase() +
               (workoutId as string)?.slice(1)}
