@@ -18,8 +18,7 @@ export default function PremiumPillarScreen({ title, headline, subtitle, image, 
     <ImageBackground source={image} contentFit="cover" style={StyleSheet.absoluteFill} cachePolicy="memory-disk" transition={0} />
     <LinearGradient colors={["rgba(0,0,0,0.45)", "rgba(0,0,0,0.08)", "#050505", "#050505"]} locations={[0, 0.32, 0.7, 1]} style={StyleSheet.absoluteFill} />
     <View style={styles.header}>
-      <View style={styles.back} />
-      <Text style={styles.title}>{title.charAt(0).toUpperCase() + title.slice(1)}</Text><View style={styles.pillarSymbol}><Ionicons name={pillarIcon} color={GOLD} size={22}/></View>
+      <Text style={styles.title}>{title.toUpperCase()}</Text><View style={styles.pillarSymbol}><Ionicons name={pillarIcon} color={GOLD} size={22}/></View>
     </View>
     <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
       <View style={{ flex: align === "middle" ? 0.8 : 1, minHeight: align === "middle" ? 160 : 240 }} />
@@ -33,8 +32,8 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: "#050505" },
   header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 21, height: 57 },
   back: { width: 35, justifyContent: "center" },
-  title: { fontSize: 28, fontWeight: "700", letterSpacing: 0.2, color: "#F5F1E8", textAlign: "center" },
-  pillarSymbol: { width: 38,height:38,borderRadius:12,borderWidth:1,borderColor:"#796035",backgroundColor:"#191712",alignItems:"center",justifyContent:"center" },
+  title: { fontSize: 25, fontWeight: "700", letterSpacing: 1.3, color: "#F5F1E8", textAlign: "center" },
+  pillarSymbol: { width: 42,height:42,borderRadius:14,borderWidth:1,borderColor:"rgba(205,235,248,0.20)",backgroundColor:"rgba(183,221,240,0.075)",alignItems:"center",justifyContent:"center" },
   scroll: { flexGrow: 1, paddingHorizontal: 20, paddingBottom: 32 },
   headline: { fontSize: 30, lineHeight: 37, fontWeight: "700", letterSpacing: -0.45, color: "#F5F1E8", maxWidth: 340 },
   subtitle: { fontSize: 14, lineHeight: 22, color: "#D1CDC5", marginTop: 10, marginBottom: 24 },
