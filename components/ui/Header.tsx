@@ -76,7 +76,7 @@ const Header: React.FC<HeaderProps> = ({
                 <Text style={styles.title}>{displayName}</Text>
               </View>
             ) : (
-              <Text style={styles.title}>{title.charAt(0).toUpperCase() + title.slice(1).toLowerCase()}</Text>
+              <Text style={styles.title}>{title.charAt(0).toUpperCase() + title.slice(1)}</Text>
             )}
           </View>
         </View>
