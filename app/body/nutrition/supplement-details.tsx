@@ -8,7 +8,7 @@ import React from "react";
 import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const GOLD = "#E8B44D";
+const GOLD = "#D7B877";
 const supplements = Nutritions.supplements.data;
 
 export default function SupplementDetails() {
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   note: { marginTop: 22, flexDirection: "row", alignItems: "flex-start", gap: 12, paddingHorizontal: 4 },
   noteText: { flex: 1, color: "#D5C9B7", fontSize: 13, lineHeight: 20 },
   source: { marginTop: 22, flexDirection: "row", alignItems: "center", gap: 8, padding: 15, borderRadius: 14,  backgroundColor: "rgba(232,180,77,0.07)" },
-  sourceText: { flex: 1, color: "#E8B44D", fontSize: 13, lineHeight: 19 },
+  sourceText: { flex: 1, color: "#D7B877", fontSize: 13, lineHeight: 19 },
   empty: { flex: 1, alignItems: "center", justifyContent: "center", padding: 30, gap: 16 },
   heading: { color: "#F5F1E8", fontSize: 24, fontWeight: "700" },
 });
