@@ -168,7 +168,7 @@ export default function ChatScreen() {
             {loading ? (
               <View style={styles.loadingDot} />
             ) : (
-              <Ionicons name="send" size={20} color={inputText.trim() ? "#E8B44D" : "#666"} />
+              <Ionicons name="send" size={20} color={inputText.trim() ? "#D7B877" : "#666"} />
             )}
           </TouchableOpacity>
       </View>
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   premiumHeaderTitle: { fontSize: 28, fontWeight: "700", color: "#F5F1E8", letterSpacing: 0.2 },
   beta: { color: "#161008", fontSize: 10, fontWeight: "800", backgroundColor: "#F5BC4F", paddingHorizontal: 9, paddingVertical: 4, borderRadius: 9 },
   welcomeAI: { backgroundColor: "rgba(19,21,21,0.72)", marginHorizontal: 20, marginTop: 24, padding: 22, borderRadius: 18, borderWidth: 1, borderColor: "rgba(255,238,197,0.24)" },
-  welcomeEyebrow: { color: "#E8B44D", fontSize: 10, fontWeight: "700", letterSpacing: 2.4, marginBottom: 12 },
+  welcomeEyebrow: { color: "#D7B877", fontSize: 10, fontWeight: "700", letterSpacing: 2.4, marginBottom: 12 },
   welcomeTitle: { color: "#F5F1E8", fontSize: 24, fontWeight: "700", marginBottom: 12 },
   welcomeNote: { color: "#A9A397", fontSize: 11, lineHeight: 16, marginTop: 18 },
   welcomeAIText: { color: "#F0F0F0", fontSize: 14, lineHeight: 22 },
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#E8B44D",
+    backgroundColor: "#D7B877",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#E8B44D",
+    backgroundColor: "#D7B877",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#E8B44D",
+    backgroundColor: "#D7B877",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 4,
   },
   userBubble: {
-    backgroundColor: "#E8B44D",
+    backgroundColor: "#D7B877",
     borderBottomRightRadius: 4,
   },
   messageText: {
@@ -381,6 +381,6 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: "#E8B44D",
+    backgroundColor: "#D7B877",
   },
 })
