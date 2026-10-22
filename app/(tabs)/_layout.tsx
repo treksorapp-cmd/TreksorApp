@@ -8,26 +8,16 @@ import {
   SimpleLineIcons,
 } from "@expo/vector-icons";
 import { Redirect, Tabs, usePathname } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import {
-  Animated,
   Platform,
   StyleSheet,
   View,
-  useWindowDimensions
 } from "react-native";
 
 export default function TabLayout() {
   const { isAuthenticated, isVerified } = useAuthStore();
-  const pathname = usePathname();
-  const { width } = useWindowDimensions();
-  const activeIndex = pathname.startsWith("/chat") ? 1 : pathname.startsWith("/tracking") ? 2 : pathname.startsWith("/community") ? 3 : 0;
-  const glowPosition = useRef(new Animated.Value(activeIndex)).current;
-  useEffect(() => {
-    Animated.timing(glowPosition, { toValue: activeIndex, duration: 260, useNativeDriver: true }).start();
-  }, [activeIndex, glowPosition]);
 
   if (!isAuthenticated || !isVerified) return <Redirect href="/" />;
 
@@ -45,35 +35,7 @@ export default function TabLayout() {
           sceneStyle: {
             backgroundColor: "#050505",
           },
-          tabBarBackground: () => (
-            <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-              <View style={styles.goldDivider} />
-              <Animated.View style={[styles.glowTrack, { width: width * 0.29, left: -width * 0.02, transform: [{ translateX: glowPosition.interpolate({ inputRange: [0, 3], outputRange: [0, width * 0.75] }) }] }]}>
-                <LinearGradient
-                  colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.018)", "rgba(232,180,77,0.055)", "rgba(232,180,77,0.018)", "rgba(232,180,77,0)"]}
-                  locations={[0,0.22,0.5,0.78,1]}
-                  start={{x:0,y:0}}
-                  end={{x:0,y:1}}
-                  style={styles.glowHalo}
-                >
-                  <LinearGradient
-                    colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.10)", "rgba(255,224,160,0.23)", "rgba(232,180,77,0.10)", "rgba(232,180,77,0)"]}
-                    locations={[0,0.28,0.5,0.72,1]}
-                    start={{x:0,y:0}}
-                    end={{x:1,y:0}}
-                    style={StyleSheet.absoluteFill}
-                  />
-                </LinearGradient>
-                <LinearGradient
-                  colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.08)", "rgba(255,224,160,0.42)", "rgba(232,180,77,0.08)", "rgba(232,180,77,0)"]}
-                  locations={[0,0.27,0.5,0.73,1]}
-                  start={{x:0,y:0}}
-                  end={{x:1,y:0}}
-                  style={styles.glowLine}
-                />
-              </Animated.View>
-            </View>
-          ),
+          tabBarBackground: () => <View pointerEvents="none" style={StyleSheet.absoluteFill}><View style={styles.goldDivider}/></View>,
           tabBarStyle: Platform.select({
             ios: {
               position: "absolute",
@@ -97,7 +59,7 @@ export default function TabLayout() {
           options={{
             title: "Home",
             tabBarIcon: ({ color }) => (
-              <AntDesign name="home" size={24} color={color} />
+              <View style={[styles.iconHalo, color === "#E8B44D" && styles.iconHaloActive]}><AntDesign name="home" size={24} color={color} /></View>
             ),
           }}
         />
@@ -107,7 +69,7 @@ export default function TabLayout() {
           options={{
             title: "Chat",
             tabBarIcon: ({ color }) => (
-              <Octicons name="dependabot" size={24} color={color} />
+              <View style={[styles.iconHalo, color === "#E8B44D" && styles.iconHaloActive]}><Octicons name="dependabot" size={24} color={color} /></View>
             ),
           }}
         />
@@ -117,14 +79,14 @@ export default function TabLayout() {
           options={{
             title: "Progress",
             tabBarIcon: ({ color }) => (
-              <SimpleLineIcons name="graph" size={24} color={color} />
+              <View style={[styles.iconHalo, color === "#E8B44D" && styles.iconHaloActive]}><SimpleLineIcons name="graph" size={24} color={color} /></View>
             ),
           }}
         />
 
         <Tabs.Screen name="articles" options={{href:null}} />
 
-        <Tabs.Screen name="community" options={{title:"Community",tabBarIcon:({color})=><MaterialIcons name="groups" size={24} color={color}/>}} />
+        <Tabs.Screen name="community" options={{title:"Community",tabBarIcon:({color})=><View style={[styles.iconHalo, color === "#E8B44D" && styles.iconHaloActive]}><MaterialIcons name="groups" size={24} color={color} /></View>}} />
         <Tabs.Screen name="index" redirect />
       </Tabs>
     </View>
@@ -137,9 +99,8 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   goldDivider: { position: "absolute", top: 0, left: 0, right: 0, height: 1, backgroundColor: "rgba(232,180,77,0.14)" },
-  glowTrack: { position: "absolute", top: -9, height: 36, alignItems: "center" },
-  glowHalo: { position: "absolute", top: 0, width: "100%", height: 36, opacity: 0.65 },
-  glowLine: { position: "absolute", top: 9, width: "100%", height: 1, opacity: 0.5 },
+  iconHalo: { width: 42, height: 42, borderRadius: 21, alignItems: "center", justifyContent: "center" },
+  iconHaloActive: { backgroundColor: "rgba(232,180,77,0.16)", borderWidth: 1, borderColor: "rgba(255,218,140,0.44)", shadowColor: "#E8B44D", shadowOpacity: 0.55, shadowRadius: 12, shadowOffset: {width:0,height:0} },
   modalOverlay: {
     position: "absolute",
     top: 0,
