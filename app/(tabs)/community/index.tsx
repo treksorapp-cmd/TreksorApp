@@ -1,17 +1,18 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, FlatList, Linking, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import axios from "axios";
+import { Ionicons } from "@expo/vector-icons";
 
 type Event = { id:string; title:string; category:string; city:string; starts_at:string; description:string; capacity:number; organizer_name:string };
 const FEED = "https://treksor-admin-production.up.railway.app/api/public/discover?type=events";
 const GOLD = "#E8B44D";
 const activities = [
- { label:"Hiking & nature", icon:"🥾", keyword:"hiking" },
- { label:"Social sports", icon:"⚽", keyword:"social sports" },
- { label:"Free events", icon:"✦", keyword:"free community events" },
- { label:"Camping & outdoors", icon:"⛺", keyword:"camping" },
- { label:"Meet people", icon:"◉", keyword:"social meetup" },
- { label:"Volunteering", icon:"♡", keyword:"volunteering" },
+ { label:"Hiking & nature", icon:"walk-outline", keyword:"hiking" },
+ { label:"Social sports", icon:"football-outline", keyword:"social sports" },
+ { label:"Free events", icon:"ticket-outline", keyword:"free community events" },
+ { label:"Camping & outdoors", icon:"bonfire-outline", keyword:"camping" },
+ { label:"Meet people", icon:"people-outline", keyword:"social meetup" },
+ { label:"Volunteering", icon:"heart-outline", keyword:"volunteering" },
 ];
 export default function Community() {
  const [events,setEvents]=useState<Event[]>([]);
@@ -44,11 +45,10 @@ export default function Community() {
   <Text style={{color:"#F4F0E8",fontSize:19,fontWeight:"700",marginTop:30,marginBottom:15}}>Explore activities near {place}</Text>
   <View style={{flexDirection:"row",flexWrap:"wrap",justifyContent:"space-between",gap:12}}>
   {activities.map(a=><TouchableOpacity key={a.label} onPress={()=>search(a.keyword)} style={{width:"48%",minHeight:105,borderRadius:14,borderWidth:1,borderColor:"#4C453A",backgroundColor:"#191918",padding:15,justifyContent:"space-between"}}>
-    <Text style={{color:GOLD,fontSize:22}}>{a.icon}</Text><Text style={{color:"#F5F1E9",fontSize:14,fontWeight:"600"}}>{a.label} ↗</Text>
+    <View style={{width:38,height:38,borderRadius:11,backgroundColor:"#30291D",alignItems:"center",justifyContent:"center"}}><Ionicons name={a.icon as any} size={21} color={GOLD}/></View><View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between",gap:5}}><Text style={{color:"#F5F1E9",fontSize:14,fontWeight:"600",flex:1}}>{a.label}</Text><Ionicons name="arrow-up-outline" size={15} color={GOLD} style={{transform:[{rotate:"45deg"}]}}/></View>
   </TouchableOpacity>)}
   </View>
-  <TouchableOpacity onPress={()=>Linking.openURL("https://www.eventbrite.com.au/d/online/free--events/").catch(()=>{})} style={{marginTop:13,padding:16,borderRadius:12,borderWidth:1,borderColor:"#5D4D31"}}><Text style={{color:GOLD,fontWeight:"700"}}>Explore free online events ↗</Text></TouchableOpacity>
-  <Text style={{color:"#B4B0A8",fontSize:12,lineHeight:18,marginTop:12}}>Activity links open external discovery pages. Check dates, location and cost with the organiser.</Text>
+  <Text style={{color:"#B4B0A8",fontSize:12,lineHeight:18,marginTop:12}}>External searches may include unrelated events. Always check the event description, date, location and price with the organiser.</Text>
   <Text style={{color:"#F4F0E8",fontSize:19,fontWeight:"700",marginTop:32,marginBottom:13}}>Upcoming Treksor gatherings</Text>
   {loading&&<ActivityIndicator color={GOLD} style={{marginVertical:16}}/>}
  </>}
