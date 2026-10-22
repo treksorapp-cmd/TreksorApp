@@ -4,6 +4,7 @@ import { usePowerThoughtStore } from "@/store/thought-store";
 import { PowerThought } from "@/types/powerThought";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
@@ -23,6 +24,7 @@ const { width } = Dimensions.get("window");
 
 export default function PowerThoughtsScreen() {
   const {powerThoughts} = usePowerThoughtStore();
+  const insets = useSafeAreaInsets();
   const [animatedValues] = useState(
     powerThoughts.map(() => new RNAnimated.Value(0))
   );
@@ -59,6 +61,7 @@ export default function PowerThoughtsScreen() {
 
   const renderThoughtCard = (thought: PowerThought, index: number) => {
     const animatedValue = animatedValues[index];
+    if (!animatedValue) return null;
 
     const translateY = animatedValue.interpolate({
       inputRange: [0, 1],
@@ -88,14 +91,14 @@ export default function PowerThoughtsScreen() {
       >
         {/* Outer LinearGradient for the border */}
         <LinearGradient
-          colors={["rgba(255, 255, 255, 0.3)", "rgba(255, 255, 255, 0.4)"]}
+          colors={["rgba(205,235,248,0.22)", "rgba(205,235,248,0.08)"]}
           start={{ x: 0.2, y: 0 }}
           end={{ x: 0.8, y: 1 }}
           style={styles.borderGradient}
         >
           {/* Inner LinearGradient for the button background */}
           <LinearGradient
-            colors={["#262626", "#0a0a0a"]}
+            colors={["rgba(183,221,240,0.10)", "rgba(183,221,240,0.045)"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.innerGradient}
@@ -103,7 +106,7 @@ export default function PowerThoughtsScreen() {
             <View style={styles.card}>
               <View style={styles.cardHeader}>
                 {thought?.isToday ? 
-                <Text style={[styles.dateText,thought.isToday && {textAlign: "center"}]}>Today Thought</Text>:
+                <Text style={[styles.dateText,thought.isToday && {textAlign: "center"}]}>TODAY'S THOUGHT</Text>:
                 <Text style={[styles.dateText,thought.isToday && {textAlign: "center"}]}>{thought.date}</Text>}
               </View>
 
@@ -137,6 +140,7 @@ export default function PowerThoughtsScreen() {
         <View style={styles.headerSpacer} />
       </View> */}
 
+      <View style={[styles.titleArea,{paddingTop:insets.top+72}]}><Text style={styles.eyebrow}>MIND / DAILY INSPIRATION</Text><Text style={styles.heroTitle}>POWER THOUGHTS</Text></View>
       {/* Thoughts List */}
       <ScrollView
         style={styles.content}
@@ -157,6 +161,9 @@ export default function PowerThoughtsScreen() {
 }
 
 const styles = StyleSheet.create({
+  titleArea:{paddingHorizontal:22,paddingBottom:22},
+  eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.7},
+  heroTitle:{color:"#FFFFFF",fontSize:34,fontWeight:"700",letterSpacing:1.5,marginTop:9},
   container: {
     flex: 1,
     backgroundColor: "#02050C",
@@ -196,7 +203,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#F39C12",
+    color: "#D7B877",
   },
   shareButton: {
     padding: 4,
@@ -204,18 +211,18 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.05)",
   },
   thoughtText: {
-    fontSize: 24,
+    fontSize: 19,
     fontWeight: "600",
     color: "#FFFFFF",
-    lineHeight: 32,
+    lineHeight: 29,
     textAlign: "left",
   },
   borderGradient: {
-    borderRadius: 12,
+    borderRadius: 19,
     padding: 1,
   },
   innerGradient: {
-    borderRadius: 11,
+    borderRadius: 18,
     minHeight: 120, // Add minimum height
   },
   thoughtCard: {
