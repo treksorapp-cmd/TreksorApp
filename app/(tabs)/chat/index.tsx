@@ -37,6 +37,7 @@ export default function ChatScreen() {
   const loadHistory = useChatStore(state => state.loadHistory)
   const messages = currentUserId ? chats[currentUserId] || [] : [];
   const [inputText, setInputText] = useState("")
+  const [campfireAvailable, setCampfireAvailable] = useState(true)
   const [keyboardHeight, setKeyboardHeight] = useState(0)
   useEffect(() => {
     const show = Keyboard.addListener("keyboardWillShow", e => setKeyboardHeight(e.endCoordinates.height))
@@ -103,7 +104,7 @@ export default function ChatScreen() {
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : undefined} keyboardVerticalOffset={0}>
       <StatusBar style="light" />
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-        <ImageBackground source={{ uri: CAMPFIRE_URL }} contentFit="cover" style={StyleSheet.absoluteFill} />
+        <ImageBackground source={campfireAvailable ? { uri: CAMPFIRE_URL } : require("@/assets/images/mental-home-bg.jpeg")} onError={() => setCampfireAvailable(false)} contentFit="cover" style={StyleSheet.absoluteFill} />
         <LinearGradient colors={["rgba(5,5,5,0.90)","rgba(5,5,5,0.78)","rgba(5,5,5,0.94)"]} style={StyleSheet.absoluteFill} />
       </View>
 
