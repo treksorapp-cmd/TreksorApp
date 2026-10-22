@@ -18,7 +18,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface ArticlesScreenProps {
   mode?: "tab" | "stack";
@@ -31,6 +31,7 @@ const cardWidth = (width - 60) / 2; // Account for padding and gap
 
 export default function ArticlesScreen({ mode = "tab", category = "All Articles" }: ArticlesScreenProps) {
   const { fetchArticles, loading, articles } = useArticleStore();
+  const insets = useSafeAreaInsets();
   const [activeCategory, setActiveCategory] = useState(category)
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(1);
@@ -102,7 +103,7 @@ export default function ArticlesScreen({ mode = "tab", category = "All Articles"
   };
 
   const handleArticlePress = (article: Article) => {
-    const path = `/(tabs)/articles/${article._id}?category=${activeCategory}`;
+    const path = mode === "stack" ? `/mental/articles/${article._id}?category=${activeCategory}` : `/(tabs)/articles/${article._id}?category=${activeCategory}`;
     router.push(path);
   };
 
@@ -133,6 +134,7 @@ export default function ArticlesScreen({ mode = "tab", category = "All Articles"
     <SafeAreaView style={styles.container} edges={["bottom"]}>
       <StatusBar style="light" />
 
+      {mode === "stack" && <View style={[styles.pageHeading,{paddingTop:insets.top+12}]}><Text style={styles.eyebrow}>MIND / READING</Text><Text style={styles.pageTitle}>MIND ARTICLES</Text></View>}
       {mode === "stack" && (
         <View style={styles.tabContainer}>
           <View style={styles.tabInnerContainer}>
@@ -204,9 +206,12 @@ export default function ArticlesScreen({ mode = "tab", category = "All Articles"
 }
 
 const styles = StyleSheet.create({
+  pageHeading:{paddingHorizontal:22,paddingBottom:14},
+  eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.6},
+  pageTitle:{color:"#FFFFFF",fontSize:36,fontWeight:"700",letterSpacing:1.5,marginTop:7},
   container: {
     flex: 1,
-    backgroundColor: "#000000",
+    backgroundColor: "#02050C",
   },
   tabContainer: {
     paddingHorizontal: 10,
@@ -215,7 +220,9 @@ const styles = StyleSheet.create({
   tabInnerContainer: {
     flexDirection: "row",
     gap: 12,
-    backgroundColor: "#1F2127",
+    backgroundColor: "rgba(183,221,240,0.075)",
+    borderWidth:1,
+    borderColor:"rgba(205,235,248,0.20)",
     height: 56,
     borderRadius: 12,
   },
@@ -226,7 +233,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   activeTab: {
-    backgroundColor: "#EFB33F",
+    backgroundColor: "rgba(183,221,240,0.17)",
     borderRadius: 12,
   },
   tabText: {
@@ -235,7 +242,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   activeTabText: {
-    color: "#000000",
+    color: "#FFFFFF",
   },
   content: {
     flex: 1,
@@ -251,8 +258,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   listContainer: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
     paddingBottom: 100,
     gap: 20,
   },
