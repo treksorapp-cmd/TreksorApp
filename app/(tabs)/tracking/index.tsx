@@ -6,7 +6,6 @@ import { useAuthStore } from "@/store/auth-store";
 import AddTrackerModal from "@/components/AddTrackerModal";
 import CalendarModal from "@/components/ui/CalendarModal";
 import { useTrackingStore } from "@/store/tracking-store";
-import {useWorkoutStore} from "@/store/workout-store";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useFocusEffect } from "expo-router";
@@ -25,9 +24,6 @@ import {
 export default function TrackingScreen() {
   const { trackingData, fetchTrackingData, loading } = useTrackingStore();
   const userId = useAuthStore(s => s.user?.id);
-  const gymSets=useWorkoutStore(s=>s.gymSets);
-  const gymCheckIns=useWorkoutStore(s=>s.checkIns);
-  const gymSessions=Object.values(gymCheckIns||{}).reduce((n,items)=>n+items.length,0);
   const [moodPeriod, setMoodPeriod] = useState<"week"|"month"|"year">("week");
   const [moodSummary, setMoodSummary] = useState<{average:number|null;days:number}>({average:null,days:0});
 
@@ -86,7 +82,10 @@ export default function TrackingScreen() {
       <StatusBar style="light" />
 
       <Text style={styles.premiumTitle}>Progress</Text>
+      <Text style={styles.trackingSubtitle}>TRACKING</Text>
       <Text style={styles.periodNote}>Small steps. Real momentum.</Text>
+      <Text style={styles.periodHeading}>{moodPeriod==="week"?"Progreso semanal":moodPeriod==="month"?"Progreso mensual":"Progreso anual"}</Text>
+      <View style={styles.periodRow}>{(["week","month","year"] as const).map(period=><TouchableOpacity key={period} onPress={()=>setMoodPeriod(period)} style={[styles.periodButton,moodPeriod===period&&styles.periodActive]}><Text style={[styles.periodText,moodPeriod===period&&styles.periodTextActive]}>{period==="week"?"SEMANAL":period==="month"?"MENSUAL":"ANUAL"}</Text></TouchableOpacity>)}</View>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={{backgroundColor:"rgba(67,72,72,0.28)",borderWidth:1,borderColor:"rgba(239,214,169,0.30)",borderRadius:18,padding:20,marginTop:17}}>
           <Text style={{color:"#F6F2EA",fontSize:18,fontWeight:"700"}}>The four pillars</Text>
@@ -103,7 +102,6 @@ export default function TrackingScreen() {
           </View>)}
           <Text style={{color:"#928D83",fontSize:11,marginTop:20,lineHeight:17}}>— means there is no tracking data for that pillar yet.</Text>
         </View>
-        <TouchableOpacity onPress={()=>router.push("/body/workout/progress")} style={{marginTop:18,backgroundColor:"rgba(67,72,72,0.32)",borderWidth:1,borderColor:"rgba(239,214,169,0.34)",borderRadius:15,padding:17,flexDirection:"row",alignItems:"center",gap:12}}><Ionicons name="barbell-outline" color="#F5BD4F" size={23}/><View style={{flex:1}}><Text style={{color:"#F7F2E8",fontSize:16,fontWeight:"700"}}>Gym progress</Text><Text style={{color:"#BFB7A9",fontSize:12,marginTop:5}}>{gymSessions} sessions · {gymSets.length} sets recorded</Text></View><Ionicons name="chevron-forward" color="#F5BD4F" size={20}/></TouchableOpacity>
         {customTrackers.length>0&&<View style={{marginTop:20,backgroundColor:"rgba(67,72,72,0.28)",borderWidth:1,borderColor:"rgba(239,214,169,0.28)",borderRadius:16,padding:19}}>
           <Text style={{color:"#F5F1E8",fontWeight:"700",fontSize:17,marginBottom:15}}>Your trackers</Text>
           {customTrackers.map(t=><TouchableOpacity key={t.id} onPress={()=>{setSelectedCategory(t.id);setShowActivityLog(true)}} style={{flexDirection:"row",alignItems:"center",gap:13,paddingVertical:12,borderBottomWidth:1,borderBottomColor:"#34332F"}}>
@@ -112,11 +110,6 @@ export default function TrackingScreen() {
             <Ionicons name="chevron-forward" color="#F5BD4F" size={18}/>
           </TouchableOpacity>)}
         </View>}
-        <TouchableOpacity onPress={()=>router.push("/progress/daily-check-in")} style={{marginTop:18,backgroundColor:"rgba(60,65,66,0.32)",borderRadius:16,borderWidth:1,borderColor:"rgba(239,214,169,0.24)",padding:17,flexDirection:"row",alignItems:"center",gap:13}}>
-          <Ionicons name="create-outline" size={22} color="#F5BD4F"/>
-          <View style={{flex:1}}><Text style={{color:"#F4F0E8",fontWeight:"700",fontSize:15}}>Daily check-in</Text><Text style={{color:"#AAA59A",marginTop:4,fontSize:12}}>How are you feeling today?</Text></View>
-          <Ionicons name="chevron-forward" color="#F5BD4F" size={18}/>
-        </TouchableOpacity>
         <View style={{flexDirection:"row",gap:12,marginTop:16}}>
           <TouchableOpacity onPress={()=>setShowAddTracker(true)} style={{flex:1,padding:15,borderRadius:12,backgroundColor:"rgba(103,107,105,0.25)",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:8}}><Ionicons name="add" size={19} color="#F5BD4F"/><Text style={{color:"#F5BD4F",fontWeight:"700"}}>Add tracker</Text></TouchableOpacity>
           <TouchableOpacity onPress={openCalendar} style={{flex:1,padding:15,borderRadius:12,backgroundColor:"#24231E",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:8}}><Ionicons name="calendar-outline" size={18} color="#F5BD4F"/><Text style={{color:"#F5BD4F",fontWeight:"700"}}>Calendar</Text></TouchableOpacity>
@@ -148,11 +141,13 @@ export default function TrackingScreen() {
 
 const styles = StyleSheet.create({
   premiumTitle: { color: "#F5F1E8", fontSize: 28, fontWeight: "700", textAlign: "left", marginHorizontal: 20, marginTop: 20, marginBottom: 4 },
-  periodRow: { flexDirection: "row", marginHorizontal: 18, backgroundColor: "#1D1D1D", borderRadius: 10, padding: 4 },
+  trackingSubtitle: { color:"#F5F1E8",fontSize:16,fontWeight:"700",letterSpacing:2,marginHorizontal:20,marginBottom:3 },
+  periodHeading: { color:"#F5F1E8",fontSize:20,fontWeight:"700",marginHorizontal:20,marginTop:18,marginBottom:12 },
+  periodRow: { flexDirection: "row", marginHorizontal: 18, backgroundColor: "rgba(255,255,255,0.06)", borderRadius: 10, padding: 4 },
   periodButton: { flex: 1, paddingVertical: 11, alignItems: "center", borderRadius: 8 },
-  periodActive: { backgroundColor: "#F5BC4F" },
+  periodActive: { backgroundColor: "rgba(255,255,255,0.18)" },
   periodText: { color: "#aaa", fontWeight: "600" },
-  periodTextActive: { color: "#111" },
+  periodTextActive: { color: "#FFFFFF" },
   periodNote: { color: "#999", fontSize: 12, textAlign: "left", marginHorizontal: 20, marginTop: 4, marginBottom: 12 },
   sectionHeading: { color: "#fff", fontSize: 17, fontWeight: "700", marginBottom: 16 },
   container: {
