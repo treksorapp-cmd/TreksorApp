@@ -120,7 +120,7 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
       >
         <StatusBar style="light" />
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#F39C12" />
+          <ActivityIndicator size="large" color="#D7B877" />
           <Text style={styles.loadingText}>Loading article...</Text>
         </View>
       </View>
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
   },
   category: {
     fontSize: 14,
-    color: "#F39C12",
+    color: "#D7B877",
     fontWeight: "600",
     marginBottom: 8,
   },
