@@ -6,14 +6,16 @@ import { ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { Alert, Animated, Easing, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const GOLD = "#E8B44D";
 
 export default function GymScreen() {
   const insets = useSafeAreaInsets();
+  const pulse = useRef(new Animated.Value(0)).current;
+  useEffect(() => { const loop = Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true}),Animated.timing(pulse,{toValue:0,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true})]));loop.start();return()=>loop.stop(); },[pulse]);
   const plan = useWorkoutStore(s => s.trainingPlan);
   const checkIns = useWorkoutStore(s => s.checkIns);
   const checkIn = useWorkoutStore(s => s.checkIn);
@@ -59,7 +61,7 @@ export default function GymScreen() {
             <>
               <View style={styles.sectionHeading}>
                 <View><Text style={styles.eyebrow}>YOUR TRAINING</Text><Text style={styles.sectionTitle}>My plan</Text></View>
-                <View style={styles.activeTag}><View style={styles.activeDot}/><Text style={styles.activeText}>ACTIVE</Text></View>
+                <View style={styles.activeTag}><View style={styles.pulseShell}><Animated.View style={[styles.pulseHalo,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.06,0.24]}),transform:[{scale:pulse.interpolate({inputRange:[0,1],outputRange:[1,1.65]})}]}]}/><Animated.View style={[styles.activeDot,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.70,1]})}]}/></View><Text style={styles.activeText}>ACTIVE</Text></View>
               </View>
               <View style={styles.planCard}>
                 <View style={styles.planStats}>
@@ -118,10 +120,12 @@ const styles = StyleSheet.create({
   content:{paddingHorizontal:20},
   sectionHeading:{flexDirection:"row",justifyContent:"space-between",alignItems:"center",marginBottom:16},
   sectionTitle:{color:"#FFFFFF",fontSize:25,fontWeight:"700",marginTop:5},
-  activeTag:{flexDirection:"row",alignItems:"center",gap:7,backgroundColor:"rgba(214,184,116,0.1)",paddingHorizontal:12,paddingVertical:8,borderRadius:20,borderWidth:1,borderColor:"rgba(214,184,116,0.25)"},
-  activeDot:{height:6,width:6,borderRadius:3,backgroundColor:GOLD},
+  activeTag:{flexDirection:"row",alignItems:"center",gap:7,backgroundColor:"rgba(214,184,116,0.1)",paddingHorizontal:12,paddingVertical:8,borderRadius:20,borderWidth:0},
+  pulseShell:{width:9,height:9,alignItems:"center",justifyContent:"center"},
+  pulseHalo:{position:"absolute",width:9,height:9,borderRadius:5,backgroundColor:GOLD},
+  activeDot:{height:9,width:9,borderRadius:5,backgroundColor:GOLD},
   activeText:{color:"#E8D0A0",fontSize:10,fontWeight:"800",letterSpacing:1},
-  planCard:{backgroundColor:"rgba(184,221,239,0.055)",borderWidth:1,borderColor:"rgba(204,233,248,0.19)",borderRadius:20,padding:20,marginBottom:8},
+  planCard:{backgroundColor:"rgba(184,221,239,0.055)",borderWidth:0,borderRadius:20,padding:20,marginBottom:8},
   planStats:{flexDirection:"row",alignItems:"center",gap:26},
   statNumber:{color:"#FFFFFF",fontSize:23,fontWeight:"700"},
   statLabel:{color:"#B8B7B5",fontSize:10,fontWeight:"700",letterSpacing:1,marginTop:6},
@@ -135,7 +139,7 @@ const styles = StyleSheet.create({
   track:{height:7,borderRadius:7,backgroundColor:"rgba(255,255,255,0.11)",overflow:"hidden"},
   trackFill:{height:"100%",backgroundColor:GOLD,borderRadius:7},
   weekCaption:{color:"#A9A9A8",fontSize:11,marginTop:12},
-  checkIn:{height:54,marginTop:5,marginBottom:16,borderRadius:16,backgroundColor:"rgba(188,223,240,0.085)",borderWidth:1,borderColor:"rgba(208,237,250,0.19)",flexDirection:"row",alignItems:"center",justifyContent:"center",gap:10},
+  checkIn:{height:54,marginTop:5,marginBottom:16,borderRadius:16,backgroundColor:"rgba(188,223,240,0.085)",borderWidth:0,flexDirection:"row",alignItems:"center",justifyContent:"center",gap:10},
   checkInDone:{opacity:0.65},
   checkInText:{color:"#FFFFFF",fontSize:13,fontWeight:"700",letterSpacing:0.8},
   intro:{color:"#B9B9B9",fontSize:14,lineHeight:21,marginTop:10,marginBottom:16},
