@@ -19,8 +19,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const BeveragesHome = () => {
   const insets = useSafeAreaInsets();
   const { type } = useLocalSearchParams();
-  const category = Nutritions[typeof type === "string" ? type as keyof typeof Nutritions : "beverages"];
-  const { backgroundImage, data, route, headerTitle } = category ?? Nutritions.beverages;
+  const categoryKey = type === "supplements" ? "supplements" : "beverages";
+  const category = Nutritions[categoryKey];
+  const { backgroundImage, data, route, headerTitle } = category;
     const { user } = useAuthStore();
 
   return (
@@ -49,7 +50,7 @@ const BeveragesHome = () => {
               }
               icon={"icon" in item ? item.icon : undefined}
             >
-              {item.name}
+              {item.name.charAt(0).toUpperCase() + item.name.slice(1).toLowerCase()}
             </Button>
           ))}
         </View>
@@ -99,8 +100,8 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
+    fontSize: 28,
+    fontWeight: "700",
     color: "#FFFFFF",
     textShadowColor: "rgba(0, 0, 0, 0.5)",
     textShadowOffset: { width: 0, height: 1 },
