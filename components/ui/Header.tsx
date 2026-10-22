@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuthStore } from "@/store/auth-store";
-import { useUserStore } from "@/store/user-store";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -29,7 +28,6 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
-  const {setShowPackages} = useUserStore();
 
 
 
@@ -67,57 +65,6 @@ const Header: React.FC<HeaderProps> = ({
       end={{ x: 0, y: 1 }}
       style={[styles.container, { paddingTop: insets.top }]}
     >
-      {/* free trial banner  */}
-      {!user?.plan && <View
-        style={{
-          paddingVertical: 6,
-          paddingHorizontal: 16,
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          zIndex: 9999,
-          backgroundColor: "#E8B44D",
-          marginBottom: "2%"
-        }}
-      >
-        <Text
-          style={{
-            color: "#000",
-            fontSize: 14,
-            fontWeight: "600",
-            flex: 1,
-            marginRight: 8,
-            width:"70%"
-          }}
-        >
-          🔥 You’re exploring Treksor Premium — {user?.daysLeft} {Number(user?.daysLeft) === 1 ? "day" : "days"} remaining
-        </Text>
-       <TouchableOpacity
-          onPress={() => setShowPackages(true)}
-          activeOpacity={0.8}
-          style={{
-            backgroundColor: "#000",
-            paddingVertical: 8,
-            paddingHorizontal: 16,
-            borderRadius: 50,
-            width:"30%",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text
-            style={{
-              color: "#fff",
-              fontSize: 10,
-              fontWeight: "600",
-              textTransform: "uppercase",
-              textAlign: "center",
-            }}
-          >
-            Go Premium
-          </Text>
-        </TouchableOpacity>
-      </View>}
       {/* Header Content */}
       {showTitle && <View style={styles.headerContent}>
         {showBackButton ? (
