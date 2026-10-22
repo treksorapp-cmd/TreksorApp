@@ -48,11 +48,29 @@ export default function TabLayout() {
           tabBarBackground: () => (
             <View pointerEvents="none" style={StyleSheet.absoluteFill}>
               <View style={styles.goldDivider} />
-              <Animated.View style={[styles.glowTrack, { width: width / 2, left: -width / 8, transform: [{ translateX: glowPosition.interpolate({ inputRange: [0, 3], outputRange: [0, width * 0.75] }) }] }]}>
-                <LinearGradient colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.06)", "rgba(232,180,77,0.17)", "rgba(232,180,77,0.06)", "rgba(232,180,77,0)"]} start={{x:0,y:0}} end={{x:0,y:1}} style={styles.glowHalo}>
-                  <LinearGradient colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.18)", "rgba(255,222,154,0.62)", "rgba(232,180,77,0.18)", "rgba(232,180,77,0)"]} start={{x:0,y:0}} end={{x:1,y:0}} style={StyleSheet.absoluteFill} />
+              <Animated.View style={[styles.glowTrack, { width: width * 0.29, left: -width * 0.02, transform: [{ translateX: glowPosition.interpolate({ inputRange: [0, 3], outputRange: [0, width * 0.75] }) }] }]}>
+                <LinearGradient
+                  colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.018)", "rgba(232,180,77,0.055)", "rgba(232,180,77,0.018)", "rgba(232,180,77,0)"]}
+                  locations={[0,0.22,0.5,0.78,1]}
+                  start={{x:0,y:0}}
+                  end={{x:0,y:1}}
+                  style={styles.glowHalo}
+                >
+                  <LinearGradient
+                    colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.10)", "rgba(255,224,160,0.23)", "rgba(232,180,77,0.10)", "rgba(232,180,77,0)"]}
+                    locations={[0,0.28,0.5,0.72,1]}
+                    start={{x:0,y:0}}
+                    end={{x:1,y:0}}
+                    style={StyleSheet.absoluteFill}
+                  />
                 </LinearGradient>
-                <LinearGradient colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.07)", "rgba(255,227,161,0.56)", "rgba(232,180,77,0.07)", "rgba(232,180,77,0)"]} start={{x:0,y:0}} end={{x:1,y:0}} style={styles.glowLine} />
+                <LinearGradient
+                  colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.08)", "rgba(255,224,160,0.42)", "rgba(232,180,77,0.08)", "rgba(232,180,77,0)"]}
+                  locations={[0,0.27,0.5,0.73,1]}
+                  start={{x:0,y:0}}
+                  end={{x:1,y:0}}
+                  style={styles.glowLine}
+                />
               </Animated.View>
             </View>
           ),
@@ -119,9 +137,9 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
   goldDivider: { position: "absolute", top: 0, left: 0, right: 0, height: 1, backgroundColor: "rgba(232,180,77,0.14)" },
-  glowTrack: { position: "absolute", top: -15, height: 46, alignItems: "center" },
-  glowHalo: { position: "absolute", top: 0, width: "100%", height: 46, opacity: 0.92 },
-  glowLine: { position: "absolute", top: 15, width: "100%", height: 1, opacity: 0.7 },
+  glowTrack: { position: "absolute", top: -9, height: 36, alignItems: "center" },
+  glowHalo: { position: "absolute", top: 0, width: "100%", height: 36, opacity: 0.65 },
+  glowLine: { position: "absolute", top: 9, width: "100%", height: 1, opacity: 0.5 },
   modalOverlay: {
     position: "absolute",
     top: 0,
