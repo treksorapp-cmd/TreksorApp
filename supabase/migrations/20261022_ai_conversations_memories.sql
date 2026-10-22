@@ -31,14 +31,10 @@ alter table public.ai_conversations enable row level security;
 alter table public.ai_messages enable row level security;
 alter table public.ai_memories enable row level security;
 revoke all on public.ai_conversations, public.ai_messages, public.ai_memories from anon;
-grant select,insert,update,delete on public.ai_conversations, public.ai_messages, public.ai_memories to authenticated;
-create policy "owner manages conversations" on public.ai_conversations for all to authenticated
- using ((select auth.uid())=user_id) with check ((select auth.uid())=user_id);
+grant select on public.ai_conversations, public.ai_messages to authenticated;
+grant select,insert,update,delete on public.ai_memories to authenticated;
+create policy "owner reads conversations" on public.ai_conversations for select to authenticated using ((select auth.uid())=user_id);
 create policy "owner reads messages" on public.ai_messages for select to authenticated
- using ((select auth.uid())=user_id and exists(select 1 from public.ai_conversations c where c.id=conversation_id and c.user_id=(select auth.uid())));
-create policy "owner creates messages" on public.ai_messages for insert to authenticated
- with check ((select auth.uid())=user_id and exists(select 1 from public.ai_conversations c where c.id=conversation_id and c.user_id=(select auth.uid())));
-create policy "owner deletes messages" on public.ai_messages for delete to authenticated
  using ((select auth.uid())=user_id and exists(select 1 from public.ai_conversations c where c.id=conversation_id and c.user_id=(select auth.uid())));
 create policy "owner manages memories" on public.ai_memories for all to authenticated
  using ((select auth.uid())=user_id) with check ((select auth.uid())=user_id);
