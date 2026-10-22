@@ -1,3 +1,4 @@
+import { scheduleTodaysPowerThought } from "@/lib/daily-thought-notification";
 import { playCompletionFeedback } from "@/lib/completion-feedback";
 import { useAuthStore } from "@/store/auth-store";
 import { usePowerThoughtStore } from "@/store/thought-store";
@@ -69,6 +70,7 @@ export default function HomeScreen() {
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const todayThought = powerThoughts?.find(item => item.isToday) || powerThoughts?.[0];
   const isCurrentThought = !!todayThought?.isToday;
+  useEffect(() => { if (todayThought?.isToday && todayThought.thought) void scheduleTodaysPowerThought(todayThought.thought, todayThought._id).catch(console.warn); }, [todayThought?._id, todayThought?.isToday, todayThought?.thought]);
   const completeThought = () => { if (!todayThought || todayThought.isRead) return; markRead(todayThought._id); void playCompletionFeedback(); };
   const thought = todayThought?.thought || "Your daily perspective will appear here when published.";
 
