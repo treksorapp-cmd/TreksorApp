@@ -19,7 +19,7 @@ export default function PremiumPillarScreen({ title, headline, subtitle, image, 
     <ImageBackground source={image} contentFit="cover" style={StyleSheet.absoluteFill} cachePolicy="memory-disk" transition={0} />
     <LinearGradient colors={["rgba(0,0,0,0.45)", "rgba(0,0,0,0.08)", "#050505", "#050505"]} locations={[0, 0.32, 0.7, 1]} style={StyleSheet.absoluteFill} />
     <View style={styles.header}>
-      <View style={styles.heading}><Text style={styles.eyebrow}>{eyebrow}</Text><Text style={styles.title}>{title.toUpperCase()}</Text></View><View style={styles.pillarSymbol}><Ionicons name={pillarIcon} color={GOLD} size={22}/></View>
+      <View style={styles.heading}><Text style={styles.eyebrow}>{eyebrow}</Text><Text style={styles.title}>{title.toUpperCase()}</Text></View><View style={styles.headerActions}><TouchableOpacity accessibilityRole="button" accessibilityLabel="Go to Home" onPress={()=>router.dismissTo("/(tabs)/home" as any)} style={styles.pillarSymbol}><Ionicons name="home-outline" color="#FFFFFF" size={22}/></TouchableOpacity><View style={styles.pillarSymbol}><Ionicons name={pillarIcon} color={GOLD} size={22}/></View></View>
     </View>
     <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
       <View style={{ flex: align === "middle" ? 0.8 : 1, minHeight: align === "middle" ? 160 : 240 }} />
@@ -33,7 +33,8 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: "#050505" },
   header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 21, minHeight: 64, paddingTop: 2, paddingBottom: 5 },
   heading:{flex:1,justifyContent:"center"},
-  eyebrow:{color:"#D7B877",fontSize:10,fontWeight:"700",letterSpacing:1.8,marginBottom:5},
+  headerActions:{flexDirection:"row",alignItems:"center",gap:9},
+  eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.6,marginBottom:7},
   back: { width: 35, justifyContent: "center" },
   title: { fontSize: 36, fontWeight: "700", letterSpacing: 1.5, color: "#FFFFFF", textAlign: "left" },
   pillarSymbol: { width: 42,height:42,borderRadius:12,backgroundColor:"rgba(183,221,240,0.075)",alignItems:"center",justifyContent:"center" },
