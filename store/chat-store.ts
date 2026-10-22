@@ -1,108 +1,74 @@
-import { api } from '@/api/axios';
+import { useAuthStore } from '@/store/auth-store';
 import { generateRandomId } from '@/lib/utils';
 import { Message } from '@/types/message';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
-import axios from 'axios';
-import { createJSONStorage, persist } from 'zustand/middleware';
 
+const endpoint = 'https://niakfwerfqmrmhuypkpd.supabase.co/functions/v1/treksor-ai';
+const publishableKey = 'sb_publishable_WxFupUF8wM6SuEcTXYuqHw_dRoSpLs8';
 interface ChatState {
-  chats: Record<string, Message[]>;
-  currentUserId: string | null;
-  loading: boolean;
-  error: string | null;
-
-  setUserId: (userId: string) => void;
-  sendMessage: (message: string) => Promise<boolean>;
-  clearData: () => void;
-  getMessages: () => Message[];
+ chats: Record<string, Message[]>;
+ conversationIds: Record<string,string>;
+ currentUserId: string | null;
+ loading: boolean;
+ error: string | null;
+ setUserId: (userId:string)=>void;
+ sendMessage: (message:string)=>Promise<boolean>;
+ loadHistory: ()=>Promise<void>;
+ clearData: ()=>void;
+ getMessages: ()=>Message[];
 }
-
-interface MessageResponse {
-  data: Message;
-  success: boolean;
+async function call(body:unknown){
+ const token=useAuthStore.getState().token;
+ if(!token)throw new Error('Sign in to use your coach.');
+ const controller=new AbortController();
+ const timer=setTimeout(()=>controller.abort(),30000);
+ try{
+  const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','apikey':publishableKey,'Authorization':`Bearer ${token}`},body:JSON.stringify(body),signal:controller.signal});
+  const data=await res.json();
+  if(!res.ok)throw new Error(res.status===401?'Your session expired. Please sign in again.':data?.error||'Unable to reach your coach.');
+  return data;
+ }finally{clearTimeout(timer);}
 }
-
-export const useChatStore = create<ChatState>()(
-  persist(
-    (set, get) => ({
-      chats: {},
-      currentUserId: null,
-      loading: false,
-      error: null,
-
-      setUserId: (userId: string) => {
-        set({ currentUserId: userId });
-      },
-
-      getMessages: () => {
-        const { currentUserId, chats } = get();
-        return currentUserId && chats[currentUserId] ? chats[currentUserId] : [];
-      },
-
-      sendMessage: async (message: string) => {
-        const { currentUserId, chats } = get();
-        if (!currentUserId) { set({error:'Sign in to start a conversation.'}); return false; }
-
-        const chatMessage: Message = {
-          id: generateRandomId(),
-          role: 'user',
-          content: message,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        };
-
-        const currentMessages = chats[currentUserId] || [];
-        const updatedUserMessages = [...currentMessages, chatMessage];
-
-        set({
-          loading: true,
-          error: null,
-          chats: {
-            ...chats,
-            [currentUserId]: updatedUserMessages,
-          },
-        });
-
-        try {
-          const { data: response } = await api.post<MessageResponse>('/chat', {
-            messages: updatedUserMessages.map(({role,content})=>({role,content})),
-          });
-          if (!response?.success || !response?.data?.content) throw new Error('Invalid response from the chat service.');
-
-          set({
-            loading: false,
-            chats: {
-              ...get().chats,
-              [currentUserId]: [...get().chats[currentUserId], response.data],
-            },
-          });
-          return true;
-        } catch (error: any) {
-          console.error('sendMessage error:', error);
-          const detail = axios.isAxiosError(error)
-            ? !error.response ? 'Unable to reach the chat service. Please check your connection and try again.'
-              : error.response.status === 401 || error.response.status === 403 ? 'Your chat session is not authorized. Please sign in again.'
-              : error.response.status === 404 ? 'The chat service is not configured yet.'
-              : error.response.status >= 500 ? 'The chat service is temporarily unavailable.'
-              : 'The chat service could not process your message.'
-            : 'Unable to get a response. Please try again.';
-          set({ loading: false, error: detail });
-          return false;
-        }
-      },
-
-      clearData: () => {
-        set({
-          chats: {},
-          loading: false,
-          error: null,
-        });
-      },
-    }),
-    {
-      name: 'chat-storage-by-user',
-      storage: createJSONStorage(() => AsyncStorage),
-      partialize: state => ({chats:state.chats,currentUserId:state.currentUserId}),
-    }
-  )
-);
+export const useChatStore=create<ChatState>()((set,get)=>({
+ chats:{},conversationIds:{},currentUserId:null,loading:false,error:null,
+ setUserId:(userId)=>{
+  if(get().currentUserId!==userId)set({currentUserId:userId,error:null});
+ },
+ getMessages:()=>{const {chats,currentUserId}=get();return currentUserId?chats[currentUserId]||[]:[];},
+ loadHistory:async()=>{
+  const userId=get().currentUserId;
+  if(!userId||!useAuthStore.getState().isAuthenticated)return;
+  try{
+   const list=await call({action:'history'});
+   if(get().currentUserId!==userId)return;
+   const first=list.conversations?.[0];
+   if(!first){set(s=>({chats:{...s.chats,[userId]:[]},conversationIds:{...s.conversationIds,[userId]:''}}));return;}
+   const result=await call({action:'history',conversationId:first.id});
+   if(get().currentUserId!==userId)return;
+   const messages:Message[]=(result.messages||[]).map((m:any)=>({id:m.id,role:m.role,content:m.content,timestamp:new Date(m.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}));
+   set(s=>({chats:{...s.chats,[userId]:messages},conversationIds:{...s.conversationIds,[userId]:first.id}}));
+  }catch(e){if(get().currentUserId===userId)set({error:e instanceof Error?e.message:'Unable to load history.'});}
+ },
+ sendMessage:async(message)=>{
+  const userId=get().currentUserId;
+  if(!userId||userId!==useAuthStore.getState().user.id){set({error:'Sign in to use your coach.'});return false;}
+  if(get().loading)return false;
+  const content=message.trim();
+  if(!content)return false;
+  const existing=get().chats[userId]||[];
+  const chatMessage:Message={id:generateRandomId(),role:'user',content,timestamp:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})};
+  set({loading:true,error:null,chats:{...get().chats,[userId]:[...existing,chatMessage]}});
+  try{
+   const conversationId=get().conversationIds[userId]||undefined;
+   const response=await call({action:'send',message:content,...(conversationId?{conversationId}:{})});
+   if(get().currentUserId!==userId)return false;
+   const answer:Message={id:generateRandomId(),role:'assistant',content:response.message.content,timestamp:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})};
+   set(s=>({loading:false,chats:{...s.chats,[userId]:[...(s.chats[userId]||[]),answer]},conversationIds:{...s.conversationIds,[userId]:response.conversationId}}));
+   return true;
+  }catch(e){
+   if(get().currentUserId===userId)set(s=>({loading:false,error:e instanceof Error?e.message:'Unable to contact your coach.',chats:{...s.chats,[userId]:existing}}));
+   return false;
+  }
+ },
+ clearData:()=>set({chats:{},conversationIds:{},currentUserId:null,loading:false,error:null}),
+}));
