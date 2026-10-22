@@ -75,7 +75,7 @@ export default function GymScreen() {
                 <View style={styles.track}><View style={[styles.trackFill,{width:`${progress * 100}%`}]}/></View>
                 <Text style={styles.weekCaption}>Monday – Sunday · Every session counts</Text>
               </View>
-              <Button iconName="calendar-outline" onPress={() => router.push("/body/workout/my-plan")}>OPEN MY PLAN</Button>
+              <Button borderless iconName="calendar-outline" onPress={() => router.push("/body/workout/my-plan")}>OPEN MY PLAN</Button>
               <TouchableOpacity accessibilityRole="button" disabled={completed >= goal} onPress={completeSession} style={[styles.checkIn, completed >= goal && styles.checkInDone]}>
                 <Ionicons name={completed >= goal ? "checkmark-circle" : "checkmark-circle-outline"} size={21} color="#FFFFFF"/>
                 <Text style={styles.checkInText}>{completed >= goal ? "WEEKLY GOAL COMPLETE" : "MARK SESSION COMPLETE"}</Text>
