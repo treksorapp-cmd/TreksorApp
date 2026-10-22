@@ -10,7 +10,7 @@ import { Animated, AppState, Easing, ScrollView, StyleSheet, Text, TouchableOpac
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const GOLD = "#E8B44D";
-const ATMOSPHERE_ENDPOINT = "https://niakfwerfqmrmhuypkpd.supabase.co/rest/v1/atmosphere_images?select=public_url&published_at=lte.${new Date().toISOString()}&order=published_at.desc&limit=1";
+const ATMOSPHERE_ENDPOINT = "https://niakfwerfqmrmhuypkpd.supabase.co/rest/v1/atmosphere_images?select=public_url&published_at=lte.&order=published_at.desc&limit=1";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_WxFupUF8wM6SuEcTXYuqHw_dRoSpLs8";
 const DAILY_MESSAGES = [
 ["Move with","intention.","Strength. Clarity. Balance. Purpose."],
@@ -51,7 +51,7 @@ export default function HomeScreen() {
     let active=true;
     const controller=new AbortController();
     const timeout=setTimeout(()=>controller.abort(),8000);
-    fetch(ATMOSPHERE_ENDPOINT.replace("${new Date().toISOString()}",encodeURIComponent(new Date().toISOString())),{headers:{apikey:SUPABASE_PUBLISHABLE_KEY},signal:controller.signal})
+    fetch(ATMOSPHERE_ENDPOINT.replace("published_at=lte.", "published_at=lte." + encodeURIComponent(new Date().toISOString())),{headers:{apikey:SUPABASE_PUBLISHABLE_KEY},signal:controller.signal})
       .then(async response=>response.ok?await response.json():[])
       .then(rows=>{const url=rows?.[0]?.public_url;if(active&&typeof url==="string"&&url.startsWith("https://"))setAtmosphereUrl(url)})
       .catch(()=>{})
