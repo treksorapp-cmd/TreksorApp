@@ -32,10 +32,10 @@ const DAILY_HERO_IMAGES = [
   require("@/assets/images/purpose-background.png"),
 ];
 const pillars: { name: string; subtitle: string; route: Href; image: number; icon: keyof typeof Ionicons.glyphMap; index: string }[] = [
-  { name: "BODY", subtitle: "Strength & movement", route: "/body", image: require("@/assets/images/Body_2.png"), icon: "barbell-outline", index: "01" },
-  { name: "MIND", subtitle: "Clarity & focus", route: "/mental", image: require("@/assets/images/mental-home-bg.jpeg"), icon: "book-outline", index: "02" },
-  { name: "BALANCE", subtitle: "Recovery & presence", route: "/spiritual", image: require("@/assets/images/spiritual-ritual.png"), icon: "shield-outline", index: "03" },
-  { name: "PURPOSE", subtitle: "Direction & intention", route: "/purpose", image: require("@/assets/images/purpose-background.png"), icon: "compass-outline", index: "04" },
+  { name: "Body", subtitle: "Strength & movement", route: "/body", image: require("@/assets/images/Body_2.png"), icon: "barbell-outline", index: "01" },
+  { name: "Mind", subtitle: "Clarity & focus", route: "/mental", image: require("@/assets/images/mental-home-bg.jpeg"), icon: "book-outline", index: "02" },
+  { name: "Balance", subtitle: "Recovery & presence", route: "/spiritual", image: require("@/assets/images/spiritual-ritual.png"), icon: "shield-outline", index: "03" },
+  { name: "Purpose", subtitle: "Direction & intention", route: "/purpose", image: require("@/assets/images/purpose-background.png"), icon: "compass-outline", index: "04" },
 ];
 
 export default function HomeScreen() {
@@ -111,7 +111,7 @@ export default function HomeScreen() {
         <Animated.View style={[styles.grid,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[18,0]})}]}]}>
           {pillars.map(pillar => (
             <TouchableOpacity key={pillar.name} activeOpacity={0.72} style={styles.tile} onPress={() => router.push(pillar.route)} accessibilityRole="button" accessibilityLabel={pillar.name + ": " + pillar.subtitle}>
-              <ImageBackground source={pillar.image} contentFit="cover" contentPosition={pillar.name==="MIND"?"center 18%":"center"} style={StyleSheet.absoluteFill} transition={180} cachePolicy="memory-disk" />
+              <ImageBackground source={pillar.image} contentFit="cover" contentPosition={pillar.name==="Mind"?"center 18%":"center"} style={StyleSheet.absoluteFill} transition={180} cachePolicy="memory-disk" />
               <LinearGradient colors={["rgba(0,0,0,0.20)", "rgba(0,0,0,0.22)", "rgba(0,0,0,0.95)"]} locations={[0, 0.34, 1]} style={StyleSheet.absoluteFill} />
               <View style={styles.tileTop}>
                 <View style={styles.tileIcon}><Ionicons name={pillar.icon} color="#FFFFFF" size={18} /></View>
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: 20, paddingTop: 13, paddingBottom: 118 },
   hero: { height: 276, marginHorizontal: -20, marginTop: -8, marginBottom: 26, overflow: "hidden", backgroundColor: "#151715" },
   heroContent: { flex: 1, justifyContent: "flex-end", paddingHorizontal: 24, paddingBottom: 28 },
-  heroTitle: { color: "#F7F5F0", fontSize: 43, lineHeight: 48, fontWeight: "700", letterSpacing: -1.5 },
+  heroTitle: { color: "#F7F5F0", fontSize: 41, lineHeight: 47, fontWeight: "600", letterSpacing: -1.7 },
   heroSub: { color: "#D0C8B9", fontSize: 12, letterSpacing: 0.7, marginTop: 13 },
   sectionCount: { color: GOLD, fontSize: 10, fontWeight: "700", letterSpacing: 1.5 },
   top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 15 },
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   pulseShell:{width:9,height:9,alignItems:"center",justifyContent:"center"},
   pulseHalo:{position:"absolute",width:9,height:9,borderRadius:5,backgroundColor:"#D7B877"},
   greetingDot:{width:6,height:6,borderRadius:3,backgroundColor:"#FFE4A1"},
-  heroGreeting:{color:"#F4D9A4",fontSize:11,fontWeight:"600",letterSpacing:0.55},
+  heroGreeting:{color:"#D7B877",fontSize:11,fontWeight:"600",letterSpacing:0.55},
   profileImage:{width:40,height:40,borderRadius:20},
   brand: { flexDirection: "row", alignItems: "center", gap: 10 },
   logo: { width: 38, height: 38, borderRadius: 11 },
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   subtitle: { color: "#A9A7A4", fontSize: 14, lineHeight: 21, marginTop: 12 },
   sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 17 },
   sectionEyebrow: { color: "#C6AE84", fontSize: 10, letterSpacing: 2.1, fontWeight: "600", marginBottom: 7 },
-  sectionTitle: { color: "#FFFFFF", fontSize: 22, fontWeight: "600", letterSpacing: -0.5 },
+  sectionTitle: { color: "#F5F4F1", fontSize: 22, fontWeight: "600", letterSpacing: -0.9 },
   sectionHint:{color:"#AFA89C",fontSize:11,marginTop:8,letterSpacing:0.2},
   fourBadge: { width: 37, height: 37, borderRadius: 19, borderWidth: 1, borderColor: "#514332", alignItems: "center", justifyContent: "center" },
   fourBadgeText: { color: GOLD, fontSize: 12, fontWeight: "800" },
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   tileIcon: { height: 34, width: 34, borderRadius: 11, backgroundColor: "rgba(183,221,240,0.13)", alignItems: "center", justifyContent: "center" },
   tileIndex: { color: "#FFFFFF", fontSize: 10, fontWeight: "700", opacity: 0.85 },
   tileBottom: { flex: 1, justifyContent: "flex-end", padding: 13 },
-  tileTitle: { color: "#FFFFFF", fontSize: 18, fontWeight: "700", letterSpacing: 1.7 },
+  tileTitle: { color: "#FFFFFF", fontSize: 20, fontWeight: "600", letterSpacing: -0.7 },
   tileCaption: { color: "#E4DBCA", fontSize: 12, lineHeight: 17, marginTop: 6 },
   tileFooter: { marginTop: 14, paddingTop: 10, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.25)", flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   explore: { color: GOLD, fontSize: 9, fontWeight: "800", letterSpacing: 1.6 },
