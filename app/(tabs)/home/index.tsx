@@ -45,6 +45,8 @@ export default function HomeScreen() {
   const firstName = user?.name?.trim().split(" ")[0] || "Explorer";
   const [now,setNow]=useState(()=>new Date());
   const reveal=useRef(new Animated.Value(0)).current;
+  const pulse=useRef(new Animated.Value(0)).current;
+  useEffect(()=>{const loop=Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1,duration:950,easing:Easing.inOut(Easing.sin),useNativeDriver:true}),Animated.timing(pulse,{toValue:0,duration:950,easing:Easing.inOut(Easing.sin),useNativeDriver:true})]));loop.start();return()=>loop.stop()},[pulse]);
   useEffect(()=>{Animated.timing(reveal,{toValue:1,duration:480,easing:Easing.out(Easing.cubic),useNativeDriver:true}).start()},[reveal]);
   useEffect(()=>{const refresh=()=>setNow(new Date());const timer=setInterval(refresh,60000);const sub=AppState.addEventListener("change",v=>{if(v==="active")refresh()});return()=>{clearInterval(timer);sub.remove()}},[]);
   const hour = now.getHours();
@@ -75,7 +77,7 @@ export default function HomeScreen() {
         <Animated.View style={[styles.hero,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[12,0]})}]}]}>
           <ImageBackground source={DAILY_HERO_IMAGES[dailyIndex]} contentFit="cover" contentPosition="center 58%" cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
           <LinearGradient colors={["rgba(8,9,11,0.08)", "rgba(8,9,11,0.45)", "#08090B"]} locations={[0, 0.4, 1]} style={StyleSheet.absoluteFill} />
-          <View style={styles.heroGreetingWrap}><View style={styles.greetingDot}/><Text style={styles.heroGreeting}>{greeting}</Text></View>
+          <View style={styles.heroGreetingWrap}><View style={styles.pulseShell}><Animated.View style={[styles.pulseHalo,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.08,0.55]}),transform:[{scale:pulse.interpolate({inputRange:[0,1],outputRange:[1,2.7]})}]}]}/><Animated.View style={[styles.greetingDot,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.55,1]})}]}/></View><Text style={styles.heroGreeting}>{greeting}</Text></View>
           <View style={styles.heroContent}>
             <Text style={styles.eyebrow}>YOUR DAILY DIRECTION</Text>
             <Text style={styles.heroTitle}>{dailyMessage[0]}{"\n"}<Text style={styles.name}>{dailyMessage[1]}</Text></Text>
@@ -131,8 +133,10 @@ const styles = StyleSheet.create({
   sectionCount: { color: GOLD, fontSize: 10, fontWeight: "700", letterSpacing: 1.5 },
   top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 15 },
   topRight:{flexDirection:"column",alignItems:"flex-end",gap:5},
-  heroGreetingWrap:{position:"absolute",top:14,right:20,zIndex:2,flexDirection:"row",alignItems:"center",gap:7,paddingHorizontal:12,paddingVertical:8,borderRadius:20,backgroundColor:"rgba(10,12,12,0.56)",borderWidth:1,borderColor:"rgba(230,187,103,0.35)"},
-  greetingDot:{width:5,height:5,borderRadius:3,backgroundColor:"#E8B44D"},
+  heroGreetingWrap:{position:"absolute",top:14,right:20,zIndex:2,flexDirection:"row",alignItems:"center",gap:7,paddingHorizontal:12,paddingVertical:8,borderRadius:20,backgroundColor:"rgba(26,29,30,0.46)",borderWidth:1,borderColor:"rgba(255,231,177,0.34)"},
+  pulseShell:{width:9,height:9,alignItems:"center",justifyContent:"center"},
+  pulseHalo:{position:"absolute",width:9,height:9,borderRadius:5,backgroundColor:"#E8B44D"},
+  greetingDot:{width:6,height:6,borderRadius:3,backgroundColor:"#FFE4A1"},
   heroGreeting:{color:"#F4D9A4",fontSize:11,fontWeight:"600",letterSpacing:0.55},
   profileImage:{width:40,height:40,borderRadius:20},
   brand: { flexDirection: "row", alignItems: "center", gap: 10 },
@@ -153,9 +157,9 @@ const styles = StyleSheet.create({
   fourBadge: { width: 37, height: 37, borderRadius: 19, borderWidth: 1, borderColor: "#514332", alignItems: "center", justifyContent: "center" },
   fourBadgeText: { color: GOLD, fontSize: 12, fontWeight: "800" },
   grid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", rowGap: 13 },
-  tile: { width: "48.3%", aspectRatio: 0.88, borderRadius: 13, overflow: "hidden", backgroundColor: "#191919", borderWidth: 1, borderColor: "#34302B" },
+  tile: { width: "48.3%", aspectRatio: 0.88, borderRadius: 13, overflow: "hidden", backgroundColor: "rgba(24,28,29,0.42)", borderWidth: 1, borderColor: "rgba(243,225,186,0.28)" },
   tileTop: { flexDirection: "row", justifyContent: "flex-end", alignItems: "center", padding: 13 },
-  tileIcon: { height: 34, width: 34, borderRadius: 11, backgroundColor: "rgba(0,0,0,0.40)", borderWidth: 1, borderColor: "rgba(255,255,255,0.22)", alignItems: "center", justifyContent: "center" },
+  tileIcon: { height: 34, width: 34, borderRadius: 11, backgroundColor: "rgba(235,231,218,0.11)", borderWidth: 1, borderColor: "rgba(255,255,255,0.33)", alignItems: "center", justifyContent: "center" },
   tileIndex: { color: "#FFFFFF", fontSize: 10, fontWeight: "700", opacity: 0.85 },
   tileBottom: { flex: 1, justifyContent: "flex-end", padding: 13 },
   tileTitle: { color: "#FFFFFF", fontSize: 18, fontWeight: "700", letterSpacing: 1.7 },
