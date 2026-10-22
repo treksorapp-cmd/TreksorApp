@@ -19,6 +19,7 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function MediationDetailScreen() {
@@ -129,6 +130,7 @@ export default function MediationDetailScreen() {
           showBackButton={true}
           onBackPress={() => router.back()}
           showAvatar={false}
+          headerRightButton={<TouchableOpacity accessibilityRole="button" accessibilityLabel="Return to Balance" onPress={() => router.dismissTo("/spiritual")} style={{width:42,height:42,borderRadius:14,backgroundColor:"rgba(185,220,238,0.1)",borderWidth:1,borderColor:"rgba(220,239,249,0.22)",alignItems:"center",justifyContent:"center"}}><Ionicons name="shield-outline" size={22} color="#E8B44D" /></TouchableOpacity>}
         />
       ),
     });
@@ -291,7 +293,7 @@ export default function MediationDetailScreen() {
           {/* Content Section */}
           <View style={styles.contentSection}>
             <View style={styles.titleRow}>
-              <Text style={styles.workoutTitle}>{mediation.title}</Text>
+              <Text style={styles.workoutTitle}>{mediation.title.toUpperCase()}</Text>
             </View>
 
             <Text style={styles.description}>
@@ -480,8 +482,9 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   workoutTitle: {
-    fontSize: 28,
-    fontWeight: "bold",
+    fontSize: 25,
+    fontWeight: "700",
+    letterSpacing: 1.1,
     color: "#FFFFFF",
   },
   description: {
