@@ -1,3 +1,4 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 import Button from "@/components/ui/Button";
 import { Ionicons } from "@expo/vector-icons";
 import { ImageBackground } from "expo-image";
@@ -19,7 +20,7 @@ const NutritionHome = () => {
         imageStyle={styles.imageStyle}
       >
                 {/* Header */}
-                <View style={[styles.header, { paddingTop: insets.top + 12 }]}><Text style={styles.eyebrow}>BODY / FUEL</Text><Text style={styles.headerTitle}>NUTRITION</Text></View>
+                <BodyPageHeading trail="BODY" title="NUTRITION" style={{position:"absolute",top:insets.top+12,left:0,right:0,zIndex:2}} />
         <View style={[styles.content, { paddingBottom: insets.bottom + 30 }]}>
           <Button borderless onPress={()=>router.push("/body/nutrition/beverages")} icon={require("@/assets/images/beverages.png")}>BEVERAGES</Button>
           <Button onPress={()=>router.push("/body/nutrition/supplements")} icon={require("@/assets/images/supplements.png")}>SUPPLEMENTS</Button>
