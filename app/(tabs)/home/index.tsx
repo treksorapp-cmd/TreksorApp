@@ -18,6 +18,15 @@ const DAILY_MESSAGES = [
 ["Own your","direction.","Every step shapes who you become."],
 ["Live with","purpose.","Small actions. Extraordinary change."]
 ] as const;
+const DAILY_HERO_IMAGES = [
+  require("@/assets/images/purpose-background.png"),
+  require("@/assets/images/Body_2.png"),
+  require("@/assets/images/purpose-background.png"),
+  require("@/assets/images/mental-home-bg.jpeg"),
+  require("@/assets/images/Body_2.png"),
+  require("@/assets/images/spiritual-ritual.png"),
+  require("@/assets/images/purpose-background.png"),
+];
 const pillars: { name: string; subtitle: string; route: Href; image: number; icon: keyof typeof Ionicons.glyphMap; index: string }[] = [
   { name: "BODY", subtitle: "Strength & movement", route: "/body", image: require("@/assets/images/Body_2.png"), icon: "barbell-outline", index: "01" },
   { name: "MIND", subtitle: "Clarity & focus", route: "/mental", image: require("@/assets/images/mental-home-bg.jpeg"), icon: "book-outline", index: "02" },
@@ -36,7 +45,8 @@ export default function HomeScreen() {
   const [now,setNow]=useState(()=>new Date());
   useEffect(()=>{const refresh=()=>setNow(new Date());const timer=setInterval(refresh,30000);const sub=AppState.addEventListener("change",v=>{if(v==="active")refresh()});return()=>{clearInterval(timer);sub.remove()}},[]);
   const hour = now.getHours();
-  const dailyMessage=DAILY_MESSAGES[Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000)%DAILY_MESSAGES.length];
+  const dailyIndex=Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000)%DAILY_MESSAGES.length;
+  const dailyMessage=DAILY_MESSAGES[dailyIndex];
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const todayThought = powerThoughts?.find(item => item.isToday) || powerThoughts?.[0];
   const thought = todayThought?.thought || "Your daily perspective will appear here when published.";
@@ -54,12 +64,13 @@ export default function HomeScreen() {
           </View>
           <View style={styles.topRight}><TouchableOpacity onPress={() => router.push("/profile")} style={styles.profile} accessibilityLabel="Open profile">
             {user?.avatar?<Image source={{uri:user.avatar}} style={styles.profileImage} cachePolicy="memory-disk"/>:<Text style={styles.profileLetter}>{firstName.charAt(0).toUpperCase()}</Text>}
-          </TouchableOpacity><Text style={styles.topGreeting}>{greeting}</Text></View>
+          </TouchableOpacity></View>
         </View>
 
         <View style={styles.hero}>
-          <ImageBackground source={require("@/assets/images/purpose-background.png")} contentFit="cover" cachePolicy="memory-disk" style={StyleSheet.absoluteFill} />
+          <ImageBackground source={DAILY_HERO_IMAGES[dailyIndex]} contentFit="cover" contentPosition="center 68%" cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
           <LinearGradient colors={["rgba(8,9,11,0.08)", "rgba(8,9,11,0.45)", "#08090B"]} locations={[0, 0.4, 1]} style={StyleSheet.absoluteFill} />
+          <Text style={styles.heroGreeting}>{greeting}</Text>
           <View style={styles.heroContent}>
             <Text style={styles.eyebrow}>YOUR DAILY DIRECTION</Text>
             <Text style={styles.heroTitle}>{dailyMessage[0]}{"\n"}<Text style={styles.name}>{dailyMessage[1]}</Text></Text>
@@ -114,7 +125,7 @@ const styles = StyleSheet.create({
   sectionCount: { color: GOLD, fontSize: 10, fontWeight: "700", letterSpacing: 1.5 },
   top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 15 },
   topRight:{flexDirection:"column",alignItems:"flex-end",gap:5},
-  topGreeting:{color:GOLD,fontSize:11,fontWeight:"700",letterSpacing:0.3},
+  heroGreeting:{position:"absolute",top:17,right:23,zIndex:2,color:"#F7D181",fontSize:12,fontWeight:"700",letterSpacing:0.4,textShadowColor:"rgba(0,0,0,.95)",textShadowRadius:8},
   profileImage:{width:40,height:40,borderRadius:20},
   brand: { flexDirection: "row", alignItems: "center", gap: 10 },
   logo: { width: 38, height: 38, borderRadius: 11 },
@@ -134,7 +145,7 @@ const styles = StyleSheet.create({
   fourBadgeText: { color: GOLD, fontSize: 12, fontWeight: "800" },
   grid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", rowGap: 13 },
   tile: { width: "48.3%", aspectRatio: 0.88, borderRadius: 13, overflow: "hidden", backgroundColor: "#191919", borderWidth: 1, borderColor: "#34302B" },
-  tileTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 13 },
+  tileTop: { flexDirection: "row", justifyContent: "flex-end", alignItems: "center", padding: 13 },
   tileIcon: { height: 34, width: 34, borderRadius: 11, backgroundColor: "rgba(0,0,0,0.40)", borderWidth: 1, borderColor: "rgba(255,255,255,0.22)", alignItems: "center", justifyContent: "center" },
   tileIndex: { color: "#FFFFFF", fontSize: 10, fontWeight: "700", opacity: 0.85 },
   tileBottom: { flex: 1, justifyContent: "flex-end", padding: 13 },
