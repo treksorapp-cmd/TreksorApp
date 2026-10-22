@@ -103,7 +103,7 @@ export default function ArticlesScreen({ mode = "tab", category = "All Articles"
   };
 
   const handleArticlePress = (article: Article) => {
-    const path = mode === "stack" ? `/mental/articles/${article._id}?category=${activeCategory}` : `/(tabs)/articles/${article._id}?category=${activeCategory}`;
+    const path = mode === "stack" ? `/${category === "Body" ? "body" : category === "Spiritual" ? "spiritual" : "mental"}/articles/${article._id}?category=${activeCategory}` : `/(tabs)/articles/${article._id}?category=${activeCategory}`;
     router.push(path);
   };
 
@@ -134,7 +134,7 @@ export default function ArticlesScreen({ mode = "tab", category = "All Articles"
     <SafeAreaView style={styles.container} edges={["bottom"]}>
       <StatusBar style="light" />
 
-      {mode === "stack" && <View style={[styles.pageHeading,{paddingTop:insets.top+12}]}><Text style={styles.eyebrow}>MIND / READING</Text><Text style={styles.pageTitle}>MIND ARTICLES</Text></View>}
+      {mode === "stack" && <View style={[styles.pageHeading,{paddingTop:insets.top+12}]}><Text style={styles.eyebrow}>{category === "Body" ? "BODY / READING" : category === "Spiritual" ? "BALANCE / READING" : "MIND / READING"}</Text><Text style={styles.pageTitle}>{category === "Body" ? "BODY ARTICLES" : category === "Spiritual" ? "BALANCE ARTICLES" : "MIND ARTICLES"}</Text></View>}
       {mode === "stack" && (
         <View style={styles.tabContainer}>
           <View style={styles.tabInnerContainer}>
