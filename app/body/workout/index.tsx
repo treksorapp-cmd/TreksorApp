@@ -48,10 +48,19 @@ const Selection = () => {
         </View>
         <View style={[styles.content, { paddingBottom: insets.bottom + 30 }]}>
           {plan&&<View style={{width:width-40,padding:16,borderRadius:15,backgroundColor:"rgba(10,12,12,.88)",borderWidth:1,borderColor:"#9B793F",marginBottom:12}}><Text style={{color:"#E8B44D",fontWeight:"800",letterSpacing:1.5}}>YOUR WEEKLY GOAL</Text><Text style={{color:"white",fontSize:21,fontWeight:"700",marginTop:8}}>{completed} / {plan.days} sessions completed</Text><Text style={{color:"#CFC8BB",marginTop:5}}>{plan.location} · Monday to Sunday</Text><TouchableOpacity disabled={completed>=plan.days} onPress={()=>{checkIn(week);Alert.alert(completed+1>=plan.days?"🏆 WEEKLY GOAL ACHIEVED!":"✨ SESSION COMPLETE",completed+1>=plan.days?"You did it! Every session counts.":"Great work. Keep your momentum going!")}} style={{backgroundColor:completed>=plan.days?"#26362C":"#E8B44D",padding:13,borderRadius:11,marginTop:14,alignItems:"center"}}><Text style={{color:completed>=plan.days?"#B7DCC0":"#17130B",fontWeight:"800"}}>{completed>=plan.days?"✓ WEEK COMPLETE":"✓ CHECK IN · SESSION DONE"}</Text></TouchableOpacity></View>}
-          <TouchableOpacity onPress={()=>router.push("/body/workout/my-plan")} style={styles.gymButtonContainer}><Text style={styles.gymButtonText}>MY PLAN</Text></TouchableOpacity>
-          <TouchableOpacity onPress={()=>router.push("/body/workout/guide")} style={styles.gymButtonContainer}><Text style={styles.gymButtonText}>BUILD MY PLAN</Text></TouchableOpacity>
-          <TouchableOpacity onPress={()=>router.push("/body/workout/progress")} style={styles.gymButtonContainer}><Text style={styles.gymButtonText}>GYM PROGRESS</Text></TouchableOpacity>
-          <TouchableOpacity onPress={()=>router.push("/body/workout/library")} style={styles.gymButtonContainer}><Text style={styles.gymButtonText}>EXERCISE LIBRARY</Text></TouchableOpacity>
+          <View style={{width:width-40,backgroundColor:"rgba(12,13,13,.94)",padding:14,borderRadius:17,borderWidth:1,borderColor:"#665334"}}>
+            <Text style={{color:"#F4F0E8",fontWeight:"800",fontSize:17,marginBottom:12,letterSpacing:1}}>GYM</Text>
+            {[
+              {title:"BUILD MY PLAN",sub:"Create your personal training plan",url:"/body/workout/guide",color:"#F5C562",icon:"options-outline"},
+              {title:"MY PLAN",sub:"Your weekly sessions and exercises",url:"/body/workout/my-plan",color:"#DDAE49",icon:"calendar-outline"},
+              {title:"EXERCISE LIBRARY",sub:"Explore movements and technique",url:"/body/workout/library",color:"#BB8D37",icon:"book-outline"}
+            ].map(item=><TouchableOpacity key={item.title} onPress={()=>router.push(item.url as any)} style={{backgroundColor:item.color,borderRadius:11,padding:14,marginBottom:9,flexDirection:"row",alignItems:"center",gap:12}}>
+              <Ionicons name={item.icon as any} size={21} color="#1C160B"/>
+              <View style={{flex:1}}><Text style={{color:"#1C160B",fontWeight:"800",fontSize:15}}>{item.title}</Text><Text style={{color:"#46371D",fontSize:11,marginTop:4}}>{item.sub}</Text></View>
+              <Ionicons name="chevron-forward" size={19} color="#1C160B"/>
+            </TouchableOpacity>)}
+            <TouchableOpacity onPress={()=>router.push("/body/workout/progress")} style={{padding:13,flexDirection:"row",alignItems:"center",gap:12}}><Ionicons name="stats-chart-outline" color="#F5C562" size={20}/><Text style={{color:"#F5C562",fontWeight:"700",flex:1}}>Gym Progress</Text><Ionicons name="chevron-forward" color="#F5C562" size={17}/></TouchableOpacity>
+          </View>
           <Text style={{ color: "#fff", textAlign: "center", marginTop: 20 }}>
             Disclaimer: These workouts are intended for general fitness purposes
             only. Always consult your doctor before starting any new exercise
@@ -110,7 +119,7 @@ const styles = StyleSheet.create({
   },
   gymButtonText: {
     color: "#000000",
-    fontSize: 24,
+    fontSize: 17,
     fontWeight: "bold",
     letterSpacing: 1,
     lineHeight: 24,
