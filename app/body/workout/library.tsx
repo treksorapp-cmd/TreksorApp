@@ -4,7 +4,7 @@ import React from "react";
 import {ScrollView,Text,TouchableOpacity,View} from "react-native";
 import {router} from "expo-router";
 import {Ionicons} from "@expo/vector-icons";
-const GOLD="#E8B44D";
+const GOLD="#D7B877";
 export default function ExerciseLibrary(){
  const insets=useSafeAreaInsets();return <ScrollView style={{flex:1,backgroundColor:"#08090B"}} contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:90}}>
 <BodyPageHeading trail="BODY / WORKOUT / GYM" title="EXERCISE LIBRARY" style={{paddingHorizontal:0}} />
