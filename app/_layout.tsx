@@ -185,7 +185,7 @@ export default function RootLayout() {
           animation: "slide_from_right",
         }}
       />
-      {pillar && isAuthenticated && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Return to pillar menu" onPress={()=>router.dismissTo(pillar.route as any)} style={{position:"absolute",top:insets.top+8,right:18,width:44,height:44,borderRadius:22,backgroundColor:"rgba(185,220,238,0.12)",borderWidth:1,borderColor:"rgba(220,239,249,0.3)",alignItems:"center",justifyContent:"center",zIndex:1000}}><Ionicons name={pillar.icon as any} size={23} color="#FFFFFF" /></TouchableOpacity>}
+      {pillar && isAuthenticated && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Return to pillar menu" onPress={()=>router.dismissTo(pillar.route as any)} style={{position:"absolute",top:insets.top+8,right:18,width:44,height:44,borderRadius:12,backgroundColor:"rgba(183,221,240,0.075)",alignItems:"center",justifyContent:"center",zIndex:1000}}><Ionicons name={pillar.icon as any} size={23} color="#FFFFFF" /></TouchableOpacity>}
     </>
   );
 }
