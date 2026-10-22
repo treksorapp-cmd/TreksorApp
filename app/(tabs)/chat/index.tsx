@@ -23,7 +23,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 const { width } = Dimensions.get("window")
-const CAMPFIRE_URL = "https://niakfwerfqmrmhuypkpd.supabase.co/storage/v1/object/public/treksor-atmosphere/chat/campfire.jpg"
+const CAMPFIRE_URL = "https://niakfwerfqmrmhuypkpd.supabase.co/storage/v1/object/public/treksor-atmosphere/chat/campfire.png"
 
 export default function ChatScreen() {
   const insets = useSafeAreaInsets()
@@ -105,7 +105,8 @@ export default function ChatScreen() {
       <StatusBar style="light" />
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         <ImageBackground source={campfireAvailable ? { uri: CAMPFIRE_URL } : require("@/assets/images/mental-home-bg.jpeg")} onError={() => setCampfireAvailable(false)} contentFit="cover" style={StyleSheet.absoluteFill} />
-        <LinearGradient colors={["rgba(5,5,5,0.90)","rgba(5,5,5,0.78)","rgba(5,5,5,0.94)"]} style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={["rgba(4,5,5,0.93)","rgba(4,5,5,0.82)","rgba(4,5,5,0.95)"]} style={StyleSheet.absoluteFill} />
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(7,11,12,0.14)" }]} />
       </View>
 
       {messages.length === 0 && (
@@ -181,7 +182,7 @@ const styles = StyleSheet.create({
   premiumHeaderCenter: { flexDirection: "row", alignItems: "center", gap: 8 },
   premiumHeaderTitle: { fontSize: 28, fontWeight: "700", color: "#F5F1E8", letterSpacing: 0.2 },
   beta: { color: "#161008", fontSize: 10, fontWeight: "800", backgroundColor: "#F5BC4F", paddingHorizontal: 9, paddingVertical: 4, borderRadius: 9 },
-  welcomeAI: { backgroundColor: "rgba(29,31,31,0.56)", marginHorizontal: 20, marginTop: 24, padding: 22, borderRadius: 18, borderWidth: 1, borderColor: "rgba(255,238,197,0.24)" },
+  welcomeAI: { backgroundColor: "rgba(19,21,21,0.72)", marginHorizontal: 20, marginTop: 24, padding: 22, borderRadius: 18, borderWidth: 1, borderColor: "rgba(255,238,197,0.24)" },
   welcomeEyebrow: { color: "#E8B44D", fontSize: 10, fontWeight: "700", letterSpacing: 2.4, marginBottom: 12 },
   welcomeTitle: { color: "#F5F1E8", fontSize: 24, fontWeight: "700", marginBottom: 12 },
   welcomeNote: { color: "#A9A397", fontSize: 11, lineHeight: 16, marginTop: 18 },
@@ -294,7 +295,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   aiBubble: {
-    backgroundColor: "rgba(46,48,48,0.74)",
+    backgroundColor: "rgba(26,28,28,0.88)",
     borderBottomLeftRadius: 4,
   },
   userBubble: {
@@ -357,7 +358,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    backgroundColor: "rgba(55,57,57,0.64)",
+    backgroundColor: "rgba(32,34,34,0.86)",
     borderRadius: 22,
     paddingHorizontal: 16,
     paddingVertical: 12,
