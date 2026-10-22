@@ -49,20 +49,20 @@ export default function TabLayout() {
             <View pointerEvents="none" style={StyleSheet.absoluteFill}>
               <View style={styles.goldDivider} />
               <Animated.View style={[styles.glowTrack, { width: width / 4, transform: [{ translateX: glowPosition.interpolate({ inputRange: [0, 3], outputRange: [0, width * 0.75] }) }] }]}>
-                <LinearGradient colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.05)", "rgba(232,180,77,0.16)", "rgba(232,180,77,0.05)", "rgba(232,180,77,0)"]} start={{x:0,y:0}} end={{x:1,y:0}} style={styles.glowHalo} />
-                <LinearGradient colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.16)", "rgba(255,232,177,0.68)", "rgba(232,180,77,0.16)", "rgba(232,180,77,0)"]} start={{x:0,y:0}} end={{x:1,y:0}} style={styles.glowLine} />
+                <LinearGradient colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.025)", "rgba(232,180,77,0.075)", "rgba(232,180,77,0.13)", "rgba(232,180,77,0.075)", "rgba(232,180,77,0.025)", "rgba(232,180,77,0)"]} start={{x:0,y:0}} end={{x:1,y:0}} style={styles.glowHalo} />
+                <LinearGradient colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.035)", "rgba(232,180,77,0.12)", "rgba(255,232,177,0.38)", "rgba(232,180,77,0.12)", "rgba(232,180,77,0.035)", "rgba(232,180,77,0)"]} start={{x:0,y:0}} end={{x:1,y:0}} style={styles.glowLine} />
               </Animated.View>
             </View>
           ),
           tabBarStyle: Platform.select({
             ios: {
               position: "absolute",
-              backgroundColor: "rgba(15,19,25,0.89)",
+              backgroundColor: "#050505",
               borderTopWidth: 0,
               elevation: 0,
             },
             default: {
-              backgroundColor: "#02050C",
+              backgroundColor: "#050505",
             },
           }),
           tabBarActiveTintColor: "#E8B44D",
@@ -116,10 +116,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "black",
   },
-  goldDivider: { position: "absolute", top: 0, left: 0, right: 0, height: 1, backgroundColor: "rgba(232,180,77,0.20)" },
-  glowTrack: { position: "absolute", top: -14, height: 38, alignItems: "center" },
-  glowHalo: { position: "absolute", top: 0, width: "100%", height: 37, opacity: 0.78 },
-  glowLine: { position: "absolute", top: 14, width: "100%", height: 1, borderRadius: 3 },
+  goldDivider: { position: "absolute", top: 0, left: 0, right: 0, height: 1, backgroundColor: "rgba(232,180,77,0.12)" },
+  glowTrack: { position: "absolute", top: -17, height: 44, alignItems: "center" },
+  glowHalo: { position: "absolute", top: 0, width: "100%", height: 43, opacity: 0.64 },
+  glowLine: { position: "absolute", top: 17, width: "100%", height: 1, borderRadius: 3 },
   modalOverlay: {
     position: "absolute",
     top: 0,
