@@ -34,8 +34,8 @@ const Selection = () => {
           <View style={styles.headerSpacer} />
         </View>
         <View style={[styles.content, { paddingBottom: insets.bottom + 30 }]}>
-          <Button onPress={() => router.push("/body/workout")}>GYM</Button>
-          <Button disabled>CALISTHENICS · COMING SOON</Button>
+          <Button iconName="barbell-outline" onPress={() => router.push("/body/workout")}>GYM</Button>
+          <Button iconName="body-outline" disabled>CALISTHENICS · COMING SOON</Button>
         </View>
       </ImageBackground>
     </View>
