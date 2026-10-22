@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 36,
     fontWeight: "700",
-    letterSpacing: 1.5,
+    letterSpacing:-1.2,
     color: "#FFFFFF",
     textShadowColor: "rgba(0, 0, 0, 0.5)",
     textShadowOffset: { width: 0, height: 1 },
