@@ -3,13 +3,19 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { useAuthStore } from "@/store/auth-store";
 import { useUserStore } from "@/store/user-store";
 import * as Linking from "expo-linking";
-import { router, SplashScreen, Stack } from "expo-router";
+import { router, SplashScreen, Stack, usePathname } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { TouchableOpacity } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useEffect, useRef, useState } from "react";
 import Purchases from "react-native-purchases";
 import Toast from "react-native-toast-message";
 import { initRC } from "./services/revenuecat";
 
 export default function RootLayout() {
+  const pathname = usePathname();
+  const insets = useSafeAreaInsets();
+  const pillar = pathname.startsWith("/body/") ? {route:"/body",icon:"barbell-outline"} : pathname.startsWith("/mental/") ? {route:"/mental",icon:"book-outline"} : pathname.startsWith("/spiritual/") ? {route:"/spiritual",icon:"shield-outline"} : pathname.startsWith("/purpose/") ? {route:"/purpose",icon:"compass-outline"} : null;
   const { error, clearError, isAuthenticated, getCurrentUser } = useAuthStore();
   const [initialURL, setInitialURL] = useState<string | null>(null);
   const [isNavigationReady, setIsNavigationReady] = useState(false);
@@ -179,6 +185,7 @@ export default function RootLayout() {
           animation: "slide_from_right",
         }}
       />
+      {pillar && isAuthenticated && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Return to pillar menu" onPress={()=>router.replace(pillar.route as any)} style={{position:"absolute",top:insets.top+8,right:18,width:44,height:44,borderRadius:22,backgroundColor:"rgba(185,220,238,0.12)",borderWidth:1,borderColor:"rgba(220,239,249,0.3)",alignItems:"center",justifyContent:"center",zIndex:1000}}><Ionicons name={pillar.icon as any} size={23} color="#FFFFFF" /></TouchableOpacity>}
     </>
   );
 }
