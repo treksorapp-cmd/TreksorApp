@@ -50,6 +50,7 @@ export default function HomeScreen() {
   const dailyMessage=DAILY_MESSAGES[dailyIndex];
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const todayThought = powerThoughts?.find(item => item.isToday) || powerThoughts?.[0];
+  const isCurrentThought = !!todayThought?.isToday;
   const completeThought = () => { if (!todayThought || todayThought.isRead) return; markRead(todayThought._id); void playCompletionFeedback(); };
   const thought = todayThought?.thought || "Your daily perspective will appear here when published.";
 
@@ -106,9 +107,9 @@ export default function HomeScreen() {
         <View style={styles.thoughtSection}>
           <View style={styles.thoughtHeading}><Ionicons name="sunny-outline" color={GOLD} size={19} /><Text style={styles.thoughtLabel}>TODAY ON TREKSOR</Text></View>
           <View style={styles.thoughtCard}>
-            <Text style={{color:GOLD,fontSize:10,fontWeight:"800",letterSpacing:1.8,marginBottom:15}}>POWER THOUGHT · TODAY</Text>
+            <Text style={{color:GOLD,fontSize:10,fontWeight:"800",letterSpacing:1.8,marginBottom:15}}>{isCurrentThought?"POWER THOUGHT · TODAY":"POWER THOUGHT · LATEST"}</Text>
             <Text style={styles.thoughtText}>{thought}</Text>
-            <View style={styles.thoughtFooter}><TouchableOpacity onPress={() => router.push("/mental/thoughts")}><Text style={styles.thoughtLink}>EXPLORE THOUGHTS →</Text></TouchableOpacity><TouchableOpacity disabled={!todayThought || !!todayThought.isRead} accessibilityRole="checkbox" accessibilityState={{checked:!!todayThought?.isRead}} onPress={completeThought} style={{flexDirection:"row",alignItems:"center",gap:8,backgroundColor:todayThought?.isRead?GOLD:"#292823",paddingHorizontal:13,paddingVertical:11,borderRadius:12,borderWidth:1,borderColor:GOLD}}><Ionicons name={todayThought?.isRead?"checkmark-circle":"checkmark-circle-outline"} size={19} color={todayThought?.isRead?"#17130B":GOLD}/><Text style={{color:todayThought?.isRead?"#17130B":GOLD,fontWeight:"800",fontSize:12}}>{todayThought?.isRead?"READ TODAY":"MARK AS READ"}</Text></TouchableOpacity></View>
+            <View style={styles.thoughtFooter}><TouchableOpacity onPress={() => router.push("/mental/thoughts")}><Text style={styles.thoughtLink}>EXPLORE THOUGHTS →</Text></TouchableOpacity><TouchableOpacity disabled={!todayThought || !!todayThought.isRead} accessibilityRole="checkbox" accessibilityState={{checked:!!todayThought?.isRead}} onPress={completeThought} style={{flexDirection:"row",alignItems:"center",gap:8,backgroundColor:todayThought?.isRead?GOLD:"#292823",paddingHorizontal:13,paddingVertical:11,borderRadius:12,borderWidth:1,borderColor:GOLD}}><Ionicons name={todayThought?.isRead?"checkmark-circle":"checkmark-circle-outline"} size={19} color={todayThought?.isRead?"#17130B":GOLD}/><Text style={{color:todayThought?.isRead?"#17130B":GOLD,fontWeight:"800",fontSize:12}}>{todayThought?.isRead?(isCurrentThought?"READ TODAY":"READ"):"MARK AS READ"}</Text></TouchableOpacity></View>
           </View>
         </View>
         <Text style={styles.footer}>TREKSOR · BUILT WITH PURPOSE</Text>
