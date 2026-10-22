@@ -85,7 +85,7 @@ export default function TrackingScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
 
-      <Text style={styles.premiumTitle}>Your progress</Text>
+      <Text style={styles.premiumTitle}>Progress</Text>
       <Text style={styles.periodNote}>Small steps. Real momentum.</Text>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={{backgroundColor:"#191A18",borderWidth:1,borderColor:"#51452F",borderRadius:18,padding:20,marginTop:17}}>
@@ -147,7 +147,7 @@ export default function TrackingScreen() {
 }
 
 const styles = StyleSheet.create({
-  premiumTitle: { color: "#fff", fontSize: 28, fontWeight: "700", textAlign: "left", marginHorizontal: 20, marginTop: 20, marginBottom: 4 },
+  premiumTitle: { color: "#F5F1E8", fontSize: 28, fontWeight: "700", textAlign: "left", marginHorizontal: 20, marginTop: 20, marginBottom: 4 },
   periodRow: { flexDirection: "row", marginHorizontal: 18, backgroundColor: "#1D1D1D", borderRadius: 10, padding: 4 },
   periodButton: { flex: 1, paddingVertical: 11, alignItems: "center", borderRadius: 8 },
   periodActive: { backgroundColor: "#F5BC4F" },
