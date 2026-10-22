@@ -1,3 +1,4 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React,{useState} from "react";
 import {Alert,KeyboardAvoidingView,Platform,ScrollView,Text,TextInput,TouchableOpacity,View} from "react-native";
@@ -16,8 +17,8 @@ export default function WorkoutGuide(){
  const parse=(v:string)=>Number(v.trim().replace(/,/g,"."));
  const submit=()=>{const a=parse(age),h=parse(height),w=parse(weight);let issue="";if(!age.trim()||!Number.isInteger(a)||a<16||a>100)issue="Enter your age in years, between 16 and 100.";else if(!height.trim()||!Number.isFinite(h)||h<100||h>240)issue="Enter your height in centimetres, between 100 and 240 (example: 175).";else if(!weight.trim()||!Number.isFinite(w)||w<25||w>350)issue="Enter your weight in kilograms, between 25 and 350 (example: 75.5).";if(issue){setError(issue);return}setError("");save({days,location:"Gym",age:a,heightCm:h,weightKg:w,goal,experience,savedAt:new Date().toISOString()});Alert.alert("Plan saved","Your training preferences are ready. You can adjust the exercises in My Plan.",[{text:"OPEN MY PLAN",onPress:()=>router.replace("/body/workout/my-plan")}])};
  return <KeyboardAvoidingView style={{flex:1,backgroundColor:"#090A0B"}} behavior={Platform.OS==="ios"?"padding":undefined}><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:100}}>
- <TouchableOpacity onPress={()=>router.back()}><Ionicons name="arrow-back" size={24} color="white"/></TouchableOpacity>
- <Text style={{color:GOLD,fontSize:11,letterSpacing:2,fontWeight:"800",marginTop:0}}>BODY / WORKOUT / GYM</Text><Text style={{color:"white",fontSize:32,fontWeight:"800",marginTop:8}}>BUILD MY PLAN</Text>
+ 
+ <BodyPageHeading trail="BODY / WORKOUT / GYM" title="BUILD MY PLAN" style={{paddingHorizontal:0}} />
  <Text style={{color:"#C9C4B9",lineHeight:21,marginTop:10}}>Three simple steps. Tell us about yourself, choose your goal, and get a routine you can customize.</Text>
  <View style={{flexDirection:"row",gap:8,marginTop:20}}>{["01 · PROFILE","02 · GOAL","03 · ROUTINE"].map((step,i)=><View key={step} style={{flex:1,borderTopWidth:2,borderTopColor:i===0?GOLD:"#5A4B33",paddingTop:9}}><Text style={{color:i===0?GOLD:"#AAA397",fontSize:10,fontWeight:"800"}}>{step}</Text></View>)}</View>
  <View style={{backgroundColor:"rgba(67,72,72,0.30)",borderRadius:16,borderWidth:1,borderColor:"rgba(242,215,164,0.32)",padding:17,marginTop:26}}>
