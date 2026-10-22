@@ -1,5 +1,6 @@
 "use client"
 
+import Button from "@/components/ui/Button"
 import { useMySpaceStore } from "@/store/myspace-store"
 import { Ionicons } from "@expo/vector-icons"
 import { Image } from "expo-image"
@@ -78,7 +79,7 @@ export default function NewEntryScreen() {
             <Text style={styles.sectionTitle}>Select Mood</Text>
             <TouchableOpacity style={styles.dropdownButton} onPress={() => setShowMoodDropdown(!showMoodDropdown)}>
               <Text style={styles.dropdownButtonText}>{mood}</Text>
-              <Ionicons name={showMoodDropdown ? "chevron-up" : "chevron-down"} size={20} color="#E5B94B" />
+              <Ionicons name={showMoodDropdown ? "chevron-up" : "chevron-down"} size={20} color="#FFFFFF" />
             </TouchableOpacity>
 
             {showMoodDropdown && (
@@ -119,9 +120,7 @@ export default function NewEntryScreen() {
           </View>
 
           {/* Add Button */}
-          <TouchableOpacity style={styles.addButton} onPress={handleAddEntry} activeOpacity={0.8}>
-            <Text style={styles.addButtonText}>Add</Text>
-          </TouchableOpacity>
+          <Button iconName="checkmark-outline" onPress={handleAddEntry}>SAVE ENTRY</Button>
           <View style={styles.bottomPadding} />
         </ScrollView>
       </KeyboardAvoidingView>
@@ -170,22 +169,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#1A1A1A",
+    backgroundColor: "rgba(255,255,255,0.08)",
     borderRadius: 10,
     padding: 15,
     borderWidth: 1,
-    borderColor: "#333",
+    borderColor: "rgba(255,255,255,0.25)",
   },
   dropdownButtonText: {
     fontSize: 16,
     color: "#FFFFFF",
   },
   dropdownMenu: {
-    backgroundColor: "#1A1A1A",
+    backgroundColor: "rgba(255,255,255,0.08)",
     borderRadius: 10,
     marginTop: 5,
     borderWidth: 1,
-    borderColor: "#333",
+    borderColor: "rgba(255,255,255,0.25)",
     maxHeight: 200,
   },
   dropdownItem: {
@@ -204,7 +203,7 @@ const styles = StyleSheet.create({
     color: "#E5B94B",
   },
   textInput: {
-    backgroundColor: "#1A1A1A",
+    backgroundColor: "rgba(255,255,255,0.08)",
     borderRadius: 10,
     padding: 15,
     color: "#FFFFFF",
@@ -212,7 +211,7 @@ const styles = StyleSheet.create({
     minHeight: 150,
     textAlignVertical: "top",
     borderWidth: 1,
-    borderColor: "#333",
+    borderColor: "rgba(255,255,255,0.25)",
   },
   addButton: {
     backgroundColor: "#EFB33F",
