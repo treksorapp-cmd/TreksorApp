@@ -82,7 +82,7 @@ export default function ChatScreen() {
       {item.role === "user" && (
         <View style={styles.userAvatar}>
           {user?.avatar ? (
-            <Image source={{ uri: user.avatar.startsWith("http") ? user.avatar : `https://app.treksor.com/${user.avatar.replace(/^\\//,"")}` }} style={{ width: 30, height: 30, borderRadius: 15 }} />
+            <Image source={{ uri: user.avatar.startsWith("http") ? user.avatar : `https://app.treksor.com/${user.avatar.replace(/^\//, "")}` }} style={{ width: 30, height: 30, borderRadius: 15 }} />
           ) : (
             <Text style={styles.userAvatarText}>👤</Text>
           )}
