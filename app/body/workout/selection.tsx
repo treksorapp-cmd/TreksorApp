@@ -1,3 +1,4 @@
+import Button from "@/components/ui/Button";
 import Header from "@/components/ui/Header";
 import { useAuthStore } from "@/store/auth-store";
 import { Ionicons } from "@expo/vector-icons";
@@ -33,16 +34,8 @@ const Selection = () => {
           <View style={styles.headerSpacer} />
         </View>
         <View style={[styles.content, { paddingBottom: insets.bottom + 30 }]}>
-          <TouchableOpacity
-            onPress={() => router.push("/body/workout")}
-            style={styles.gymButtonContainer}
-          >
-            <Text style={styles.gymButtonText}>GYM</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.otherButtonContainer}>
-            <Text style={styles.otherButtonText}>CALISTHENICS</Text>
-            <Text style={styles.otherButtonSubText}>Available Soon</Text>
-          </TouchableOpacity>
+          <Button onPress={() => router.push("/body/workout")}>GYM</Button>
+          <Button disabled>CALISTHENICS · COMING SOON</Button>
         </View>
       </ImageBackground>
     </View>
