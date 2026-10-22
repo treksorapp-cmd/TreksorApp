@@ -1,33 +1,5 @@
-import Header from "@/components/ui/Header";
-import { router, Stack } from "expo-router";
-import React from "react";
+import { Stack } from "expo-router";
 
-const PowerThoughtsLayout = () => {
-  return (
-    <Stack
-      screenOptions={{
-        contentStyle: {
-          backgroundColor: "#02050C",
-        },
-        headerShown: false,
-      }}
-    >
-      <Stack.Screen
-        name="index"
-        options={{
-          headerShown: true,
-          header: () => (
-            <Header
-              title="Power Thoughts"
-              showBackButton={true}
-              onBackPress={() => router.back()}
-              showAvatar={false}
-            />
-          ),
-        }}
-      />
-    </Stack>
-  );
-};
-
-export default PowerThoughtsLayout;
+export default function PillarStackLayout() {
+  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#02050C" } }} />;
+}
