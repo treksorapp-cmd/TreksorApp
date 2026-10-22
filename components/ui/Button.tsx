@@ -1,4 +1,4 @@
-import { Entypo } from "@expo/vector-icons";
+import { Entypo, Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
@@ -16,7 +16,8 @@ type ButtonProps = {
   children: React.ReactNode | string;
   onPress?: () => void;
   loading?: boolean;
-  icon?: string;
+  icon?: number | string;
+  iconName?: React.ComponentProps<typeof Ionicons>["name"];
   iconStyle?: object; // Optional custom styles for the icon image
   buttonStyle?: object;
   disabled?: boolean;
@@ -29,6 +30,7 @@ const Button = ({
   onPress,
   loading,
   icon,
+  iconName,
   iconStyle,
   buttonStyle,
   disabled,
@@ -68,17 +70,12 @@ const Button = ({
           {loading ? (
             <ActivityIndicator size="small" color="#FFFFFF" />
           ) : typeof children === "string" ? (
-            icon ? (
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                {!iconImage ? <Image
-                  source={icon}
-                  style={[{ marginRight: 10, width: 20, height: 20 }, iconStyle]} // Apply custom styles
-                />: <Entypo style={{ marginRight: 10 }} name={iconImageIcon} size={28} color="#FFFFFF" />}
-                <Text style={styles.buttonText}>{children}</Text>
-              </View>
-            ) : (
-              <Text style={styles.buttonText}>{children}</Text>
-            )
+            <View style={styles.labelRow}>
+              {iconName ? <Ionicons name={iconName} size={22} color="#FFFFFF" style={styles.leadingIcon} /> :
+                icon ? (!iconImage ? <Image source={icon} style={[styles.imageIcon, iconStyle]} /> :
+                <Entypo name={iconImageIcon as React.ComponentProps<typeof Entypo>["name"]} size={24} color="#FFFFFF" style={styles.leadingIcon} />) : null}
+              <Text style={styles.buttonText}>{children.toUpperCase()}</Text>
+            </View>
           ) : (
             children
           )}
@@ -112,11 +109,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 17, // Slightly smaller than outer radius
   },
+  labelRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingHorizontal: 18, width: "100%" },
+  leadingIcon: { marginRight: 12 },
+  imageIcon: { width: 23, height: 23, marginRight: 12 },
   buttonText: {
     color: "#FFFFFF",
     fontSize: 18,
     fontWeight: "500",
-    letterSpacing: 0.3,
+    letterSpacing: 0.9,
     lineHeight: 24,
   },
 });
