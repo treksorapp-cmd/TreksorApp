@@ -52,9 +52,9 @@ export default function HomeScreen() {
               <Text style={styles.brandCaption}>BUILT WITH PURPOSE</Text>
             </View>
           </View>
-          <View style={styles.topRight}><Text style={styles.topGreeting}>{greeting}</Text><TouchableOpacity onPress={() => router.push("/profile")} style={styles.profile} accessibilityLabel="Open profile">
+          <View style={styles.topRight}><TouchableOpacity onPress={() => router.push("/profile")} style={styles.profile} accessibilityLabel="Open profile">
             {user?.avatar?<Image source={{uri:user.avatar}} style={styles.profileImage} cachePolicy="memory-disk"/>:<Text style={styles.profileLetter}>{firstName.charAt(0).toUpperCase()}</Text>}
-          </TouchableOpacity></View>
+          </TouchableOpacity><Text style={styles.topGreeting}>{greeting}</Text></View>
         </View>
 
         <View style={styles.hero}>
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   heroSub: { color: "#D0C8B9", fontSize: 12, letterSpacing: 0.7, marginTop: 13 },
   sectionCount: { color: GOLD, fontSize: 10, fontWeight: "700", letterSpacing: 1.5 },
   top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 15 },
-  topRight:{flexDirection:"row",alignItems:"center",gap:10},
+  topRight:{flexDirection:"column",alignItems:"flex-end",gap:5},
   topGreeting:{color:GOLD,fontSize:11,fontWeight:"700",letterSpacing:0.3},
   profileImage:{width:40,height:40,borderRadius:20},
   brand: { flexDirection: "row", alignItems: "center", gap: 10 },
