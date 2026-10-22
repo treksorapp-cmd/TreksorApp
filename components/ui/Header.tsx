@@ -67,11 +67,6 @@ const Header: React.FC<HeaderProps> = ({
     >
       {/* Header Content */}
       {showTitle && <View style={styles.headerContent}>
-        {showBackButton ? (
-          <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
-            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-        ) : null}
 
         <View style={title ? styles.absoluteTitleWrapper : {}}>
           <View style={styles.titleContainer}>
@@ -81,7 +76,7 @@ const Header: React.FC<HeaderProps> = ({
                 <Text style={styles.title}>{displayName}</Text>
               </View>
             ) : (
-              <Text style={styles.title}>{title}</Text>
+              <Text style={styles.title}>{title.charAt(0).toUpperCase() + title.slice(1).toLowerCase()}</Text>
             )}
           </View>
         </View>
@@ -191,8 +186,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: "bold",
-    fontSize: 22,
-    color: "#FFFFFF",
+    fontSize: 26,
+    color: "#F5F1E8",
     textAlign: "center",
   },
 });
