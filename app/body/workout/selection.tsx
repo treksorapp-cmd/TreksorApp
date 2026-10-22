@@ -1,3 +1,4 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 import Button from "@/components/ui/Button";
 import { Ionicons } from "@expo/vector-icons";
 import { ImageBackground } from "expo-image";
@@ -24,7 +25,7 @@ const Selection = () => {
         style={styles.backgroundImage}
         imageStyle={styles.imageStyle}
       >
-        <View style={[styles.header, { paddingTop: insets.top + 12 }]}><Text style={styles.eyebrow}>BODY / MOVEMENT</Text><Text style={styles.headerTitle}>WORKOUT</Text></View>
+        <BodyPageHeading trail="BODY" title="WORKOUT" style={{position:"absolute",top:insets.top+12,left:0,right:0,zIndex:2}} />
         <View style={[styles.content, { paddingBottom: insets.bottom + 30 }]}>
           <Button borderless iconName="barbell-outline" onPress={() => router.push("/body/workout")}>GYM</Button>
           <Button iconName="body-outline" disabled>CALISTHENICS · COMING SOON</Button>
