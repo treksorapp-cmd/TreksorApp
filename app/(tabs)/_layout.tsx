@@ -10,7 +10,7 @@ import {
 } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Platform,
   StyleSheet,
@@ -19,13 +19,7 @@ import {
 
 export default function TabLayout() {
   const { isAuthenticated, isVerified } = useAuthStore();
-  const [badge, setBadge] = React.useState<number>(0);
-  const [offerings, setOfferings] = React.useState<any>([]);
-
-
-  useEffect(() => {
-    setBadge(useArticleStore.getState().unreadArticlesCount);
-  }, [useArticleStore.getState().unreadArticlesCount]);
+  const badge = useArticleStore(state => state.unreadArticlesCount);
 
   if (!isAuthenticated || !isVerified) return <Redirect href="/" />;
 
@@ -38,7 +32,6 @@ export default function TabLayout() {
 
       {/* tabs */}
       <Tabs
-        key={badge}
         screenOptions={{
           animation: "shift",
           sceneStyle: {
