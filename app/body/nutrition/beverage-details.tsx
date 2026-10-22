@@ -9,7 +9,7 @@ import React, { useState } from "react";
 import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const GOLD = "#E8B44D";
+const GOLD = "#D7B877";
 const GLASS = "rgba(183,221,240,0.075)";
 const BORDER = "rgba(205,235,248,0.20)";
 type Beverage = (typeof Nutritions.beverages.data)[number];
@@ -80,7 +80,7 @@ const styles=StyleSheet.create({
   topLabel:{color:"#F5F1E8",fontSize:13,fontWeight:"700",letterSpacing:2},
   heroCopy:{paddingHorizontal:22,paddingBottom:28},
   eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.7},
-  heroTitle:{color:"#FFFFFF",fontSize:34,fontWeight:"700",letterSpacing:1.3,marginTop:9},
+  heroTitle:{color:"#FFFFFF",fontSize:34,fontWeight:"600",letterSpacing:1.3,marginTop:9},
   heroCaption:{color:"#D8D6D2",fontSize:11,letterSpacing:1.7,marginTop:9,fontWeight:"600"},
   content:{paddingHorizontal:20},
   descriptionCard:{borderRadius:20,backgroundColor:GLASS,borderWidth:1,borderColor:BORDER,padding:20,marginBottom:28},
@@ -88,7 +88,7 @@ const styles=StyleSheet.create({
   description:{fontSize:14,color:"#C8CCD0",lineHeight:22,marginTop:10},
   lead:{fontSize:16,color:"#FFFFFF",fontWeight:"600",lineHeight:24},
   sectionHeader:{flexDirection:"row",alignItems:"center",justifyContent:"space-between",gap:12,marginBottom:15},
-  sectionTitle:{color:"#FFFFFF",fontSize:23,fontWeight:"700",letterSpacing:1.2,marginTop:6},
+  sectionTitle:{color:"#FFFFFF",fontSize:23,fontWeight:"600",letterSpacing:1.2,marginTop:6},
   quantity:{maxWidth:"47%",flexDirection:"row",alignItems:"center",gap:7,backgroundColor:GLASS,borderWidth:1,borderColor:BORDER,paddingHorizontal:11,paddingVertical:9,borderRadius:14},
   quantityText:{color:"#E1E8EC",fontSize:11,flexShrink:1},
   ingredients:{backgroundColor:GLASS,borderWidth:1,borderColor:BORDER,borderRadius:20,paddingHorizontal:16,paddingVertical:3},
