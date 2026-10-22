@@ -171,7 +171,7 @@ export default function ProfileScreen() {
           </Button>
         </View>
 
-        <TouchableOpacity onPress={() => router.push("/mind/journal")} style={{marginHorizontal:20,marginVertical:16,padding:18,borderRadius:16,backgroundColor:"#1A1D22",borderWidth:1,borderColor:"#D6AE67"}}><Text style={{color:"#D6AE67",fontSize:12,letterSpacing:2}}>MIND · PRIVATE</Text><Text style={{color:"#fff",fontSize:21,fontWeight:"700",marginTop:7}}>My Journal & Mood Tracking →</Text><Text style={{color:"#aaa",marginTop:7}}>{moodSummary.days > 0 ? `Last 30 days · ${moodSummary.average?.toFixed(1)} / 5 · ${moodSummary.days} check-ins` : "Record how you feel and review your progress."}</Text></TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("/mind/journal")} style={{marginHorizontal:20,marginVertical:16,padding:18,borderRadius:16,backgroundColor:"rgba(67,72,78,0.30)",borderWidth:1,borderColor:"rgba(242,215,164,0.42)"}}><Text style={{color:"#D6AE67",fontSize:12,letterSpacing:2}}>MIND · PRIVATE</Text><Text style={{color:"#fff",fontSize:21,fontWeight:"700",marginTop:7}}>My Journal & Mood Tracking →</Text><Text style={{color:"#aaa",marginTop:7}}>{moodSummary.days > 0 ? `Last 30 days · ${moodSummary.average?.toFixed(1)} / 5 · ${moodSummary.days} check-ins` : "Record how you feel and review your progress."}</Text></TouchableOpacity>
 
         {/* Subscription Plan Section */}
         {user?.plan && (
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#1A1A1A",
+    backgroundColor: "rgba(67,72,72,0.30)",
     padding: 15,
     borderRadius: 12,
     marginBottom: 10,
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "rgba(255, 255, 255, 0.1)",
   },
   subscriptionCard: {
-    backgroundColor: "#1A1A1A",
+    backgroundColor: "rgba(67,72,72,0.30)",
     borderRadius: 12,
     padding: 20,
     borderWidth: 1,
