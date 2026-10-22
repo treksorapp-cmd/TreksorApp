@@ -48,12 +48,8 @@ Deno.serve(async (req: Request) => {
  if(id){
   const {data}=await db.from("ai_conversations").select("id").eq("id",id).eq("user_id",user.id).maybeSingle();
   if(!data)return reply(404,{error:"Conversation not found"});
- }else{
-  const {data,error}=await db.from("ai_conversations").insert({user_id:user.id,title:body.message.trim().slice(0,80)}).select("id").single();
-  if(error||!data)return reply(503,{error:"Unable to create conversation"});
-  id=data.id;
  }
- const {data:history,error:historyError}=await db.from("ai_messages").select("role,content").eq("conversation_id",id).eq("user_id",user.id).order("created_at",{ascending:false}).limit(16);
+ const {data:history,error:historyError}=id ? await db.from("ai_messages").select("role,content").eq("conversation_id",id).eq("user_id",user.id).order("created_at",{ascending:false}).limit(16) : {data:[],error:null};
  if(historyError)return reply(503,{error:"Unable to load context"});
  const {data:memories,error:memoryError}=await db.from("ai_memories").select("category,content").eq("user_id",user.id).eq("user_approved",true).order("created_at",{ascending:false}).limit(20);
  if(memoryError)return reply(503,{error:"Unable to load approved memories"});
@@ -62,11 +58,12 @@ Deno.serve(async (req: Request) => {
  const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),25000);
  let ai:Response;
  try {ai=await fetch("https://api.openai.com/v1/responses",{method:"POST",headers:{"Authorization":"Bearer "+openai,"Content-Type":"application/json"},body:JSON.stringify({model:"gpt-4.1-mini",instructions:instruction+"\nApproved memories:\n"+approved,input:messages,max_output_tokens:550,store:false}),signal:controller.signal});}
- catch {return reply(502,{error:"AI service temporarily unavailable"});}finally{clearTimeout(timeout);}
- if(!ai.ok)return reply(502,{error:"AI service temporarily unavailable"});
+ catch (e) {console.error("OpenAI connection error",e instanceof Error?e.name:"unknown");return reply(502,{error:"Could not reach the AI provider. Try again shortly."});}finally{clearTimeout(timeout);}
+ if(!ai.ok){let code="unknown";try{const detail=await ai.json();code=typeof detail?.error?.code==="string"?detail.error.code:"unknown";}catch{}console.error("OpenAI provider error",JSON.stringify({status:ai.status,code}));if(ai.status===429)return reply(503,{error:code==="insufficient_quota"?"Treksor AI needs API billing or a higher usage limit.":"AI is busy. Please try again shortly."});if(ai.status===401)return reply(502,{error:"Treksor AI credentials are not valid."});if(ai.status===403)return reply(502,{error:"Treksor AI project key lacks model access."});if(ai.status===400)return reply(502,{error:"Treksor AI model configuration needs attention."});return reply(502,{error:"AI service temporarily unavailable"});}
  const result=await ai.json();
  const answer=(result?.output??[]).flatMap((item:any)=>item?.content??[]).filter((part:any)=>part?.type==="output_text").map((part:any)=>part.text).join("\n");
  if(typeof answer!=="string"||!answer.trim())return reply(502,{error:"AI response unavailable"});
+ if(!id){const {data:created,error:createError}=await db.from("ai_conversations").insert({user_id:user.id,title:body.message.trim().slice(0,80)}).select("id").single();if(createError||!created)return reply(503,{error:"Unable to create conversation"});id=created.id;}
  const {error:saveError}=await db.from("ai_messages").insert([{conversation_id:id,user_id:user.id,role:"user",content:body.message.trim()},{conversation_id:id,user_id:user.id,role:"assistant",content:answer.slice(0,16000)}]);
  if(saveError)return reply(503,{error:"Unable to save conversation"});
  await db.from("ai_conversations").update({updated_at:new Date().toISOString()}).eq("id",id).eq("user_id",user.id);
