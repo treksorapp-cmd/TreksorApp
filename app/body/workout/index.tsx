@@ -51,7 +51,7 @@ export default function GymScreen() {
           <LinearGradient colors={["rgba(2,5,12,0.22)", "rgba(2,5,12,0.68)", "#02050C"]} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
           <View style={[styles.heroContent, { paddingTop: insets.top + 12 }]}>
             <Text style={styles.eyebrow}>BODY / WORKOUT</Text>
-            <Text style={styles.heroTitle}>GYM</Text>
+            <Text style={styles.heroTitle}>Gym</Text>
             <Text style={styles.heroSubtitle}>Train with intention. Progress with purpose.</Text>
           </View>
         </View>
@@ -115,11 +115,11 @@ const styles = StyleSheet.create({
   hero:{height:280,justifyContent:"flex-end",overflow:"hidden"},
   heroContent:{paddingHorizontal:24,paddingBottom:27,flex:1,justifyContent:"flex-end"},
   eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:2},
-  heroTitle:{color:"#FFFFFF",fontSize:43,fontWeight:"700",letterSpacing:2,marginTop:7},
+  heroTitle:{color:"#FFFFFF",fontSize:43,fontWeight:"600",letterSpacing:-1.2,marginTop:7},
   heroSubtitle:{color:"#DDD7CB",fontSize:13,marginTop:8},
   content:{paddingHorizontal:20},
   sectionHeading:{flexDirection:"row",justifyContent:"space-between",alignItems:"center",marginBottom:16},
-  sectionTitle:{color:"#FFFFFF",fontSize:25,fontWeight:"700",marginTop:5},
+  sectionTitle:{color:"#FFFFFF",fontSize:25,fontWeight:"600",marginTop:5},
   activeTag:{flexDirection:"row",alignItems:"center",gap:7,backgroundColor:"rgba(214,184,116,0.1)",paddingHorizontal:12,paddingVertical:8,borderRadius:20,borderWidth:0},
   pulseShell:{width:9,height:9,alignItems:"center",justifyContent:"center"},
   pulseHalo:{position:"absolute",width:9,height:9,borderRadius:5,backgroundColor:GOLD},
