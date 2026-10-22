@@ -4,7 +4,8 @@ import { useAuthStore } from "@/store/auth-store"
 import { useChatStore } from "@/store/chat-store"
 import { Message } from "@/types/message"
 import { Ionicons } from "@expo/vector-icons"
-import { Image } from "expo-image"
+import { Image, ImageBackground } from "expo-image"
+import { LinearGradient } from "expo-linear-gradient"
 import { StatusBar } from "expo-status-bar"
 import { useEffect, useRef, useState } from "react"
 import {
@@ -100,6 +101,10 @@ export default function ChatScreen() {
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : undefined} keyboardVerticalOffset={0}>
       <StatusBar style="light" />
+      <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+        <ImageBackground source={require("@/assets/images/mental-home-bg.jpeg")} contentFit="cover" style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={["rgba(5,5,5,0.94)","rgba(5,5,5,0.88)","rgba(5,5,5,0.97)"]} style={StyleSheet.absoluteFill} />
+      </View>
 
       {messages.length === 0 && (
         <View style={styles.welcomeAI}>
@@ -174,7 +179,7 @@ const styles = StyleSheet.create({
   premiumHeaderCenter: { flexDirection: "row", alignItems: "center", gap: 8 },
   premiumHeaderTitle: { fontSize: 28, fontWeight: "700", color: "#F5F1E8", letterSpacing: 0.2 },
   beta: { color: "#161008", fontSize: 10, fontWeight: "800", backgroundColor: "#F5BC4F", paddingHorizontal: 9, paddingVertical: 4, borderRadius: 9 },
-  welcomeAI: { backgroundColor: "rgba(56,62,62,0.30)", marginHorizontal: 20, marginTop: 24, padding: 22, borderRadius: 18, borderWidth: 1, borderColor: "rgba(255,238,197,0.24)" },
+  welcomeAI: { backgroundColor: "rgba(29,31,31,0.56)", marginHorizontal: 20, marginTop: 24, padding: 22, borderRadius: 18, borderWidth: 1, borderColor: "rgba(255,238,197,0.24)" },
   welcomeEyebrow: { color: "#E8B44D", fontSize: 10, fontWeight: "700", letterSpacing: 2.4, marginBottom: 12 },
   welcomeTitle: { color: "#F5F1E8", fontSize: 24, fontWeight: "700", marginBottom: 12 },
   welcomeNote: { color: "#A9A397", fontSize: 11, lineHeight: 16, marginTop: 18 },
@@ -287,7 +292,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   aiBubble: {
-    backgroundColor: "rgba(67,72,74,0.45)",
+    backgroundColor: "rgba(46,48,48,0.74)",
     borderBottomLeftRadius: 4,
   },
   userBubble: {
@@ -350,8 +355,8 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    backgroundColor: "#2a2a2a",
-    borderRadius: 20,
+    backgroundColor: "rgba(55,57,57,0.64)",
+    borderRadius: 22,
     paddingHorizontal: 16,
     paddingVertical: 12,
     color: "#FFFFFF",
