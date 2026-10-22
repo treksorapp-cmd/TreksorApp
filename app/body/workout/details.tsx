@@ -1,7 +1,6 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
 
-import Header from "@/components/ui/Header";
-import { useAuthStore } from "@/store/auth-store";
 // import { workoutContent } from "@/mock/workouts"
 import { useWorkoutStore } from "@/store/workout-store";
 import { Ionicons } from "@expo/vector-icons";
@@ -53,7 +52,6 @@ export default function WorkoutInfoScreen() {
   const [fadeAnim] = useState(new RNAnimated.Value(0));
   const [slideAnim] = useState(new RNAnimated.Value(30));
   const [isCompleted, setIsCompleted] = useState(false);
-  const {user} = useAuthStore();
 
   useEffect(() => {
     // Load workout content based on ID
@@ -113,16 +111,10 @@ export default function WorkoutInfoScreen() {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: user?.plan ? insets.top + 10 : 0, position: !user?.plan ? "relative": "absolute" }]}>
+    <View style={styles.container}>
       <StatusBar style="light" />
 
-      {/* Custom Header */}
-      {!user?.plan && <Header showTitle={false} showBackButton={false} showAvatar={false} />}
-      <View style={styles.header}>
-        <View style={styles.backButton} />
-        <Text style={styles.headerTitle}>{workout.title}</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+      <BodyPageHeading trail="BODY / WORKOUT / GYM / EXERCISES" title={workout.title} style={{marginTop:insets.top+12}} />
 
       <ScrollView
         style={styles.content}
@@ -163,9 +155,6 @@ export default function WorkoutInfoScreen() {
 
           {/* Content Section */}
           <View style={styles.contentSection}>
-            <View style={styles.titleRow}>
-              <Text style={styles.workoutTitle}>{workout.title}</Text>
-            </View>
 
             <Text style={styles.description}>
               {parseHTMLContent(workout.content.description)}
