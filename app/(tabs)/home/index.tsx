@@ -1,3 +1,4 @@
+import { playCompletionFeedback } from "@/lib/completion-feedback";
 import { useAuthStore } from "@/store/auth-store";
 import { usePowerThoughtStore } from "@/store/thought-store";
 import { Ionicons } from "@expo/vector-icons";
@@ -49,6 +50,7 @@ export default function HomeScreen() {
   const dailyMessage=DAILY_MESSAGES[dailyIndex];
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const todayThought = powerThoughts?.find(item => item.isToday) || powerThoughts?.[0];
+  const completeThought = () => { if (!todayThought || todayThought.isRead) return; markRead(todayThought._id); void playCompletionFeedback(); };
   const thought = todayThought?.thought || "Your daily perspective will appear here when published.";
 
   return (
@@ -70,7 +72,7 @@ export default function HomeScreen() {
         <View style={styles.hero}>
           <ImageBackground source={DAILY_HERO_IMAGES[dailyIndex]} contentFit="cover" contentPosition="center 58%" cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
           <LinearGradient colors={["rgba(8,9,11,0.08)", "rgba(8,9,11,0.45)", "#08090B"]} locations={[0, 0.4, 1]} style={StyleSheet.absoluteFill} />
-          <Text style={styles.heroGreeting}>{greeting}</Text>
+          <View style={styles.heroGreetingWrap}><View style={styles.greetingDot}/><Text style={styles.heroGreeting}>{greeting}</Text></View>
           <View style={styles.heroContent}>
             <Text style={styles.eyebrow}>YOUR DAILY DIRECTION</Text>
             <Text style={styles.heroTitle}>{dailyMessage[0]}{"\n"}<Text style={styles.name}>{dailyMessage[1]}</Text></Text>
@@ -106,7 +108,7 @@ export default function HomeScreen() {
           <View style={styles.thoughtCard}>
             <Text style={{color:GOLD,fontSize:10,fontWeight:"800",letterSpacing:1.8,marginBottom:15}}>POWER THOUGHT · TODAY</Text>
             <Text style={styles.thoughtText}>{thought}</Text>
-            <View style={styles.thoughtFooter}><TouchableOpacity onPress={() => router.push("/mental/thoughts")}><Text style={styles.thoughtLink}>EXPLORE THOUGHTS →</Text></TouchableOpacity><TouchableOpacity disabled={!todayThought || !!todayThought.isRead} accessibilityRole="checkbox" accessibilityState={{checked:!!todayThought?.isRead}} onPress={()=>todayThought&&markRead(todayThought._id)} style={{flexDirection:"row",alignItems:"center",gap:8,backgroundColor:todayThought?.isRead?GOLD:"#292823",paddingHorizontal:13,paddingVertical:11,borderRadius:12,borderWidth:1,borderColor:GOLD}}><Ionicons name={todayThought?.isRead?"checkmark-circle":"checkmark-circle-outline"} size={19} color={todayThought?.isRead?"#17130B":GOLD}/><Text style={{color:todayThought?.isRead?"#17130B":GOLD,fontWeight:"800",fontSize:12}}>{todayThought?.isRead?"READ TODAY":"MARK AS READ"}</Text></TouchableOpacity></View>
+            <View style={styles.thoughtFooter}><TouchableOpacity onPress={() => router.push("/mental/thoughts")}><Text style={styles.thoughtLink}>EXPLORE THOUGHTS →</Text></TouchableOpacity><TouchableOpacity disabled={!todayThought || !!todayThought.isRead} accessibilityRole="checkbox" accessibilityState={{checked:!!todayThought?.isRead}} onPress={completeThought} style={{flexDirection:"row",alignItems:"center",gap:8,backgroundColor:todayThought?.isRead?GOLD:"#292823",paddingHorizontal:13,paddingVertical:11,borderRadius:12,borderWidth:1,borderColor:GOLD}}><Ionicons name={todayThought?.isRead?"checkmark-circle":"checkmark-circle-outline"} size={19} color={todayThought?.isRead?"#17130B":GOLD}/><Text style={{color:todayThought?.isRead?"#17130B":GOLD,fontWeight:"800",fontSize:12}}>{todayThought?.isRead?"READ TODAY":"MARK AS READ"}</Text></TouchableOpacity></View>
           </View>
         </View>
         <Text style={styles.footer}>TREKSOR · BUILT WITH PURPOSE</Text>
@@ -125,7 +127,9 @@ const styles = StyleSheet.create({
   sectionCount: { color: GOLD, fontSize: 10, fontWeight: "700", letterSpacing: 1.5 },
   top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 15 },
   topRight:{flexDirection:"column",alignItems:"flex-end",gap:5},
-  heroGreeting:{position:"absolute",top:17,right:23,zIndex:2,color:"#F7D181",fontSize:12,fontWeight:"700",letterSpacing:0.4,textShadowColor:"rgba(0,0,0,.95)",textShadowRadius:8},
+  heroGreetingWrap:{position:"absolute",top:14,right:20,zIndex:2,flexDirection:"row",alignItems:"center",gap:7,paddingHorizontal:12,paddingVertical:8,borderRadius:20,backgroundColor:"rgba(10,12,12,0.56)",borderWidth:1,borderColor:"rgba(230,187,103,0.35)"},
+  greetingDot:{width:5,height:5,borderRadius:3,backgroundColor:"#E8B44D"},
+  heroGreeting:{color:"#F4D9A4",fontSize:11,fontWeight:"600",letterSpacing:0.55},
   profileImage:{width:40,height:40,borderRadius:20},
   brand: { flexDirection: "row", alignItems: "center", gap: 10 },
   logo: { width: 38, height: 38, borderRadius: 11 },
