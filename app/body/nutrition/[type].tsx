@@ -1,7 +1,6 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 import Button from "@/components/ui/Button";
-import Header from "@/components/ui/Header";
 import { Nutritions } from "@/mock/nutrition";
-import { useAuthStore } from "@/store/auth-store";
 import { Ionicons } from "@expo/vector-icons";
 import { ImageBackground } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
@@ -22,7 +21,6 @@ const BeveragesHome = () => {
   const categoryKey = type === "supplements" ? "supplements" : "beverages";
   const category = Nutritions[categoryKey];
   const { backgroundImage, data, route, headerTitle } = category;
-    const { user } = useAuthStore();
 
   return (
     <View style={styles.container}>
@@ -33,17 +31,12 @@ const BeveragesHome = () => {
         style={styles.backgroundImage}
         imageStyle={styles.imageStyle}
       >
-        {/* Header */}
-         {!user?.plan && <Header showTitle={false} showBackButton={false} showAvatar={false} />}
-        <View style={[styles.header, { paddingTop: user?.plan ? insets.top + 10 : 0, position: !user?.plan ? "relative" : "absolute" }]}>
-          <View style={styles.backButton} />
-          <Text style={styles.headerTitle}>{headerTitle}</Text>
-          <View style={styles.headerSpacer} />
-        </View>
+        <BodyPageHeading trail="BODY / NUTRITION" title={headerTitle} style={{position:"absolute",top:insets.top+12,left:0,right:0,zIndex:2}} />
 
         <View style={[styles.content, { paddingBottom: insets.bottom + 30 }]}>
           {data?.map((item) => (
             <Button
+              borderless
               key={item.id}
               onPress={() =>
                 router.push({ pathname: route, params: { id: item.id } })
