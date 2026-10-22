@@ -32,7 +32,7 @@ export default function MyPlan(){
  return <KeyboardAvoidingView style={{flex:1,backgroundColor:"#08090B"}} behavior={Platform.OS==="ios"?"padding":undefined}><ScrollView keyboardShouldPersistTaps="handled" style={{flex:1,backgroundColor:"#08090B"}} contentContainerStyle={{padding:22,paddingTop:insets.top+78,paddingBottom:insets.bottom+90}}>
  <Text style={{color:GOLD,letterSpacing:2,fontSize:11,fontWeight:"700",marginTop:0}}>BODY / WORKOUT</Text>
  <Text style={{color:"white",fontSize:38,fontWeight:"700",letterSpacing:1.5,marginTop:8}}>MY PLAN</Text>
- {!plan?<><Text style={{color:"#D5D1C9",marginTop:18,lineHeight:22}}>Create a plan to see your weekly sessions and exercises here.</Text><Button iconName="options-outline" onPress={()=>router.push("/body/workout/guide")}>BUILD MY PLAN</Button></>:<>
+ {!plan?<><Text style={{color:"#D5D1C9",marginTop:18,lineHeight:22}}>Create a plan to see your weekly sessions and exercises here.</Text><Button borderless iconName="options-outline" onPress={()=>router.push("/body/workout/guide")}>BUILD MY PLAN</Button></>:<>
  <Text style={{color:"#C9C5BC",marginTop:10}}>{plan.days} sessions per week · {plan.location}</Text>
  <TouchableOpacity onPress={()=>router.push("/body/workout/progress")} style={{flexDirection:"row",alignItems:"center",gap:9,marginTop:18,padding:14,backgroundColor:GLASS,borderRadius:16}}><Ionicons name="stats-chart-outline" size={20} color={GOLD}/><Text style={{color:GOLD,fontWeight:"800",flex:1}}>GYM PROGRESS</Text><Ionicons name="chevron-forward" size={18} color={GOLD}/></TouchableOpacity>
  <View style={{backgroundColor:GLASS,padding:20,borderRadius:20,marginTop:24}}>
