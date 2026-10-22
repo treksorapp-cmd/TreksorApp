@@ -26,8 +26,13 @@ const { width } = Dimensions.get("window")
 
 export default function ChatScreen() {
   const insets = useSafeAreaInsets()
-  const {getMessages,sendMessage, loading, error, setUserId } = useChatStore()
-  const messages = getMessages();
+  const chats = useChatStore(state => state.chats)
+  const currentUserId = useChatStore(state => state.currentUserId)
+  const loading = useChatStore(state => state.loading)
+  const error = useChatStore(state => state.error)
+  const sendMessage = useChatStore(state => state.sendMessage)
+  const setUserId = useChatStore(state => state.setUserId)
+  const messages = currentUserId ? chats[currentUserId] || [] : [];
   const [inputText, setInputText] = useState("")
   const [keyboardHeight, setKeyboardHeight] = useState(0)
   useEffect(() => {
@@ -39,17 +44,18 @@ export default function ChatScreen() {
   const { user } = useAuthStore()
 
   useEffect(()=>{
-    if (useAuthStore.getState().user?.id) setUserId(useAuthStore.getState().user.id)
-  },[setUserId])
+    if (user?.id) setUserId(user.id)
+  },[setUserId,user?.id])
 
   useEffect(() => {
     flatListRef.current?.scrollToEnd({ animated: true })
   }, [messages])
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (inputText.trim() && !loading) {
-      sendMessage(inputText.trim())
-      setInputText("")
+      const text=inputText.trim()
+      const sent=await sendMessage(text)
+      if(sent)setInputText("")
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true })
       }, 100)
@@ -95,8 +101,9 @@ export default function ChatScreen() {
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : undefined} keyboardVerticalOffset={0}>
       <StatusBar style="light" />
 
-      <View style={styles.premiumHeader}><TouchableOpacity onPress={handleBack}><Ionicons name="arrow-back" size={23} color="#fff" /></TouchableOpacity><View style={styles.premiumHeaderCenter}><Text style={styles.premiumHeaderTitle}>Treksor AI</Text><Text style={styles.beta}>BETA</Text></View><View style={{width:23}} /></View>
-      {messages.length === 0 && <View style={styles.welcomeAI}><Text style={styles.welcomeAIText}>Hi {user?.name?.split(" ")[0] || "there"} 👋{"\n"}I'm your Treksor AI coach.{"\n"}I'm here to help you be more focused, consistent and intentional.</Text></View>}
+      <View style={styles.premiumHeader}><TouchableOpacity onPress={handleBack}><Ionicons name="arrow-back" size={23} color="#fff" /></TouchableOpacity><View style={styles.premiumHeaderCenter}><Text style={styles.premiumHeaderTitle}>TREKSOR CORE</Text><Text style={styles.beta}>WELLBEING</Text></View><View style={{width:23}} /></View>
+      {messages.length === 0 && <View style={styles.welcomeAI}><Text style={styles.welcomeAIText}>Welcome to Core.{"\n"}A private space to reflect, find clarity and build healthy habits across mind, body, balance and purpose. What would you like to talk about today?</Text></View>}
+      <Text style={{color:"#A9A397",fontSize:11,lineHeight:17,marginHorizontal:20,marginTop:10}}>Core is an AI companion, not a therapist or emergency service. If you are in immediate danger, contact local emergency services.</Text>
       {/* Header */}
       {/* <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
@@ -155,7 +162,7 @@ export default function ChatScreen() {
       <View style={[styles.inputContainer, { paddingBottom: keyboardHeight > 0 ? 12 : insets.bottom + 82, marginBottom: keyboardHeight > 0 ? 12 : 0 }]}>
           <TextInput
             style={styles.textInput}
-            placeholder="Type your message here..."
+            placeholder="What’s on your mind?"
             placeholderTextColor="#666"
             value={inputText}
             onChangeText={setInputText}
