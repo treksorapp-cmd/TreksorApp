@@ -130,7 +130,7 @@ export default function MediationDetailScreen() {
           showBackButton={true}
           onBackPress={() => router.back()}
           showAvatar={false}
-          headerRightButton={<TouchableOpacity accessibilityRole="button" accessibilityLabel="Return to Balance" onPress={() => router.dismissTo("/spiritual")} style={{width:42,height:42,borderRadius:14,backgroundColor:"rgba(185,220,238,0.1)",borderWidth:1,borderColor:"rgba(220,239,249,0.22)",alignItems:"center",justifyContent:"center"}}><Ionicons name="shield-outline" size={22} color="#E8B44D" /></TouchableOpacity>}
+          headerRightButton={<TouchableOpacity accessibilityRole="button" accessibilityLabel="Return to Balance" onPress={() => router.dismissTo("/spiritual")} style={{width:42,height:42,borderRadius:14,backgroundColor:"rgba(185,220,238,0.1)",borderWidth:1,borderColor:"rgba(220,239,249,0.22)",alignItems:"center",justifyContent:"center"}}><Ionicons name="shield-outline" size={22} color="#D7B877" /></TouchableOpacity>}
         />
       ),
     });
@@ -355,7 +355,7 @@ export default function MediationDetailScreen() {
         >
           <LinearGradient
             colors={
-              mediation.isRead ? ["#4CAF50", "#45A049"] : ["#F39C12", "#E67E22"]
+              mediation.isRead ? ["#4CAF50", "#45A049"] : ["#D7B877", "#E67E22"]
             }
             style={styles.buttonGradient}
             start={{ x: 0, y: 0 }}
@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: "#F39C12",
+    backgroundColor: "#D7B877",
     marginTop: 8,
     marginRight: 12,
   },
