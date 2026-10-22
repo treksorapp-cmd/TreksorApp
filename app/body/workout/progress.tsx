@@ -29,7 +29,7 @@ export default function GymProgress(){
  },[sets]);
  const sessions=Object.values(checkIns).reduce((sum,arr)=>sum+arr.length,0);
  return <ScrollView style={{flex:1,backgroundColor:"#08090B"}} contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:100}}>
- <TouchableOpacity onPress={()=>router.back()}><Ionicons name="arrow-back" color="white" size={24}/></TouchableOpacity>
+ 
  <BodyPageHeading trail="BODY / WORKOUT / GYM" title="GYM PROGRESS" style={{paddingHorizontal:0}} />
  <Text style={{color:"#C7C1B5",marginTop:9,lineHeight:21}}>Your strength journey, built one set at a time.</Text>
  <View style={{backgroundColor:"rgba(67,72,72,0.30)",borderWidth:1,borderColor:"rgba(242,215,164,0.32)",borderRadius:17,padding:20,marginTop:25}}>
