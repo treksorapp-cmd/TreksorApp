@@ -5,8 +5,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image, ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, type Href } from "expo-router";
-import { useEffect, useState } from "react";
-import { AppState, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Animated, AppState, Easing, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const GOLD = "#E8B44D";
@@ -44,7 +44,9 @@ export default function HomeScreen() {
 
   const firstName = user?.name?.trim().split(" ")[0] || "Explorer";
   const [now,setNow]=useState(()=>new Date());
-  useEffect(()=>{const refresh=()=>setNow(new Date());const timer=setInterval(refresh,30000);const sub=AppState.addEventListener("change",v=>{if(v==="active")refresh()});return()=>{clearInterval(timer);sub.remove()}},[]);
+  const reveal=useRef(new Animated.Value(0)).current;
+  useEffect(()=>{Animated.timing(reveal,{toValue:1,duration:480,easing:Easing.out(Easing.cubic),useNativeDriver:true}).start()},[reveal]);
+  useEffect(()=>{const refresh=()=>setNow(new Date());const timer=setInterval(refresh,60000);const sub=AppState.addEventListener("change",v=>{if(v==="active")refresh()});return()=>{clearInterval(timer);sub.remove()}},[]);
   const hour = now.getHours();
   const dailyIndex=Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000)%DAILY_MESSAGES.length;
   const dailyMessage=DAILY_MESSAGES[dailyIndex];
@@ -70,7 +72,7 @@ export default function HomeScreen() {
           </TouchableOpacity></View>
         </View>
 
-        <View style={styles.hero}>
+        <Animated.View style={[styles.hero,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[12,0]})}]}]}>
           <ImageBackground source={DAILY_HERO_IMAGES[dailyIndex]} contentFit="cover" contentPosition="center 58%" cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
           <LinearGradient colors={["rgba(8,9,11,0.08)", "rgba(8,9,11,0.45)", "#08090B"]} locations={[0, 0.4, 1]} style={StyleSheet.absoluteFill} />
           <View style={styles.heroGreetingWrap}><View style={styles.greetingDot}/><Text style={styles.heroGreeting}>{greeting}</Text></View>
@@ -79,17 +81,18 @@ export default function HomeScreen() {
             <Text style={styles.heroTitle}>{dailyMessage[0]}{"\n"}<Text style={styles.name}>{dailyMessage[1]}</Text></Text>
             <Text style={styles.heroSub}>{dailyMessage[2]}</Text>
           </View>
-        </View>
+        </Animated.View>
         <View style={styles.sectionHeader}>
           <View>
             <Text style={styles.sectionEyebrow}>THE TREKSOR METHOD</Text>
             <Text style={styles.sectionTitle}>Four pillars. One direction.</Text>
+            <Text style={styles.sectionHint}>Choose a pillar to explore <Ionicons name="arrow-down" size={12} color="#C6AE84"/></Text>
           </View>
         </View>
 
-        <View style={styles.grid}>
+        <Animated.View style={[styles.grid,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[18,0]})}]}]}>
           {pillars.map(pillar => (
-            <TouchableOpacity key={pillar.name} activeOpacity={0.84} style={styles.tile} onPress={() => router.push(pillar.route)} accessibilityRole="button" accessibilityLabel={pillar.name + ": " + pillar.subtitle}>
+            <TouchableOpacity key={pillar.name} activeOpacity={0.72} style={styles.tile} onPress={() => router.push(pillar.route)} accessibilityRole="button" accessibilityLabel={pillar.name + ": " + pillar.subtitle}>
               <ImageBackground source={pillar.image} contentFit="cover" contentPosition={pillar.name==="MIND"?"center 18%":"center"} style={StyleSheet.absoluteFill} transition={180} cachePolicy="memory-disk" />
               <LinearGradient colors={["rgba(0,0,0,0.20)", "rgba(0,0,0,0.22)", "rgba(0,0,0,0.95)"]} locations={[0, 0.34, 1]} style={StyleSheet.absoluteFill} />
               <View style={styles.tileTop}>
@@ -102,7 +105,7 @@ export default function HomeScreen() {
               </View>
             </TouchableOpacity>
           ))}
-        </View>
+        </Animated.View>
 
         <View style={styles.thoughtSection}>
           <View style={styles.thoughtHeading}><Ionicons name="sunny-outline" color={GOLD} size={19} /><Text style={styles.thoughtLabel}>TODAY ON TREKSOR</Text></View>
@@ -146,6 +149,7 @@ const styles = StyleSheet.create({
   sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 17 },
   sectionEyebrow: { color: "#C6AE84", fontSize: 10, letterSpacing: 2.1, fontWeight: "600", marginBottom: 7 },
   sectionTitle: { color: "#FFFFFF", fontSize: 22, fontWeight: "600", letterSpacing: -0.5 },
+  sectionHint:{color:"#AFA89C",fontSize:11,marginTop:8,letterSpacing:0.2},
   fourBadge: { width: 37, height: 37, borderRadius: 19, borderWidth: 1, borderColor: "#514332", alignItems: "center", justifyContent: "center" },
   fourBadgeText: { color: GOLD, fontSize: 12, fontWeight: "800" },
   grid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", rowGap: 13 },
