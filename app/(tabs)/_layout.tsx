@@ -1,6 +1,5 @@
 "use client";
 
-import { useArticleStore } from "@/store/article-store";
 import { useAuthStore } from "@/store/auth-store";
 import {
   AntDesign,
@@ -8,18 +7,27 @@ import {
   Octicons,
   SimpleLineIcons,
 } from "@expo/vector-icons";
-import { Redirect, Tabs } from "expo-router";
+import { Redirect, Tabs, usePathname } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
+  Animated,
   Platform,
   StyleSheet,
-  View
+  View,
+  useWindowDimensions
 } from "react-native";
 
 export default function TabLayout() {
   const { isAuthenticated, isVerified } = useAuthStore();
-  const badge = useArticleStore(state => state.unreadArticlesCount);
+  const pathname = usePathname();
+  const { width } = useWindowDimensions();
+  const activeIndex = pathname.startsWith("/chat") ? 1 : pathname.startsWith("/tracking") ? 2 : pathname.startsWith("/community") ? 3 : 0;
+  const glowPosition = useRef(new Animated.Value(activeIndex)).current;
+  useEffect(() => {
+    Animated.timing(glowPosition, { toValue: activeIndex, duration: 260, useNativeDriver: true }).start();
+  }, [activeIndex, glowPosition]);
 
   if (!isAuthenticated || !isVerified) return <Redirect href="/" />;
 
@@ -37,10 +45,21 @@ export default function TabLayout() {
           sceneStyle: {
             backgroundColor: "#050505",
           },
+          tabBarBackground: () => (
+            <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+              <View style={styles.goldDivider} />
+              <Animated.View style={[styles.glowTrack, { width: width / 4, transform: [{ translateX: glowPosition.interpolate({ inputRange: [0, 3], outputRange: [0, width * 0.75] }) }] }]}>
+                <LinearGradient colors={["transparent", "rgba(232,180,77,0.24)", "transparent"]} start={{x:0,y:0}} end={{x:1,y:0}} style={styles.glowHalo} />
+                <LinearGradient colors={["transparent", "#E8B44D", "#FFF0BC", "#E8B44D", "transparent"]} start={{x:0,y:0}} end={{x:1,y:0}} style={styles.glowLine} />
+              </Animated.View>
+            </View>
+          ),
           tabBarStyle: Platform.select({
             ios: {
               position: "absolute",
               backgroundColor: "#02050C",
+              borderTopWidth: 0,
+              elevation: 0,
             },
             default: {
               backgroundColor: "#02050C",
@@ -97,6 +116,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "black",
   },
+  goldDivider: { position: "absolute", top: 0, left: 0, right: 0, height: 1, backgroundColor: "rgba(232,180,77,0.32)" },
+  glowTrack: { position: "absolute", top: -8, height: 24, alignItems: "center" },
+  glowHalo: { position: "absolute", top: 0, width: "100%", height: 23, opacity: 0.95 },
+  glowLine: { position: "absolute", top: 8, width: "92%", height: 2, borderRadius: 3 },
   modalOverlay: {
     position: "absolute",
     top: 0,
