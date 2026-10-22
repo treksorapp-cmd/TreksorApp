@@ -236,7 +236,7 @@ export default function MySpaceScreen() {
   const moodDays: Record<string,{sum:number,count:number}> = {}
   for(const entry of myspaces){const d=new Date(entry.date);const score=scores[entry.mood];if(!Number.isFinite(d.getTime())||!score)continue;const day=d.toISOString().slice(0,10);const prev=moodDays[day]||{sum:0,count:0};moodDays[day]={sum:prev.sum+score,count:prev.count+1}}
   const moodTrend=Object.keys(moodDays).sort().slice(-7).map(day=>({day,score:moodDays[day].sum/moodDays[day].count}))
-  const [animatedValues] = useState(myspaces.map(() => new RNAnimated.Value(0)))
+  const animatedValues = myspaces.map(() => new RNAnimated.Value(1))
   const [selectedEntry, setSelectedEntry] = useState<string | null>(null)
   const [showOptionsModal, setShowOptionsModal] = useState(false)
 
@@ -252,7 +252,7 @@ export default function MySpaceScreen() {
     )
 
     RNAnimated.stagger(80, animations).start()
-  }, [])
+  }, [myspaces.length])
 
   const handleLongPress = (entryId: string) => {
     setSelectedEntry(entryId)
@@ -362,7 +362,7 @@ export default function MySpaceScreen() {
           {moodTrend.length===0&&<Text style={{color:"#AAA"}}>Your mood history will appear here.</Text>}
         </View>
       </View>
-      <View style={{paddingHorizontal:20}}><Button iconName="create-outline" onPress={()=>router.push("/mental/myspace/new-entry")}>NEW ENTRY</Button></View>
+      <View style={{paddingHorizontal:20}}><Button iconName="create-outline" onPress={()=>router.push("/mental/myspace/new-entry")}>TODAY'S ENTRY</Button></View>
       {/* Thoughts List */}
       <ScrollView
         style={styles.content}
