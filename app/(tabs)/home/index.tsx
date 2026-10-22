@@ -10,6 +10,8 @@ import { Animated, AppState, Easing, ScrollView, StyleSheet, Text, TouchableOpac
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const GOLD = "#E8B44D";
+const ATMOSPHERE_ENDPOINT = "https://niakfwerfqmrmhuypkpd.supabase.co/rest/v1/atmosphere_images?select=public_url&order=published_at.desc&limit=1";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_WxFupUF8wM6SuEcTXYuqHw_dRoSpLs8";
 const DAILY_MESSAGES = [
 ["Move with","intention.","Strength. Clarity. Balance. Purpose."],
 ["Become who","you envision.","Your future begins with today's choices."],
@@ -44,6 +46,18 @@ export default function HomeScreen() {
 
   const firstName = user?.name?.trim().split(" ")[0] || "Explorer";
   const [now,setNow]=useState(()=>new Date());
+  const [atmosphereUrl,setAtmosphereUrl]=useState<string | null>(null);
+  useEffect(()=>{
+    let active=true;
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),8000);
+    fetch(ATMOSPHERE_ENDPOINT,{headers:{apikey:SUPABASE_PUBLISHABLE_KEY},signal:controller.signal})
+      .then(async response=>response.ok?await response.json():[])
+      .then(rows=>{const url=rows?.[0]?.public_url;if(active&&typeof url==="string"&&url.startsWith("https://"))setAtmosphereUrl(url)})
+      .catch(()=>{})
+      .finally(()=>clearTimeout(timeout));
+    return()=>{active=false;clearTimeout(timeout);controller.abort()};
+  },[]);
   const reveal=useRef(new Animated.Value(0)).current;
   const pulse=useRef(new Animated.Value(0)).current;
   useEffect(()=>{const loop=Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true}),Animated.timing(pulse,{toValue:0,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true})]));loop.start();return()=>loop.stop()},[pulse]);
@@ -75,7 +89,7 @@ export default function HomeScreen() {
         </View>
 
         <Animated.View style={[styles.hero,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[12,0]})}]}]}>
-          <ImageBackground source={DAILY_HERO_IMAGES[dailyIndex]} contentFit="cover" contentPosition="center 58%" cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
+          <ImageBackground source={atmosphereUrl ? {uri:atmosphereUrl} : DAILY_HERO_IMAGES[dailyIndex]} contentFit="cover" contentPosition="center 58%" cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
           <LinearGradient colors={["rgba(8,9,11,0.08)", "rgba(8,9,11,0.45)", "#08090B"]} locations={[0, 0.4, 1]} style={StyleSheet.absoluteFill} />
           <View style={styles.heroGreetingWrap}><View style={styles.pulseShell}><Animated.View style={[styles.pulseHalo,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.06,0.24]}),transform:[{scale:pulse.interpolate({inputRange:[0,1],outputRange:[1,1.65]})}]}]}/><Animated.View style={[styles.greetingDot,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.70,1]})}]}/></View><Text style={styles.heroGreeting}>{greeting}</Text></View>
           <View style={styles.heroContent}>
