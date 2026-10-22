@@ -20,6 +20,7 @@ type ButtonProps = {
   iconStyle?: object; // Optional custom styles for the icon image
   buttonStyle?: object;
   disabled?: boolean;
+  borderless?: boolean;
   iconImage?: boolean; // Optional custom icon component
   iconImageIcon?: string; // Optional icon name for Entypo
 };
@@ -33,6 +34,7 @@ const Button = ({
   iconStyle,
   buttonStyle,
   disabled,
+  borderless = false,
   iconImage,
   iconImageIcon
 }: ButtonProps) => {
@@ -58,7 +60,7 @@ const Button = ({
         }
         start={{ x: 0.2, y: 0 }}
         end={{ x: 0.8, y: 1 }}
-        style={styles.borderGradient}
+        style={[styles.borderGradient, borderless && styles.borderlessGradient]}
       >
         <BlurView intensity={14} tint="dark" pointerEvents="none" style={StyleSheet.absoluteFill} />
         {/* Inner LinearGradient for the button background */}
@@ -102,6 +104,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     padding: 1, // This creates the border thickness
   },
+  borderlessGradient:{padding:0},
   innerGradient: {
     flex: 1,
     justifyContent: "center",
