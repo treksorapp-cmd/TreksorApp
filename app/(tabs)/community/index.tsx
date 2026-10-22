@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 type Event = { id:string; title:string; category:string; city:string; starts_at:string; description:string; capacity:number; organizer_name:string };
 const FEED = "https://treksor-admin-production.up.railway.app/api/public/discover?type=events";
-const GOLD = "#E8B44D";
+const GOLD = "#D7B877";
 const GLASS = "rgba(183,221,240,0.055)";
 const ACTIVITY_TINTS = ["rgba(94,164,143,0.17)","rgba(100,147,199,0.17)","rgba(201,163,97,0.15)","rgba(147,127,191,0.17)","rgba(191,132,154,0.16)","rgba(107,169,181,0.16)"];
 const ACTIVITY_ICON_TINTS = ["#B8E2D1","#C1DCF6","#F2D8A4","#D6C5F2","#F2C8D8","#B8E5EB"];
