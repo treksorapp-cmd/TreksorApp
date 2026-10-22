@@ -358,7 +358,7 @@ export default function MySpaceScreen() {
         <Text style={{color:"#FFFFFF",fontWeight:"700",fontSize:15}}>MOOD OVER TIME</Text>
         <Text style={{color:"#CCC6BC",marginTop:6}}>{moodTrend.length<2?"Record moods on different days to see your trend":moodTrend[moodTrend.length-1].score>moodTrend[0].score?"Mood improving":moodTrend[moodTrend.length-1].score<moodTrend[0].score?"Mood declining":"Mood stable"}</Text>
         <View style={{height:130,flexDirection:"row",justifyContent:"space-around",alignItems:"flex-end"}}>
-          {moodTrend.map(item=><View key={item.day} style={{alignItems:"center",flex:1}}><View style={{height:Math.max(6,item.score*18),width:7,borderRadius:5,backgroundColor:"#E8B44D"}}/><Text style={{color:"#C8C2B6",fontSize:10,marginTop:7}}>{item.day.slice(5)}</Text></View>)}
+          {moodTrend.map(item=><View key={item.day} style={{alignItems:"center",flex:1}}><View style={{height:Math.max(6,item.score*18),width:7,borderRadius:5,backgroundColor:"#D7B877"}}/><Text style={{color:"#C8C2B6",fontSize:10,marginTop:7}}>{item.day.slice(5)}</Text></View>)}
           {moodTrend.length===0&&<Text style={{color:"#AAA"}}>Your mood history will appear here.</Text>}
         </View>
       </View>
