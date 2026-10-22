@@ -49,8 +49,8 @@ export default function GymScreen() {
         <View style={styles.hero}>
           <ImageBackground source={require("@/assets/images/Gym_2.png")} contentFit="cover" style={StyleSheet.absoluteFill} />
           <LinearGradient colors={["rgba(2,5,12,0.22)", "rgba(2,5,12,0.68)", "#02050C"]} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
-          <View style={[styles.heroContent, { paddingTop: insets.top + 66 }]}>
-            <Text style={styles.eyebrow}>BODY  /  WORKOUT</Text>
+          <View style={[styles.heroContent, { paddingTop: insets.top + 12 }]}>
+            <Text style={styles.eyebrow}>BODY / WORKOUT</Text>
             <Text style={styles.heroTitle}>GYM</Text>
             <Text style={styles.heroSubtitle}>Train with intention. Progress with purpose.</Text>
           </View>
