@@ -97,9 +97,7 @@ const SupplementDetails = () => {
         {/* Header */}
          {!user?.plan && <Header showTitle={false} showBackButton={false} showAvatar={false} />}
         <View style={[styles.header, { paddingTop: user?.plan && (insets.top + 10), position: !user?.plan ? "relative": "absolute" }]}>
-          <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
-            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
+          <View style={styles.backButton} />
           <Text style={styles.headerTitle}>{supplement.name}</Text>
           <View style={styles.headerSpacer} />
         </View>
