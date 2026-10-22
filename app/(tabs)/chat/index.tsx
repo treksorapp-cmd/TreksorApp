@@ -106,9 +106,23 @@ export default function ChatScreen() {
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : undefined} keyboardVerticalOffset={0}>
       <StatusBar style="light" />
 
-      <View style={styles.premiumHeader}><TouchableOpacity onPress={handleBack}><Ionicons name="arrow-back" size={23} color="#fff" /></TouchableOpacity><View style={styles.premiumHeaderCenter}><Text style={styles.premiumHeaderTitle}>TREKSOR AI</Text><Text style={styles.beta}>WELLBEING</Text></View><View style={{width:23}} /></View>
-      {messages.length === 0 && <View style={styles.welcomeAI}><Text style={styles.welcomeAIText}>Welcome to Treksor.{"\n"}A private space to reflect, find clarity and build healthy habits across mind, body, balance and purpose. What would you like to talk about today?</Text></View>}
-      <Text style={{color:"#A9A397",fontSize:11,lineHeight:17,marginHorizontal:20,marginTop:10}}>Treksor AI is a companion, not a therapist or emergency service. If you are in immediate danger, contact local emergency services.</Text>
+      <View style={styles.premiumHeader}>
+        <TouchableOpacity onPress={handleBack} accessibilityRole="button" accessibilityLabel="Go back" style={styles.headerBack}>
+          <Ionicons name="arrow-back" size={22} color="#F5F1E8" />
+        </TouchableOpacity>
+        <View style={styles.premiumHeaderCenter}>
+          <Text style={styles.premiumHeaderTitle}>Chat</Text>
+        </View>
+        <View style={styles.headerBack} />
+      </View>
+      {messages.length === 0 && (
+        <View style={styles.welcomeAI}>
+          <Text style={styles.welcomeEyebrow}>YOUR SPACE</Text>
+          <Text style={styles.welcomeTitle}>What's on your mind?</Text>
+          <Text style={styles.welcomeAIText}>Talk about what matters to you. Find clarity, build healthy habits and move forward at your own pace.</Text>
+          <Text style={styles.welcomeNote}>AI support, not professional mental health care.</Text>
+        </View>
+      )}
       {/* Header */}
       {/* <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
@@ -167,7 +181,7 @@ export default function ChatScreen() {
       <View style={[styles.inputContainer, { paddingBottom: keyboardHeight > 0 ? 12 : insets.bottom + 82, marginBottom: keyboardHeight > 0 ? 12 : 0 }]}>
           <TextInput
             style={styles.textInput}
-            placeholder="What’s on your mind?"
+            placeholder="Message..."
             placeholderTextColor="#666"
             value={inputText}
             onChangeText={setInputText}
@@ -192,11 +206,15 @@ export default function ChatScreen() {
 }
 
 const styles = StyleSheet.create({
-  premiumHeader: { height: 56, flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: "#242424" },
+  premiumHeader: { height: 62, flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: "#242424" },
+  headerBack: { width: 28, alignItems: "flex-start" },
   premiumHeaderCenter: { flexDirection: "row", alignItems: "center", gap: 8 },
-  premiumHeaderTitle: { fontSize: 19, fontWeight: "700", color: "#fff" },
+  premiumHeaderTitle: { fontSize: 20, fontWeight: "700", color: "#F5F1E8", letterSpacing: 0.4 },
   beta: { color: "#161008", fontSize: 10, fontWeight: "800", backgroundColor: "#F5BC4F", paddingHorizontal: 9, paddingVertical: 4, borderRadius: 9 },
-  welcomeAI: { backgroundColor: "#202020", marginHorizontal: 20, marginTop: 18, padding: 16, borderRadius: 14 },
+  welcomeAI: { backgroundColor: "#191A18", marginHorizontal: 20, marginTop: 24, padding: 22, borderRadius: 18, borderWidth: 1, borderColor: "#343028" },
+  welcomeEyebrow: { color: "#E8B44D", fontSize: 10, fontWeight: "700", letterSpacing: 2.4, marginBottom: 12 },
+  welcomeTitle: { color: "#F5F1E8", fontSize: 24, fontWeight: "700", marginBottom: 12 },
+  welcomeNote: { color: "#A9A397", fontSize: 11, lineHeight: 16, marginTop: 18 },
   welcomeAIText: { color: "#F0F0F0", fontSize: 14, lineHeight: 22 },
 
   container: {
