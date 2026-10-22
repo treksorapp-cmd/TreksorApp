@@ -82,7 +82,7 @@ export default function ChatScreen() {
       {item.role === "user" && (
         <View style={styles.userAvatar}>
           {user?.avatar ? (
-            <Image source={{ uri: `https://app.treksor.com/${user?.avatar}` }} style={{ width: 30, height: 30, borderRadius: 15 }} />
+            <Image source={{ uri: user.avatar.startsWith("http") ? user.avatar : `https://app.treksor.com/${user.avatar.replace(/^\\//,"")}` }} style={{ width: 30, height: 30, borderRadius: 15 }} />
           ) : (
             <Text style={styles.userAvatarText}>👤</Text>
           )}
@@ -95,7 +95,7 @@ export default function ChatScreen() {
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : undefined} keyboardVerticalOffset={0}>
       <StatusBar style="light" />
 
-      <View style={styles.premiumHeader}><TouchableOpacity onPress={handleBack}><Ionicons name="arrow-back" size={23} color="#fff" /></TouchableOpacity><View style={styles.premiumHeaderCenter}><Text style={styles.premiumHeaderTitle}>Treksor AI</Text><Text style={styles.beta}>BETA</Text></View><Ionicons name="ellipsis-horizontal" color="#fff" size={23} /></View>
+      <View style={styles.premiumHeader}><TouchableOpacity onPress={handleBack}><Ionicons name="arrow-back" size={23} color="#fff" /></TouchableOpacity><View style={styles.premiumHeaderCenter}><Text style={styles.premiumHeaderTitle}>Treksor AI</Text><Text style={styles.beta}>BETA</Text></View><View style={{width:23}} /></View>
       {messages.length === 0 && <View style={styles.welcomeAI}><Text style={styles.welcomeAIText}>Hi {user?.name?.split(" ")[0] || "there"} 👋{"\n"}I'm your Treksor AI coach.{"\n"}I'm here to help you be more focused, consistent and intentional.</Text></View>}
       {/* Header */}
       {/* <View style={styles.header}>
