@@ -123,30 +123,6 @@ export default function ChatScreen() {
           <Text style={styles.welcomeNote}>AI support, not professional mental health care.</Text>
         </View>
       )}
-      {/* Header */}
-      {/* <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-
-        <View style={styles.headerCenter}>
-          <View style={styles.aiHeaderAvatar}>
-            <Image source={require("@/assets/images/bot.png")} style={{ width: 40, height: 40, borderRadius: 20 }} />
-          </View>
-          <View>
-            <Text style={styles.headerTitle}>AI Assistant</Text>
-            <View style={styles.onlineStatus}>
-              <View style={styles.onlineDot} />
-              <Text style={styles.onlineText}>Online</Text>
-            </View>
-          </View>
-        </View>
-
-        <TouchableOpacity style={styles.moreButton}>
-          <Ionicons name="ellipsis-vertical" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-      </View> */}
-
       {/* Messages */}
       <FlatList
         ref={flatListRef}
