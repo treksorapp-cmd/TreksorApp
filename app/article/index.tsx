@@ -112,7 +112,7 @@ export default function ArticlesScreen({ mode = "tab", category = "All Articles"
 
     return (
       <View style={styles.footerLoader}>
-        <ActivityIndicator size="small" color="#F39C12" />
+        <ActivityIndicator size="small" color="#D7B877" />
         <Text style={styles.loadingText}>Loading more...</Text>
       </View>
     );
@@ -177,7 +177,7 @@ export default function ArticlesScreen({ mode = "tab", category = "All Articles"
       <View style={styles.content}>
         {loading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#F39C12" />
+            <ActivityIndicator size="large" color="#D7B877" />
             <Text style={styles.loadingText}>Loading articles...</Text>
           </View>
         ) : (
@@ -191,7 +191,7 @@ export default function ArticlesScreen({ mode = "tab", category = "All Articles"
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={handleRefresh}
-                tintColor="#F39C12"
+                tintColor="#D7B877"
               />
             }
             onEndReached={handleLoadMore}
