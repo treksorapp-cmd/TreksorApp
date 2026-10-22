@@ -25,13 +25,7 @@ export default function PremiumPillarScreen({ title, headline, subtitle, image, 
       <View style={{ flex: align === "middle" ? 0.8 : 1, minHeight: align === "middle" ? 160 : 240 }} />
       <Text style={styles.headline}>{normalizedHeadline}</Text>
       <Text style={styles.subtitle}>{subtitle}</Text>
-      <View style={styles.actions}>{actions.map(action => <Button key={action.label} onPress={() => router.push(action.href)} buttonStyle={styles.action}>
-        <View style={styles.actionContents}>
-          <Ionicons name={action.icon} color={GOLD} size={23} />
-          <Text style={styles.actionText}>{action.label}</Text>
-          <Ionicons name="chevron-forward" size={19} color={GOLD} />
-        </View>
-      </Button>)}</View>
+      <View style={styles.actions}>{actions.map(action => <Button key={action.label} onPress={() => router.push(action.href)} iconName={action.icon} buttonStyle={styles.action}>{action.label}</Button>)}</View>
     </ScrollView>
   </SafeAreaView>;
 }
