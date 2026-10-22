@@ -8,6 +8,9 @@ import { LinearGradient } from "expo-linear-gradient"
 import { useState } from "react"
 import {
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
   Dimensions,
   Modal,
   Animated as RNAnimated,
@@ -80,7 +83,7 @@ export default function AddTrackerModal({ visible, onClose }: AddTrackerModalPro
 
   return (
     <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
-      <BlurView intensity={20} style={styles.overlay}>
+      <KeyboardAvoidingView behavior={Platform.OS==="ios"?"padding":"height"} style={{flex:1}} keyboardVerticalOffset={0}><BlurView intensity={20} style={styles.overlay}>
         <RNAnimated.View style={[styles.modalContainer]}>
           <LinearGradient
             colors={["rgba(255, 255, 255, 0.1)", "rgba(255, 255, 255, 0.05)"]}
@@ -97,7 +100,7 @@ export default function AddTrackerModal({ visible, onClose }: AddTrackerModalPro
                 </TouchableOpacity>
               </View>
 
-              <ScrollView style={styles.form} showsVerticalScrollIndicator={false}>
+              <ScrollView style={styles.form} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{paddingBottom:25}}>
                 {/* Category Title */}
                 <View style={styles.formGroup}>
                   <Text style={styles.label}>Category Title</Text>
@@ -161,14 +164,14 @@ export default function AddTrackerModal({ visible, onClose }: AddTrackerModalPro
                 <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
                   <Text style={styles.cancelButtonText}>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.addButton} onPress={handleSubmit}>
+                <TouchableOpacity style={styles.addButton} onPress={()=>{Keyboard.dismiss();handleSubmit()}}>
                   <Text style={styles.addButtonText}>Add Category</Text>
                 </TouchableOpacity>
               </View>
             </View>
           </LinearGradient>
         </RNAnimated.View>
-      </BlurView>
+      </BlurView></KeyboardAvoidingView>
     </Modal>
   )
 }
@@ -182,7 +185,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     width: width - 40,
-    maxHeight: "80%",
+    maxHeight: "90%",
     borderRadius: 20,
     overflow: "hidden",
   },
@@ -248,7 +251,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   addItemText: {
-    color: "#EFB33F",
+    color: "#F5BD4F",
     fontSize: 12,
     fontWeight: "500",
   },
@@ -292,7 +295,7 @@ const styles = StyleSheet.create({
   },
   addButton: {
     flex: 1,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#F5BD4F",
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: "center",
