@@ -71,7 +71,7 @@ export default function TrackingScreen() {
   if(loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#F5BD4F" />
+        <ActivityIndicator size="large" color="#D7B877" />
         <Text style={styles.loadingText}>Loading...</Text>
       </View>
     )
@@ -92,12 +92,12 @@ export default function TrackingScreen() {
           <Text style={{color:"#BBB5A9",fontSize:12,marginTop:6,marginBottom:23}}>Your progress, all in one place.</Text>
           {pillarProgress.map((p,i)=><View key={p.name} style={{marginBottom:i===3?0:23}}>
             <View style={{flexDirection:"row",alignItems:"center",marginBottom:11,gap:10}}>
-              <Ionicons name={p.icon} size={19} color="#F5BD4F"/>
+              <Ionicons name={p.icon} size={19} color="#D7B877"/>
               <Text style={{color:"#F3EFE8",fontSize:13,fontWeight:"700",letterSpacing:1,flex:1}}>{p.name}</Text>
-              <Text style={{color:p.pct===null?"#8C8983":"#F5BD4F",fontWeight:"800",fontSize:14}}>{p.pct===null?"—":p.pct+"%"}</Text>
+              <Text style={{color:p.pct===null?"#8C8983":"#D7B877",fontWeight:"800",fontSize:14}}>{p.pct===null?"—":p.pct+"%"}</Text>
             </View>
             <View style={{height:8,backgroundColor:"#383831",borderRadius:6,overflow:"hidden"}}>
-              <View style={{height:"100%",width:`${p.pct??0}%`,backgroundColor:"#F5BD4F",borderRadius:6}}/>
+              <View style={{height:"100%",width:`${p.pct??0}%`,backgroundColor:"#D7B877",borderRadius:6}}/>
             </View>
           </View>)}
           <Text style={{color:"#928D83",fontSize:11,marginTop:20,lineHeight:17}}>— means there is no tracking data for that pillar yet.</Text>
@@ -105,14 +105,14 @@ export default function TrackingScreen() {
         {customTrackers.length>0&&<View style={{marginTop:20,backgroundColor:"rgba(67,72,72,0.28)",borderWidth:1,borderColor:"rgba(239,214,169,0.28)",borderRadius:16,padding:19}}>
           <Text style={{color:"#F5F1E8",fontWeight:"700",fontSize:17,marginBottom:15}}>Your trackers</Text>
           {customTrackers.map(t=><TouchableOpacity key={t.id} onPress={()=>{setSelectedCategory(t.id);setShowActivityLog(true)}} style={{flexDirection:"row",alignItems:"center",gap:13,paddingVertical:12,borderBottomWidth:1,borderBottomColor:"#34332F"}}>
-            <View style={{height:35,width:35,borderRadius:10,backgroundColor:"#30281C",alignItems:"center",justifyContent:"center"}}><Ionicons name="bookmark-outline" size={20} color="#F5BD4F"/></View>
+            <View style={{height:35,width:35,borderRadius:10,backgroundColor:"#30281C",alignItems:"center",justifyContent:"center"}}><Ionicons name="bookmark-outline" size={20} color="#D7B877"/></View>
             <View style={{flex:1}}><Text style={{color:"#F5F1E8",fontSize:15,fontWeight:"700"}}>{t.title}</Text><Text style={{color:"#BEB8AD",fontSize:12,marginTop:3}}>{t.items.length} tracking {t.items.length===1?"item":"items"}</Text></View>
-            <Ionicons name="chevron-forward" color="#F5BD4F" size={18}/>
+            <Ionicons name="chevron-forward" color="#D7B877" size={18}/>
           </TouchableOpacity>)}
         </View>}
         <View style={{flexDirection:"row",gap:12,marginTop:16}}>
-          <TouchableOpacity onPress={()=>setShowAddTracker(true)} style={{flex:1,padding:15,borderRadius:12,backgroundColor:"rgba(103,107,105,0.25)",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:8}}><Ionicons name="add" size={19} color="#F5BD4F"/><Text style={{color:"#F5BD4F",fontWeight:"700"}}>Add tracker</Text></TouchableOpacity>
-          <TouchableOpacity onPress={openCalendar} style={{flex:1,padding:15,borderRadius:12,backgroundColor:"#24231E",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:8}}><Ionicons name="calendar-outline" size={18} color="#F5BD4F"/><Text style={{color:"#F5BD4F",fontWeight:"700"}}>Calendar</Text></TouchableOpacity>
+          <TouchableOpacity onPress={()=>setShowAddTracker(true)} style={{flex:1,padding:15,borderRadius:12,backgroundColor:"rgba(103,107,105,0.25)",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:8}}><Ionicons name="add" size={19} color="#D7B877"/><Text style={{color:"#D7B877",fontWeight:"700"}}>Add tracker</Text></TouchableOpacity>
+          <TouchableOpacity onPress={openCalendar} style={{flex:1,padding:15,borderRadius:12,backgroundColor:"#24231E",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:8}}><Ionicons name="calendar-outline" size={18} color="#D7B877"/><Text style={{color:"#D7B877",fontWeight:"700"}}>Calendar</Text></TouchableOpacity>
         </View>
       </ScrollView>
       <AddTrackerModal
