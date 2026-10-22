@@ -72,7 +72,7 @@ const Button = ({
             <ActivityIndicator size="small" color="#FFFFFF" />
           ) : typeof children === "string" ? (
             <View style={styles.labelRow}>
-              {iconName ? <Ionicons name={iconName} size={22} color="#FFFFFF" style={styles.leadingIcon} /> :
+              {iconName ? <Ionicons name={iconName} size={23} color="#FFFFFF" style={styles.leadingIcon} /> :
                 icon ? (!iconImage ? <Image source={icon} style={[styles.imageIcon, iconStyle, { tintColor: "#FFFFFF" }]} /> :
                 <Entypo name={iconImageIcon as React.ComponentProps<typeof Entypo>["name"]} size={24} color="#FFFFFF" style={styles.leadingIcon} />) : null}
               <Text style={styles.buttonText}>{children.toUpperCase()}</Text>
