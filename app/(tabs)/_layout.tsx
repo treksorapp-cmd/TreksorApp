@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   },
   goldDivider: { position: "absolute", top: 0, left: 0, right: 0, height: 1, backgroundColor: "rgba(232,180,77,0.14)" },
   iconHalo: { width: 42, height: 42, borderRadius: 21, alignItems: "center", justifyContent: "center" },
-  iconHaloActive: { backgroundColor: "rgba(232,180,77,0.16)", borderWidth: 1, borderColor: "rgba(255,218,140,0.44)", shadowColor: "#E8B44D", shadowOpacity: 0.55, shadowRadius: 12, shadowOffset: {width:0,height:0} },
+  iconHaloActive: { backgroundColor: "rgba(232,180,77,0.11)" },
   modalOverlay: {
     position: "absolute",
     top: 0,
