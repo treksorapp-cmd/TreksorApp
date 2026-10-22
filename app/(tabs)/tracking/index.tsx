@@ -46,6 +46,7 @@ export default function TrackingScreen() {
 
   useFocusEffect(useCallback(() => { let active = true; if (userId) { getEntries(userId).then(entries => { if (active) setMoodSummary(moodAverage(entries,moodPeriod)); }).catch(() => { if (active) setMoodSummary({average:null,days:0}); }); } return () => { active=false; }; }, [userId,moodPeriod]));
 
+  const customTrackers=trackingData.filter(d=>d.custom && !["BODY","MIND","SPIRITUAL","BALANCE","PURPOSE","ARTICLES"].includes(d.title.toUpperCase()));
   const pillarProgress = [
     {name:"BODY",icon:"barbell-outline" as const,keys:["body","physical","fitness","workout","exercise"]},
     {name:"MIND",icon:"book-outline" as const,keys:["mind","mental","journal","mood"]},
@@ -70,7 +71,7 @@ export default function TrackingScreen() {
   if(loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#E8B44D" />
+        <ActivityIndicator size="large" color="#F5BD4F" />
         <Text style={styles.loadingText}>Loading...</Text>
       </View>
     )
@@ -88,24 +89,32 @@ export default function TrackingScreen() {
           <Text style={{color:"#BBB5A9",fontSize:12,marginTop:6,marginBottom:23}}>Your progress, all in one place.</Text>
           {pillarProgress.map((p,i)=><View key={p.name} style={{marginBottom:i===3?0:23}}>
             <View style={{flexDirection:"row",alignItems:"center",marginBottom:11,gap:10}}>
-              <Ionicons name={p.icon} size={19} color="#E8B44D"/>
+              <Ionicons name={p.icon} size={19} color="#F5BD4F"/>
               <Text style={{color:"#F3EFE8",fontSize:13,fontWeight:"700",letterSpacing:1,flex:1}}>{p.name}</Text>
-              <Text style={{color:p.pct===null?"#8C8983":"#E8B44D",fontWeight:"800",fontSize:14}}>{p.pct===null?"—":p.pct+"%"}</Text>
+              <Text style={{color:p.pct===null?"#8C8983":"#F5BD4F",fontWeight:"800",fontSize:14}}>{p.pct===null?"—":p.pct+"%"}</Text>
             </View>
             <View style={{height:8,backgroundColor:"#383831",borderRadius:6,overflow:"hidden"}}>
-              <View style={{height:"100%",width:`${p.pct??0}%`,backgroundColor:"#E8B44D",borderRadius:6}}/>
+              <View style={{height:"100%",width:`${p.pct??0}%`,backgroundColor:"#F5BD4F",borderRadius:6}}/>
             </View>
           </View>)}
           <Text style={{color:"#928D83",fontSize:11,marginTop:20,lineHeight:17}}>— means there is no tracking data for that pillar yet.</Text>
         </View>
-        <TouchableOpacity onPress={()=>router.push("/mind/journal")} style={{marginTop:18,backgroundColor:"#171816",borderRadius:14,borderWidth:1,borderColor:"#37352E",padding:17,flexDirection:"row",alignItems:"center",gap:13}}>
-          <Ionicons name="create-outline" size={22} color="#E8B44D"/>
+        {customTrackers.length>0&&<View style={{marginTop:20,backgroundColor:"#191A18",borderWidth:1,borderColor:"#544632",borderRadius:16,padding:19}}>
+          <Text style={{color:"#F5F1E8",fontWeight:"700",fontSize:17,marginBottom:15}}>Your trackers</Text>
+          {customTrackers.map(t=><TouchableOpacity key={t.id} onPress={()=>{setSelectedCategory(t.id);setShowActivityLog(true)}} style={{flexDirection:"row",alignItems:"center",gap:13,paddingVertical:12,borderBottomWidth:1,borderBottomColor:"#34332F"}}>
+            <View style={{height:35,width:35,borderRadius:10,backgroundColor:"#30281C",alignItems:"center",justifyContent:"center"}}><Ionicons name="bookmark-outline" size={20} color="#F5BD4F"/></View>
+            <View style={{flex:1}}><Text style={{color:"#F5F1E8",fontSize:15,fontWeight:"700"}}>{t.title}</Text><Text style={{color:"#BEB8AD",fontSize:12,marginTop:3}}>{t.items.length} tracking {t.items.length===1?"item":"items"}</Text></View>
+            <Ionicons name="chevron-forward" color="#F5BD4F" size={18}/>
+          </TouchableOpacity>)}
+        </View>}
+        <TouchableOpacity onPress={()=>router.push("/progress/daily-check-in")} style={{marginTop:18,backgroundColor:"#171816",borderRadius:14,borderWidth:1,borderColor:"#37352E",padding:17,flexDirection:"row",alignItems:"center",gap:13}}>
+          <Ionicons name="create-outline" size={22} color="#F5BD4F"/>
           <View style={{flex:1}}><Text style={{color:"#F4F0E8",fontWeight:"700",fontSize:15}}>Daily check-in</Text><Text style={{color:"#AAA59A",marginTop:4,fontSize:12}}>How are you feeling today?</Text></View>
-          <Ionicons name="chevron-forward" color="#E8B44D" size={18}/>
+          <Ionicons name="chevron-forward" color="#F5BD4F" size={18}/>
         </TouchableOpacity>
         <View style={{flexDirection:"row",gap:12,marginTop:16}}>
-          <TouchableOpacity onPress={()=>setShowAddTracker(true)} style={{flex:1,padding:15,borderRadius:12,backgroundColor:"#24231E",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:8}}><Ionicons name="add" size={19} color="#E8B44D"/><Text style={{color:"#E8B44D",fontWeight:"700"}}>Add tracker</Text></TouchableOpacity>
-          <TouchableOpacity onPress={openCalendar} style={{flex:1,padding:15,borderRadius:12,backgroundColor:"#24231E",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:8}}><Ionicons name="calendar-outline" size={18} color="#E8B44D"/><Text style={{color:"#E8B44D",fontWeight:"700"}}>Calendar</Text></TouchableOpacity>
+          <TouchableOpacity onPress={()=>setShowAddTracker(true)} style={{flex:1,padding:15,borderRadius:12,backgroundColor:"#24231E",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:8}}><Ionicons name="add" size={19} color="#F5BD4F"/><Text style={{color:"#F5BD4F",fontWeight:"700"}}>Add tracker</Text></TouchableOpacity>
+          <TouchableOpacity onPress={openCalendar} style={{flex:1,padding:15,borderRadius:12,backgroundColor:"#24231E",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:8}}><Ionicons name="calendar-outline" size={18} color="#F5BD4F"/><Text style={{color:"#F5BD4F",fontWeight:"700"}}>Calendar</Text></TouchableOpacity>
         </View>
       </ScrollView>
       <AddTrackerModal
