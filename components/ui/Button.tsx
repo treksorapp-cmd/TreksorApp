@@ -54,7 +54,7 @@ const Button = ({
         colors={
           disabled
             ? ["rgba(255, 255, 255, 0.1)", "rgba(255, 255, 255, 0.2)"]
-            : ["rgba(205, 235, 248, 0.30)", "rgba(220, 241, 252, 0.11)"]
+            : ["rgba(205, 235, 248, 0.24)", "rgba(220, 241, 252, 0.088)"]
         }
         start={{ x: 0.2, y: 0 }}
         end={{ x: 0.8, y: 1 }}
@@ -63,7 +63,7 @@ const Button = ({
         <BlurView intensity={14} tint="dark" pointerEvents="none" style={StyleSheet.absoluteFill} />
         {/* Inner LinearGradient for the button background */}
         <LinearGradient
-          colors={disabled ? ["rgba(255, 255, 255, 0.045)", "rgba(255, 255, 255, 0.015)"] : ["rgba(183, 221, 240, 0.095)", "rgba(194, 231, 249, 0.025)"]}
+          colors={disabled ? ["rgba(255, 255, 255, 0.045)", "rgba(255, 255, 255, 0.015)"] : ["rgba(183, 221, 240, 0.076)", "rgba(194, 231, 249, 0.020)"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.innerGradient}
