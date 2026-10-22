@@ -30,20 +30,20 @@ export default function GymProgress(){
  <Text style={{color:GOLD,fontSize:11,fontWeight:"800",letterSpacing:2,marginTop:28}}>BODY · WORKOUT</Text>
  <Text style={{color:"white",fontSize:32,fontWeight:"800",marginTop:8}}>Gym progress</Text>
  <Text style={{color:"#C7C1B5",marginTop:9,lineHeight:21}}>Your strength journey, built one set at a time.</Text>
- <View style={{backgroundColor:"#1A1B19",borderWidth:1,borderColor:"#655238",borderRadius:17,padding:20,marginTop:25}}>
+ <View style={{backgroundColor:"rgba(67,72,72,0.30)",borderWidth:1,borderColor:"rgba(242,215,164,0.32)",borderRadius:17,padding:20,marginTop:25}}>
  <Text style={{color:GOLD,fontSize:11,fontWeight:"800",letterSpacing:1.5}}>TRAINING OVERVIEW</Text>
  <View style={{flexDirection:"row",gap:12,marginTop:17}}>
  {[[String(sessions),"Sessions"],[String(stats.sets),"Sets logged"],[Math.round(stats.volume).toLocaleString()+" kg","Total volume"]].map(([v,l])=><View key={l} style={{flex:1}}><Text style={{color:"white",fontSize:19,fontWeight:"800"}}>{v}</Text><Text style={{color:"#BAB4A9",fontSize:11,marginTop:6}}>{l}</Text></View>)}
  </View>
  {plan&&<Text style={{color:"#BEB8AD",marginTop:18,fontSize:12}}>Weekly goal: {plan.days} gym sessions</Text>}
  </View>
- <View style={{backgroundColor:"#1A1B19",borderWidth:1,borderColor:"#4B4234",borderRadius:17,padding:20,marginTop:16}}>
+ <View style={{backgroundColor:"rgba(67,72,72,0.30)",borderWidth:1,borderColor:"rgba(242,215,164,0.25)",borderRadius:17,padding:20,marginTop:16}}>
  <Text style={{color:GOLD,fontSize:11,fontWeight:"800",letterSpacing:1.5}}>ESTIMATED STRENGTH TREND</Text>
  <Text style={{color:stats.meanChange===null?"#BEB8AD":GOLD,fontSize:32,fontWeight:"800",marginTop:12}}>{stats.meanChange===null?"—":(stats.meanChange>=0?"+":"")+stats.meanChange.toFixed(1)+"%"}</Text>
  <Text style={{color:"#BEB8AD",lineHeight:19,fontSize:12,marginTop:8}}>Average change in estimated 1-rep max across exercises with at least two recorded sets. Not a direct measure of maximum strength or power.</Text>
  </View>
  <Text style={{color:"white",fontSize:20,fontWeight:"800",marginTop:30,marginBottom:12}}>By exercise</Text>
- {!stats.exercises.length?<View style={{padding:19,backgroundColor:"#1A1B19",borderRadius:14}}><Text style={{color:"#D1CABE",lineHeight:21}}>No gym sets recorded yet. Open My Plan, select a training day and log your first completed set.</Text></View>:stats.exercises.map(e=><View key={e.name} style={{backgroundColor:"#1A1B19",padding:18,borderRadius:14,marginBottom:11,borderWidth:1,borderColor:"#3F3A30"}}>
+ {!stats.exercises.length?<View style={{padding:19,backgroundColor:"rgba(67,72,72,0.30)",borderRadius:14}}><Text style={{color:"#D1CABE",lineHeight:21}}>No gym sets recorded yet. Open My Plan, select a training day and log your first completed set.</Text></View>:stats.exercises.map(e=><View key={e.name} style={{backgroundColor:"rgba(67,72,72,0.30)",padding:18,borderRadius:14,marginBottom:11,borderWidth:1,borderColor:"#3F3A30"}}>
  <Text style={{color:"white",fontWeight:"700",fontSize:16}}>{e.name}</Text>
  <Text style={{color:GOLD,fontWeight:"800",fontSize:23,marginTop:12}}>{e.sets<2?"Baseline":(e.change>=0?"+":"")+e.change.toFixed(1)+"%"}</Text>
  <Text style={{color:"#C7C1B5",fontSize:12,marginTop:6}}>First estimated 1RM: {e.first.toFixed(1)} kg · Latest: {e.latest.toFixed(1)} kg</Text>
