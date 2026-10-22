@@ -5,7 +5,6 @@ import { useChatStore } from "@/store/chat-store"
 import { Message } from "@/types/message"
 import { Ionicons } from "@expo/vector-icons"
 import { Image } from "expo-image"
-import { router } from "expo-router"
 import { StatusBar } from "expo-status-bar"
 import { useEffect, useRef, useState } from "react"
 import {
@@ -67,10 +66,6 @@ export default function ChatScreen() {
     }
   }
 
-  const handleBack = () => {
-    router.back()
-  }
-
   const renderMessage = ({ item }: { item: Message }) => (
     <View
       style={[
@@ -107,13 +102,9 @@ export default function ChatScreen() {
       <StatusBar style="light" />
 
       <View style={styles.premiumHeader}>
-        <TouchableOpacity onPress={handleBack} accessibilityRole="button" accessibilityLabel="Go back" style={styles.headerBack}>
-          <Ionicons name="arrow-back" size={22} color="#F5F1E8" />
-        </TouchableOpacity>
         <View style={styles.premiumHeaderCenter}>
           <Text style={styles.premiumHeaderTitle}>Chat</Text>
         </View>
-        <View style={styles.headerBack} />
       </View>
       {messages.length === 0 && (
         <View style={styles.welcomeAI}>
@@ -182,10 +173,10 @@ export default function ChatScreen() {
 }
 
 const styles = StyleSheet.create({
-  premiumHeader: { height: 62, flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: "#242424" },
+  premiumHeader: { height: 62, flexDirection: "row", justifyContent: "center", alignItems: "center", paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: "#292720" },
   headerBack: { width: 28, alignItems: "flex-start" },
   premiumHeaderCenter: { flexDirection: "row", alignItems: "center", gap: 8 },
-  premiumHeaderTitle: { fontSize: 20, fontWeight: "700", color: "#F5F1E8", letterSpacing: 0.4 },
+  premiumHeaderTitle: { fontSize: 28, fontWeight: "700", color: "#F5F1E8", letterSpacing: 0.2 },
   beta: { color: "#161008", fontSize: 10, fontWeight: "800", backgroundColor: "#F5BC4F", paddingHorizontal: 9, paddingVertical: 4, borderRadius: 9 },
   welcomeAI: { backgroundColor: "#191A18", marginHorizontal: 20, marginTop: 24, padding: 22, borderRadius: 18, borderWidth: 1, borderColor: "#343028" },
   welcomeEyebrow: { color: "#E8B44D", fontSize: 10, fontWeight: "700", letterSpacing: 2.4, marginBottom: 12 },
