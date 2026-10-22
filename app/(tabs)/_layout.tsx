@@ -49,8 +49,8 @@ export default function TabLayout() {
             <View pointerEvents="none" style={StyleSheet.absoluteFill}>
               <View style={styles.goldDivider} />
               <Animated.View style={[styles.glowTrack, { width: width / 4, transform: [{ translateX: glowPosition.interpolate({ inputRange: [0, 3], outputRange: [0, width * 0.75] }) }] }]}>
-                <LinearGradient colors={["transparent", "rgba(232,180,77,0.24)", "transparent"]} start={{x:0,y:0}} end={{x:1,y:0}} style={styles.glowHalo} />
-                <LinearGradient colors={["transparent", "#E8B44D", "#FFF0BC", "#E8B44D", "transparent"]} start={{x:0,y:0}} end={{x:1,y:0}} style={styles.glowLine} />
+                <LinearGradient colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.05)", "rgba(232,180,77,0.16)", "rgba(232,180,77,0.05)", "rgba(232,180,77,0)"]} start={{x:0,y:0}} end={{x:1,y:0}} style={styles.glowHalo} />
+                <LinearGradient colors={["rgba(232,180,77,0)", "rgba(232,180,77,0.16)", "rgba(255,232,177,0.68)", "rgba(232,180,77,0.16)", "rgba(232,180,77,0)"]} start={{x:0,y:0}} end={{x:1,y:0}} style={styles.glowLine} />
               </Animated.View>
             </View>
           ),
@@ -116,10 +116,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "black",
   },
-  goldDivider: { position: "absolute", top: 0, left: 0, right: 0, height: 1, backgroundColor: "rgba(232,180,77,0.32)" },
-  glowTrack: { position: "absolute", top: -8, height: 24, alignItems: "center" },
-  glowHalo: { position: "absolute", top: 0, width: "100%", height: 23, opacity: 0.95 },
-  glowLine: { position: "absolute", top: 8, width: "92%", height: 2, borderRadius: 3 },
+  goldDivider: { position: "absolute", top: 0, left: 0, right: 0, height: 1, backgroundColor: "rgba(232,180,77,0.20)" },
+  glowTrack: { position: "absolute", top: -14, height: 38, alignItems: "center" },
+  glowHalo: { position: "absolute", top: 0, width: "100%", height: 37, opacity: 0.78 },
+  glowLine: { position: "absolute", top: 14, width: "100%", height: 1, borderRadius: 3 },
   modalOverlay: {
     position: "absolute",
     top: 0,
