@@ -187,7 +187,7 @@ export default function RootLayout() {
           animation: "slide_from_right",
         }}
       />
-      {isPillarDetail && isAuthenticated && <View pointerEvents="box-none" style={{position:"absolute",top:insets.top+8,right:18,flexDirection:"row",gap:9,zIndex:1000}}>
+      {isPillarDetail && isAuthenticated && <View pointerEvents="box-none" style={{position:"absolute",top:insets.top+8,right:hasOwnPillarIcon?72:18,flexDirection:"row",gap:9,zIndex:1000}}>
         <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go to Home" onPress={()=>router.dismissTo("/(tabs)/home" as any)} style={{width:44,height:44,borderRadius:12,backgroundColor:"rgba(183,221,240,0.075)",alignItems:"center",justifyContent:"center"}}><Ionicons name="home-outline" size={22} color="#FFFFFF" /></TouchableOpacity>
         {pillar && !hasOwnPillarIcon && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Return to pillar menu" onPress={()=>router.dismissTo(pillar.route as any)} style={{width:44,height:44,borderRadius:12,backgroundColor:"rgba(183,221,240,0.075)",alignItems:"center",justifyContent:"center"}}><Ionicons name={pillar.icon as any} size={23} color="#FFFFFF" /></TouchableOpacity>}
       </View>}
