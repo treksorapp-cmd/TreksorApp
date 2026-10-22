@@ -46,7 +46,7 @@ export default function HomeScreen() {
   const [now,setNow]=useState(()=>new Date());
   const reveal=useRef(new Animated.Value(0)).current;
   const pulse=useRef(new Animated.Value(0)).current;
-  useEffect(()=>{const loop=Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1,duration:950,easing:Easing.inOut(Easing.sin),useNativeDriver:true}),Animated.timing(pulse,{toValue:0,duration:950,easing:Easing.inOut(Easing.sin),useNativeDriver:true})]));loop.start();return()=>loop.stop()},[pulse]);
+  useEffect(()=>{const loop=Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true}),Animated.timing(pulse,{toValue:0,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true})]));loop.start();return()=>loop.stop()},[pulse]);
   useEffect(()=>{Animated.timing(reveal,{toValue:1,duration:480,easing:Easing.out(Easing.cubic),useNativeDriver:true}).start()},[reveal]);
   useEffect(()=>{const refresh=()=>setNow(new Date());const timer=setInterval(refresh,60000);const sub=AppState.addEventListener("change",v=>{if(v==="active")refresh()});return()=>{clearInterval(timer);sub.remove()}},[]);
   const hour = now.getHours();
@@ -77,7 +77,7 @@ export default function HomeScreen() {
         <Animated.View style={[styles.hero,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[12,0]})}]}]}>
           <ImageBackground source={DAILY_HERO_IMAGES[dailyIndex]} contentFit="cover" contentPosition="center 58%" cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
           <LinearGradient colors={["rgba(8,9,11,0.08)", "rgba(8,9,11,0.45)", "#08090B"]} locations={[0, 0.4, 1]} style={StyleSheet.absoluteFill} />
-          <View style={styles.heroGreetingWrap}><View style={styles.pulseShell}><Animated.View style={[styles.pulseHalo,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.08,0.55]}),transform:[{scale:pulse.interpolate({inputRange:[0,1],outputRange:[1,2.7]})}]}]}/><Animated.View style={[styles.greetingDot,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.55,1]})}]}/></View><Text style={styles.heroGreeting}>{greeting}</Text></View>
+          <View style={styles.heroGreetingWrap}><View style={styles.pulseShell}><Animated.View style={[styles.pulseHalo,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.06,0.24]}),transform:[{scale:pulse.interpolate({inputRange:[0,1],outputRange:[1,1.65]})}]}]}/><Animated.View style={[styles.greetingDot,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.70,1]})}]}/></View><Text style={styles.heroGreeting}>{greeting}</Text></View>
           <View style={styles.heroContent}>
             <Text style={styles.eyebrow}>YOUR DAILY DIRECTION</Text>
             <Text style={styles.heroTitle}>{dailyMessage[0]}{"\n"}<Text style={styles.name}>{dailyMessage[1]}</Text></Text>
