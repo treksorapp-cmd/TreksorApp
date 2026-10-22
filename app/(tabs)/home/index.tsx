@@ -68,7 +68,7 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.hero}>
-          <ImageBackground source={DAILY_HERO_IMAGES[dailyIndex]} contentFit="cover" contentPosition="center 68%" cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
+          <ImageBackground source={DAILY_HERO_IMAGES[dailyIndex]} contentFit="cover" contentPosition="center 58%" cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
           <LinearGradient colors={["rgba(8,9,11,0.08)", "rgba(8,9,11,0.45)", "#08090B"]} locations={[0, 0.4, 1]} style={StyleSheet.absoluteFill} />
           <Text style={styles.heroGreeting}>{greeting}</Text>
           <View style={styles.heroContent}>
@@ -87,7 +87,7 @@ export default function HomeScreen() {
         <View style={styles.grid}>
           {pillars.map(pillar => (
             <TouchableOpacity key={pillar.name} activeOpacity={0.84} style={styles.tile} onPress={() => router.push(pillar.route)} accessibilityRole="button" accessibilityLabel={pillar.name + ": " + pillar.subtitle}>
-              <ImageBackground source={pillar.image} contentFit="cover" style={StyleSheet.absoluteFill} transition={180} cachePolicy="memory-disk" />
+              <ImageBackground source={pillar.image} contentFit="cover" contentPosition={pillar.name==="MIND"?"center 18%":"center"} style={StyleSheet.absoluteFill} transition={180} cachePolicy="memory-disk" />
               <LinearGradient colors={["rgba(0,0,0,0.20)", "rgba(0,0,0,0.22)", "rgba(0,0,0,0.95)"]} locations={[0, 0.34, 1]} style={StyleSheet.absoluteFill} />
               <View style={styles.tileTop}>
                 <View style={styles.tileIcon}><Ionicons name={pillar.icon} color="#FFFFFF" size={18} /></View>
@@ -118,7 +118,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: "#08090B" },
   content: { paddingHorizontal: 20, paddingTop: 13, paddingBottom: 118 },
-  hero: { height: 310, marginHorizontal: -20, marginTop: -8, marginBottom: 26, overflow: "hidden", backgroundColor: "#151715" },
+  hero: { height: 276, marginHorizontal: -20, marginTop: -8, marginBottom: 26, overflow: "hidden", backgroundColor: "#151715" },
   heroContent: { flex: 1, justifyContent: "flex-end", paddingHorizontal: 24, paddingBottom: 28 },
   heroTitle: { color: "#F7F5F0", fontSize: 43, lineHeight: 48, fontWeight: "700", letterSpacing: -1.5 },
   heroSub: { color: "#D0C8B9", fontSize: 12, letterSpacing: 0.7, marginTop: 13 },
