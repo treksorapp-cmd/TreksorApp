@@ -29,8 +29,8 @@ export default function MyPlan(){
  useEffect(()=>{let active=true;axios.get("https://treksor-admin-production.up.railway.app/api/public/discover?type=exercises",{timeout:12000}).then(r=>{if(active)setExercises(Array.isArray(r.data?.data)?r.data.data:[])}).catch(()=>{if(active)setLibraryError(true)}).finally(()=>{if(active)setLibraryLoading(false)});return()=>{active=false}},[]);
  const d=new Date();d.setDate(d.getDate()-(d.getDay()+6)%7);d.setHours(0,0,0,0);const week=[d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
  const done=(checkIns[week]||[]).length;
- return <KeyboardAvoidingView style={{flex:1,backgroundColor:"#08090B"}} behavior={Platform.OS==="ios"?"padding":undefined}><ScrollView keyboardShouldPersistTaps="handled" style={{flex:1,backgroundColor:"#08090B"}} contentContainerStyle={{padding:22,paddingTop:insets.top+78,paddingBottom:insets.bottom+90}}>
- <Text style={{color:GOLD,letterSpacing:2,fontSize:11,fontWeight:"700",marginTop:0}}>BODY / WORKOUT</Text>
+ return <KeyboardAvoidingView style={{flex:1,backgroundColor:"#08090B"}} behavior={Platform.OS==="ios"?"padding":undefined}><ScrollView keyboardShouldPersistTaps="handled" style={{flex:1,backgroundColor:"#08090B"}} contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:insets.bottom+90}}>
+ <Text style={{color:GOLD,letterSpacing:2,fontSize:11,fontWeight:"700",marginTop:0}}>BODY / WORKOUT / GYM</Text>
  <Text style={{color:"white",fontSize:38,fontWeight:"700",letterSpacing:1.5,marginTop:8}}>MY PLAN</Text>
  {!plan?<><Text style={{color:"#D5D1C9",marginTop:18,lineHeight:22}}>Create a plan to see your weekly sessions and exercises here.</Text><Button borderless iconName="options-outline" onPress={()=>router.push("/body/workout/guide")}>BUILD MY PLAN</Button></>:<>
  <Text style={{color:"#C9C5BC",marginTop:10}}>{plan.days} sessions per week · {plan.location}</Text>
