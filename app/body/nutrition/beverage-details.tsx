@@ -1,3 +1,4 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 import { Nutritions } from "@/mock/nutrition";
 import { Ionicons } from "@expo/vector-icons";
 import { ImageBackground } from "expo-image";
@@ -34,16 +35,7 @@ export default function BeverageDetails() {
       <View style={styles.hero}>
         <ImageBackground source={beverage.backgroundImage} contentFit="cover" style={StyleSheet.absoluteFill}/>
         <LinearGradient colors={["rgba(2,5,12,0.35)","rgba(2,5,12,0.45)","#02050C"]} locations={[0,0.48,1]} style={StyleSheet.absoluteFill}/>
-        <View style={[styles.topBar,{paddingTop:insets.top+10}]}>
-          <TouchableOpacity accessibilityRole="button" accessibilityLabel="Back" onPress={()=>router.back()} style={styles.back}><Ionicons name="chevron-back" size={22} color="#FFFFFF"/></TouchableOpacity>
-          <Text style={styles.topLabel}>BEVERAGES</Text>
-          <View style={{width:42}}/>
-        </View>
-        <View style={styles.heroCopy}>
-          <Text style={styles.eyebrow}>BODY  /  NUTRITION</Text>
-          <Text style={styles.heroTitle}>{beverage.name.toUpperCase()}</Text>
-          <Text style={styles.heroCaption}>A DAILY RITUAL</Text>
-        </View>
+        <BodyPageHeading trail="BODY / NUTRITION / BEVERAGES" title={beverage.name} style={{position:"absolute",top:insets.top+12,left:0,right:0}} />
       </View>
       <View style={styles.content}>
         <View style={styles.descriptionCard}>
@@ -84,7 +76,7 @@ const styles=StyleSheet.create({
   empty:{color:"#FFFFFF",textAlign:"center",marginTop:120},
   hero:{height:370,justifyContent:"space-between",overflow:"hidden"},
   topBar:{paddingHorizontal:20,flexDirection:"row",alignItems:"center",justifyContent:"space-between"},
-  back:{height:42,width:42,borderRadius:14,backgroundColor:"rgba(183,221,240,0.12)",borderWidth:1,borderColor:BORDER,alignItems:"center",justifyContent:"center"},
+  back:{height:42,width:42,borderRadius:14,backgroundColor:"rgba(183,221,240,0.12)",alignItems:"center",justifyContent:"center"},
   topLabel:{color:"#F5F1E8",fontSize:13,fontWeight:"700",letterSpacing:2},
   heroCopy:{paddingHorizontal:22,paddingBottom:28},
   eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.7},
@@ -105,7 +97,7 @@ const styles=StyleSheet.create({
   number:{fontSize:11,fontWeight:"700",color:"#D6E8F2"},
   ingredientName:{flex:1,color:"#FFFFFF",fontSize:14,fontWeight:"600",lineHeight:19},
   amount:{color:"#D5C29B",fontSize:12,fontWeight:"600",textAlign:"right",maxWidth:"37%",lineHeight:17},
-  references:{marginTop:27,backgroundColor:"rgba(183,221,240,0.045)",borderRadius:18,borderWidth:1,borderColor:"rgba(205,235,248,0.13)",padding:16},
+  references:{marginTop:27,backgroundColor:"rgba(183,221,240,0.045)",borderRadius:18,padding:16},
   safetyRow:{flexDirection:"row",alignItems:"flex-start",gap:10},
   safetyText:{color:"#B8BEC2",fontSize:12,lineHeight:18,flex:1},
   sourcesToggle:{flexDirection:"row",alignItems:"center",gap:10,marginTop:17,paddingTop:14,borderTopWidth:1,borderTopColor:"rgba(255,255,255,0.1)"},
