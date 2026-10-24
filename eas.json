@@ -19,9 +19,21 @@
         "GOOGLE_SERVICES_INFOPLIST": "./GoogleService-Info.plist",
         "GOOGLE_SERVICES_JSON": "./google-services.json"
       }
+    },
+    "iphone-dev": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": false
+      },
+      "env": {
+        "TREKSOR_IPHONE_DEV": "1",
+        "GOOGLE_SERVICES_INFOPLIST": "./GoogleService-Info.plist",
+        "GOOGLE_SERVICES_JSON": "./google-services.json"
+      }
     }
   },
-   "submit": {
+  "submit": {
     "production": {
       "ios": {
         "appleId": "barbadeindio@gmail.com",

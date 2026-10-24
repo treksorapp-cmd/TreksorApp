@@ -25,7 +25,7 @@ interface MediationState {
 export const useMediationStore = create<MediationState>()(
   persist(
     (set, get) => ({
-      mediation: mediations,
+      mediation: mediations.map(item => ({ ...item, isRead: false })),
       locked: ["intermediate", "advanced"],
       loading: false,
       error: null,
@@ -44,12 +44,8 @@ export const useMediationStore = create<MediationState>()(
 
       fetchMediationById: async (data) => {
         try {
-          console.log("fetchMediationById", { data });
           set({ loading: true, error: null });
-          const lol = get();
-          console.log("fetchMediationById - store data", { lol });
           const mediation = get().mediation.find((mediation) => mediation.id === data.id);
-          console.log("fetchMediationById", { mediation });
           set({ loading: false });
           return mediation;
         } catch (error: any) {
@@ -85,8 +81,10 @@ export const useMediationStore = create<MediationState>()(
       },
 
       markMediationAsRead: (id) => {
-        const existingMediations = get().mediation;
+        if (get().locked.includes(id)) return;
+        const existingMediations = get().mediation.map(item => ({ ...item }));
         const mediationIndex = existingMediations.findIndex(thought => thought.id === id)
+        if (mediationIndex < 0) return;
         existingMediations[mediationIndex].isRead = true;
         const locked: string[] = [];
         const beginnerMediation = existingMediations.find((mediation) => mediation.id === "beginner");
@@ -102,7 +100,7 @@ export const useMediationStore = create<MediationState>()(
 
       clearData: () => {
         set({
-          mediation: mediations,
+          mediation: mediations.map(item => ({ ...item, isRead: false })),
           locked: ["intermediate", "advanced"],
           loading: false,
           error: null,
@@ -112,10 +110,23 @@ export const useMediationStore = create<MediationState>()(
     {
       name: "mediation-storage",
       storage: createJSONStorage(() => AsyncStorage),
+      // Persist only completion flags, not audio URLs or content.
       partialize: (state) => ({
-        mediation: state.mediation,
-        locked: state.locked,
+        mediation: state.mediation.map(item => ({ id: item.id, isRead: !!item.isRead })),
       }),
+      merge: (persisted, current) => {
+        const saved = persisted as { mediation?: { id: string; isRead?: boolean }[] } | undefined;
+        const completed = new Set((saved?.mediation ?? []).filter(item => item.isRead).map(item => item.id));
+        const meditation = mediations.map(item => ({ ...item, isRead: completed.has(item.id) }));
+        return {
+          ...current,
+          mediation: meditation,
+          locked: [
+            ...(!completed.has("beginner") ? ["intermediate"] : []),
+            ...(!completed.has("intermediate") ? ["advanced"] : []),
+          ],
+        };
+      },
     }
   )
 );

@@ -4,7 +4,7 @@ import { useArticleStore } from "@/store/article-store";
 import { Audio } from "expo-av";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, usePathname } from "expo-router";
 import * as Speech from 'expo-speech';
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
@@ -39,6 +39,8 @@ interface ArticlesDetailsScreenProps {
 
 export default function ArticleDetailScreen({ mode = "stack" }: ArticlesDetailsScreenProps) {
   const insets = useSafeAreaInsets();
+  const pathname = usePathname();
+  const pillarTrail = pathname.startsWith("/body/") ? "BODY / READING / ARTICLES" : pathname.startsWith("/spiritual/") ? "BALANCE / READING / ARTICLES" : "MIND / READING / ARTICLES";
   const { id, category } = useLocalSearchParams();
   const [article, setArticle] = useState<Article | null>(null);
   const [isRead, setIsRead] = useState(false)
@@ -118,7 +120,7 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
       >
         <StatusBar style="light" />
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#F39C12" />
+          <ActivityIndicator size="large" color="#D7B877" />
           <Text style={styles.loadingText}>Loading article...</Text>
         </View>
       </View>
@@ -155,6 +157,7 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: mode === 'tab' ? insets.bottom + 40 : 0}}
       >
+        <View style={{paddingTop:insets.top+12,paddingBottom:17}}><Text style={{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.6}}>{pillarTrail}</Text><Text style={{color:"#FFFFFF",fontSize:34,fontWeight:"700",letterSpacing:1.5,marginTop:7}}>ARTICLE</Text></View>
         {/* Article Image */}
         <Image
           source={{ uri: imageUrl }}
@@ -200,7 +203,7 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
             activeOpacity={0.8}
           >
             <LinearGradient
-              colors={isRead ? ["#4CAF50", "#45A049"] : ["#F39C12", "#E67E22"]}
+              colors={isRead ? ["rgba(183,221,240,0.07)", "rgba(183,221,240,0.04)"] : ["rgba(183,221,240,0.16)", "rgba(183,221,240,0.07)"]}
               style={styles.buttonGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -216,7 +219,7 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000000",
+    backgroundColor: "#02050C",
   },
   loadingContainer: {
     flex: 1,
@@ -244,29 +247,30 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingTop: 0,
+    paddingBottom: 20,
   },
   articleImage: {
     width: "100%",
     height: 200,
-    borderRadius: 12,
+    borderRadius: 18,
   },
   articleContent: {
     paddingVertical: 20,
   },
   category: {
     fontSize: 14,
-    color: "#F39C12",
+    color: "#D7B877",
     fontWeight: "600",
     marginBottom: 8,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 26,
+    fontWeight: "700",
     color: "#FFFFFF",
     lineHeight: 28,
     marginBottom: 16,
-    maxWidth:"80%"
+    maxWidth:"100%"
   },
   description: {
     fontSize: 16,
@@ -292,7 +296,9 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   markAsReadButton: {
-    borderRadius: 12,
+    borderRadius: 16,
+    borderWidth:1,
+    borderColor:"rgba(205,235,248,0.20)",
     overflow: "hidden",
   },
   markAsReadButtonRead: {
@@ -304,7 +310,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonText: {
-    color: "#000000",
+    color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "600",
   },

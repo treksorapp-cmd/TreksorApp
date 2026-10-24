@@ -214,15 +214,10 @@ export default function Register() {
     Keyboard.dismiss()
 
     if (validateStep3()) {
-      register({
-        name,
-        email: email?.toLowerCase(),
-        password,
-        role: "user",
-      }).then(() => {
-        requestOtp({email: email?.toLowerCase()}).then(() => {
+      register({ name, email: email.toLowerCase(), password, role: "user" }).then(() => {
+        if (!useAuthStore.getState().error && !useAuthStore.getState().isAuthenticated) {
           router.push({ pathname: "/(auth)/verify-otp", params: { email } });
-        })
+        }
       })
     }
   }

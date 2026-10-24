@@ -70,7 +70,7 @@ export const useTrackingStore = create<TrackingStore>()(
           const totalJournals = journalEntries.length;
 
           // Get existing tracking data to preserve IDs and custom categories
-          let oldTrackingData = get().trackingData;
+          let oldTrackingData = [...get().trackingData];
           
           const bodyCategory = oldTrackingData.find(track => track.title === 'BODY' || track.title === 'Body') || { id: "1", title: "BODY" };
           const mindCategory = oldTrackingData.find(track => track.title === 'MIND' || track.title === 'Mind') || { id: "2", title: "MIND" };
@@ -173,7 +173,7 @@ export const useTrackingStore = create<TrackingStore>()(
         const updatedCategory = {
           ...category,
           items: category.items.map((item) => {
-            const days = parseInt(item.value);
+            const days = Math.min(365, Math.max(0, parseInt(item.value,10)||0));
             const record: Record<string, boolean> = {};
       
             for (let i = 0; i < days; i++) {

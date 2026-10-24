@@ -33,6 +33,8 @@ export default function EditProfile() {
   const [tempAvatarFile, setTempAvatarFile] = useState<ImagePicker.ImagePickerAsset | null>(null)
   const [isUploading, setIsUploading] = useState(false)
 
+  useEffect(() => { if (user?.name) setName(user.name); if (user?.avatar) setAvatar(user.avatar) }, [user?.name,user?.avatar])
+
   useEffect(() => {
     // Request permission for image library
     const requestPermission = async () => {
@@ -48,10 +50,11 @@ export default function EditProfile() {
   const handlePickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images"],
+        base64: true,
         allowsEditing: true,
         aspect: [1, 1],
-        quality: 0.8,
+        quality: 0.65,
       })
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
@@ -74,6 +77,7 @@ export default function EditProfile() {
       }
 
       const result = await ImagePicker.launchCameraAsync({
+        base64: true,
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
@@ -81,6 +85,7 @@ export default function EditProfile() {
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
         setTempAvatar(result.assets[0].uri)
+        setTempAvatarFile(result.assets[0])
       }
     } catch (error) {
       console.error("Error taking photo:", error)
@@ -117,36 +122,26 @@ export default function EditProfile() {
 
   const handleSave = async () => {
     try {
-      if (tempAvatar) {
-        setIsUploading(true)
-        // In a real app, you would upload the image to your server here
-        // and get back a URL to store in the user profile
-
-        // Simulate upload delay
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        setAvatar(tempAvatar)
-        setIsUploading(false)
-      }
-
-      // Update profile with new data
-      await updateProfile({
-        name,
-        avatar: tempAvatarFile,
-      }).then(()=>{
-        getCurrentUser();
-      })
+      if (!name.trim()) { Alert.alert("Name required","Please enter your name."); return; }
+      setIsUploading(true)
+      await updateProfile({ name: name.trim(), avatar: tempAvatarFile });
+      setTempAvatar(null)
+      setTempAvatarFile(null)
+      Alert.alert("Profile updated","Your changes were saved successfully.")
 
       // Navigate back after successful update
       router.back()
     } catch (error) {
       console.error("Error updating profile:", error)
-      Alert.alert("Error", "Failed to update profile. Please try again.")
-    }
+      Alert.alert("Unable to save profile", error instanceof Error ? error.message : "Please try again.")
+    } finally { setIsUploading(false) }
   }
 
   const handleChangePassword = () => {
-    requestResetPassword({ email: user.email, isChangePassword: true })
+    requestResetPassword({ email: user?.email || "", isChangePassword: true })
         .then(() => {
+            const requestError = useAuthStore.getState().error;
+            if (requestError) { Alert.alert("Unable to send code", requestError); return; }
             router.push({ pathname: "/(auth)/verify-otp", params: { email:user.email, purpose: 'reset-password' } });
         })
   }
@@ -169,7 +164,7 @@ export default function EditProfile() {
                 </View>
               )}
               <View style={styles.editIconContainer}>
-                <LinearGradient colors={["#3498db", "#2980b9"]} style={styles.editIconGradient}>
+                <LinearGradient colors={["#E8B44D", "#A87720"]} style={styles.editIconGradient}>
                   <Ionicons name="camera" size={14} color="#FFFFFF" />
                 </LinearGradient>
               </View>
@@ -250,7 +245,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: "#3498db",
+    backgroundColor: "#3B2C15",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -282,7 +277,7 @@ const styles = StyleSheet.create({
     borderColor: "#121212",
   },
   changePhotoText: {
-    color: "#3498db",
+    color: "#E8B44D",
     fontSize: 16,
     marginTop: 12,
   },

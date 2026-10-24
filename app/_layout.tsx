@@ -3,13 +3,21 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { useAuthStore } from "@/store/auth-store";
 import { useUserStore } from "@/store/user-store";
 import * as Linking from "expo-linking";
-import { router, SplashScreen, Stack } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, SplashScreen, Stack, usePathname } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useEffect, useRef, useState } from "react";
 import Purchases from "react-native-purchases";
 import Toast from "react-native-toast-message";
 import { initRC } from "./services/revenuecat";
 
 export default function RootLayout() {
+  const pathname = usePathname();
+  const insets = useSafeAreaInsets();
+  const isPillarDetail = /^\/(body|mental|spiritual|purpose)\//.test(pathname);
+  const hasOwnPillarIcon = pathname.startsWith("/spiritual/mediation/");
+  const pillar = pathname.startsWith("/body/") ? {route:"/body",icon:"barbell-outline"} : pathname.startsWith("/mental/") ? {route:"/mental",icon:"book-outline"} : pathname.startsWith("/spiritual/") && !pathname.startsWith("/spiritual/mediation/") ? {route:"/spiritual",icon:"shield-outline"} : pathname.startsWith("/purpose/") ? {route:"/purpose",icon:"compass-outline"} : null;
   const { error, clearError, isAuthenticated, getCurrentUser } = useAuthStore();
   const [initialURL, setInitialURL] = useState<string | null>(null);
   const [isNavigationReady, setIsNavigationReady] = useState(false);
@@ -17,6 +25,7 @@ export default function RootLayout() {
   const { showPackages, setShowPackages, savePushToken, purchasePlan } = useUserStore();
   const { pushToken } = useNotifications();
   const [hasSyncedSubscription, setHasSyncedSubscription] = useState(false);
+  const subscriptionSyncInFlight = useRef(false);
 
   useEffect(() => {
     initRC();
@@ -32,10 +41,11 @@ export default function RootLayout() {
   // ✅ Sync subscription status on app start
   useEffect(() => {
     async function syncSubscriptionStatus() {
-      if (!isAuthenticated || hasSyncedSubscription) {
+      if (!isAuthenticated || hasSyncedSubscription || subscriptionSyncInFlight.current) {
         return;
       }
 
+      subscriptionSyncInFlight.current = true;
       try {
         // Wait for RevenueCat to be configured
         if (await Purchases.isConfigured()) {
@@ -90,6 +100,8 @@ export default function RootLayout() {
           console.error("Error fetching user data:", userError);
         }
         setHasSyncedSubscription(true);
+      } finally {
+        subscriptionSyncInFlight.current = false;
       }
     }
 
@@ -149,10 +161,10 @@ export default function RootLayout() {
 
   // ✅ Force show subscription modal if expired
   useEffect(() => {
-    if (user && Number(user.daysLeft) === 0 && !user.plan) {
+    if (isAuthenticated && user && Number(user.daysLeft) === 0 && !user.plan && !showPackages) {
       setShowPackages(true);
     }
-  }, [user, setShowPackages]);
+  }, [isAuthenticated, user?.daysLeft, user?.plan, showPackages, setShowPackages]);
 
   // ✅ Save push token on app start when authenticated
   useEffect(() => {
@@ -175,6 +187,10 @@ export default function RootLayout() {
           animation: "slide_from_right",
         }}
       />
+      {isPillarDetail && isAuthenticated && <View pointerEvents="box-none" style={{position:"absolute",top:insets.top+8,right:hasOwnPillarIcon?72:18,flexDirection:"row",gap:9,zIndex:1000}}>
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go to Home" onPress={()=>router.dismissTo("/(tabs)/home" as any)} style={{width:44,height:44,borderRadius:12,backgroundColor:"rgba(183,221,240,0.075)",alignItems:"center",justifyContent:"center"}}><Ionicons name="home-outline" size={22} color="#FFFFFF" /></TouchableOpacity>
+        {pillar && !hasOwnPillarIcon && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Return to pillar menu" onPress={()=>router.dismissTo(pillar.route as any)} style={{width:44,height:44,borderRadius:12,backgroundColor:"rgba(183,221,240,0.075)",alignItems:"center",justifyContent:"center"}}><Ionicons name={pillar.icon as any} size={23} color="#FFFFFF" /></TouchableOpacity>}
+      </View>}
     </>
   );
 }

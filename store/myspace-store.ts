@@ -31,9 +31,9 @@ export const useMySpaceStore = create<MySpaceState>()(
           return mySpace
       },
 
-      addMySpace: async (data) => {
+      addMySpace: (data) => {
         const payload = {
-            id: `${get().myspaces.length + 1}`,
+            id: `${Date.now()}-${Math.random().toString(36).slice(2,9)}`,
             mood: data.mood,
             date: new Date().toLocaleDateString('en-US', {
               year: 'numeric',
@@ -42,8 +42,7 @@ export const useMySpaceStore = create<MySpaceState>()(
             }),
             text: data.text,
         }          
-        const newSpaces = [payload, ...get().myspaces]
-        set({ myspaces: newSpaces });
+        set(state => ({ myspaces: [payload, ...state.myspaces] }));
       },
 
       updateMySpace: (id, updates) => {

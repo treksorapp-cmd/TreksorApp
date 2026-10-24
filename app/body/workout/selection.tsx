@@ -1,5 +1,5 @@
-import Header from "@/components/ui/Header";
-import { useAuthStore } from "@/store/auth-store";
+import BodyPageHeading from "@/components/BodyPageHeading";
+import Button from "@/components/ui/Button";
 import { Ionicons } from "@expo/vector-icons";
 import { ImageBackground } from "expo-image";
 import { router } from "expo-router";
@@ -16,7 +16,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Selection = () => {
   const insets = useSafeAreaInsets();
-  const { user } = useAuthStore();
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
@@ -26,28 +25,10 @@ const Selection = () => {
         style={styles.backgroundImage}
         imageStyle={styles.imageStyle}
       >
-        {!user?.plan && <Header showTitle={false} showBackButton={false} showAvatar={false} />}
-        <View style={[styles.header, { paddingTop: user?.plan && (insets.top + 10), position: !user?.plan ? "relative": "absolute" }]}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-          >
-            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Workout</Text>
-          <View style={styles.headerSpacer} />
-        </View>
+        <BodyPageHeading trail="BODY" title="WORKOUT" style={{position:"absolute",top:insets.top+12,left:0,right:0,zIndex:2}} />
         <View style={[styles.content, { paddingBottom: insets.bottom + 30 }]}>
-          <TouchableOpacity
-            onPress={() => router.push("/body/workout")}
-            style={styles.gymButtonContainer}
-          >
-            <Text style={styles.gymButtonText}>GYM</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.otherButtonContainer}>
-            <Text style={styles.otherButtonText}>CALISTHENICS</Text>
-            <Text style={styles.otherButtonSubText}>Available Soon</Text>
-          </TouchableOpacity>
+          <Button borderless iconName="barbell-outline" onPress={() => router.push("/body/workout")}>GYM</Button>
+          <Button iconName="body-outline" disabled>CALISTHENICS · COMING SOON</Button>
         </View>
       </ImageBackground>
     </View>
@@ -121,12 +102,15 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     lineHeight: 24,
   },
+  eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.7,marginBottom:7},
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingVertical: 0,
+    alignItems:"flex-start",
+    flexDirection:"column",
     position: "absolute",
     top: 0,
     left: 0,
@@ -137,8 +121,9 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
+    fontSize: 36,
+    fontWeight: "700",
+    letterSpacing: 1.5,
     color: "#FFFFFF",
     textShadowColor: "rgba(0, 0, 0, 0.5)",
     textShadowOffset: { width: 0, height: 1 },

@@ -1,6 +1,5 @@
 "use client";
 
-import { useArticleStore } from "@/store/article-store";
 import { useAuthStore } from "@/store/auth-store";
 import {
   AntDesign,
@@ -8,24 +7,17 @@ import {
   Octicons,
   SimpleLineIcons,
 } from "@expo/vector-icons";
-import { Redirect, Tabs } from "expo-router";
+import { Redirect, Tabs, usePathname } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Platform,
   StyleSheet,
-  View
+  View,
 } from "react-native";
 
 export default function TabLayout() {
   const { isAuthenticated, isVerified } = useAuthStore();
-  const [badge, setBadge] = React.useState<number>(0);
-  const [offerings, setOfferings] = React.useState<any>([]);
-
-
-  useEffect(() => {
-    setBadge(useArticleStore.getState().unreadArticlesCount);
-  }, [useArticleStore.getState().unreadArticlesCount]);
 
   if (!isAuthenticated || !isVerified) return <Redirect href="/" />;
 
@@ -38,22 +30,27 @@ export default function TabLayout() {
 
       {/* tabs */}
       <Tabs
-        key={badge}
         screenOptions={{
           animation: "shift",
           sceneStyle: {
-            backgroundColor: "#02050C",
+            backgroundColor: "#050505",
           },
+          tabBarBackground: () => <View pointerEvents="none" style={StyleSheet.absoluteFill}><View style={styles.goldDivider}/></View>,
           tabBarStyle: Platform.select({
             ios: {
               position: "absolute",
-              backgroundColor: "#02050C",
+              backgroundColor: "#050505",
+              borderTopWidth: 0,
+              elevation: 0,
             },
             default: {
-              backgroundColor: "#02050C",
+              backgroundColor: "#050505",
             },
           }),
-          tabBarActiveTintColor: "#EFB33F",
+          tabBarActiveTintColor: "#D7B877",
+          tabBarInactiveTintColor: "#BABABA",
+          tabBarLabelStyle: { fontSize: 11, fontWeight: "600", marginTop: 2 },
+          tabBarItemStyle: { paddingVertical: 3 },
           headerShown: false,
         }}
       >
@@ -62,7 +59,7 @@ export default function TabLayout() {
           options={{
             title: "Home",
             tabBarIcon: ({ color }) => (
-              <AntDesign name="home" size={24} color={color} />
+              <View style={styles.iconContainer}><AntDesign name="home" size={24} color={color} /></View>
             ),
           }}
         />
@@ -72,7 +69,7 @@ export default function TabLayout() {
           options={{
             title: "Chat",
             tabBarIcon: ({ color }) => (
-              <Octicons name="dependabot" size={24} color={color} />
+              <View style={styles.iconContainer}><Octicons name="dependabot" size={24} color={color} /></View>
             ),
           }}
         />
@@ -80,27 +77,16 @@ export default function TabLayout() {
         <Tabs.Screen
           name="tracking"
           options={{
-            title: "Tracking",
+            title: "Progress",
             tabBarIcon: ({ color }) => (
-              <SimpleLineIcons name="graph" size={24} color={color} />
+              <View style={styles.iconContainer}><SimpleLineIcons name="graph" size={24} color={color} /></View>
             ),
           }}
         />
 
-        <Tabs.Screen
-          name="articles"
-          options={() => {
-            const badge = useArticleStore.getState().unreadArticlesCount;
-            return {
-              title: "Articles",
-              tabBarIcon: ({ color }) => (
-                <MaterialIcons name="article" size={24} color={color} />
-              ),
-              tabBarBadge: badge > 0 ? badge : undefined,
-            };
-          }}
-        />
+        <Tabs.Screen name="articles" options={{href:null}} />
 
+        <Tabs.Screen name="community" options={{title:"Community",tabBarIcon:({color})=><View style={styles.iconContainer}><MaterialIcons name="groups" size={24} color={color} /></View>}} />
         <Tabs.Screen name="index" redirect />
       </Tabs>
     </View>
@@ -112,6 +98,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "black",
   },
+  goldDivider: { position: "absolute", top: 0, left: 0, right: 0, height: 1, backgroundColor: "rgba(232,180,77,0.14)" },
+  iconContainer: { width: 42, height: 42, alignItems: "center", justifyContent: "center" },
   modalOverlay: {
     position: "absolute",
     top: 0,

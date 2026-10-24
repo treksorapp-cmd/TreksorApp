@@ -1,3 +1,4 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 import Button from "@/components/ui/Button";
 import { ImageBackground } from "expo-image";
 import { router } from "expo-router";
@@ -17,6 +18,7 @@ const SupplementsHome = () => {
         style={styles.backgroundImage}
         imageStyle={styles.imageStyle}
       >
+        <BodyPageHeading trail="BODY / NUTRITION" title="SUPPLEMENTS" style={{position:"absolute",top:insets.top+12,left:0,right:0}} />
         <View style={[styles.content, { paddingBottom: insets.bottom + 30 }]}>
           <Button onPress={()=>router.push("/body/nutrition/beverages")} icon={require("@/assets/images/creatine-icon.png")}>CREATINE</Button>
           <Button icon={require("@/assets/images/omega-icon.png")}>OMEGA-3</Button>

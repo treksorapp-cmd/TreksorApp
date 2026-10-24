@@ -25,10 +25,12 @@ export default function VerifyOtp() {
   const params = useLocalSearchParams()
   const { email, purpose = "registration" } = params
 
+  const codeLength = purpose === "reset-password" ? 8 : 6
   const [otp, setOtp] = useState("")
   const [error, setError] = useState("")
   const [timeLeft, setTimeLeft] = useState(30)
   const [canResend, setCanResend] = useState(false)
+  const [resendNotice, setResendNotice] = useState("")
   const timerRef = useRef<number | null>(null)
 
   // Animation values
@@ -83,34 +85,45 @@ export default function VerifyOtp() {
   const handleVerify = () => {
     Keyboard.dismiss()
 
-    if (!otp || otp.length !== 4) {
-      setError("Please enter a valid 4-digit code")
+    if (!otp || otp.length !== codeLength) {
+      setError(`Please enter a valid ${codeLength}-digit code`)
       return
     }
 
     setError("")
+    setResendNotice("")
 
     verifyOtp({ email: email as string, otp, type: purpose as string }).then((token)=>{
       if(purpose === 'reset-password')
       {
-        router.push({ pathname: "/(auth)/reset-password", params: { token } });
+        if (token) router.push({ pathname: "/(auth)/reset-password", params: { token } });
       }
-      else {
+      else if (useAuthStore.getState().isAuthenticated) {
         getCurrentUser();
       }
+      const authError = useAuthStore.getState().error
+      if (authError) setError(authError)
     })
   }
 
   const handleResendCode = () => {
-    if (!canResend) return
+    if (!canResend || loading) return
+    setError("")
+    setResendNotice("")
 
-    if(purpose === 'reset-password')
-    {
-      requestResetPassword({ email: email as string })
-    }
-    else{
-      requestOtp({ email: email as string });
-    }
+    const resend = purpose === "reset-password"
+      ? requestResetPassword({ email: email as string })
+      : requestOtp({ email: email as string })
+    resend.then(() => {
+      const resendError = useAuthStore.getState().error
+      if (resendError) {
+        setError(resendError)
+        return
+      }
+      setOtp("")
+      setResendNotice("Request accepted. Email delivery is not guaranteed. Check your inbox and spam folder.")
+      startTimer()
+    })
   }
 
   const formatTime = (seconds: number) => {
@@ -143,13 +156,14 @@ export default function VerifyOtp() {
 
           <Text style={styles.heading}>Verification Code</Text>
           <Text style={styles.subHeading}>
-            We've sent a 4-digit code to {email}. Enter the code below to verify your{" "}
+            If a code was issued, it will be sent to {email}. Enter the {codeLength}-digit code to verify your{" "}
             {purpose === "reset-password" ? "identity" : "account"}.
           </Text>
 
-          <OtpInput codeLength={4} onCodeFilled={setOtp} error={!!error} />
+          <OtpInput codeLength={codeLength} onCodeFilled={setOtp} error={!!error} />
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          {resendNotice ? <Text style={styles.noticeText}>{resendNotice}</Text> : null}
 
           <Button onPress={handleVerify} loading={loading}>
             VERIFY
@@ -220,6 +234,12 @@ const styles = StyleSheet.create({
     color: "#ff6b6b",
     fontSize: 14,
     marginBottom: 20,
+    textAlign: "center",
+  },
+  noticeText: {
+    color: "rgba(255, 255, 255, 0.7)",
+    fontSize: 13,
+    marginBottom: 16,
     textAlign: "center",
   },
   resendContainer: {

@@ -21,7 +21,7 @@ import TextInput from "@/components/ui/TextInput"
 import { useAuthStore } from "@/store/auth-store"
 
 export default function ForgotPassword() {
-  const {requestResetPassword, loading} = useAuthStore();
+  const {requestResetPassword, loading, error: authError, clearError} = useAuthStore();
   const [email, setEmail] = useState("")
   const [error, setError] = useState("")
 
@@ -57,14 +57,18 @@ export default function ForgotPassword() {
     return true
   }
 
-  const handleSendResetLink = () => {
+  const handleSendResetLink = async () => {
     Keyboard.dismiss()
 
-    if (validateEmail()) {
-      requestResetPassword({ email }).then(() => {
-        router.push({ pathname: "/(auth)/verify-otp", params: { email,purpose:'reset-password' } });
-      })
+    if (!validateEmail() || loading) return
+    clearError()
+    await requestResetPassword({ email: email.trim().toLowerCase() })
+    const requestError = useAuthStore.getState().error
+    if (requestError) {
+      setError(requestError)
+      return
     }
+    router.push({ pathname: "/(auth)/verify-otp", params: { email: email.trim().toLowerCase(), purpose: "reset-password" } })
   }
 
   return (
@@ -94,7 +98,7 @@ export default function ForgotPassword() {
             <TextInput
               placeholder="Email"
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(value) => { setEmail(value); setError(""); if (authError) clearError() }}
               keyboardType="email-address"
               autoCapitalize="none"
               icon="mail-outline"

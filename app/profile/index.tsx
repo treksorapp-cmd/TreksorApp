@@ -1,6 +1,9 @@
 "use client"
 
 import Button from "@/components/ui/Button"
+import { getEntries, moodAverage } from "@/lib/mood-journal"
+import { useFocusEffect } from "expo-router"
+import { useCallback } from "react"
 import PDFViewer from "@/components/ui/PDFViewer"
 import { useAuthStore } from "@/store/auth-store"
 import { useUserStore } from "@/store/user-store"
@@ -14,6 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
+  const [moodSummary,setMoodSummary]=useState<{average:number|null;days:number}>({average:null,days:0});
   const {isAuthenticated, logout, user, loading, requestResetPassword, getCurrentUser} = useAuthStore();
   const {deactivateAccount, cancelSubscription, setShowPackages} = useUserStore();
   const [showPDF, setShowPDF] = useState<{
@@ -139,6 +143,8 @@ export default function ProfileScreen() {
     }
   };  
 
+  useFocusEffect(useCallback(()=>{let active=true; if(user?.id){getEntries(user.id).then(entries=>{if(active)setMoodSummary(moodAverage(entries,"month"))}).catch(()=>{if(active)setMoodSummary({average:null,days:0})})}return()=>{active=false}},[user?.id]));
+
   const imageUrl = `https://app.treksor.com/${user?.avatar}`;
 
   return (
@@ -164,6 +170,8 @@ export default function ProfileScreen() {
             EDIT PROFILE
           </Button>
         </View>
+
+        <TouchableOpacity onPress={() => router.push("/mind/journal")} style={{marginHorizontal:20,marginVertical:16,padding:18,borderRadius:16,backgroundColor:"rgba(67,72,78,0.30)",borderWidth:1,borderColor:"rgba(242,215,164,0.42)"}}><Text style={{color:"#D6AE67",fontSize:12,letterSpacing:2}}>MIND · PRIVATE</Text><Text style={{color:"#fff",fontSize:21,fontWeight:"700",marginTop:7}}>My Journal & Mood Tracking →</Text><Text style={{color:"#aaa",marginTop:7}}>{moodSummary.days > 0 ? `Last 30 days · ${moodSummary.average?.toFixed(1)} / 5 · ${moodSummary.days} check-ins` : "Record how you feel and review your progress."}</Text></TouchableOpacity>
 
         {/* Subscription Plan Section */}
         {user?.plan && (
@@ -348,7 +356,7 @@ const styles = StyleSheet.create({
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#1A1A1A",
+    backgroundColor: "rgba(67,72,72,0.30)",
     padding: 15,
     borderRadius: 12,
     marginBottom: 10,
@@ -378,7 +386,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "rgba(255, 255, 255, 0.1)",
   },
   subscriptionCard: {
-    backgroundColor: "#1A1A1A",
+    backgroundColor: "rgba(67,72,72,0.30)",
     borderRadius: 12,
     padding: 20,
     borderWidth: 1,

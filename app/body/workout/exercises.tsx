@@ -1,7 +1,6 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
 
-import Header from "@/components/ui/Header";
-import { useAuthStore } from "@/store/auth-store";
 import { useWorkoutStore } from "@/store/workout-store";
 import { Exercise } from "@/types/workout";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,7 +13,7 @@ import {
   useNavigation,
 } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useLayoutEffect, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 import {
   Alert,
   Dimensions,
@@ -32,13 +31,11 @@ export default function WorkoutDetailScreen() {
   const { workoutId } = useLocalSearchParams();
   const { workouts, getWorkoutExercies, resetProgress } = useWorkoutStore();
   const [workout, setWorkout] = useState<Exercise[]>();
-  const {user} = useAuthStore();
 
-  useFocusEffect(() => {
-    if (workoutId) {
-      setWorkout(getWorkoutExercies(workoutId as string));
-    }
-  });
+  useFocusEffect(useCallback(() => {
+    const id = Array.isArray(workoutId) ? workoutId[0] : workoutId;
+    if (id) setWorkout(getWorkoutExercies(id) ?? []);
+  }, [workoutId, getWorkoutExercies]));
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -98,13 +95,13 @@ export default function WorkoutDetailScreen() {
         key={index}
       >
         <LinearGradient
-          colors={["rgba(255, 255, 255, 0.3)", "rgba(255, 255, 255, 0.4)"]}
+          colors={["rgba(183,221,240,0.085)", "rgba(183,221,240,0.06)"]}
           start={{ x: 0.2, y: 0 }}
           end={{ x: 0.8, y: 1 }}
           style={styles.borderGradient}
         >
           <LinearGradient
-            colors={["#262626", "#0a0a0a"]}
+            colors={["rgba(183,221,240,0.075)", "rgba(183,221,240,0.045)"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.innerGradient}
@@ -143,21 +140,7 @@ export default function WorkoutDetailScreen() {
           imageStyle={styles.imageStyle}
         >
           <StatusBar style="light" />
-          <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-          >
-            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>
-            {(workoutId as string)?.charAt(0).toUpperCase() +
-              (workoutId as string)?.slice(1)}
-          </Text>
-          <TouchableOpacity onPress={_resetProgress}>
-            <Ionicons name="refresh" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
+          <BodyPageHeading trail="BODY / WORKOUT / GYM / EXERCISE LIBRARY" title={String(Array.isArray(workoutId)?workoutId[0]:workoutId || "EXERCISES")} style={{position:"absolute",top:insets.top+12,left:0,right:0,zIndex:10}} />
           <View style={styles.loadingContainer}>
             <Text style={styles.loadingText}>Loading workout...</Text>
           </View>
@@ -178,22 +161,7 @@ export default function WorkoutDetailScreen() {
         imageStyle={styles.imageStyle}
       >
         <StatusBar style="light" />
-        {!user?.plan && <Header showTitle={false} showBackButton={false} showAvatar={false} />}
-        <View style={[styles.header, { paddingTop: user?.plan && (insets.top + 10), position: !user?.plan ? "relative": "absolute" }]}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-          >
-            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>
-            {(workoutId as string)?.charAt(0).toUpperCase() +
-              (workoutId as string)?.slice(1)}
-          </Text>
-          <TouchableOpacity onPress={_resetProgress}>
-            <Ionicons name="refresh" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
+        <BodyPageHeading trail="BODY / WORKOUT / GYM / EXERCISE LIBRARY" title={String(Array.isArray(workoutId)?workoutId[0]:workoutId || "EXERCISES")} style={{position:"absolute",top:insets.top+12,left:0,right:0,zIndex:10}} />
         <ScrollView
           style={styles.content}
           contentContainerStyle={styles.scrollContent}
@@ -235,7 +203,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    marginTop: "20%",
+    marginTop: 0,
+    paddingTop: 145,
   },
   scrollContent: {
     padding: 20,
@@ -300,13 +269,13 @@ const styles = StyleSheet.create({
   },
   exerciseDetails: {
     fontSize: 14,
-    color: "#F39C12",
+    color: "#E8B44D",
     fontWeight: "500",
   },
   borderGradient: {
     flex: 1,
     borderRadius: 12,
-    padding: 1, // This creates the border thickness
+    padding: 0,
   },
   innerGradient: {
     flex: 1,

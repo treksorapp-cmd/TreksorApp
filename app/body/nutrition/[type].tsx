@@ -1,7 +1,6 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 import Button from "@/components/ui/Button";
-import Header from "@/components/ui/Header";
 import { Nutritions } from "@/mock/nutrition";
-import { useAuthStore } from "@/store/auth-store";
 import { Ionicons } from "@expo/vector-icons";
 import { ImageBackground } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
@@ -19,9 +18,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const BeveragesHome = () => {
   const insets = useSafeAreaInsets();
   const { type } = useLocalSearchParams();
-  const { backgroundImage, data, route, headerTitle } =
-    Nutritions[type as string];
-    const { user } = useAuthStore();
+  const categoryKey = type === "supplements" ? "supplements" : "beverages";
+  const category = Nutritions[categoryKey];
+  const { backgroundImage, data, route, headerTitle } = category;
 
   return (
     <View style={styles.container}>
@@ -32,29 +31,19 @@ const BeveragesHome = () => {
         style={styles.backgroundImage}
         imageStyle={styles.imageStyle}
       >
-        {/* Header */}
-         {!user?.plan && <Header showTitle={false} showBackButton={false} showAvatar={false} />}
-        <View style={[styles.header, { paddingTop: user?.plan && (insets.top + 10), position: !user?.plan ? "relative": "absolute" }]}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-          >
-            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>{headerTitle}</Text>
-          <View style={styles.headerSpacer} />
-        </View>
+        <BodyPageHeading trail="BODY / NUTRITION" title={headerTitle} style={{position:"absolute",top:insets.top+12,left:0,right:0,zIndex:2}} />
 
         <View style={[styles.content, { paddingBottom: insets.bottom + 30 }]}>
           {data?.map((item) => (
             <Button
+              borderless
               key={item.id}
               onPress={() =>
                 router.push({ pathname: route, params: { id: item.id } })
               }
-              icon={item.icon}
+              icon={"icon" in item ? item.icon : undefined}
             >
-              {item.name}
+              {item.name.charAt(0).toUpperCase() + item.name.slice(1).toLowerCase()}
             </Button>
           ))}
         </View>
@@ -104,8 +93,8 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
+    fontSize: 28,
+    fontWeight: "700",
     color: "#FFFFFF",
     textShadowColor: "rgba(0, 0, 0, 0.5)",
     textShadowOffset: { width: 0, height: 1 },

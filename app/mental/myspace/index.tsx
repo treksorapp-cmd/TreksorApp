@@ -209,6 +209,7 @@
 
 "use client"
 
+import Button from "@/components/ui/Button"
 import EntryOptionsModal from "@/components/EntryOptionsModal"
 import { useMySpaceStore } from "@/store/myspace-store"
 import type { MySpace } from "@/types/myspace"
@@ -231,7 +232,11 @@ const { width } = Dimensions.get("window")
 
 export default function MySpaceScreen() {
   const { myspaces, deleteMySpace } = useMySpaceStore()
-  const [animatedValues] = useState(myspaces.map(() => new RNAnimated.Value(0)))
+  const scores: Record<string,number> = {Happy:5,Grateful:5,Calm:4,Tired:3,Anxious:2,Stressed:2,Frustrated:2,Sad:1}
+  const moodDays: Record<string,{sum:number,count:number}> = {}
+  for(const entry of myspaces){const d=new Date(entry.date);const score=scores[entry.mood];if(!Number.isFinite(d.getTime())||!score)continue;const day=d.toISOString().slice(0,10);const prev=moodDays[day]||{sum:0,count:0};moodDays[day]={sum:prev.sum+score,count:prev.count+1}}
+  const moodTrend=Object.keys(moodDays).sort().slice(-7).map(day=>({day,score:moodDays[day].sum/moodDays[day].count}))
+  const animatedValues = myspaces.map(() => new RNAnimated.Value(1))
   const [selectedEntry, setSelectedEntry] = useState<string | null>(null)
   const [showOptionsModal, setShowOptionsModal] = useState(false)
 
@@ -247,7 +252,7 @@ export default function MySpaceScreen() {
     )
 
     RNAnimated.stagger(80, animations).start()
-  }, [])
+  }, [myspaces.length])
 
   const handleLongPress = (entryId: string) => {
     setSelectedEntry(entryId)
@@ -349,10 +354,15 @@ export default function MySpaceScreen() {
     <View style={styles.container}>
       <StatusBar style="light" />
 
-      <TouchableOpacity style={styles.newEntry} onPress={() => router.push("/mental/myspace/new-entry")}>
-        <Text style={styles.newEntryText}>New Entry</Text>
-      </TouchableOpacity>
-
+      <View style={{marginHorizontal:20,marginTop:16,padding:18,borderRadius:18,backgroundColor:"rgba(255,255,255,0.08)",borderWidth:1,borderColor:"rgba(255,255,255,0.22)"}}>
+        <Text style={{color:"#FFFFFF",fontWeight:"700",fontSize:15}}>MOOD OVER TIME</Text>
+        <Text style={{color:"#CCC6BC",marginTop:6}}>{moodTrend.length<2?"Record moods on different days to see your trend":moodTrend[moodTrend.length-1].score>moodTrend[0].score?"Mood improving":moodTrend[moodTrend.length-1].score<moodTrend[0].score?"Mood declining":"Mood stable"}</Text>
+        <View style={{height:130,flexDirection:"row",justifyContent:"space-around",alignItems:"flex-end"}}>
+          {moodTrend.map(item=><View key={item.day} style={{alignItems:"center",flex:1}}><View style={{height:Math.max(6,item.score*18),width:7,borderRadius:5,backgroundColor:"#D7B877"}}/><Text style={{color:"#C8C2B6",fontSize:10,marginTop:7}}>{item.day.slice(5)}</Text></View>)}
+          {moodTrend.length===0&&<Text style={{color:"#AAA"}}>Your mood history will appear here.</Text>}
+        </View>
+      </View>
+      <View style={{paddingHorizontal:20}}><Button iconName="create-outline" onPress={()=>router.push("/mental/myspace/new-entry")}>TODAY'S ENTRY</Button></View>
       {/* Thoughts List */}
       <ScrollView
         style={styles.content}

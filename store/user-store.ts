@@ -85,8 +85,8 @@ export const useUserStore = create<UserState>()(
           await api.post<SavePushTokenResonse>("user/save-push-token", data);
           set({ loading: false });
         } catch (error: any) {
-          console.error("savePushToken error:", { error:error.response.data });
-          set({ error: error.response.data.message, loading: false });
+          console.error("savePushToken error:", { error:error?.response?.data ?? error?.message });
+          set({ error: error?.response?.data?.message || error?.message || "Service unavailable", loading: false });
           errorHandler(error);
         }
       },
@@ -101,8 +101,8 @@ export const useUserStore = create<UserState>()(
           await api.delete<DeactivateAccountResponse>("user/deactivate");
           set({ loading: false });
         } catch (error: any) {
-          console.error("deactivateAccount error:", { error:error.response.data });
-          set({ error: error.response.data.message, loading: false });
+          console.error("deactivateAccount error:", { error:error?.response?.data ?? error?.message });
+          set({ error: error?.response?.data?.message || error?.message || "Service unavailable", loading: false });
           errorHandler(error);
         }
       },
@@ -113,8 +113,8 @@ export const useUserStore = create<UserState>()(
           await api.post<PurchasePlanResponse>("user/purchase-plan", data);
           set({ loading: false });
         } catch (error: any) {
-          console.error("purchasePlanError error:", { error:error.response.data });
-          set({ error: error.response.data.message, loading: false });
+          console.error("purchasePlanError error:", { error:error?.response?.data ?? error?.message });
+          set({ error: error?.response?.data?.message || error?.message || "Service unavailable", loading: false });
           errorHandler(error);
         }
       },
@@ -125,8 +125,8 @@ export const useUserStore = create<UserState>()(
           await api.post<CancelSubscriptionResponse>("user/cancel-subscription");
           set({ loading: false });
         } catch (error: any) {
-          console.error("cancelSubscription error:", { error:error.response.data });
-          set({ error: error.response.data.message, loading: false });
+          console.error("cancelSubscription error:", { error:error?.response?.data ?? error?.message });
+          set({ error: error?.response?.data?.message || error?.message || "Service unavailable", loading: false });
           errorHandler(error);
         }
       },
@@ -147,8 +147,8 @@ export const useUserStore = create<UserState>()(
       //     set({ loading: false, user: response.data.user, isVerified: response.data.user?.isVerified });
       //     return response.data.user?.isVerified;
       //   } catch (error: any) {
-      //     console.error("getCurrentUser error:", {error:error.response.data });
-      //     set({ error: error.response.data.message, loading: false });
+      //     console.error("getCurrentUser error:", {error:error?.response?.data ?? error?.message });
+      //     set({ error: error?.response?.data?.message || error?.message || "Service unavailable", loading: false });
       //     errorHandler(error);
       //   }
       // },
@@ -177,8 +177,8 @@ export const useUserStore = create<UserState>()(
       //     await api.patch<AuthResponse>("user/profile", formData, config);
       //     set({ loading: false });
       //   } catch (error: any) {
-      //     console.error("updateProfile error:", {error:error.response.data });
-      //     set({ error: error.response.data.message, loading: false });
+      //     console.error("updateProfile error:", {error:error?.response?.data ?? error?.message });
+      //     set({ error: error?.response?.data?.message || error?.message || "Service unavailable", loading: false });
       //     errorHandler(error);
       //   }
       // },

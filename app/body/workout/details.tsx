@@ -1,15 +1,12 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
 
-import Header from "@/components/ui/Header";
-import { useAuthStore } from "@/store/auth-store";
 // import { workoutContent } from "@/mock/workouts"
 import { useWorkoutStore } from "@/store/workout-store";
 import { Ionicons } from "@expo/vector-icons";
-import { useEvent } from "expo";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useVideoPlayer, VideoView } from "expo-video";
 import { useEffect, useState } from "react";
 import {
   Dimensions,
@@ -55,23 +52,6 @@ export default function WorkoutInfoScreen() {
   const [fadeAnim] = useState(new RNAnimated.Value(0));
   const [slideAnim] = useState(new RNAnimated.Value(30));
   const [isCompleted, setIsCompleted] = useState(false);
-  const videoUrl =
-    workout?.videoUrl || "https://app.treksor.com/uploads/loading.mp4";
-
-  const player = useVideoPlayer(videoUrl);
-  const {user} = useAuthStore();
-
-  // Start playback once video and player are available
-  useEffect(() => {
-    if (workout?.videoUrl && player) {
-      player.loop = true;
-      player.play();
-    }
-  }, [player, workout?.videoUrl]);
-
-  const { isPlaying } = useEvent(player, "playingChange", {
-    isPlaying: player.playing,
-  });
 
   useEffect(() => {
     // Load workout content based on ID
@@ -131,18 +111,10 @@ export default function WorkoutInfoScreen() {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: user?.plan && (insets.top + 10), position: !user?.plan ? "relative": "absolute" }]}>
+    <View style={styles.container}>
       <StatusBar style="light" />
 
-      {/* Custom Header */}
-      {!user?.plan && <Header showTitle={false} showBackButton={false} showAvatar={false} />}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
-          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{workout.title}</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+      <BodyPageHeading trail="BODY / WORKOUT / GYM / EXERCISES" title={workout.title} style={{marginTop:insets.top+12}} />
 
       <ScrollView
         style={styles.content}
@@ -160,25 +132,19 @@ export default function WorkoutInfoScreen() {
         >
           {/* Video/Image Section */}
           <View style={styles.videoSection}>
-            <VideoView
-              style={styles.video}
-              player={player}
-              allowsFullscreen
-              allowsPictureInPicture
-              nativeControls={false}
-            />
+            <View style={{flex:1,backgroundColor:"#171815",alignItems:"center",justifyContent:"center",padding:20}}><Ionicons name="barbell-outline" size={40} color="#D7B877"/><Text style={{color:"#CFC9BE",textAlign:"center",marginTop:12}}>Exercise video preview temporarily unavailable</Text></View>
             {/* Stats Overlay */}
             {/* <View style={styles.statsOverlay}>
               <BlurView intensity={40} style={styles.statsBlur}>
                 <View style={styles.statsContainer}>
                   <View style={styles.statItem}>
-                    <Ionicons name="flame" size={20} color="#F39C12" />
+                    <Ionicons name="flame" size={20} color="#D7B877" />
                     <Text style={styles.statLabel}>Burn</Text>
                     <Text style={styles.statValue}>{workout.stats.burn}</Text>
                   </View>
                   <View style={styles.statDivider} />
                   <View style={styles.statItem}>
-                    <Ionicons name="time" size={20} color="#F39C12" />
+                    <Ionicons name="time" size={20} color="#D7B877" />
                     <Text style={styles.statLabel}>Time</Text>
                     <Text style={styles.statValue}>{workout.stats.time}</Text>
                   </View>
@@ -189,9 +155,6 @@ export default function WorkoutInfoScreen() {
 
           {/* Content Section */}
           <View style={styles.contentSection}>
-            <View style={styles.titleRow}>
-              <Text style={styles.workoutTitle}>{workout.title}</Text>
-            </View>
 
             <Text style={styles.description}>
               {parseHTMLContent(workout.content.description)}
@@ -238,7 +201,7 @@ export default function WorkoutInfoScreen() {
         >
           <LinearGradient
             colors={
-              isCompleted ? ["#4CAF50", "#45A049"] : ["#F39C12", "#E67E22"]
+              isCompleted ? ["#4CAF50", "#45A049"] : ["#D7B877", "#E67E22"]
             }
             style={styles.buttonGradient}
             start={{ x: 0, y: 0 }}
@@ -393,7 +356,7 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: "#F39C12",
+    backgroundColor: "#D7B877",
     marginTop: 8,
     marginRight: 12,
   },
@@ -442,7 +405,7 @@ const styles = StyleSheet.create({
     // height: 250,
     height: height * 0.3,
     borderRadius: 12,
-    backgroundColor: "#00000", // Very light gray
+    backgroundColor: "#000000", // Very light gray
   },
   controlsContainer: {
     padding: 10,
