@@ -420,12 +420,12 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   quickActionButton: {
-    backgroundColor: "rgba(239, 179, 63, 0.2)",
+    backgroundColor: "rgba(215,184,119, 0.2)",
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(239, 179, 63, 0.3)",
+    borderColor: "rgba(215,184,119, 0.3)",
   },
   quickActionText: {
     color: "#D7B877",
@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "rgba(239, 179, 63, 0.2)",
+    backgroundColor: "rgba(215,184,119, 0.2)",
     alignItems: "center",
     justifyContent: "center",
   },

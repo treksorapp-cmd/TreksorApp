@@ -258,7 +258,8 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContainer: {
-    width: width - 40,
+    width: "90%",
+    maxWidth: 520,
     maxHeight: "85%",
     borderRadius: 20,
     overflow: "hidden",
@@ -281,11 +282,16 @@ const styles = StyleSheet.create({
     borderBottomColor: "rgba(255, 255, 255, 0.1)",
   },
   headerTitle: {
+    flex: 1,
+    marginRight: 12,
     fontSize: 22,
     fontWeight: "600",
     color: "#F5F4F1", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   closeButton: {
-    padding: 4,
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: "center",
+    justifyContent: "center",
   },
   content: {
     maxHeight: 400,
@@ -296,7 +302,7 @@ const styles = StyleSheet.create({
     gap: 8,
     margin: 20,
     padding: 12,
-    backgroundColor: "rgba(239, 179, 63, 0.1)",
+    backgroundColor: "rgba(215,184,119, 0.1)",
     borderRadius: 10,
   },
   dateText: {

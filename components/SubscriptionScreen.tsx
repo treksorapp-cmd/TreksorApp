@@ -637,7 +637,7 @@ const styles = StyleSheet.create({
     },
     switchWarning: {
       flexDirection: "row",
-      backgroundColor: "rgba(239, 179, 63, 0.15)",
+      backgroundColor: "rgba(215,184,119, 0.15)",
       padding: 12,
       borderRadius: 8,
       marginBottom: 15,

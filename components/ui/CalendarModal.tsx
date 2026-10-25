@@ -188,7 +188,8 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContainer: {
-    width: width - 40,
+    width: "90%",
+    maxWidth: 520,
     borderRadius: 20,
     overflow: "hidden",
   },
@@ -246,7 +247,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   today: {
-    backgroundColor: "rgba(239, 179, 63, 0.3)",
+    backgroundColor: "rgba(215,184,119, 0.3)",
   },
   selectedDay: {
     backgroundColor: "#D7B877",
@@ -270,7 +271,7 @@ const styles = StyleSheet.create({
   },
   todayButton: {
     flex: 1,
-    backgroundColor: "rgba(239, 179, 63, 0.2)",
+    backgroundColor: "rgba(215,184,119, 0.2)",
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",

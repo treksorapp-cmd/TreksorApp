@@ -32,7 +32,7 @@ export default function PremiumPillarScreen({ title, headline, subtitle, image, 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: "#050505" },
   header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 21, minHeight: 64, paddingTop: 2, paddingBottom: 5 },
-  heading:{flex:1,justifyContent:"center"},
+  heading:{flex:1,minWidth:0,paddingRight:12,justifyContent:"center"},
   headerActions:{flexDirection:"row",alignItems:"center",gap:9},
   eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"600",letterSpacing:1.5,marginBottom:7},
   back: { width: 35, justifyContent: "center" },

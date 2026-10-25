@@ -184,7 +184,8 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContainer: {
-    width: width - 40,
+    width: "90%",
+    maxWidth: 520,
     maxHeight: "90%",
     borderRadius: 20,
     overflow: "hidden",
@@ -207,11 +208,16 @@ const styles = StyleSheet.create({
     borderBottomColor: "rgba(255, 255, 255, 0.1)",
   },
   headerTitle: {
+    flex: 1,
+    marginRight: 12,
     fontSize: 22,
     fontWeight: "600",
     color: "#F5F4F1", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   closeButton: {
-    padding: 4,
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: "center",
+    justifyContent: "center",
   },
   form: {
     padding: 20,
@@ -244,13 +250,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
-    backgroundColor: "rgba(239, 179, 63, 0.2)",
+    backgroundColor: "rgba(215,184,119, 0.2)",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
   },
   addItemText: {
-    color: "#F5BD4F",
+    color: "#D7B877",
     fontSize: 12,
     fontWeight: "500",
   },
@@ -294,7 +300,7 @@ const styles = StyleSheet.create({
   },
   addButton: {
     flex: 1,
-    backgroundColor: "#F5BD4F",
+    backgroundColor: "#D7B877",
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: "center",

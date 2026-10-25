@@ -20,6 +20,6 @@ const styles = StyleSheet.create({
   subHeading: { fontSize: 12, lineHeight: 21, letterSpacing: 3.2, color: "#fff", textAlign: "center", marginTop: 12 },
   bottom: { alignItems: "center", paddingHorizontal: 28, paddingBottom: 35 },
   mantra: { color: "#D8D5CF", fontSize: 14, lineHeight: 22, textAlign: "center", marginBottom: 28 },
-  button: { backgroundColor: "#F5BC4F", width: "100%", padding: 17, borderRadius: 12 },
+  button: { backgroundColor: "#D7B877", width: "100%", padding: 17, borderRadius: 12 },
   buttonText: { color: "#12100B", fontWeight: "800", fontSize: 15, textAlign: "center", letterSpacing: 1 },
 });

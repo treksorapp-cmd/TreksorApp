@@ -49,7 +49,7 @@ const ArticleCard = ({
             </View>
 
             <View style={styles.textContent}>
-              <Text style={styles.articleTitle} numberOfLines={2}>
+              <Text style={styles.articleTitle}>
                 {item.title}
               </Text>
               <Text style={styles.articleDescription} numberOfLines={3}>
@@ -91,7 +91,8 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: "43%",
-    height: "100%",
+    alignSelf: "stretch",
+    minHeight: 165,
     borderRadius: 12,
     overflow: "hidden",
   },
@@ -106,7 +107,9 @@ const styles = StyleSheet.create({
     justifyContent:"center",
     gap:8,
     textAlign:'left',
-    marginHorizontal:16
+    marginHorizontal:16,
+    paddingVertical:16,
+    minWidth:0
   },
   articleTitle: {
     fontSize: 18,
@@ -114,8 +117,8 @@ const styles = StyleSheet.create({
     color: "#F5F4F1",
     lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   articleDescription: {
-    fontSize: 12,
-    color: "#FFFFFF",
-    lineHeight: 28,
+    fontSize: 13,
+    color: "#C8C3BA",
+    lineHeight: 19,
   },
 });

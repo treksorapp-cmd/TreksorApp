@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   description: { color: "#E4E0D8", fontSize: 16, lineHeight: 25 },
   note: { marginTop: 22, flexDirection: "row", alignItems: "flex-start", gap: 12, paddingHorizontal: 4 },
   noteText: { flex: 1, color: "#D5C9B7", fontSize: 13, lineHeight: 20 },
-  source: { marginTop: 22, flexDirection: "row", alignItems: "center", gap: 8, padding: 15, borderRadius: 14,  backgroundColor: "rgba(232,180,77,0.07)" },
+  source: { marginTop: 22, flexDirection: "row", alignItems: "center", gap: 8, padding: 15, borderRadius: 14,  backgroundColor: "rgba(215,184,119,0.07)" },
   sourceText: { flex: 1, color: "#D7B877", fontSize: 13, lineHeight: 19 },
   empty: { flex: 1, alignItems: "center", justifyContent: "center", padding: 30, gap: 16 },
   heading: { color: "#F5F1E8", fontSize: 22, fontWeight: "600", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
