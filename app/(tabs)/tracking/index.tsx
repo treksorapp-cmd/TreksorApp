@@ -1,3 +1,4 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
 
 import ProgressSyncStatus from "@/components/ProgressSyncStatus";
@@ -82,11 +83,10 @@ export default function TrackingScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
 
-      <Text style={styles.premiumTitle}>Progress</Text>
-      <Text style={styles.trackingSubtitle}>TRACKING</Text>
+      <BodyPageHeading trail="YOUR JOURNEY" title="Progress" style={{paddingRight:22,paddingTop:12}} />
       <Text style={styles.periodNote}>Small steps. Real momentum.</Text>
-      <Text style={styles.periodHeading}>{moodPeriod==="week"?"Progreso semanal":moodPeriod==="month"?"Progreso mensual":"Progreso anual"}</Text>
-      <View style={styles.periodRow}>{(["week","month","year"] as const).map(period=><TouchableOpacity key={period} onPress={()=>setMoodPeriod(period)} style={[styles.periodButton,moodPeriod===period&&styles.periodActive]}><Text style={[styles.periodText,moodPeriod===period&&styles.periodTextActive]}>{period==="week"?"SEMANAL":period==="month"?"MENSUAL":"ANUAL"}</Text></TouchableOpacity>)}</View>
+      <Text style={styles.periodHeading}>{moodPeriod==="week"?"Weekly progress":moodPeriod==="month"?"Monthly progress":"Yearly progress"}</Text>
+      <View style={styles.periodRow}>{(["week","month","year"] as const).map(period=><TouchableOpacity key={period} onPress={()=>setMoodPeriod(period)} style={[styles.periodButton,moodPeriod===period&&styles.periodActive]}><Text style={[styles.periodText,moodPeriod===period&&styles.periodTextActive]}>{period==="week"?"Week":period==="month"?"Month":"Year"}</Text></TouchableOpacity>)}</View>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <ProgressSyncStatus />
         <View style={{backgroundColor:"rgba(67,72,72,0.28)",borderWidth:1,borderColor:"rgba(239,214,169,0.30)",borderRadius:18,padding:20,marginTop:17}}>

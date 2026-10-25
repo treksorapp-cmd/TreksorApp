@@ -32,10 +32,11 @@ export default function BeverageDetails() {
   return <View style={styles.screen}>
     <StatusBar style="light"/>
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:insets.bottom+48}}>
+      <BodyPageHeading trail="BODY / BEVERAGES" title={beverage.name} style={{paddingTop:insets.top+12,paddingBottom:24}} />
       <View style={styles.hero}>
         <ImageBackground source={beverage.backgroundImage} contentFit="cover" style={StyleSheet.absoluteFill}/>
         <LinearGradient colors={["rgba(2,5,12,0.35)","rgba(2,5,12,0.45)","#02050C"]} locations={[0,0.48,1]} style={StyleSheet.absoluteFill}/>
-        <BodyPageHeading trail="BODY / NUTRITION / BEVERAGES" title={beverage.name} style={{position:"absolute",top:insets.top+12,left:0,right:0}} />
+
       </View>
       <View style={styles.content}>
         <View style={styles.descriptionCard}>
@@ -74,7 +75,7 @@ export default function BeverageDetails() {
 const styles=StyleSheet.create({
   screen:{flex:1,backgroundColor:"#02050C"},
   empty:{color:"#FFFFFF",textAlign:"center",marginTop:120},
-  hero:{height:370,justifyContent:"space-between",overflow:"hidden"},
+  hero:{height:280,justifyContent:"space-between",overflow:"hidden"},
   topBar:{paddingHorizontal:20,flexDirection:"row",alignItems:"center",justifyContent:"space-between"},
   back:{height:42,width:42,borderRadius:14,backgroundColor:"rgba(183,221,240,0.12)",alignItems:"center",justifyContent:"center"},
   topLabel:{color:"#F5F1E8",fontSize:13,fontWeight:"700",letterSpacing:2},

@@ -1,3 +1,5 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 // "use client";
 
 // import { useMySpaceStore } from "@/store/myspace-store";
@@ -19,6 +21,7 @@
 // const { width } = Dimensions.get("window");
 
 // export default function MySpaceScreen() {
+  const insets=useSafeAreaInsets();
 //   const {myspaces} = useMySpaceStore();
 //   const [animatedValues] = useState(
 //     myspaces.map(() => new RNAnimated.Value(0))
@@ -231,6 +234,7 @@ import {
 const { width } = Dimensions.get("window")
 
 export default function MySpaceScreen() {
+  const insets=useSafeAreaInsets();
   const { myspaces, deleteMySpace } = useMySpaceStore()
   const scores: Record<string,number> = {Happy:5,Grateful:5,Calm:4,Tired:3,Anxious:2,Stressed:2,Frustrated:2,Sad:1}
   const moodDays: Record<string,{sum:number,count:number}> = {}
@@ -260,6 +264,7 @@ export default function MySpaceScreen() {
   }
 
   const handleView = () => {
+
     if (selectedEntry) {
       router.push(`/mental/myspace/view-entry/${selectedEntry}`)
     }
@@ -351,7 +356,9 @@ export default function MySpaceScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container,{paddingTop:insets.top+12}]}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:insets.bottom+32}}>
+      <BodyPageHeading trail="MIND / REFLECTION" title="My space" />
       <StatusBar style="light" />
 
       <View style={{marginHorizontal:20,marginTop:16,padding:18,borderRadius:18,backgroundColor:"rgba(255,255,255,0.08)",borderWidth:1,borderColor:"rgba(255,255,255,0.22)"}}>
@@ -364,16 +371,9 @@ export default function MySpaceScreen() {
       </View>
       <View style={{paddingHorizontal:20}}><Button iconName="create-outline" onPress={()=>router.push("/mental/myspace/new-entry")}>TODAY'S ENTRY</Button></View>
       {/* Thoughts List */}
-      <ScrollView
-        style={styles.content}
-        contentContainerStyle={{
-          paddingHorizontal: 20,
-          paddingVertical: 10,
-          gap: 16,
-        }}
-        showsVerticalScrollIndicator={false}
-      >
+      <View style={{paddingHorizontal:20,gap:16,paddingVertical:10}}>
         {myspaces.map((mySpace, index) => renderMySpaces(mySpace, index))}
+      </View>
       </ScrollView>
 
       {/* Options Modal */}

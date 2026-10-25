@@ -1,3 +1,4 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
 
 import AudioControlButton from "@/components/AudioControlButton";
@@ -216,7 +217,7 @@ export default function MediationDetailScreen() {
 
       <ScrollView
         style={styles.content}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent,{paddingTop:insets.top+12}]}
         showsVerticalScrollIndicator={false}
       >
         <RNAnimated.View
@@ -228,6 +229,10 @@ export default function MediationDetailScreen() {
             },
           ]}
         >
+          {/* Content Section */}
+          <View style={styles.contentSection}>
+            <BodyPageHeading trail="BALANCE / MEDITATION" title={mediation.title} style={{paddingLeft:0,paddingRight:104}} />
+            <Text style={styles.description}>{parseHTMLContent(mediation.content.description)}</Text>
           {/* Video/Image Section */}
           {/* <View style={styles.videoSection}> */}
           {/* <VideoView style={styles.video} player={player} allowsFullscreen allowsPictureInPicture /> */}
@@ -289,16 +294,6 @@ export default function MediationDetailScreen() {
             </View>
           )}
           {/* </View> */}
-
-          {/* Content Section */}
-          <View style={styles.contentSection}>
-            <View style={styles.titleRow}>
-              <Text style={styles.workoutTitle}>{mediation.title.toUpperCase()}</Text>
-            </View>
-
-            <Text style={styles.description}>
-              {parseHTMLContent(mediation.content.description)}
-            </Text>
 
             <View style={styles.goalsSection}>
               <Text style={styles.goalsTitle}>What You'll Experience:</Text>

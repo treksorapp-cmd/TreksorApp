@@ -13,7 +13,7 @@ export default function TrackingLayout() {
       <Stack.Screen
         name="index"
         options={{
-          headerShown:true,
+          headerShown:false,
           header:()=><Header title="TRACKING" showBackButton={false} showAvatar={false} />
         }}
       />
