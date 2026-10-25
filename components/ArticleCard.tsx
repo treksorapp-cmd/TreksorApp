@@ -109,11 +109,10 @@ const styles = StyleSheet.create({
     marginHorizontal:16
   },
   articleTitle: {
-    fontSize: 17,
-    fontWeight: "bold",
+    fontSize: 18,
+    fontWeight: "600",
     color: "#FFFFFF",
-    lineHeight: 23,
-  },
+    lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
   articleDescription: {
     fontSize: 12,
     color: "#FFFFFF",

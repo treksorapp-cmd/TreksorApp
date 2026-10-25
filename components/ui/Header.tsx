@@ -68,13 +68,10 @@ const Header: React.FC<HeaderProps> = ({
       {/* Header Content */}
       {showTitle && <View style={styles.headerContent}>
 
-        <View style={title ? styles.absoluteTitleWrapper : {}}>
+        <View style={{flex:1, minWidth:0, paddingRight:12}}>
           <View style={styles.titleContainer}>
             {!title ? (
-              <View style={{ flexDirection: "row" }}>
-                <Text style={styles.title}>{`${getGreeting()}, `}</Text>
-                <Text style={styles.title}>{displayName}</Text>
-              </View>
+              <Text style={styles.title}>{`${getGreeting()}, ${displayName}`}</Text>
             ) : (
               <Text style={styles.title}>{title.charAt(0).toUpperCase() + title.slice(1)}</Text>
             )}
@@ -185,11 +182,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   title: {
-    fontWeight: "bold",
-    fontSize: 26,
+    fontWeight: "600",
+    fontSize: 22,
     color: "#F5F1E8",
-    textAlign: "center",
-  },
+    textAlign: "left", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
 });
 
 export default Header;

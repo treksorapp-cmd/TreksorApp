@@ -124,8 +124,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#FFFFFF",
     flex: 1,
-    textAlign: "center",
-  },
+    textAlign: "center", lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
   externalButton: {
     padding: 5,
   },
@@ -164,12 +163,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   errorTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "600",
     color: "#FFFFFF",
     marginTop: 20,
-    marginBottom: 10,
-  },
+    marginBottom: 10, lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   errorText: {
     fontSize: 16,
     color: "#AAAAAA",

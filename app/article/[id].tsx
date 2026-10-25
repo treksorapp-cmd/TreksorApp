@@ -265,13 +265,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   title: {
-    fontSize: 26,
-    fontWeight: "700",
+    fontSize: 22,
+    fontWeight: "600",
     color: "#FFFFFF",
-    lineHeight: 28,
+    lineHeight: 29,
     marginBottom: 16,
-    maxWidth:"100%"
-  },
+    maxWidth:"100%", letterSpacing: -0.2, includeFontPadding: false, },
   description: {
     fontSize: 16,
     color: "#FFFFFF",

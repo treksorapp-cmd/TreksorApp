@@ -77,7 +77,7 @@ const Button = ({
               {iconName ? <Ionicons name={iconName} size={23} color="#FFFFFF" style={styles.leadingIcon} /> :
                 icon ? (!iconImage ? <Image source={icon} style={[styles.imageIcon, iconStyle, { tintColor: "#FFFFFF" }]} /> :
                 <Entypo name={iconImageIcon as React.ComponentProps<typeof Entypo>["name"]} size={24} color="#FFFFFF" style={styles.leadingIcon} />) : null}
-              <Text style={styles.buttonText}>{children.toUpperCase()}</Text>
+              <Text style={styles.buttonText}>{children === children.toUpperCase() ? children.toLowerCase().replace(/(^|\s)\S/g, letter => letter.toUpperCase()) : children}</Text>
             </View>
           ) : (
             children
@@ -91,7 +91,7 @@ const Button = ({
 const styles = StyleSheet.create({
   buttonContainer: {
     width: "100%", // Match parent container on every screen
-    height: 56,
+    minHeight: 56,
     borderRadius: 18,
     overflow: "hidden",
     marginVertical: 10,
@@ -100,13 +100,14 @@ const styles = StyleSheet.create({
     opacity: 0.5, // Reduce opacity for disabled state
   },
   borderGradient: {
-    flex: 1,
+    minHeight: 56,
     borderRadius: 18,
     padding: 1, // This creates the border thickness
   },
   borderlessGradient:{padding:0},
   innerGradient: {
-    flex: 1,
+    minHeight: 54,
+    paddingVertical: 14,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 17, // Slightly smaller than outer radius
@@ -116,9 +117,12 @@ const styles = StyleSheet.create({
   imageIcon: { width: 23, height: 23, marginRight: 12 },
   buttonText: {
     color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "500",
-    letterSpacing: 0.9,
+    fontSize: 17,
+    fontWeight: "600",
+    letterSpacing: 0,
+    flexShrink: 1,
+    textAlign: "center",
+    includeFontPadding: false,
     lineHeight: 24,
   },
 });

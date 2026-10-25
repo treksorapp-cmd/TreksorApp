@@ -398,10 +398,9 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "600",
-    color: "#FFFFFF",
-  },
+    color: "#FFFFFF", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   headerSpacer: {
     width: 34,
   },
@@ -482,11 +481,10 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   workoutTitle: {
-    fontSize: 25,
-    fontWeight: "700",
-    letterSpacing: 1.1,
-    color: "#FFFFFF",
-  },
+    fontSize: 22,
+    fontWeight: "600",
+    letterSpacing: -0.2,
+    color: "#FFFFFF", lineHeight: 29, includeFontPadding: false, },
   description: {
     fontSize: 16,
     color: "#CCCCCC",
@@ -497,11 +495,10 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   goalsTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
+    fontSize: 22,
+    fontWeight: "600",
     color: "#FFFFFF",
-    marginBottom: 16,
-  },
+    marginBottom: 16, lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   goalItem: {
     flexDirection: "row",
     alignItems: "flex-start",

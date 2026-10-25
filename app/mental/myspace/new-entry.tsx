@@ -167,8 +167,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     color: "#FFFFFF",
-    marginBottom: 10,
-  },
+    marginBottom: 10, lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
   dropdownButton: {
     flexDirection: "row",
     alignItems: "center",

@@ -140,7 +140,7 @@ export default function PowerThoughtsScreen() {
         <View style={styles.headerSpacer} />
       </View> */}
 
-      <View style={[styles.titleArea,{paddingTop:insets.top+72}]}><Text style={styles.eyebrow}>MIND / DAILY INSPIRATION</Text><Text style={styles.heroTitle}>POWER THOUGHTS</Text></View>
+      <View style={[styles.titleArea,{paddingTop:insets.top+72}]}><Text style={styles.eyebrow}>MIND / DAILY INSPIRATION</Text><Text style={styles.heroTitle}>Power thoughts</Text></View>
       {/* Thoughts List */}
       <ScrollView
         style={styles.content}
@@ -163,7 +163,7 @@ export default function PowerThoughtsScreen() {
 const styles = StyleSheet.create({
   titleArea:{paddingHorizontal:22,paddingBottom:22},
   eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.7},
-  heroTitle:{color:"#FFFFFF",fontSize:34,fontWeight:"600",letterSpacing:-1.2,marginTop:9},
+  heroTitle: {color:"#FFFFFF",fontSize: 34,fontWeight: "600",letterSpacing: -0.6,marginTop:9, lineHeight: 42, includeFontPadding: false, },
   container: {
     flex: 1,
     backgroundColor: "#02050C",
@@ -181,10 +181,9 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "600",
-    color: "#FFFFFF",
-  },
+    color: "#FFFFFF", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   headerSpacer: {
     width: 34,
   },

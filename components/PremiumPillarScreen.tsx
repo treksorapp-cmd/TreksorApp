@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   headerActions:{flexDirection:"row",alignItems:"center",gap:9},
   eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"600",letterSpacing:1.5,marginBottom:7},
   back: { width: 35, justifyContent: "center" },
-  title: { fontSize: 35, fontWeight: "600", letterSpacing: -1.5, color: "#F5F4F1", textAlign: "left" },
+  title: { fontSize: 34, fontWeight: "600", letterSpacing: -0.6, color: "#F5F4F1", textAlign: "left", lineHeight: 42, includeFontPadding: false, },
   pillarSymbol: { width: 42,height:42,borderRadius:12,backgroundColor:"rgba(183,221,240,0.075)",alignItems:"center",justifyContent:"center" },
   scroll: { flexGrow: 1, paddingHorizontal: 20, paddingBottom: 32 },
   headline: { fontSize: 30, lineHeight: 37, fontWeight: "600", letterSpacing: -0.45, color: "#F5F1E8", maxWidth: 340 },

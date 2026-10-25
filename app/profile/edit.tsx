@@ -308,9 +308,8 @@ const styles = StyleSheet.create({
   sectionTitle: {
     color: "#FFFFFF",
     fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 15,
-  },
+    fontWeight: "600",
+    marginBottom: 15, lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
   changePasswordButton: {
     flexDirection: "row",
     alignItems: "center",

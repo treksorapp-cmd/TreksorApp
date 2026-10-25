@@ -142,16 +142,16 @@ export default function TrackingScreen() {
 }
 
 const styles = StyleSheet.create({
-  premiumTitle: { color: "#F5F1E8", fontSize: 28, fontWeight: "700", textAlign: "left", marginHorizontal: 20, marginTop: 20, marginBottom: 4 },
+  premiumTitle: { color: "#F5F1E8", fontSize: 34, fontWeight: "600", textAlign: "left", marginHorizontal: 20, marginTop: 20, marginBottom: 4, lineHeight: 42, letterSpacing: -0.6, includeFontPadding: false, },
   trackingSubtitle: { color:"#F5F1E8",fontSize:16,fontWeight:"600",letterSpacing:-1.2,marginHorizontal:20,marginBottom:3 },
-  periodHeading: { color:"#F5F1E8",fontSize:20,fontWeight:"700",marginHorizontal:20,marginTop:18,marginBottom:12 },
+  periodHeading: { color:"#F5F1E8",fontSize: 22,fontWeight: "600",marginHorizontal:20,marginTop:18,marginBottom:12, lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   periodRow: { flexDirection: "row", marginHorizontal: 18, backgroundColor: "rgba(255,255,255,0.06)", borderRadius: 10, padding: 4 },
   periodButton: { flex: 1, paddingVertical: 11, alignItems: "center", borderRadius: 8 },
   periodActive: { backgroundColor: "rgba(255,255,255,0.18)" },
   periodText: { color: "#aaa", fontWeight: "600" },
   periodTextActive: { color: "#FFFFFF" },
   periodNote: { color: "#999", fontSize: 12, textAlign: "left", marginHorizontal: 20, marginTop: 4, marginBottom: 12 },
-  sectionHeading: { color: "#fff", fontSize: 17, fontWeight: "700", marginBottom: 16 },
+  sectionHeading: { color: "#fff", fontSize: 18, fontWeight: "600", marginBottom: 16, lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
   container: {
     flex: 1,
     backgroundColor: "#050505",

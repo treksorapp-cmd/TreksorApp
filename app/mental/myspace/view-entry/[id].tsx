@@ -186,10 +186,9 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "600",
-    color: "#FFFFFF",
-  },
+    color: "#FFFFFF", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   content: {
     flex: 1,
   },

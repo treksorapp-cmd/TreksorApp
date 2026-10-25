@@ -120,12 +120,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalTitle: {
-    fontSize: 24,
-    fontWeight: "700",
+    fontSize: 22,
+    fontWeight: "600",
     color: "#fff",
     marginBottom: 8,
-    textAlign: "center",
-  },
+    textAlign: "center", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   modalSubtitle: {
     fontSize: 14,
     color: "#ddd",
@@ -155,8 +154,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     color: "#fff",
-    marginBottom: 5,
-  },
+    marginBottom: 5, lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
   packagePrice: {
     fontSize: 16,
     color: "#fff",

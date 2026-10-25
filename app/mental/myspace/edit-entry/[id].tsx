@@ -200,10 +200,9 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "600",
-    color: "#FFFFFF",
-  },
+    color: "#FFFFFF", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   saveText: {
     fontSize: 16,
     fontWeight: "600",
@@ -240,8 +239,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     color: "#FFFFFF",
-    marginBottom: 10,
-  },
+    marginBottom: 10, lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
   dropdownButton: {
     flexDirection: "row",
     alignItems: "center",

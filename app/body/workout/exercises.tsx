@@ -216,12 +216,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 28,
-    fontWeight: "bold",
+    fontSize: 34,
+    fontWeight: "600",
     color: "#FFFFFF",
     marginBottom: 15,
-    marginLeft: 4,
-  },
+    marginLeft: 4, lineHeight: 42, letterSpacing: -0.6, includeFontPadding: false, },
   exercisesList: {
     gap: 0,
   },

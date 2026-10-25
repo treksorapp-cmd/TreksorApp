@@ -43,7 +43,7 @@ export default function MindJournalScreen(){
 }
 const styles=StyleSheet.create({
  screen:{flex:1,backgroundColor:"#080b0f"},content:{padding:22,paddingTop:65,paddingBottom:80},
- eyebrow:{color:"#D6AE67",fontSize:11,letterSpacing:3,fontWeight:"700"},heading:{fontSize:34,color:"#fff",fontWeight:"700",marginTop:10},subtitle:{color:"#A1A1AA",fontSize:13,lineHeight:20,marginTop:7},
+ eyebrow:{color:"#D6AE67",fontSize:11,letterSpacing:3,fontWeight:"700"},heading: {fontSize: 34,color:"#fff",fontWeight: "600",marginTop:10, lineHeight: 42, letterSpacing: -0.6, includeFontPadding: false, },subtitle:{color:"#A1A1AA",fontSize:13,lineHeight:20,marginTop:7},
  card:{backgroundColor:"#1A1D22",borderRadius:18,borderWidth:1,borderColor:"#38302A",padding:18,marginTop:22},
  section:{color:"#fff",fontSize:18,fontWeight:"700",marginBottom:10},date:{color:"#D6AE67",fontSize:13,marginBottom:12},
  moods:{flexDirection:"row",flexWrap:"wrap",gap:7,marginVertical:12},mood:{paddingHorizontal:10,paddingVertical:10,borderRadius:10,backgroundColor:"#292D33",borderWidth:1,borderColor:"#414141"},

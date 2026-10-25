@@ -518,12 +518,11 @@ const styles = StyleSheet.create({
       alignItems: "center",
     },
     modalTitle: {
-      fontSize: 24,
-      fontWeight: "700",
+      fontSize: 22,
+      fontWeight: "600",
       color: "#fff",
       marginBottom: 20,
-      textAlign: "center",
-    },
+      textAlign: "center", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
     tabContainer: {
       flexDirection: "row",
       gap: 12,

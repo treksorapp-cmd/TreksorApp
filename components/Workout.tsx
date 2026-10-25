@@ -105,9 +105,8 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#FFFFFF",
-    fontSize: 20,
-    fontWeight: "bold",
-  },
+    fontSize: 22,
+    fontWeight: "600", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   description: {
     color: "#EFB33F",
     fontSize: 16,

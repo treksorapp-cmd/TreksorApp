@@ -349,10 +349,9 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "600",
     color: "#FFFFFF",
-    marginBottom: 15,
-  },
+    marginBottom: 15, lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -399,10 +398,9 @@ const styles = StyleSheet.create({
   },
   subscriptionTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "600",
     color: "#EFB33F",
-    marginLeft: 10,
-  },
+    marginLeft: 10, lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
   planName: {
     fontSize: 20,
     fontWeight: "600",

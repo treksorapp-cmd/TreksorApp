@@ -207,10 +207,9 @@ const styles = StyleSheet.create({
     borderBottomColor: "rgba(255, 255, 255, 0.1)",
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-  },
+    fontSize: 22,
+    fontWeight: "600",
+    color: "#FFFFFF", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   closeButton: {
     padding: 4,
   },

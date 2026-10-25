@@ -187,12 +187,11 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
+    fontSize: 22,
+    fontWeight: "600",
     color: "#FFFFFF",
     textAlign: "center",
-    marginBottom: 24,
-  },
+    marginBottom: 24, lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   optionButton: {
     flexDirection: "row",
     alignItems: "center",

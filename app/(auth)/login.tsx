@@ -292,18 +292,16 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   heading: {
-    fontSize: 28,
-    fontWeight: "bold",
+    fontSize: 34,
+    fontWeight: "600",
     color: "#FFFFFF",
-    textAlign: "center",
-  },
+    textAlign: "center", lineHeight: 42, letterSpacing: -0.6, includeFontPadding: false, },
   subHeading: {
-    fontSize: 16,
+    fontSize: 18,
     color: "rgba(255, 255, 255, 0.7)",
     textAlign: "center",
     marginTop: 8,
-    marginBottom: 30,
-  },
+    marginBottom: 30, lineHeight: 25, fontWeight: "600", letterSpacing: -0.2, includeFontPadding: false, },
   form: {
     width: "100%",
     alignItems: "center",
