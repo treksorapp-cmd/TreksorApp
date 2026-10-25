@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 34,
     fontWeight: "600",
-    color: "#FFFFFF",
+    color: "#F5F4F1",
     textAlign: "center", lineHeight: 42, letterSpacing: -0.6, includeFontPadding: false, },
   subHeading: {
     fontSize: 18,
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 8,
     marginBottom: 30,
-    paddingHorizontal: 20, lineHeight: 25, fontWeight: "600", letterSpacing: -0.2, includeFontPadding: false, },
+    paddingHorizontal: 20, lineHeight: 23, fontWeight: "600", letterSpacing: -0.2, includeFontPadding: false, },
   form: {
     width: "100%",
     alignItems: "center",

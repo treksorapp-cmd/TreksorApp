@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   eyebrow: { color: GOLD, fontSize: 11, letterSpacing: 2, fontWeight: "700", marginBottom: 14 },
   title: { color: "#F5F1E8", fontSize: 34, fontWeight: "600", marginBottom: 24, lineHeight: 42, letterSpacing: -0.6, includeFontPadding: false, },
   glassCard: { overflow: "hidden", borderRadius: 20,  backgroundColor: "rgba(255,255,255,0.05)", padding: 22 },
-  sectionTitle: { color: "#F5F1E8", fontSize: 18, fontWeight: "600", marginBottom: 14, lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
+  sectionTitle: { color: "#F5F1E8", fontSize: 18, fontWeight: "600", marginBottom: 14, lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   description: { color: "#E4E0D8", fontSize: 16, lineHeight: 25 },
   note: { marginTop: 22, flexDirection: "row", alignItems: "flex-start", gap: 12, paddingHorizontal: 4 },
   noteText: { flex: 1, color: "#D5C9B7", fontSize: 13, lineHeight: 20 },

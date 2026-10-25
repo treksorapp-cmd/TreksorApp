@@ -73,7 +73,7 @@ const Workout = ({
               percentage={percentage}
               size={70}
               strokeWidth={6}
-              color="#EFB33F"
+              color="#D7B877"
             />
           </View>
         </LinearGradient>
@@ -104,11 +104,11 @@ const styles = StyleSheet.create({
     borderRadius: 11, // Slightly smaller than outer radius
   },
   title: {
-    color: "#FFFFFF",
+    color: "#F5F4F1",
     fontSize: 22,
     fontWeight: "600", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   description: {
-    color: "#EFB33F",
+    color: "#D7B877",
     fontSize: 16,
     fontWeight: "medium",
   },

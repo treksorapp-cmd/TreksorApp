@@ -1,7 +1,7 @@
 import React from "react";
 import {Text,View} from "react-native";
 import {TrackingItem} from "@/types/tracking";
-const GOLD="#E8B44D";
+const GOLD="#D7B877";
 interface Props{title:string;percentage:number;items:TrackingItem[];custom:boolean}
 export default function TrackingCard({title,percentage,items,custom}:Props){
  const done=items.reduce((n,i)=>n+Object.values(i?.record||{}).filter(v=>v===true).length,0);

@@ -166,8 +166,8 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#FFFFFF",
-    marginBottom: 10, lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
+    color: "#F5F4F1",
+    marginBottom: 10, lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   dropdownButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.25)",
   },
   addButton: {
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     borderRadius: 10,
     padding: 15,
     alignItems: "center",

@@ -33,7 +33,7 @@ export default function ExerciseVideo({ exerciseId }: { exerciseId: string }) {
   return <View style={{ marginTop: 12 }}>
     {url ? <VideoView player={player} style={{ width: "100%", height: 210, borderRadius: 12 }} nativeControls contentFit="contain" /> :
       <TouchableOpacity onPress={() => void load()} disabled={loading} style={{ padding: 12, backgroundColor: "#34302A", borderRadius: 10, alignItems: "center" }}>
-        {loading ? <ActivityIndicator color="#D6AE67" /> : <Text style={{ color: "#D6AE67", fontWeight: "700" }}>Watch demonstration</Text>}
+        {loading ? <ActivityIndicator color="#D7B877" /> : <Text style={{ color: "#D7B877", fontWeight: "700" }}>Watch demonstration</Text>}
       </TouchableOpacity>}
     {!!error && <Text style={{ color: "#D9A6A6", marginTop: 8 }}>{error}</Text>}
   </View>

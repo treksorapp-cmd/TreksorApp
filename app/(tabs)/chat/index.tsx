@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#FFFFFF", lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
+    color: "#F5F4F1", lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   onlineStatus: {
     flexDirection: "row",
     alignItems: "center",

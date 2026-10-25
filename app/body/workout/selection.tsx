@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: "hidden",
     marginVertical: 10,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   otherButtonText: {
-    color: "#EFB33F",
+    color: "#D7B877",
     fontSize: 18,
     fontWeight: "bold",
     letterSpacing: 1,

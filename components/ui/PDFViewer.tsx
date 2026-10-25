@@ -71,13 +71,13 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ title, pdfUrl, onClose }) => {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{title}</Text>
         <TouchableOpacity style={styles.externalButton} onPress={handleOpenExternal}>
-          <Ionicons name="open-outline" size={20} color="#EFB33F" />
+          <Ionicons name="open-outline" size={20} color="#D7B877" />
         </TouchableOpacity>
       </View>
 
       {loading && (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#EFB33F" />
+          <ActivityIndicator size="large" color="#D7B877" />
           <Text style={styles.loadingText}>Loading document...</Text>
         </View>
       )}
@@ -122,9 +122,9 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#FFFFFF",
+    color: "#F5F4F1",
     flex: 1,
-    textAlign: "center", lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
+    textAlign: "center", lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   externalButton: {
     padding: 5,
   },
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   loadingText: {
-    color: "#EFB33F",
+    color: "#D7B877",
     marginTop: 10,
     fontSize: 16,
   },
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   errorTitle: {
     fontSize: 22,
     fontWeight: "600",
-    color: "#FFFFFF",
+    color: "#F5F4F1",
     marginTop: 20,
     marginBottom: 10, lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   errorText: {

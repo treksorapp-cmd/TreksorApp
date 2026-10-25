@@ -171,14 +171,14 @@ export default function ProfileScreen() {
           </Button>
         </View>
 
-        <TouchableOpacity onPress={() => router.push("/mind/journal")} style={{marginHorizontal:20,marginVertical:16,padding:18,borderRadius:16,backgroundColor:"rgba(67,72,78,0.30)",borderWidth:1,borderColor:"rgba(242,215,164,0.42)"}}><Text style={{color:"#D6AE67",fontSize:12,letterSpacing:2}}>MIND · PRIVATE</Text><Text style={{color:"#fff",fontSize:21,fontWeight:"700",marginTop:7}}>My Journal & Mood Tracking →</Text><Text style={{color:"#aaa",marginTop:7}}>{moodSummary.days > 0 ? `Last 30 days · ${moodSummary.average?.toFixed(1)} / 5 · ${moodSummary.days} check-ins` : "Record how you feel and review your progress."}</Text></TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("/mind/journal")} style={{marginHorizontal:20,marginVertical:16,padding:18,borderRadius:16,backgroundColor:"rgba(67,72,78,0.30)",borderWidth:1,borderColor:"rgba(242,215,164,0.42)"}}><Text style={{color:"#D7B877",fontSize:12,letterSpacing:2}}>MIND · PRIVATE</Text><Text style={{color:"#fff",fontSize:21,fontWeight:"700",marginTop:7}}>My Journal & Mood Tracking →</Text><Text style={{color:"#aaa",marginTop:7}}>{moodSummary.days > 0 ? `Last 30 days · ${moodSummary.average?.toFixed(1)} / 5 · ${moodSummary.days} check-ins` : "Record how you feel and review your progress."}</Text></TouchableOpacity>
 
         {/* Subscription Plan Section */}
         {user?.plan && (
           <TouchableOpacity onPress={()=> setShowPackages(true)} style={styles.subscriptionSection}>
             <View style={styles.subscriptionCard}>
               <View style={styles.subscriptionHeader}>
-                <Ionicons name="checkmark-circle" size={24} color="#EFB33F" />
+                <Ionicons name="checkmark-circle" size={24} color="#D7B877" />
                 <Text style={styles.subscriptionTitle}>Active Plan</Text>
               </View>
               <Text style={styles.planName}>
@@ -350,8 +350,8 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#FFFFFF",
-    marginBottom: 15, lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
+    color: "#F5F4F1",
+    marginBottom: 15, lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 20,
     borderWidth: 1,
-    borderColor: "#EFB33F",
+    borderColor: "#D7B877",
   },
   subscriptionHeader: {
     flexDirection: "row",
@@ -399,8 +399,8 @@ const styles = StyleSheet.create({
   subscriptionTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#EFB33F",
-    marginLeft: 10, lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
+    color: "#D7B877",
+    marginLeft: 10, lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   planName: {
     fontSize: 20,
     fontWeight: "600",

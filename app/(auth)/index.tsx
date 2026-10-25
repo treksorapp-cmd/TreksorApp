@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: "#050505", justifyContent: "space-between" },
   brand: { alignItems: "center", paddingTop: "20%" },
   logo: { width: 160, height: 160 },
-  heading: { fontSize: 34, fontWeight: "600", color: "#fff", marginTop: 3, lineHeight: 42, letterSpacing: -0.6, includeFontPadding: false, },
+  heading: { fontSize: 34, fontWeight: "600", color: "#F5F4F1", marginTop: 3, lineHeight: 42, letterSpacing: -0.6, includeFontPadding: false, },
   subHeading: { fontSize: 12, lineHeight: 21, letterSpacing: 3.2, color: "#fff", textAlign: "center", marginTop: 12 },
   bottom: { alignItems: "center", paddingHorizontal: 28, paddingBottom: 35 },
   mantra: { color: "#D8D5CF", fontSize: 14, lineHeight: 22, textAlign: "center", marginBottom: 28 },

@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 34,
     fontWeight: "600",
-    color: "#FFFFFF",
+    color: "#F5F4F1",
     marginBottom: 15,
     marginLeft: 4, lineHeight: 42, letterSpacing: -0.6, includeFontPadding: false, },
   exercisesList: {
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   },
   exerciseDetails: {
     fontSize: 14,
-    color: "#E8B44D",
+    color: "#D7B877",
     fontWeight: "500",
   },
   borderGradient: {

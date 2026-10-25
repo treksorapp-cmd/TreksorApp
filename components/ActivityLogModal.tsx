@@ -156,7 +156,7 @@ export default function ActivityLogModal({ visible, onClose, selectedDate }: Act
               <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
                 {/* Date */}
                 <View style={styles.dateContainer}>
-                  <Ionicons name="calendar" size={20} color="#EFB33F" />
+                  <Ionicons name="calendar" size={20} color="#D7B877" />
                   <Text style={styles.dateText}>{formatDate(selectedDate)}</Text>
                 </View>
 
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: "600",
-    color: "#FFFFFF", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
+    color: "#F5F4F1", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   closeButton: {
     padding: 4,
   },
@@ -333,9 +333,9 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   trackerTitle: {
-    color: "#FFFFFF",
+    color: "#F5F4F1",
     fontSize: 18,
-    fontWeight: "600", lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
+    fontWeight: "600", lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   trackerStats: {
     alignItems: "flex-end",
   },
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   trackerPercentage: {
-    color: "#EFB33F",
+    color: "#D7B877",
     fontSize: 12,
     fontWeight: "500",
   },
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     flex: 1,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: "center",

@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 22,
     fontWeight: "600",
-    color: "#fff",
+    color: "#F5F4F1",
     marginBottom: 8,
     textAlign: "center", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   modalSubtitle: {
@@ -145,22 +145,22 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#EFB33F",
+    borderColor: "#D7B877",
   },
   proPackageCard: {
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
   },
   packageTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#fff",
-    marginBottom: 5, lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
+    color: "#F5F4F1",
+    marginBottom: 5, lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   packagePrice: {
     fontSize: 16,
     color: "#fff",
   },
   subscribeButton: {
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     paddingVertical: 14,
     paddingHorizontal: 50,
     borderRadius: 25,

@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: "600",
-    color: "#FFFFFF", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
+    color: "#F5F4F1", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   headerSpacer: {
     width: 34,
   },
@@ -484,7 +484,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "600",
     letterSpacing: -0.2,
-    color: "#FFFFFF", lineHeight: 29, includeFontPadding: false, },
+    color: "#F5F4F1", lineHeight: 29, includeFontPadding: false, },
   description: {
     fontSize: 16,
     color: "#CCCCCC",
@@ -497,7 +497,7 @@ const styles = StyleSheet.create({
   goalsTitle: {
     fontSize: 22,
     fontWeight: "600",
-    color: "#FFFFFF",
+    color: "#F5F4F1",
     marginBottom: 16, lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   goalItem: {
     flexDirection: "row",

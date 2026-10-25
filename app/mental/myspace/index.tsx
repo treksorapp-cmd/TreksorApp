@@ -150,7 +150,7 @@
 //   dateText: {
 //     fontSize: 16,
 //     fontWeight: "bold",
-//     color: "#EFB33F",
+//     color: "#D7B877",
 //   },
 //   text: {
 //     fontSize: 18,
@@ -179,7 +179,7 @@
 //   newEntry: {
 //     height:60,
 //     width: width - 40,
-//     backgroundColor: "#EFB33F",
+//     backgroundColor: "#D7B877",
 //     borderRadius: 12,
 //     alignItems:'center',
 //     justifyContent:'center',
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#EFB33F",
+    color: "#D7B877",
   },
   text: {
     fontSize: 18,
@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
   newEntry: {
     height: 60,
     width: width - 40,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",

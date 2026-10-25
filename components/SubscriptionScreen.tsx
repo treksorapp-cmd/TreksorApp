@@ -391,12 +391,12 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
                 </View>
 
                 {loading ? (
-                  <ActivityIndicator color="#EFB33F" size="large" />
+                  <ActivityIndicator color="#D7B877" size="large" />
                 ) : currentPackage ? (
                   <>
                     {isSubscribed ? (
                       <View style={styles.subscribedContainer}>
-                        <Ionicons name="checkmark-circle" size={32} color="#EFB33F" />
+                        <Ionicons name="checkmark-circle" size={32} color="#D7B877" />
                         <Text style={styles.subscribedText}>Already Subscribed</Text>
                         <Text style={styles.subscribedSubtext}>
                           You are currently subscribed to the {planType === "monthly" ? "Monthly" : "Yearly"} plan.
@@ -419,7 +419,7 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
 
                     {activeSubscriptionType && activeSubscriptionType !== planType && !isSubscribed && (
                       <View style={styles.switchWarning}>
-                        <Ionicons name="alert-circle" size={20} color="#EFB33F" />
+                        <Ionicons name="alert-circle" size={20} color="#D7B877" />
                         <Text style={styles.switchWarningText}>
                           You currently have an active {activeSubscriptionType} subscription. Please cancel your current subscription first from the App Store settings before switching to the {planType} plan.
                         </Text>
@@ -520,7 +520,7 @@ const styles = StyleSheet.create({
     modalTitle: {
       fontSize: 22,
       fontWeight: "600",
-      color: "#fff",
+      color: "#F5F4F1",
       marginBottom: 20,
       textAlign: "center", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
     tabContainer: {
@@ -541,7 +541,7 @@ const styles = StyleSheet.create({
       borderRadius: 8,
     },
     activeTab: {
-      backgroundColor: "#EFB33F",
+      backgroundColor: "#D7B877",
     },
     tabText: {
       fontSize: 16,
@@ -553,7 +553,7 @@ const styles = StyleSheet.create({
     },
     planPrice: {
       fontSize: 18,
-      color: "#EFB33F",
+      color: "#D7B877",
       marginBottom: 10,
       fontWeight: "600",
     },
@@ -575,7 +575,7 @@ const styles = StyleSheet.create({
       textAlign: "left",
     },
     subscribeButton: {
-      backgroundColor: "#EFB33F",
+      backgroundColor: "#D7B877",
       paddingVertical: 14,
       paddingHorizontal: 50,
       borderRadius: 25,
@@ -608,7 +608,7 @@ const styles = StyleSheet.create({
     subscribedText: {
       fontSize: 20,
       fontWeight: "700",
-      color: "#EFB33F",
+      color: "#D7B877",
       marginTop: 10,
       marginBottom: 5,
     },
@@ -621,7 +621,7 @@ const styles = StyleSheet.create({
     cancelButton: {
       backgroundColor: "transparent",
       borderWidth: 2,
-      borderColor: "#EFB33F",
+      borderColor: "#D7B877",
       paddingVertical: 14,
       paddingHorizontal: 50,
       borderRadius: 25,
@@ -630,7 +630,7 @@ const styles = StyleSheet.create({
       alignItems: "center",
     },
     cancelButtonText: {
-      color: "#EFB33F",
+      color: "#D7B877",
       fontWeight: "700",
       fontSize: 16,
       textAlign: "center",
@@ -645,7 +645,7 @@ const styles = StyleSheet.create({
     },
     switchWarningText: {
       fontSize: 12,
-      color: "#EFB33F",
+      color: "#D7B877",
       marginLeft: 8,
       flex: 1,
       lineHeight: 16,

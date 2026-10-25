@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: "600",
-    color: "#FFFFFF", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
+    color: "#F5F4F1", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   content: {
     flex: 1,
   },
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#EFB33F",
+    color: "#D7B877",
   },
   mood: {
     paddingHorizontal: 12,
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     paddingVertical: 16,
     borderRadius: 12,
     gap: 8,
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   backButton: {
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,

@@ -202,11 +202,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: "600",
-    color: "#FFFFFF", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
+    color: "#F5F4F1", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   saveText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#EFB33F",
+    color: "#D7B877",
   },
   disabledButton: {
     opacity: 0.5,
@@ -238,8 +238,8 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#FFFFFF",
-    marginBottom: 10, lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
+    color: "#F5F4F1",
+    marginBottom: 10, lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   dropdownButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
     borderColor: "#333",
   },
   saveButton: {
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     borderRadius: 10,
     padding: 15,
     alignItems: "center",
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   backButton: {
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,

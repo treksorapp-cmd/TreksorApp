@@ -164,7 +164,7 @@ export default function EditProfile() {
                 </View>
               )}
               <View style={styles.editIconContainer}>
-                <LinearGradient colors={["#E8B44D", "#A87720"]} style={styles.editIconGradient}>
+                <LinearGradient colors={["#D7B877", "#A87720"]} style={styles.editIconGradient}>
                   <Ionicons name="camera" size={14} color="#FFFFFF" />
                 </LinearGradient>
               </View>
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     borderColor: "#121212",
   },
   changePhotoText: {
-    color: "#E8B44D",
+    color: "#D7B877",
     fontSize: 16,
     marginTop: 12,
   },
@@ -306,10 +306,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   sectionTitle: {
-    color: "#FFFFFF",
+    color: "#F5F4F1",
     fontSize: 18,
     fontWeight: "600",
-    marginBottom: 15, lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
+    marginBottom: 15, lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   changePasswordButton: {
     flexDirection: "row",
     alignItems: "center",

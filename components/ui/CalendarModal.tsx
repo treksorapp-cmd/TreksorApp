@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   monthTitle: {
     fontSize: 22,
     fontWeight: "600",
-    color: "#FFFFFF", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
+    color: "#F5F4F1", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   dayNamesRow: {
     flexDirection: "row",
     marginBottom: 10,
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(239, 179, 63, 0.3)",
   },
   selectedDay: {
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
   },
   dayText: {
     color: "#FFFFFF",
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   todayText: {
-    color: "#EFB33F",
+    color: "#D7B877",
     fontWeight: "bold",
   },
   selectedDayText: {
@@ -275,10 +275,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#EFB33F",
+    borderColor: "#D7B877",
   },
   todayButtonText: {
-    color: "#EFB33F",
+    color: "#D7B877",
     fontSize: 16,
     fontWeight: "600",
   },

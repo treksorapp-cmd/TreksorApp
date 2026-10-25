@@ -111,8 +111,8 @@ const styles = StyleSheet.create({
   articleTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#FFFFFF",
-    lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
+    color: "#F5F4F1",
+    lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   articleDescription: {
     fontSize: 12,
     color: "#FFFFFF",

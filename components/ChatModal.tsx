@@ -224,7 +224,7 @@ export default function ChatModal({ visible, onClose }: ChatModalProps) {
                       onPress={handleSendMessage}
                       disabled={!inputText.trim()}
                     >
-                      <Ionicons name="send" size={20} color={inputText.trim() ? "#EFB33F" : "#666"} />
+                      <Ionicons name="send" size={20} color={inputText.trim() ? "#D7B877" : "#666"} />
                     </TouchableOpacity>
                   </View>
                 </KeyboardAvoidingView>
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#FFFFFF", lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
+    color: "#F5F4F1", lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   onlineStatus: {
     flexDirection: "row",
     alignItems: "center",
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 4,
   },
   userBubble: {
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     borderBottomRightRadius: 4,
   },
   messageText: {
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
     borderColor: "rgba(239, 179, 63, 0.3)",
   },
   quickActionText: {
-    color: "#EFB33F",
+    color: "#D7B877",
     fontSize: 12,
     fontWeight: "500",
   },

@@ -163,7 +163,7 @@ export default function PowerThoughtsScreen() {
 const styles = StyleSheet.create({
   titleArea:{paddingHorizontal:22,paddingBottom:22},
   eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.7},
-  heroTitle: {color:"#FFFFFF",fontSize: 34,fontWeight: "600",letterSpacing: -0.6,marginTop:9, lineHeight: 42, includeFontPadding: false, },
+  heroTitle: {color: "#F5F4F1",fontSize: 34,fontWeight: "600",letterSpacing: -0.6,marginTop:9, lineHeight: 42, includeFontPadding: false, },
   container: {
     flex: 1,
     backgroundColor: "#02050C",
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: "600",
-    color: "#FFFFFF", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
+    color: "#F5F4F1", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   headerSpacer: {
     width: 34,
   },

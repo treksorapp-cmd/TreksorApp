@@ -72,7 +72,7 @@ export default function WorkoutPlanner({ exercises, days, location }: Props) {
     <Text style={{ color: "white", fontSize: 22, fontWeight: "700", marginBottom: 8 }}>Your Weekly Plan</Text>
     <Text style={{ color: "#AEB4BC", marginBottom: 16 }}>Select exercises and mark each exercise complete. Your choices are stored on this device.</Text>
     {sessions.map((session, day) => <View key={day} style={{ backgroundColor: "#1A1D22", borderRadius: 14, padding: 16, marginBottom: 12 }}>
-      <Text style={{ color: "#D6AE67", fontWeight: "700", fontSize: 17, marginBottom: 10 }}>Day {day + 1} · {session.name}</Text>
+      <Text style={{ color: "#D7B877", fontWeight: "700", fontSize: 17, marginBottom: 10 }}>Day {day + 1} · {session.name}</Text>
       {!session.exercises.length && <Text style={{ color: "#AEB4BC" }}>Exercises will appear when they are published in the library.</Text>}
       {session.exercises.map(exercise => {
         const itemKey = day + ":" + exercise.id
@@ -80,11 +80,11 @@ export default function WorkoutPlanner({ exercises, days, location }: Props) {
         const done = completed.includes(itemKey)
         return <View key={itemKey} style={{ paddingVertical: 9, borderTopWidth: 1, borderColor: "#35373B" }}>
           <TouchableOpacity accessibilityRole="checkbox" accessibilityState={{ checked: included }} onPress={() => void persist(included ? selected.filter(v => v !== itemKey) : [...selected, itemKey], completed.filter(v => v !== itemKey))}>
-            <Text style={{ color: included ? "#D6AE67" : "white", fontWeight: "600" }}>{included ? "☑" : "☐"} {exercise.name}</Text>
+            <Text style={{ color: included ? "#D7B877" : "white", fontWeight: "600" }}>{included ? "☑" : "☐"} {exercise.name}</Text>
           </TouchableOpacity>
           <Text style={{ color: "#BFC2C5", marginTop: 4 }}>{exercise.sets} sets · {exercise.reps} reps · {exercise.rest_seconds}s rest</Text>
           {included && <TouchableOpacity onPress={() => void persist(selected, done ? completed.filter(v => v !== itemKey) : [...completed, itemKey])} style={{ marginTop: 8 }}>
-            <Text style={{ color: done ? "#8CD0A6" : "#D6AE67" }}>{done ? "✓ Session exercise completed" : "Mark exercise complete"}</Text>
+            <Text style={{ color: done ? "#8CD0A6" : "#D7B877" }}>{done ? "✓ Session exercise completed" : "Mark exercise complete"}</Text>
           </TouchableOpacity>}
         </View>
       })}

@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   periodText: { color: "#aaa", fontWeight: "600" },
   periodTextActive: { color: "#FFFFFF" },
   periodNote: { color: "#999", fontSize: 12, textAlign: "left", marginHorizontal: 20, marginTop: 4, marginBottom: 12 },
-  sectionHeading: { color: "#fff", fontSize: 18, fontWeight: "600", marginBottom: 16, lineHeight: 25, letterSpacing: -0.2, includeFontPadding: false, },
+  sectionHeading: { color: "#F5F4F1", fontSize: 18, fontWeight: "600", marginBottom: 16, lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   container: {
     flex: 1,
     backgroundColor: "#050505",
