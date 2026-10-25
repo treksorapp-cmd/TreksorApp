@@ -43,13 +43,14 @@ const Button = ({
       accessibilityRole="button"
       accessibilityLabel={typeof children === "string" ? children : undefined}
       activeOpacity={0.8}
-      onPress={!disabled ? onPress : undefined}
+      onPress={!disabled && !loading ? onPress : undefined}
       style={[
         styles.buttonContainer,
         disabled && styles.disabledButtonContainer,
         buttonStyle,
       ]}
-      disabled={disabled}
+      disabled={disabled || loading}
+      accessibilityState={{disabled: Boolean(disabled || loading), busy: Boolean(loading)}}
     >
       {/* Outer LinearGradient for the border */}
       <LinearGradient

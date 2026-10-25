@@ -1,3 +1,4 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
 
 import { usePowerThoughtStore } from "@/store/thought-store";
@@ -140,7 +141,7 @@ export default function PowerThoughtsScreen() {
         <View style={styles.headerSpacer} />
       </View> */}
 
-      <View style={[styles.titleArea,{paddingTop:insets.top+72}]}><Text style={styles.eyebrow}>MIND / DAILY INSPIRATION</Text><Text style={styles.heroTitle}>Power thoughts</Text></View>
+      <BodyPageHeading trail="MIND" title="Power thoughts" style={{paddingTop:insets.top+12,paddingBottom:20}} />
       {/* Thoughts List */}
       <ScrollView
         style={styles.content}
