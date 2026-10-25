@@ -1,25 +1,25 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#070B11">
-  <meta name="description" content="Tu camino. Tu gente. Tu mejor versión. Treksor conecta bienestar, actividades compartidas, encuentros uno a uno y mentoría.">
-  <meta property="og:title" content="Treksor — Crecé a tu manera"><meta property="og:description" content="Body. Mind. Balance. Purpose. Un espacio para avanzar y encontrar a tu gente.">
-  <title>Treksor — Crecé a tu manera</title>
+  <meta name="description" content="Your journey, connected. Explore wellbeing, community, one-to-one connections and mentorship with Treksor.">
+  <meta property="og:title" content="Treksor — Grow your own way"><meta property="og:description" content="Body. Mind. Balance. Purpose. One account. Your progress. Your people.">
+  <title>Treksor — Grow your own way</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/styles.css">
-  <script defer src="/assets/supabase.js"></script><script defer src="/config.js"></script><script defer src="/app.js"></script>
+  <script defer src="/assets/supabase.js"></script><script defer src="/config.js"></script><script defer src="/app.js"></script><script defer src="/community.js"></script><script defer src="/portal.js"></script><script defer src="/events.js"></script>
 </head>
 <body>
-  <a class="skip" href="#main">Saltar al contenido</a>
+  <a class="skip" href="#main">Skip to content</a>
   <header class="header"><div class="nav-wrap">
-    <a class="brand" href="#/" aria-label="Treksor, inicio"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M3 25 16 5l13 20M9 25l7-11 7 11M12 25h8" stroke="currentColor" stroke-width="1.3"/></svg><span>TREKSOR</span></a>
-    <nav aria-label="Principal"><a href="#/" data-nav="home">Inicio</a><a href="#/ecosistema" data-nav="ecosistema">Ecosistema</a><a href="#/community" data-nav="community">Community</a></nav>
-    <div id="account-nav"><button class="button small ghost" data-action="login">Entrar <span>↗</span></button></div>
-    <button class="mobile-menu icon-button" aria-label="Abrir menú" aria-expanded="false" data-action="menu">☰</button>
+    <a class="brand" href="#/" aria-label="Treksor home"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M3 25 16 5l13 20M9 25l7-11 7 11M12 25h8" stroke="currentColor" stroke-width="1.3"/></svg><span>TREKSOR</span></a>
+    <nav aria-label="Main navigation"><a href="#/" data-nav="home">Home</a><a href="#/ecosystem" data-nav="ecosystem">The ecosystem</a><a href="#/community" data-nav="community">Community</a><a href="#/progress" data-nav="progress">My progress</a></nav>
+    <div id="account-nav"><button class="button small ghost" data-action="login">Sign in <span>↗</span></button></div>
+    <button class="mobile-menu icon-button" aria-label="Open menu" aria-expanded="false" data-action="menu">☰</button>
   </div></header>
   <main id="main" tabindex="-1"></main>
-  <footer><div class="footer-top"><a class="brand" href="#/">TREKSOR</a><p>Una vida con más intención.<br>Un camino que también se comparte.</p><div><a href="#/community">Encontrá tu comunidad ↗</a><a href="#/community/mentores">Conocé la mentoría ↗</a></div></div><div class="footer-bottom"><span>© <span id="year"></span> Treksor</span><div><button data-action="principles">Convivencia</button><button data-action="privacy">Privacidad</button><a href="https://unsplash.com/es/fotos/gente-caminando-junto-a-las-colinas-1YAAaJIqzPg" target="_blank" rel="noopener">Fotografía: Jeffrey Eisen</a></div><span>Body · Mind · Balance · Purpose</span></div></footer>
-  <dialog id="dialog" aria-labelledby="dialog-title"><button class="dialog-close icon-button" data-action="close" aria-label="Cerrar">×</button><div id="dialog-content"></div></dialog>
+  <footer><div class="footer-top"><a class="brand" href="#/">TREKSOR</a><p>A life with more intention.<br>A journey worth sharing.</p><div><a href="#/community">Find your community ↗</a><a href="#/community/mentors">Explore mentorship ↗</a></div></div><div class="footer-bottom"><span>© <span id="year"></span> Treksor</span><div><button data-action="principles">Community guidelines</button><button data-action="privacy">Privacy</button><a href="https://unsplash.com/es/fotos/gente-caminando-junto-a-las-colinas-1YAAaJIqzPg" target="_blank" rel="noopener">Photography: Jeffrey Eisen</a></div><span>Body · Mind · Balance · Purpose</span></div></footer>
+  <dialog id="dialog" aria-labelledby="dialog-title"><button class="dialog-close icon-button" data-action="close" aria-label="Close">×</button><div id="dialog-content"></div></dialog>
   <div id="toast" role="status" aria-live="polite"></div>
-  <noscript><p class="notice">Activá JavaScript para explorar Treksor y participar de la comunidad.</p></noscript>
+  <noscript><p class="notice">Enable JavaScript to explore Treksor and join the community.</p></noscript>
 </body></html>

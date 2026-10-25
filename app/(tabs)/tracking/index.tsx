@@ -1,5 +1,6 @@
 "use client";
 
+import ProgressSyncStatus from "@/components/ProgressSyncStatus";
 import ActivityLogModal from "@/components/ActivityLogModal";
 import { getEntries, moodAverage } from "@/lib/mood-journal";
 import { useAuthStore } from "@/store/auth-store";
@@ -87,6 +88,7 @@ export default function TrackingScreen() {
       <Text style={styles.periodHeading}>{moodPeriod==="week"?"Progreso semanal":moodPeriod==="month"?"Progreso mensual":"Progreso anual"}</Text>
       <View style={styles.periodRow}>{(["week","month","year"] as const).map(period=><TouchableOpacity key={period} onPress={()=>setMoodPeriod(period)} style={[styles.periodButton,moodPeriod===period&&styles.periodActive]}><Text style={[styles.periodText,moodPeriod===period&&styles.periodTextActive]}>{period==="week"?"SEMANAL":period==="month"?"MENSUAL":"ANUAL"}</Text></TouchableOpacity>)}</View>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <ProgressSyncStatus />
         <View style={{backgroundColor:"rgba(67,72,72,0.28)",borderWidth:1,borderColor:"rgba(239,214,169,0.30)",borderRadius:18,padding:20,marginTop:17}}>
           <Text style={{color:"#F6F2EA",fontSize:18,fontWeight:"700"}}>The four pillars</Text>
           <Text style={{color:"#BBB5A9",fontSize:12,marginTop:6,marginBottom:23}}>Your progress, all in one place.</Text>

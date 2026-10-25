@@ -63,6 +63,7 @@ export const useWorkoutStore = create<WorkoutState>()(
         
         clearData: () => {
           set({
+            trainingPlan: null, gymSets: [], checkIns: {}, exerciseOverrides: {},
             workouts: WorkoutsData,
             workoutContent: workoutContent,
           })

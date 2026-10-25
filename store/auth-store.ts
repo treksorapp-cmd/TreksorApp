@@ -1,3 +1,4 @@
+import { checkpointProgress, prepareProgressAccount } from "@/lib/local-progress";
 import { api } from "@/api/axios";
 import { supabaseAuth } from "@/api/supabase-auth";
 import { uploadProfileAvatar } from "@/api/profile-avatar";
@@ -142,6 +143,7 @@ export const useAuthStore = create<AuthState>()(
           const response = await supabaseAuth.signIn(email, password);
           if (!response.access_token) throw new Error("Confirmá tu correo electrónico para iniciar sesión.");
           const u = response.user;
+          if (u?.id) await prepareProgressAccount(u.id);
           set({
             token: response.access_token,
             refreshToken: response.refresh_token ?? null,
@@ -159,6 +161,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           const response = await supabaseAuth.signUp(name, email, password);
           if (response.access_token) {
+            if (response.user?.id) await prepareProgressAccount(response.user.id);
             set({
               token: response.access_token,
               refreshToken: response.refresh_token ?? null,
@@ -188,6 +191,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: async () => {
+        await checkpointProgress(get().user.id);
         if (get().user.authProvider === 'google') {
           await GoogleSignin.revokeAccess();
           await GoogleSignin.signOut();

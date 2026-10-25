@@ -1,3 +1,4 @@
+import { useProgressSync } from "@/hooks/useProgressSync";
 import SubscriptionScreen from "@/components/SubscriptionScreen";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useAuthStore } from "@/store/auth-store";
@@ -13,6 +14,7 @@ import Toast from "react-native-toast-message";
 import { initRC } from "./services/revenuecat";
 
 export default function RootLayout() {
+  useProgressSync();
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const isPillarDetail = /^\/(body|mental|spiritual|purpose)\//.test(pathname);
