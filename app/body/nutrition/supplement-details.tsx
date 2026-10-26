@@ -1,3 +1,4 @@
+import {colors} from "@/theme/architect";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import { Nutritions } from "@/mock/nutrition";
 import { Ionicons } from "@expo/vector-icons";
@@ -18,9 +19,10 @@ export default function SupplementDetails() {
 
   if (!supplement) {
     return <SafeAreaView style={styles.screen}>
+      <BodyPageHeading title="Supplement unavailable" trail="BODY / NUTRITION" style={{paddingTop:12}} />
       <View style={styles.empty}>
         <Ionicons name="nutrition-outline" size={30} color={GOLD} />
-        <Text style={styles.heading}>Supplement unavailable</Text>
+
         <Text style={styles.description}>Choose Creatine, Omega-3 or B12 from Nutrition.</Text>
       </View>
     </SafeAreaView>;
@@ -62,7 +64,7 @@ export default function SupplementDetails() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#050505" },
+  screen: { flex: 1, backgroundColor: colors.background },
   safe: { flex: 1 },
   header: { height: 62, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 24 },
   headerTitle: { color: "#F5F1E8", fontSize: 22, fontWeight: "600", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },

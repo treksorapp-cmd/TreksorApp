@@ -1,3 +1,4 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
 
 import ArticleCard from "@/components/ArticleCard";
@@ -134,7 +135,7 @@ export default function ArticlesScreen({ mode = "tab", category = "All Articles"
     <SafeAreaView style={styles.container} edges={["bottom"]}>
       <StatusBar style="light" />
 
-      {mode === "stack" && <View style={[styles.pageHeading,{paddingTop:insets.top+12}]}><Text style={styles.eyebrow}>{category === "Body" ? "BODY / READING" : category === "Spiritual" ? "BALANCE / READING" : "MIND / READING"}</Text><Text style={styles.pageTitle}>{category === "Body" ? "Body articles" : category === "Spiritual" ? "Balance articles" : "Mind articles"}</Text></View>}
+      {mode === "stack" && <BodyPageHeading trail={category === "Body" ? "BODY / READING" : category === "Spiritual" ? "BALANCE / READING" : "MIND / READING"} title="Articles" style={{paddingTop:insets.top+12,paddingBottom:20}} />}
       {mode === "stack" && (
         <View style={styles.tabContainer}>
           <View style={styles.tabInnerContainer}>

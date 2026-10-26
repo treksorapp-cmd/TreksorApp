@@ -1,3 +1,5 @@
+import {useSafeAreaInsets} from "react-native-safe-area-context";
+import {colors} from "@/theme/architect";
 "use client"
 
 import { generateRandomId } from "@/lib/utils"
@@ -32,6 +34,7 @@ interface AddTrackerModalProps {
 const categories = ["Body", "Mental", "Spiritual"] as const
 
 export default function AddTrackerModal({ visible, onClose }: AddTrackerModalProps) {
+  const insets=useSafeAreaInsets();
   const { addTrackingCategory } = useTrackingStore()
 
   const [formData, setFormData] = useState({
@@ -82,8 +85,8 @@ export default function AddTrackerModal({ visible, onClose }: AddTrackerModalPro
   }
 
   return (
-    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
-      <KeyboardAvoidingView behavior={Platform.OS==="ios"?"padding":"height"} style={{flex:1}} keyboardVerticalOffset={0}><BlurView intensity={20} style={styles.overlay}>
+    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
+      <KeyboardAvoidingView behavior={Platform.OS==="ios"?"padding":"height"} style={{flex:1}} keyboardVerticalOffset={0}><BlurView intensity={20} style={[styles.overlay,{paddingTop:insets.top+12,paddingBottom:insets.bottom+12}]}>
         <RNAnimated.View style={[styles.modalContainer]}>
           <LinearGradient
             colors={["rgba(255, 255, 255, 0.1)", "rgba(255, 255, 255, 0.05)"]}
@@ -94,16 +97,16 @@ export default function AddTrackerModal({ visible, onClose }: AddTrackerModalPro
             <View style={styles.modalContent}>
               {/* Header */}
               <View style={styles.header}>
-                <Text style={styles.headerTitle}>Add Tracking Category</Text>
-                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                <Text style={styles.headerTitle}>Add a tracker</Text>
+                <TouchableOpacity accessibilityRole="button" accessibilityLabel="Close" style={styles.closeButton} onPress={onClose}>
                   <Ionicons name="close" size={24} color="#FFFFFF" />
                 </TouchableOpacity>
               </View>
 
               <ScrollView style={styles.form} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{paddingBottom:25}}>
-                {/* Category Title */}
+                {/* Tracker name */}
                 <View style={styles.formGroup}>
-                  <Text style={styles.label}>Category Title</Text>
+                  <Text style={styles.label}>Tracker name</Text>
                   <TextInput
                     style={styles.textInput}
                     placeholder="e.g., Fitness, Learning, Habits"
@@ -165,7 +168,7 @@ export default function AddTrackerModal({ visible, onClose }: AddTrackerModalPro
                   <Text style={styles.cancelButtonText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.addButton} onPress={()=>{Keyboard.dismiss();handleSubmit()}}>
-                  <Text style={styles.addButtonText}>Add Category</Text>
+                  <Text style={styles.addButtonText}>Add tracker</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -195,7 +198,7 @@ const styles = StyleSheet.create({
     padding: 1,
   },
   modalContent: {
-    backgroundColor: "#1a1a1a",
+    backgroundColor: colors.surface,
     borderRadius: 19,
     maxHeight: "100%",
   },
@@ -232,7 +235,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   textInput: {
-    backgroundColor: "#2a2a2a",
+    backgroundColor: colors.surfaceRaised,
     borderRadius: 10,
     padding: 12,
     color: "#FFFFFF",
@@ -288,7 +291,7 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     flex: 1,
-    backgroundColor: "#2a2a2a",
+    backgroundColor: colors.surfaceRaised,
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: "center",

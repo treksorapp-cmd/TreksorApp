@@ -19,7 +19,7 @@ export default function BeverageDetails() {
   const insets = useSafeAreaInsets();
   const [showReferences, setShowReferences] = useState(false);
   const beverage = Nutritions.beverages.data.find(item => item.id === id) as Beverage | undefined;
-  if (!beverage) return <View style={styles.screen}><Text style={styles.empty}>Beverage not found.</Text></View>;
+  if (!beverage) return <View style={styles.screen}><BodyPageHeading title="Beverage unavailable" trail="BODY / NUTRITION" subtitle="Return to Nutrition to choose a drink." style={{paddingTop:insets.top+12}} /></View>;
 
   const sources = [
     {title:beverage.source_1,url:beverage.url_1},
@@ -44,7 +44,7 @@ export default function BeverageDetails() {
           {paragraphs.map((paragraph,index)=><Text key={index} style={[styles.description,index===0&&styles.lead]}>{paragraph}</Text>)}
         </View>
         <View style={styles.sectionHeader}>
-          <View><Text style={styles.sectionEyebrow}>PREPARE YOUR DRINK</Text><Text style={styles.sectionTitle}>INGREDIENTS</Text></View>
+          <View><Text style={styles.sectionEyebrow}>PREPARE YOUR DRINK</Text><Text style={styles.sectionTitle}>Ingredients</Text></View>
           <View style={styles.quantity}><Ionicons name="beaker-outline" color="#D6E9F2" size={16}/><Text style={styles.quantityText}>{beverage.quantity.replace(/[()]/g,"")}</Text></View>
         </View>
         <View style={styles.ingredients}>

@@ -1,3 +1,6 @@
+import Button from "@/components/ui/Button";
+import BodyPageHeading from "@/components/BodyPageHeading";
+import {useReflectionContext} from "@/hooks/useReflectionContext";
 "use client"
 
 import { useMySpaceStore } from "@/store/myspace-store"
@@ -5,7 +8,7 @@ import { Ionicons } from "@expo/vector-icons"
 import { LinearGradient } from "expo-linear-gradient"
 import { router, useLocalSearchParams } from "expo-router"
 import { StatusBar } from "expo-status-bar"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
     Alert,
     Dimensions,
@@ -23,6 +26,7 @@ const { width } = Dimensions.get("window")
 
 export default function ViewEntryScreen() {
   const insets = useSafeAreaInsets()
+  const {origin,home,trail}=useReflectionContext();
   const { id } = useLocalSearchParams()
   const { myspaces, deleteMySpace } = useMySpaceStore()
   const [fadeAnim] = useState(new RNAnimated.Value(0))
@@ -31,7 +35,7 @@ export default function ViewEntryScreen() {
   // Find the entry by ID
   const entry = myspaces.find((space) => space.id === id)
 
-  useState(() => {
+  useEffect(() => {
     // Start animations
     RNAnimated.parallel([
       RNAnimated.timing(fadeAnim, {
@@ -45,14 +49,15 @@ export default function ViewEntryScreen() {
         useNativeDriver: true,
       }),
     ]).start()
-  })
+    return ()=>{fadeAnim.stopAnimation();scaleAnim.stopAnimation();};
+  },[fadeAnim,scaleAnim])
 
   const handleBack = () => {
     router.back()
   }
 
   const handleEdit = () => {
-    router.push(`/mental/myspace/edit-entry/${id}`)
+    router.push(`/mental/myspace/edit-entry/${id}?pillar=${origin}`)
   }
 
   const handleDelete = () => {
@@ -104,16 +109,7 @@ export default function ViewEntryScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar style="light" />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton} onPress={handleBack}>
-          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>View Entry</Text>
-        <TouchableOpacity style={styles.headerButton} onPress={handleShare}>
-          <Ionicons name="share-outline" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-      </View>
+      <BodyPageHeading trail={trail} title="Your reflection" onBack={handleBack} style={{paddingTop:12,paddingBottom:16}} />
 
       <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
         <RNAnimated.View
@@ -151,6 +147,7 @@ export default function ViewEntryScreen() {
           </LinearGradient>
         </RNAnimated.View>
 
+        <Button iconName="share-outline" onPress={handleShare}>Share reflection</Button>
         {/* Action Buttons */}
         <View style={styles.actionButtons}>
           <TouchableOpacity style={styles.editButton} onPress={handleEdit}>

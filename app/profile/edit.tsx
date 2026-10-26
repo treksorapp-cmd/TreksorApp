@@ -1,3 +1,4 @@
+import {colors} from "@/theme/architect";
 "use client"
 
 import { Ionicons } from "@expo/vector-icons"
@@ -147,7 +148,7 @@ export default function EditProfile() {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: 0 }]}>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.keyboardAvoid}>
         <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
           <View style={styles.avatarSection}>
@@ -157,7 +158,7 @@ export default function EditProfile() {
                   <ActivityIndicator size="large" color="#FFFFFF" />
                 </View>
               ) : tempAvatar || avatar ? (
-                <Image source={{ uri: tempAvatar || avatar }} style={styles.avatar} />
+                <Image source={{ uri: tempAvatar || avatar || undefined }} style={styles.avatar} />
               ) : (
                 <View style={styles.avatarPlaceholder}>
                   <Text style={styles.avatarText}>{name.charAt(0)}</Text>
@@ -215,7 +216,7 @@ export default function EditProfile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: colors.background,
   },
   keyboardAvoid: {
     flex: 1,

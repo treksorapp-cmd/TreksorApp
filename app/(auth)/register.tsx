@@ -1,3 +1,4 @@
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons"
 import { router } from "expo-router"
 import { StatusBar } from "expo-status-bar"
@@ -20,6 +21,7 @@ import TextInput from "@/components/ui/TextInput"
 import { useAuthStore } from "@/store/auth-store"
 
 export default function Register() {
+  const insets = useSafeAreaInsets();
   const {register, requestOtp, loading} = useAuthStore();
   const [step, setStep] = useState(1)
   const [name, setName] = useState("")
@@ -256,6 +258,7 @@ export default function Register() {
           <Animated.View
             style={[
               styles.content,
+              {paddingTop:insets.top+12,paddingBottom:insets.bottom+24},
               {
                 opacity: fadeAnim,
                 transform: [{ translateY: slideAnim }],
@@ -368,12 +371,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 40,
   },
-  backButton: {
-    position: "absolute",
-    top: 50,
-    left: 20,
-    zIndex: 10,
-  },
+  backButton: { alignSelf:"flex-start", minWidth:44, minHeight:44, justifyContent:"center", marginBottom:20 },
   stepIndicator: {
     flexDirection: "row",
     alignItems: "center",
@@ -386,7 +384,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.3)",
   },
   activeStepDot: {
-    backgroundColor: "#3498db",
+    backgroundColor: "#D7B877",
   },
   stepLine: {
     width: 50,
@@ -419,7 +417,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   signInText: {
-    color: "#3498db",
+    color: "#D7B877",
     fontSize: 14,
     fontWeight: "bold",
   },

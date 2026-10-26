@@ -1,40 +1,9 @@
-import { Image } from 'expo-image'
-import { StatusBar } from 'expo-status-bar'
-import React from 'react'
-import { Dimensions, SafeAreaView, StyleSheet, View } from 'react-native'
-
-const NewEntrySuccessScreen = () => {
-  return (
-    <SafeAreaView style={styles.container}>
-        <StatusBar style="light" />
-        <View style={styles.illustrationContainer}>
-            <Image
-                source={require("@/assets/images/new-entry-success.png")}
-                style={styles.illustration}
-                contentFit="contain"
-            />
-        </View>
-    </SafeAreaView>
-  )
-}
-
-export default NewEntrySuccessScreen
-
-const { width, height } = Dimensions.get("window")
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#02050C",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    illustration: {
-        width: width * 0.8,
-        height: "100%",
-    },
-    illustrationContainer: {
-        alignItems: "center",
-        justifyContent: "center",
-    },
-})
+import {Ionicons} from "@expo/vector-icons";
+import {router} from "expo-router";
+import {ScrollView,Text,View} from "react-native";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
+import BodyPageHeading from "@/components/BodyPageHeading";
+import Button from "@/components/ui/Button";
+import {useReflectionContext} from "@/hooks/useReflectionContext";
+import {colors,type} from "@/theme/architect";
+export default function EntrySaved(){const insets=useSafeAreaInsets();const {home,trail}=useReflectionContext();return <ScrollView style={{flex:1,backgroundColor:colors.background}} contentContainerStyle={{paddingTop:insets.top+12,paddingBottom:insets.bottom+32}}><BodyPageHeading title="Reflection saved" trail={trail}/><View style={{padding:22,gap:24,alignItems:"center",marginTop:40}}><Ionicons name="checkmark-circle-outline" size={72} color={colors.gold}/><Text style={type.body}>A moment of reflection is a step forward.</Text><Button onPress={()=>router.replace(home)}>Return to my space</Button></View></ScrollView>;}

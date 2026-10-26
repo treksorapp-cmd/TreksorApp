@@ -1,3 +1,5 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
+import {useReflectionContext} from "@/hooks/useReflectionContext";
 "use client"
 
 import Button from "@/components/ui/Button"
@@ -28,6 +30,7 @@ const moodOptions = ["Happy", "Sad", "Stressed", "Anxious", "Calm", "Frustrated"
 
 export default function NewEntryScreen() {
   const insets = useSafeAreaInsets()
+  const {origin,home,trail}=useReflectionContext();
   const [mood, setMood] = useState("Happy")
   const {addMySpace} = useMySpaceStore();
   const [entryText, setEntryText] = useState("")
@@ -40,7 +43,7 @@ export default function NewEntryScreen() {
     }
     try {
       addMySpace({mood,text:entryText.trim()})
-      router.replace('/mental/myspace');
+      router.replace(home);
     } catch (error) {
       Alert.alert('Unable to save entry', 'Please try again.');
     }
@@ -68,6 +71,7 @@ export default function NewEntryScreen() {
           bounces={false}
         >
       
+          <BodyPageHeading trail={trail} title="New reflection" style={{paddingHorizontal:0}} />
           {/* Illustration */}
           <View style={styles.illustrationContainer}>
             <Image
@@ -79,7 +83,7 @@ export default function NewEntryScreen() {
 
           {/* Mood Selector */}
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>SELECT MOOD</Text>
+            <Text style={styles.sectionTitle}>How are you feeling?</Text>
             <TouchableOpacity style={styles.dropdownButton} onPress={() => setShowMoodDropdown(!showMoodDropdown)}>
               <Text style={styles.dropdownButtonText}>{mood}</Text>
               <Ionicons name={showMoodDropdown ? "chevron-up" : "chevron-down"} size={20} color="#FFFFFF" />
@@ -88,7 +92,7 @@ export default function NewEntryScreen() {
             {showMoodDropdown && (
               <View style={styles.dropdownMenu}>
               <ScrollView 
-                style={styles.dropdownScroll}
+                style={styles.dropDownScroll}
                 nestedScrollEnabled={true}
                 showsVerticalScrollIndicator={false}
               >
@@ -110,11 +114,11 @@ export default function NewEntryScreen() {
 
           {/* Entry Text Input */}
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>TODAY'S REFLECTION</Text>
+            <Text style={styles.sectionTitle}>Your reflection</Text>
             <TextInput
               style={styles.textInput}
               multiline
-              placeholder="Write your thoughts here..."
+              placeholder={origin === "purpose" ? "What matters to you, and what is one step you can take?" : "Write your thoughts here..."}
               placeholderTextColor="#666"
               value={entryText}
               onChangeText={setEntryText}
@@ -152,10 +156,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginVertical: 20,
-    height: height * 0.2, // Responsive height
+    height: 110, // Responsive height
   },
   illustration: {
-    width: width * 0.6,
+    width: "70%",
     height: "100%",
   },
   sectionContainer: {
@@ -202,7 +206,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   dropdownItemTextSelected: {
-    color: "#E5B94B",
+    color: "#D7B877",
   },
   textInput: {
     backgroundColor: "rgba(255,255,255,0.08)",

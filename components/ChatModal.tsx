@@ -1,3 +1,4 @@
+import {colors} from "@/theme/architect";
 "use client"
 
 import { useAuthStore } from "@/store/auth-store"
@@ -30,7 +31,7 @@ interface ChatModalProps {
   onClose: () => void
 }
 
-const quickActions = [
+const quickActions: {id:string;text:string;icon:string}[] = [
   // { id: "1", text: "💡 What is WappGPT?", icon: "💡" },
   // { id: "2", text: "🔒 Pricing", icon: "🔒" },
   // { id: "3", text: "🤔 FAQs", icon: "🤔" },
@@ -38,12 +39,14 @@ const quickActions = [
 
 export default function ChatModal({ visible, onClose }: ChatModalProps) {
   const insets = useSafeAreaInsets()
-  const {messages, sendMessage, loading, error} = useChatStore();
+  const {chats,currentUserId,sendMessage,loading,error,setUserId,loadHistory}=useChatStore();
+  const messages=currentUserId?chats[currentUserId]||[]:[];
   const [inputText, setInputText] = useState("")
   const [slideAnim] = useState(new RNAnimated.Value(height))
   const [fadeAnim] = useState(new RNAnimated.Value(0))
   const flatListRef = useRef<FlatList>(null)
   const {user} = useAuthStore();
+  useEffect(()=>{if(visible&&user?.id){setUserId(user.id);void loadHistory();}},[visible,user?.id,setUserId,loadHistory]);
 
   useEffect(() => {
     if (visible) {
@@ -79,10 +82,10 @@ export default function ChatModal({ visible, onClose }: ChatModalProps) {
     flatListRef.current?.scrollToEnd({ animated: true })
   },[messages])
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (inputText.trim() && !loading) {
-      sendMessage(inputText.trim())
-      setInputText("")
+      const sent=await sendMessage(inputText.trim());
+      if(sent)setInputText("")
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true })
       }, 100)
@@ -126,7 +129,7 @@ export default function ChatModal({ visible, onClose }: ChatModalProps) {
   )
 
   return (
-    <Modal visible={visible} transparent animationType="none" statusBarTranslucent>
+    <Modal visible={visible} transparent animationType="none" statusBarTranslucent onRequestClose={onClose}>
       <RNAnimated.View style={[styles.overlay, { opacity: fadeAnim }]}>
         <BlurView intensity={20} style={styles.blurView}>
           <RNAnimated.View
@@ -260,7 +263,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     flex: 1,
-    backgroundColor: "#1a1a1a",
+    backgroundColor: colors.surface,
     borderRadius: 23,
   },
   header: {
@@ -360,7 +363,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   aiBubble: {
-    backgroundColor: "#2a2a2a",
+    backgroundColor: colors.surfaceRaised,
     borderBottomLeftRadius: 4,
   },
   userBubble: {
@@ -402,7 +405,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   typingBubble: {
-    backgroundColor: "#2a2a2a",
+    backgroundColor: colors.surfaceRaised,
     padding: 12,
     borderRadius: 16,
     borderBottomLeftRadius: 4,
@@ -443,7 +446,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    backgroundColor: "#2a2a2a",
+    backgroundColor: colors.surfaceRaised,
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 12,

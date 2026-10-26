@@ -1,3 +1,4 @@
+import {colors} from "@/theme/architect";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React,{useMemo} from "react";
@@ -28,9 +29,9 @@ export default function GymProgress(){
   return {exercises,volume,meanChange,sets:valid.length};
  },[sets]);
  const sessions=Object.values(checkIns).reduce((sum,arr)=>sum+arr.length,0);
- return <ScrollView style={{flex:1,backgroundColor:"#08090B"}} contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:100}}>
+ return <ScrollView style={{flex:1,backgroundColor: colors.background}} contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:100}}>
  
- <BodyPageHeading trail="BODY / WORKOUT / GYM" title="GYM PROGRESS" style={{paddingLeft:0,paddingRight:104}} />
+ <BodyPageHeading trail="BODY / WORKOUT / GYM" title="GYM PROGRESS" style={{paddingLeft:0,paddingRight:0}} />
  <Text style={{color:"#C7C1B5",marginTop:9,lineHeight:21}}>Your strength journey, built one set at a time.</Text>
  <View style={{backgroundColor:"rgba(67,72,72,0.30)",borderWidth:1,borderColor:"rgba(242,215,164,0.32)",borderRadius:17,padding:20,marginTop:25}}>
  <Text style={{color:GOLD,fontSize:11,fontWeight:"800",letterSpacing:1.5}}>TRAINING OVERVIEW</Text>

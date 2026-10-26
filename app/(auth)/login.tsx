@@ -1,3 +1,4 @@
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import {
@@ -23,6 +24,7 @@ import { router } from "expo-router";
 import Toast from "react-native-toast-message";
 
 export default function Login() {
+  const insets = useSafeAreaInsets();
   const { login, loading, getCurrentUser, requestOtp, signInWithThirdParty } =
     useAuthStore();
   const [email, setEmail] = useState("");
@@ -108,7 +110,7 @@ export default function Login() {
       const currentUser = GoogleSignin.getCurrentUser();
       if(currentUser) {
         const {user} = currentUser;
-        signInWithThirdParty({ email:user.email, name:user.name, photo:user.photo, provider: 'google' }).then(() => {
+        signInWithThirdParty({ email:user.email, name:user.name || user.email.split("@")[0], photo:user.photo, provider: 'google' }).then(() => {
           getCurrentUser();
         });
         return;
@@ -183,6 +185,7 @@ export default function Login() {
           <Animated.View
             style={[
               styles.content,
+              {paddingTop:insets.top+12,paddingBottom:insets.bottom+24},
               {
                 opacity: fadeAnim,
                 transform: [{ translateY: slideAnim }],
@@ -196,7 +199,7 @@ export default function Login() {
               <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
             </TouchableOpacity>
 
-            <Text style={styles.heading}>Welcome To Treksor</Text>
+            <Text style={styles.heading}>Welcome to Treksor</Text>
             <Text style={styles.subHeading}>Sign in to your account</Text>
 
             <View style={styles.form}>
@@ -285,12 +288,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)", // adjust opacity as needed
     zIndex: -1,
   },
-  backButton: {
-    position: "absolute",
-    top: 50,
-    left: 20,
-    zIndex: 10,
-  },
+  backButton: { alignSelf:"flex-start", minWidth:44, minHeight:44, justifyContent:"center", marginBottom:20 },
   heading: {
     fontSize: 34,
     fontWeight: "600",
@@ -312,7 +310,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   forgotPasswordText: {
-    color: "#3498db",
+    color: "#D7B877",
     fontSize: 14,
   },
   divider: {
@@ -344,7 +342,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   signUpText: {
-    color: "#3498db",
+    color: "#D7B877",
     fontSize: 14,
     fontWeight: "bold",
   },

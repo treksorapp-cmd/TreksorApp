@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     right: -3,
     bottom: -3,
     borderRadius: 15,
-    backgroundColor: "#3498db",
+    backgroundColor: "#D7B877",
     zIndex: -1,
   },
   borderGradient: {

@@ -1,3 +1,4 @@
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 "use client"
 
 import { Ionicons } from "@expo/vector-icons"
@@ -21,6 +22,7 @@ import TextInput from "@/components/ui/TextInput"
 import { useAuthStore } from "@/store/auth-store"
 
 export default function ForgotPassword() {
+  const insets = useSafeAreaInsets();
   const {requestResetPassword, loading, error: authError, clearError} = useAuthStore();
   const [email, setEmail] = useState("")
   const [error, setError] = useState("")
@@ -79,6 +81,7 @@ export default function ForgotPassword() {
         <Animated.View
           style={[
             styles.content,
+              {paddingTop:insets.top+12,paddingBottom:insets.bottom+24},
             {
               opacity: fadeAnim,
               transform: [{ translateY: slideAnim }],
@@ -138,12 +141,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
   },
-  backButton: {
-    position: "absolute",
-    top: 50,
-    left: 20,
-    zIndex: 10,
-  },
+  backButton: { alignSelf:"flex-start", minWidth:44, minHeight:44, justifyContent:"center", marginBottom:20 },
   heading: {
     fontSize: 34,
     fontWeight: "600",
@@ -171,7 +169,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   resendText: {
-    color: "#3498db",
+    color: "#D7B877",
     fontSize: 14,
   },
   footer: {
@@ -183,7 +181,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   signInText: {
-    color: "#3498db",
+    color: "#D7B877",
     fontSize: 14,
     fontWeight: "bold",
   },

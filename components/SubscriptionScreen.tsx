@@ -1,15 +1,17 @@
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 import { getOfferings } from "@/app/services/revenuecat";
 import { useAuthStore } from "@/store/auth-store";
 import { useUserStore } from "@/store/user-store";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Alert, AppState, ImageBackground, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, AppState, Modal, ScrollView, ImageBackground, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Purchases from "react-native-purchases";
 
 type PlanType = "monthly" | "yearly";
 
 
 export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
+  const insets=useSafeAreaInsets();
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
@@ -316,6 +318,7 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
   };
 
   return (
+    <Modal transparent visible animationType="fade" onRequestClose={()=>{if(Number(user?.daysLeft)>0||user?.plan)onClose();}}>
     <View style={styles.modalOverlay}>
           <ImageBackground
             source={planType === "monthly" ? require("@/assets/images/monthly.jpeg") : require("@/assets/images/yearly.jpeg")}
@@ -324,7 +327,7 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
             imageStyle={styles.imageStyle}
           >
             {(Number(user?.daysLeft) > 0 || user?.plan) ? (
-              <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+              <TouchableOpacity accessibilityRole="button" accessibilityLabel="Close plans" style={[styles.closeButton,{top:insets.top+12}]} onPress={onClose}>
                 <Ionicons
                   name="close"
                   size={24}
@@ -333,7 +336,7 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
               </TouchableOpacity>
             ): (
               <TouchableOpacity
-                style={styles.logoutButton}
+                accessibilityRole="button" accessibilityLabel="Log out" style={[styles.logoutButton,{top:insets.top+12}]}
                 onPress={() => {
                   Alert.alert(
                     "Logout",
@@ -364,9 +367,9 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
               </TouchableOpacity>
             )}
 
-            <View style={styles.overlay}>
+            <ScrollView style={{width:"100%"}} contentContainerStyle={[styles.overlay,{paddingTop:insets.top+76,paddingBottom:insets.bottom+24}]} showsVerticalScrollIndicator={false}>
               <View style={styles.modalContainer}>
-                <Text style={styles.modalTitle}>Choose Your Plan</Text>
+                <Text style={styles.modalTitle}>Choose your plan</Text>
                 
                 {/* Tab Selector */}
                 <View style={styles.tabContainer}>
@@ -474,16 +477,17 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
                   Growth begins when discipline becomes identity. Every day, your body, mind and spirit align towards mastery
                 </Text>
               </View>
-            </View>
+            </ScrollView>
           </ImageBackground>
         </View>
+    </Modal>
   );
 }
 
 
 const styles = StyleSheet.create({
     modalOverlay: {
-      ...StyleSheet.absoluteFillObject,
+      flex: 1,
       zIndex: 99999999,
       justifyContent: "center",
       alignItems: "center",
@@ -499,7 +503,7 @@ const styles = StyleSheet.create({
     overlay: {
       backgroundColor: "rgba(0, 0, 0, 0.45)",
       width: "100%",
-      height: "100%",
+      flexGrow: 1,
       justifyContent: "center",
       alignItems: "center",
       paddingHorizontal: 20,
@@ -507,11 +511,13 @@ const styles = StyleSheet.create({
     closeButton: {
       position: "absolute",
       top: "10%",
-      right: "10%",
+      right: 22,
+      width:44,height:44,alignItems:"center",justifyContent:"center",
       zIndex: 999
     },
     modalContainer: {
-      width: "90%",
+      width: "100%",
+      maxWidth: 520,
       backgroundColor: "rgba(0,0,0,0.65)",
       borderRadius: 20,
       padding: 25,
@@ -653,7 +659,7 @@ const styles = StyleSheet.create({
     logoutButton: {
       position: "absolute",
       top: "10%",
-      right: "10%",
+      right: 22,
       zIndex: 999,
       width: 44,
       height: 44,

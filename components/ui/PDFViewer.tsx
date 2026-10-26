@@ -89,7 +89,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ title, pdfUrl, onClose }) => {
           onLoad={handleLoad}
           onError={handleError}
           startInLoadingState={true}
-          renderLoading={() => null}
+          renderLoading={() => <View />}
           bounces={false}
           scrollEnabled={true}
           scalesPageToFit={true}

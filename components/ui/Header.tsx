@@ -1,191 +1,35 @@
-"use client";
-
-import { useAuthStore } from "@/store/auth-store";
+import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import type React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-interface HeaderProps {
-  title?: string;
-  showAvatar?: boolean;
-  showBackButton?: boolean;
-  headerRightButton?: React.ReactNode;
-  onBackPress?: () => void;
-  showTitle?: boolean
+import { useAuthStore } from "@/store/auth-store";
+import { colors, surface, type } from "@/theme/architect";
+import { displayLabel } from "@/lib/pillar-navigation";
+interface Props {
+    title?: string;
+    showAvatar?: boolean;
+    showBackButton?: boolean;
+    headerRightButton?: React.ReactNode;
+    onBackPress?: () => void;
+    showTitle?: boolean;
 }
-
-const Header: React.FC<HeaderProps> = ({
-  title,
-  showAvatar = true,
-  showBackButton = false,
-  headerRightButton = null,
-  onBackPress,
-  showTitle = true
-}) => {
-  const insets = useSafeAreaInsets();
-  const { user } = useAuthStore();
-
-
-
-//   const daysLeft = user?.createdAt
-//   ? Math.max(0, 7 - Math.floor((Date.now() - new Date(user.createdAt)) / 86400000))
-//   : null;
-
-// console.log("user?.createdAt", user?.daysLeft);
-// console.log("daysLeft", daysLeft);
-
-
-
-  const handleBackPress = () => {
-    if (onBackPress) {
-      onBackPress();
-    } else {
-      router.back();
-    }
-  };
-
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-    return "Good evening";
-  };
-
-  const displayName = user?.name ? user.name.split(" ")[0] : "there";
-  const imageUrl = `https://app.treksor.com/${user?.avatar}`;
-
-  return (
-    <LinearGradient
-      colors={["rgba(0,0,0,0.9)", "rgba(0,0,0,0.7)"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0, y: 1 }}
-      style={[styles.container, { paddingTop: insets.top }]}
-    >
-      {/* Header Content */}
-      {showTitle && <View style={styles.headerContent}>
-
-        <View style={{flex:1, minWidth:0, paddingRight:12}}>
-          <View style={styles.titleContainer}>
-            {!title ? (
-              <Text style={styles.title}>{`${getGreeting()}, ${displayName}`}</Text>
-            ) : (
-              <Text style={styles.title}>{title.charAt(0).toUpperCase() + title.slice(1)}</Text>
-            )}
-          </View>
-        </View>
-
-        {headerRightButton && (
-          <View style={styles.headerRightButtonContainer}>
-            {headerRightButton}
-          </View>
-        )}
-
-        {showAvatar && (
-          <TouchableOpacity
-            style={styles.avatarContainer}
-            onPress={() => router.push("/profile")}
-            activeOpacity={0.8}
-          >
-            {user?.avatar ? (
-              <Image source={{ uri: imageUrl }} style={styles.avatar} />
-            ) : (
-              <View style={styles.avatarPlaceholder}>
-                <Text style={styles.avatarText}>{displayName.charAt(0)}</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        )}
-      </View>}
-    </LinearGradient>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-    overflow: "hidden",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
-  backButton: {
-    padding: 5,
-  },
-  greeting: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "500",
-    opacity: 0.9,
-  },
-  name: {
-    color: "#FFFFFF",
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  avatarContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    overflow: "hidden",
-    backgroundColor: "#3A2D16",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  headerRightButtonContainer: {
-    width: "auto",
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-  },
-  avatarPlaceholder: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#3498db",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  avatarText: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  headerContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-    paddingTop: 15,
-    paddingBottom: 5,
-    position: "relative",
-  },
-  absoluteTitleWrapper: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: -1, // keep it under avatar/back if needed
-  },
-  titleContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontWeight: "600",
-    fontSize: 22,
-    color: "#F5F1E8",
-    textAlign: "left", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
-});
-
-export default Header;
+export default function Header({ title, showAvatar = true, showBackButton = false, headerRightButton, onBackPress, showTitle = true }: Props) {
+    const insets = useSafeAreaInsets();
+    const user = useAuthStore(s => s.user);
+    const name = user?.name?.trim().split(" ")[0] || "there";
+    const avatar = user?.avatar ? (user.avatar.startsWith("http") ? user.avatar : `https://app.treksor.com/${user.avatar.replace(/^\//, "")}`) : undefined;
+    return <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
+    <View style={styles.topRow}>
+      <Text style={styles.eyebrow}>TREKSOR / {title ? displayLabel(title).toUpperCase() : "YOUR JOURNEY"}</Text>
+      <View style={styles.actions}>
+        {showBackButton && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go back" style={styles.icon} onPress={() => onBackPress ? onBackPress() : router.canGoBack() ? router.back() : router.replace("/(tabs)/home")}><Ionicons name="arrow-back" size={22} color={colors.text}/></TouchableOpacity>}
+        {headerRightButton}
+        {showAvatar && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open profile" style={styles.icon} onPress={() => router.push("/profile")}>{avatar ? <Image source={{ uri: avatar }} style={styles.avatar}/> : <Ionicons name="person-outline" size={22} color={colors.gold}/>}</TouchableOpacity>}
+      </View>
+    </View>
+    {showTitle && <Text accessibilityRole="header" style={styles.title}>{title ? displayLabel(title) : `Welcome, ${name}`}</Text>}
+  </View>;
+}
+const styles = StyleSheet.create({ header: { paddingHorizontal: 22, paddingBottom: 18, backgroundColor: colors.background }, topRow: { flexDirection: "row", gap: 12, alignItems: "center", marginBottom: 10 }, eyebrow: { ...type.eyebrow, flex: 1 }, actions: { flexDirection: "row", gap: 8 }, icon: surface.icon, avatar: { width: 44, height: 44, borderRadius: 13 }, title: type.page });

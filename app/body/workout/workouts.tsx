@@ -31,10 +31,10 @@ const WorkoutHome = () => {
           <Workout
             key={workout.id}
             onPress={() => router.push({ pathname: "/body/workout/exercises", params: { workoutId:workout.id }})}
-            icon={workout.icon}
+            icon=""
             title={workout.title}
             description={workout.description}
-            percentage={workout.percentage}
+            percentage={workout.exercises.length ? workout.exercises.filter(exercise=>exercise.completed).length/workout.exercises.length*100 : 0}
           />
         ))}
       </ScrollView>

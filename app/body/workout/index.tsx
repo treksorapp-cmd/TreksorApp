@@ -1,3 +1,5 @@
+import {useReducedMotion} from "@/hooks/useReducedMotion";
+import BodyPageHeading from "@/components/BodyPageHeading";
 import Button from "@/components/ui/Button";
 import { playCompletionFeedback } from "@/lib/completion-feedback";
 import { useWorkoutStore } from "@/store/workout-store";
@@ -14,8 +16,9 @@ const GOLD = "#D7B877";
 
 export default function GymScreen() {
   const insets = useSafeAreaInsets();
+  const reducedMotion=useReducedMotion();
   const pulse = useRef(new Animated.Value(0)).current;
-  useEffect(() => { const loop = Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true}),Animated.timing(pulse,{toValue:0,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true})]));loop.start();return()=>loop.stop(); },[pulse]);
+  useEffect(() => { if(reducedMotion){pulse.setValue(0);return;} const loop = Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true}),Animated.timing(pulse,{toValue:0,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true})]));loop.start();return()=>loop.stop(); },[pulse,reducedMotion]);
   const plan = useWorkoutStore(s => s.trainingPlan);
   const checkIns = useWorkoutStore(s => s.checkIns);
   const checkIn = useWorkoutStore(s => s.checkIn);
@@ -50,9 +53,7 @@ export default function GymScreen() {
           <ImageBackground source={require("@/assets/images/Gym_2.png")} contentFit="cover" style={StyleSheet.absoluteFill} />
           <LinearGradient colors={["rgba(2,5,12,0.22)", "rgba(2,5,12,0.68)", "#02050C"]} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
           <View style={[styles.heroContent, { paddingTop: insets.top + 12 }]}>
-            <Text style={styles.eyebrow}>BODY / WORKOUT</Text>
-            <Text style={styles.heroTitle}>Gym</Text>
-            <Text style={styles.heroSubtitle}>Train with intention. Progress with purpose.</Text>
+            <BodyPageHeading title="Gym" trail="BODY / WORKOUT" subtitle="Train with intention. Progress with purpose." style={{paddingHorizontal:0}} />
           </View>
         </View>
 
@@ -113,7 +114,7 @@ export default function GymScreen() {
 const styles = StyleSheet.create({
   screen:{flex:1,backgroundColor:"#02050C"},
   hero:{minHeight:240,justifyContent:"flex-end",overflow:"hidden"},
-  heroContent:{paddingLeft:22,paddingRight:126,paddingBottom:32,justifyContent:"flex-start"},
+  heroContent:{paddingLeft:22,paddingRight:22,paddingBottom:32,justifyContent:"flex-start"},
   eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:2},
   heroTitle: {color: "#F5F4F1",fontSize: 34,fontWeight: "600",letterSpacing: -0.6,marginTop:7, lineHeight: 42, includeFontPadding: false, },
   heroSubtitle:{color:"#DDD7CB",fontSize:14,lineHeight:22,marginTop:8},
@@ -139,9 +140,9 @@ const styles = StyleSheet.create({
   track:{height:7,borderRadius:7,backgroundColor:"rgba(255,255,255,0.11)",overflow:"hidden"},
   trackFill:{height:"100%",backgroundColor:GOLD,borderRadius:7},
   weekCaption:{color:"#A9A9A8",fontSize:11,marginTop:12},
-  checkIn:{height:54,marginTop:5,marginBottom:16,borderRadius:16,backgroundColor:"rgba(188,223,240,0.085)",borderWidth:0,flexDirection:"row",alignItems:"center",justifyContent:"center",gap:10},
+  checkIn:{minHeight:54,paddingVertical:14,paddingHorizontal:16,marginTop:5,marginBottom:16,borderRadius:16,backgroundColor:"rgba(188,223,240,0.085)",borderWidth:0,flexDirection:"row",alignItems:"center",justifyContent:"center",gap:10},
   checkInDone:{opacity:0.65},
-  checkInText:{color:"#FFFFFF",fontSize:13,fontWeight:"700",letterSpacing:0.8},
+  checkInText:{color:"#F5F4F1",fontSize:15,lineHeight:22,fontWeight:"600",flexShrink:1,textAlign:"center"},
   intro:{color:"#B9B9B9",fontSize:14,lineHeight:21,marginTop:10,marginBottom:16},
   sectionHeadingSecondary:{flexDirection:"row",alignItems:"baseline",justifyContent:"space-between",marginTop:23,marginBottom:7},
   sectionNote:{color:"#A9A39A",fontSize:10,letterSpacing:1.1},

@@ -1,3 +1,4 @@
+import {colors} from "@/theme/architect";
 "use client"
 
 import { useAuthStore } from "@/store/auth-store"
@@ -40,8 +41,8 @@ export default function ChatScreen() {
   const [campfireAvailable, setCampfireAvailable] = useState(true)
   const [keyboardHeight, setKeyboardHeight] = useState(0)
   useEffect(() => {
-    const show = Keyboard.addListener("keyboardWillShow", e => setKeyboardHeight(e.endCoordinates.height))
-    const hide = Keyboard.addListener("keyboardWillHide", () => setKeyboardHeight(0))
+    const show = Keyboard.addListener(Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow", e => setKeyboardHeight(e.endCoordinates.height))
+    const hide = Keyboard.addListener(Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide", () => setKeyboardHeight(0))
     return () => { show.remove(); hide.remove() }
   }, [])
   const flatListRef = useRef<FlatList>(null)
@@ -109,18 +110,17 @@ export default function ChatScreen() {
         <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(7,11,12,0.14)" }]} />
       </View>
 
-      {messages.length === 0 && (
-        <View style={styles.welcomeAI}>
-          <Text style={styles.welcomeEyebrow}>YOUR SPACE</Text>
-          <Text style={styles.welcomeTitle}>What's on your mind?</Text>
-          <Text style={styles.welcomeAIText}>Talk about what matters to you. Find clarity, build healthy habits and move forward at your own pace.</Text>
-          <Text style={styles.welcomeNote}>AI support, not professional mental health care.</Text>
-        </View>
-      )}
+
       {/* Single Chat title is provided by the tab navigation. */}
       {/* Messages */}
       <FlatList
         ref={flatListRef}
+        ListEmptyComponent={<View style={styles.welcomeAI}>
+          <Text style={styles.welcomeEyebrow}>YOUR SPACE</Text>
+          <Text style={styles.welcomeTitle}>What's on your mind?</Text>
+          <Text style={styles.welcomeAIText}>Talk about what matters to you. Find clarity, build healthy habits and move forward at your own pace.</Text>
+          <Text style={styles.welcomeNote}>AI support, not professional mental health care.</Text>
+        </View>}
         data={messages}
         renderItem={renderMessage}
         keyExtractor={(item) => item.id}
@@ -152,6 +152,7 @@ export default function ChatScreen() {
       <View style={[styles.inputContainer, { paddingBottom: keyboardHeight > 0 ? 12 : insets.bottom + 82, marginBottom: keyboardHeight > 0 ? 12 : 0 }]}>
           <TextInput
             style={styles.textInput}
+            accessibilityLabel="Message Treksor"
             placeholder="Message..."
             placeholderTextColor="#666"
             value={inputText}
@@ -161,6 +162,8 @@ export default function ChatScreen() {
             maxLength={500}
           />
           <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Send message"
             style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
             onPress={handleSendMessage}
             disabled={!inputText.trim() || loading}
@@ -190,7 +193,7 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: "#050505",
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: "row",
@@ -320,7 +323,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   typingBubble: {
-    backgroundColor: "#2a2a2a",
+    backgroundColor: colors.surfaceRaised,
     padding: 12,
     borderRadius: 16,
     borderBottomLeftRadius: 4,
@@ -351,7 +354,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 15,
     gap: 12,
-    backgroundColor: "#050505",
+    backgroundColor: colors.background,
   },
   textInput: {
     flex: 1,

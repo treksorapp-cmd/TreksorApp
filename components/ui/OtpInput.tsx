@@ -139,7 +139,7 @@ const OtpInput = ({ codeLength = 4, onCodeFilled, error = false }: OtpInputProps
           })
 
           return (
-            <View key={index} style={[styles.inputContainer, { width: Math.min(60, (width - 80 - (codeLength - 1) * 6) / codeLength) }]}>
+            <View key={index} style={styles.inputContainer}>
               {/* Focus glow effect */}
               {focusedIndex === index && (
                 <Animated.View
@@ -174,6 +174,7 @@ const OtpInput = ({ codeLength = 4, onCodeFilled, error = false }: OtpInputProps
                       inputRefs.current[index] = ref;
                     }}
                     style={styles.input}
+                    accessibilityLabel={`Code digit ${index+1} of ${codeLength}`}
                     keyboardType="number-pad"
                     maxLength={codeLength}
                     value={digit}
@@ -181,7 +182,7 @@ const OtpInput = ({ codeLength = 4, onCodeFilled, error = false }: OtpInputProps
                     onKeyPress={(e) => handleKeyPress(e, index)}
                     onFocus={() => handleFocus(index)}
                     onBlur={() => handleBlur(index)}
-                    selectionColor="#3498db"
+                    selectionColor="#D7B877"
                     textContentType="oneTimeCode" // iOS autofill support
                   />
                 </LinearGradient>
@@ -198,11 +199,14 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: width - 80,
+    width: "100%",
+    maxWidth: 420,
+    gap: 6,
     marginVertical: 20,
   },
   inputContainer: {
-    width: 60,
+    flex: 1,
+    minWidth: 0,
     height: 60,
     borderRadius: 12,
     overflow: "visible",
@@ -215,7 +219,7 @@ const styles = StyleSheet.create({
     right: -3,
     bottom: -3,
     borderRadius: 15,
-    backgroundColor: "#3498db",
+    backgroundColor: "#D7B877",
     zIndex: -1,
   },
   borderGradient: {

@@ -1,3 +1,4 @@
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 "use client"
 
 import { Ionicons } from "@expo/vector-icons"
@@ -21,6 +22,7 @@ import OtpInput from "@/components/ui/OtpInput"
 import { useAuthStore } from "@/store/auth-store"
 
 export default function VerifyOtp() {
+  const insets = useSafeAreaInsets();
   const { verifyOtp, loading, getCurrentUser, requestOtp, requestResetPassword} = useAuthStore();
   const params = useLocalSearchParams()
   const { email, purpose = "registration" } = params
@@ -31,7 +33,7 @@ export default function VerifyOtp() {
   const [timeLeft, setTimeLeft] = useState(30)
   const [canResend, setCanResend] = useState(false)
   const [resendNotice, setResendNotice] = useState("")
-  const timerRef = useRef<number | null>(null)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // Animation values
   const fadeAnim = React.useRef(new Animated.Value(0)).current
@@ -140,6 +142,7 @@ export default function VerifyOtp() {
         <Animated.View
           style={[
             styles.content,
+              {paddingTop:insets.top+12,paddingBottom:insets.bottom+24},
             {
               opacity: fadeAnim,
               transform: [{ translateY: slideAnim }],
@@ -151,7 +154,7 @@ export default function VerifyOtp() {
           </TouchableOpacity>
 
           <View style={styles.iconContainer}>
-            <Ionicons name="shield-checkmark-outline" size={60} color="#3498db" />
+            <Ionicons name="shield-checkmark-outline" size={60} color="#D7B877" />
           </View>
 
           <Text style={styles.heading}>Verification Code</Text>
@@ -201,17 +204,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
   },
-  backButton: {
-    position: "absolute",
-    top: 50,
-    left: 20,
-    zIndex: 10,
-  },
+  backButton: { alignSelf:"flex-start", minWidth:44, minHeight:44, justifyContent:"center", marginBottom:20 },
   iconContainer: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: "rgba(52, 152, 219, 0.1)",
+    backgroundColor: "rgba(215,184,119,0.12)",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
@@ -250,12 +248,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   resendButton: {
-    color: "#3498db",
+    color: "#D7B877",
     fontSize: 14,
     fontWeight: "bold",
   },
   timerText: {
-    color: "#3498db",
+    color: "#D7B877",
     fontSize: 14,
   },
 })

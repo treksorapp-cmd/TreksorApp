@@ -103,8 +103,9 @@ export default function WorkoutInfoScreen() {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}>
         <StatusBar style="light" />
+        <BodyPageHeading title="Exercise unavailable" trail="BODY / GYM" subtitle="Return to the exercise library to choose an exercise." />
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading workout info...</Text>
+          <Text style={styles.loadingText}>No exercise selected.</Text>
         </View>
       </View>
     );
@@ -201,7 +202,7 @@ export default function WorkoutInfoScreen() {
         >
           <LinearGradient
             colors={
-              isCompleted ? ["#4CAF50", "#45A049"] : ["#D7B877", "#E67E22"]
+              isCompleted ? ["#244037", "#172C25"] : ["#25313A", "#111820"]
             }
             style={styles.buttonGradient}
             start={{ x: 0, y: 0 }}

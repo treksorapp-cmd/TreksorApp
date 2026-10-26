@@ -1,3 +1,4 @@
+import {colors} from "@/theme/architect";
 "use client";
 
 import { useAuthStore } from "@/store/auth-store";
@@ -33,18 +34,18 @@ export default function TabLayout() {
         screenOptions={{
           animation: "shift",
           sceneStyle: {
-            backgroundColor: "#050505",
+            backgroundColor: colors.background,
           },
           tabBarBackground: () => <View pointerEvents="none" style={StyleSheet.absoluteFill}><View style={styles.goldDivider}/></View>,
           tabBarStyle: Platform.select({
             ios: {
               position: "absolute",
-              backgroundColor: "#050505",
+              backgroundColor: colors.background,
               borderTopWidth: 0,
               elevation: 0,
             },
             default: {
-              backgroundColor: "#050505",
+              backgroundColor: colors.background,
             },
           }),
           tabBarActiveTintColor: "#D7B877",
@@ -96,7 +97,7 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: colors.background,
   },
   goldDivider: { position: "absolute", top: 0, left: 0, right: 0, height: 1, backgroundColor: "rgba(215,184,119,0.14)" },
   iconContainer: { width: 42, height: 42, alignItems: "center", justifyContent: "center" },

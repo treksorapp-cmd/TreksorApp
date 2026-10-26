@@ -1,3 +1,5 @@
+import {useSafeAreaInsets} from "react-native-safe-area-context";
+import {colors} from "@/theme/architect";
 "use client"
 
 import { Ionicons } from "@expo/vector-icons"
@@ -16,6 +18,7 @@ interface CalendarModalProps {
 }
 
 export default function CalendarModal({ visible, onClose, onDateSelect, selectedDate }: CalendarModalProps) {
+  const insets=useSafeAreaInsets();
   const [currentMonth, setCurrentMonth] = useState(new Date())
 
   const getDaysInMonth = (date: Date) => {
@@ -96,8 +99,8 @@ export default function CalendarModal({ visible, onClose, onDateSelect, selected
   const days = getDaysInMonth(currentMonth)
 
   return (
-    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
-      <BlurView intensity={20} style={styles.overlay}>
+    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
+      <BlurView intensity={20} style={[styles.overlay,{paddingTop:insets.top+12,paddingBottom:insets.bottom+12}]}>
         <RNAnimated.View style={[styles.modalContainer]}>
           <LinearGradient
             colors={["rgba(255, 255, 255, 0.1)", "rgba(255, 255, 255, 0.05)"]}
@@ -168,7 +171,7 @@ export default function CalendarModal({ visible, onClose, onDateSelect, selected
                 <TouchableOpacity style={styles.todayButton} onPress={() => handleDatePress(new Date())}>
                   <Text style={styles.todayButtonText}>Today</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                <TouchableOpacity accessibilityRole="button" accessibilityLabel="Close" style={styles.closeButton} onPress={onClose}>
                   <Text style={styles.closeButtonText}>Close</Text>
                 </TouchableOpacity>
               </View>
@@ -198,7 +201,7 @@ const styles = StyleSheet.create({
     padding: 1,
   },
   modalContent: {
-    backgroundColor: "#1a1a1a",
+    backgroundColor: colors.surface,
     borderRadius: 19,
     padding: 20,
   },
@@ -285,7 +288,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     flex: 1,
-    backgroundColor: "#2a2a2a",
+    backgroundColor: colors.surfaceRaised,
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",

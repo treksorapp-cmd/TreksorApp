@@ -1,3 +1,4 @@
+import {colors} from "@/theme/architect";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React from "react";
@@ -6,8 +7,8 @@ import {router} from "expo-router";
 import {Ionicons} from "@expo/vector-icons";
 const GOLD="#D7B877";
 export default function ExerciseLibrary(){
- const insets=useSafeAreaInsets();return <ScrollView style={{flex:1,backgroundColor:"#08090B"}} contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:90}}>
-<BodyPageHeading trail="BODY / WORKOUT / GYM" title="EXERCISE LIBRARY" style={{paddingLeft:0,paddingRight:104}} />
+ const insets=useSafeAreaInsets();return <ScrollView style={{flex:1,backgroundColor: colors.background}} contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:90}}>
+<BodyPageHeading trail="BODY / WORKOUT / GYM" title="EXERCISE LIBRARY" style={{paddingLeft:0,paddingRight:0}} />
 <Text style={{color:"#C9C5BC",marginTop:9,lineHeight:21,marginBottom:24}}>Explore classic training splits independently from your personal plan.</Text>
 {[{name:"Push",desc:"Chest · Shoulders · Triceps",icon:"arrow-up-circle-outline"},{name:"Pull",desc:"Back · Biceps",icon:"repeat-outline"},{name:"Legs",desc:"Quads · Hamstrings · Glutes",icon:"walk-outline"}].map(item=><TouchableOpacity key={item.name} onPress={()=>router.push({pathname:"/body/workout/exercises",params:{workoutId:item.name.toLowerCase()}})} style={{backgroundColor:"rgba(183,221,240,0.075)",borderRadius:17,padding:20,marginBottom:13,flexDirection:"row",alignItems:"center",gap:14}}><Ionicons name={item.icon as any} size={25} color={GOLD}/><View style={{flex:1}}><Text style={{color:"white",fontSize:18,lineHeight:25,fontWeight:"600"}}>{item.name}</Text><Text style={{color:"#C7C2B7",marginTop:5}}>{item.desc}</Text></View><Ionicons name="chevron-forward" color={GOLD} size={20}/></TouchableOpacity>)}
 </ScrollView>}

@@ -34,4 +34,4 @@ export const generateRandomId = (length: number = 6): string => {
 export const calcPercentage = (done: number, total: number) =>
   total > 0 ? Math.round((done / total) * 100) : 0;
 
-export const countRead = (items) => items.filter(i => i.isRead).length;
+export const countRead = (items: {isRead?: boolean}[]) => items.filter(i => i.isRead).length;

@@ -1,3 +1,6 @@
+import {colors} from "@/theme/architect";
+import {useReducedMotion} from "@/hooks/useReducedMotion";
+import JourneyCard from "@/components/JourneyCard";
 import { scheduleTodaysPowerThought } from "@/lib/daily-thought-notification";
 import { playCompletionFeedback } from "@/lib/completion-feedback";
 import { useAuthStore } from "@/store/auth-store";
@@ -60,12 +63,13 @@ export default function HomeScreen() {
     return()=>{active=false;clearTimeout(timeout);controller.abort()};
   },[]);
   const reveal=useRef(new Animated.Value(0)).current;
+  const reducedMotion=useReducedMotion();
   const pulse=useRef(new Animated.Value(0)).current;
-  useEffect(()=>{const loop=Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true}),Animated.timing(pulse,{toValue:0,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true})]));loop.start();return()=>loop.stop()},[pulse]);
-  useEffect(()=>{Animated.timing(reveal,{toValue:1,duration:480,easing:Easing.out(Easing.cubic),useNativeDriver:true}).start()},[reveal]);
+  useEffect(()=>{if(reducedMotion){pulse.setValue(0);return;}const loop=Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true}),Animated.timing(pulse,{toValue:0,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true})]));loop.start();return()=>loop.stop()},[pulse,reducedMotion]);
+  useEffect(()=>{Animated.timing(reveal,{toValue:1,duration:reducedMotion?0:480,easing:Easing.out(Easing.cubic),useNativeDriver:true}).start()},[reveal,reducedMotion]);
   useEffect(()=>{const refresh=()=>setNow(new Date());const timer=setInterval(refresh,60000);const sub=AppState.addEventListener("change",v=>{if(v==="active")refresh()});return()=>{clearInterval(timer);sub.remove()}},[]);
   const hour = now.getHours();
-  const dailyIndex=Math.floor(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate())/86400000)%DAILY_MESSAGES.length;
+  const dailyIndex=Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000)%DAILY_MESSAGES.length;
   const dailyMessage=DAILY_MESSAGES[dailyIndex];
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const todayThought = powerThoughts?.find(item => item.isToday) || powerThoughts?.[0];
@@ -86,12 +90,12 @@ export default function HomeScreen() {
             </View>
           </View>
           <View style={styles.topRight}><TouchableOpacity onPress={() => router.push("/profile")} style={styles.profile} accessibilityLabel="Open profile">
-            {user?.avatar?<Image source={{uri:user.avatar}} style={styles.profileImage} cachePolicy="memory-disk"/>:<Text style={styles.profileLetter}>{firstName.charAt(0).toUpperCase()}</Text>}
+            {user?.avatar?<Image source={{uri:user.avatar.startsWith("http")?user.avatar:`https://app.treksor.com/${user.avatar}`}} style={styles.profileImage} cachePolicy="memory-disk"/>:<Text style={styles.profileLetter}>{firstName.charAt(0).toUpperCase()}</Text>}
           </TouchableOpacity></View>
         </View>
 
         <Animated.View style={[styles.hero,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[12,0]})}]}]}>
-          <ImageBackground source={atmosphereUrl ? {uri:atmosphereUrl} : DAILY_HERO_IMAGES[dailyIndex]} onError={() => { if (atmosphereUrl) setAtmosphereUrl(null); }} contentFit="cover" contentPosition="center 58%" cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
+          <ImageBackground source={atmosphereUrl ? {uri:atmosphereUrl} : DAILY_HERO_IMAGES[dailyIndex]} onError={() => { if (atmosphereUrl) setAtmosphereUrl(null); }} contentFit="cover" contentPosition={{left:"50%",top:"58%"}} cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
           <LinearGradient colors={["rgba(8,9,11,0.08)", "rgba(8,9,11,0.45)", "#08090B"]} locations={[0, 0.4, 1]} style={StyleSheet.absoluteFill} />
           <View style={styles.heroGreetingWrap}><View style={styles.pulseShell}><Animated.View style={[styles.pulseHalo,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.06,0.24]}),transform:[{scale:pulse.interpolate({inputRange:[0,1],outputRange:[1,1.65]})}]}]}/><Animated.View style={[styles.greetingDot,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.70,1]})}]}/></View><Text style={styles.heroGreeting}>{greeting}</Text></View>
           <View style={styles.heroContent}>
@@ -111,7 +115,7 @@ export default function HomeScreen() {
         <Animated.View style={[styles.grid,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[18,0]})}]}]}>
           {pillars.map(pillar => (
             <TouchableOpacity key={pillar.name} activeOpacity={0.72} style={styles.tile} onPress={() => router.push(pillar.route)} accessibilityRole="button" accessibilityLabel={pillar.name + ": " + pillar.subtitle}>
-              <ImageBackground source={pillar.image} contentFit="cover" contentPosition={pillar.name==="Mind"?"center 18%":"center"} style={StyleSheet.absoluteFill} transition={180} cachePolicy="memory-disk" />
+              <ImageBackground source={pillar.image} contentFit="cover" contentPosition={pillar.name==="Mind"?{left:"50%",top:"18%"}:"center"} style={StyleSheet.absoluteFill} transition={180} cachePolicy="memory-disk" />
               <LinearGradient colors={["rgba(0,0,0,0.20)", "rgba(0,0,0,0.22)", "rgba(0,0,0,0.95)"]} locations={[0, 0.34, 1]} style={StyleSheet.absoluteFill} />
               <View style={styles.tileTop}>
                 <View style={styles.tileIcon}><Ionicons name={pillar.icon} color="#FFFFFF" size={18} /></View>
@@ -125,6 +129,7 @@ export default function HomeScreen() {
           ))}
         </Animated.View>
 
+        <JourneyCard />
         <View style={styles.thoughtSection}>
           <View style={styles.thoughtHeading}><Ionicons name="sunny-outline" color={GOLD} size={19} /><Text style={styles.thoughtLabel}>TODAY ON TREKSOR</Text></View>
           <View style={styles.thoughtCard}>
@@ -140,10 +145,10 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: "#08090B" },
+  screen: { flex: 1, backgroundColor: colors.background },
   content: { paddingHorizontal: 20, paddingTop: 13, paddingBottom: 118 },
-  hero: { height: 276, marginHorizontal: -20, marginTop: -8, marginBottom: 26, overflow: "hidden", backgroundColor: "#151715" },
-  heroContent: { flex: 1, justifyContent: "flex-end", paddingHorizontal: 24, paddingBottom: 28 },
+  hero: { minHeight: 276, marginHorizontal: -20, marginTop: -8, marginBottom: 26, overflow: "hidden", backgroundColor: "#151715" },
+  heroContent: { flex: 1, paddingTop: 88, justifyContent: "flex-end", paddingHorizontal: 24, paddingBottom: 28 },
   heroTitle: { color: "#F7F5F0", fontSize: 34, lineHeight: 42, fontWeight: "600", letterSpacing: -0.6, includeFontPadding: false, },
   heroSub: { color: "#D0C8B9", fontSize: 12, letterSpacing: 0.7, marginTop: 13 },
   sectionCount: { color: GOLD, fontSize: 10, fontWeight: "700", letterSpacing: 1.5 },
@@ -173,7 +178,7 @@ const styles = StyleSheet.create({
   fourBadge: { width: 37, height: 37, borderRadius: 19, borderWidth: 1, borderColor: "#514332", alignItems: "center", justifyContent: "center" },
   fourBadgeText: { color: GOLD, fontSize: 12, fontWeight: "800" },
   grid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", rowGap: 13 },
-  tile: { width: "48.3%", aspectRatio: 0.88, borderRadius: 13, overflow: "hidden", backgroundColor: "rgba(183,221,240,0.075)" },
+  tile: { width: "48.3%", minHeight: 230, borderRadius: 13, overflow: "hidden", backgroundColor: "rgba(183,221,240,0.075)" },
   tileTop: { flexDirection: "row", justifyContent: "flex-end", alignItems: "center", padding: 13 },
   tileIcon: { height: 34, width: 34, borderRadius: 11, backgroundColor: "rgba(183,221,240,0.13)", alignItems: "center", justifyContent: "center" },
   tileIndex: { color: "#FFFFFF", fontSize: 10, fontWeight: "700", opacity: 0.85 },

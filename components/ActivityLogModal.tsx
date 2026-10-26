@@ -1,3 +1,5 @@
+import {useSafeAreaInsets} from "react-native-safe-area-context";
+import {colors} from "@/theme/architect";
 "use client"
 
 import { calcPercentage } from "@/lib/utils"
@@ -28,6 +30,7 @@ interface ActivityLogModalProps {
 }
 
 export default function ActivityLogModal({ visible, onClose, selectedDate }: ActivityLogModalProps) {
+  const insets=useSafeAreaInsets();
   const { trackingData, updateTrackingCategory } = useTrackingStore()
 
   const [userTrackers, setUserTrackers] = useState(() => {
@@ -135,8 +138,8 @@ export default function ActivityLogModal({ visible, onClose, selectedDate }: Act
   }
 
   return (
-    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
-      <BlurView intensity={20} style={styles.overlay}>
+    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
+      <BlurView intensity={20} style={[styles.overlay,{paddingTop:insets.top+12,paddingBottom:insets.bottom+12}]}>
         <RNAnimated.View style={[styles.modalContainer]}>
           <LinearGradient
             colors={["rgba(255, 255, 255, 0.1)", "rgba(255, 255, 255, 0.05)"]}
@@ -148,7 +151,7 @@ export default function ActivityLogModal({ visible, onClose, selectedDate }: Act
               {/* Header */}
               <View style={styles.header}>
                 <Text style={styles.headerTitle}>Log Daily Activities</Text>
-                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                <TouchableOpacity accessibilityRole="button" accessibilityLabel="Close" style={styles.closeButton} onPress={onClose}>
                   <Ionicons name="close" size={24} color="#FFFFFF" />
                 </TouchableOpacity>
               </View>
@@ -269,7 +272,7 @@ const styles = StyleSheet.create({
     padding: 1,
   },
   modalContent: {
-    backgroundColor: "#1a1a1a",
+    backgroundColor: colors.surface,
     borderRadius: 19,
     maxHeight: "100%",
   },
@@ -425,7 +428,7 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     flex: 1,
-    backgroundColor: "#2a2a2a",
+    backgroundColor: colors.surfaceRaised,
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: "center",

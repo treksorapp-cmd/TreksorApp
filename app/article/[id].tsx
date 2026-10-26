@@ -1,3 +1,4 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
 
 import { useArticleStore } from "@/store/article-store";
@@ -127,7 +128,9 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
     );
   }
 
-  const imageUrl = `https://app.treksor.com/${article?.image}`;
+  if(!article)return <View style={[styles.container,{paddingTop:insets.top+12}]}><BodyPageHeading title="Article unavailable" trail={pillarTrail} navigation subtitle="Return to your pillar to choose another article." /></View>;
+
+  const imageUrl = article.image?.startsWith("http") ? article.image : `https://app.treksor.com/${article.image}`;
 
   // Create HTML content for WebView to render the body with proper styling
   const htmlContent = `
@@ -151,13 +154,13 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
   `;
 
   return (
-    <View style={[styles.container, { paddingBottom: insets.bottom + (mode === "tab" ? 80 : 20) }]}>
+    <View style={[styles.container, { paddingBottom: 0 }]}>
       <StatusBar style="light" />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: mode === 'tab' ? insets.bottom + 40 : 0}}
+      contentContainerStyle={{paddingBottom:24}}
       >
-        <View style={{paddingTop:insets.top+12,paddingBottom:17}}><Text style={{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.6}}>{pillarTrail}</Text><Text style={{color:"#FFFFFF",fontSize:34,fontWeight:"700",letterSpacing:1.5,marginTop:7}}>ARTICLE</Text></View>
+        <BodyPageHeading trail={pillarTrail} title={article?.title || "Article"} navigation style={{paddingHorizontal:0,paddingTop:insets.top+12,paddingBottom:20}} />
         {/* Article Image */}
         <Image
           source={{ uri: imageUrl }}
@@ -168,12 +171,6 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
         {/* Article Content */}
         <View style={styles.articleContent}>
           {/* <Text style={styles.category}>{article?.category}</Text> */}
-          <View style={styles.titleRow}>          
-            <Text style={styles.title}>{article?.title}</Text>
-            {/* <Pressable onPress={() => handleSpeak(article?.title, article?.description, article?.body)}>
-              <Ionicons name="volume-high-outline" size={24} color="gray" />
-            </Pressable> */}
-          </View>
           <Text style={styles.description}>{article?.description}</Text>
 
           {/* Article Body */}
@@ -195,7 +192,7 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
         </View>
       </ScrollView>
 
-      <View style={[styles.bottomSection, { bottom: mode === 'tab' ? insets.bottom + 20 : 0 }]}>
+      <View style={[styles.bottomSection, {paddingBottom:insets.bottom+(mode === "tab"?80:12)}]}>
           <TouchableOpacity
             style={[styles.markAsReadButton, isRead && styles.markAsReadButtonRead]}
             onPress={handleMarkAsRead}
@@ -285,8 +282,6 @@ const styles = StyleSheet.create({
     height: 400,
   },
   bottomSection: {
-    position: "absolute",
-    bottom: 0,
     left: 0,
     right: 0,
     backgroundColor: "rgba(10, 10, 10, 0.95)",

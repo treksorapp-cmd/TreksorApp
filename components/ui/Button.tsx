@@ -1,3 +1,4 @@
+import {displayLabel} from "@/lib/pillar-navigation";
 import { Entypo, Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { BlurView } from "expo-blur";
@@ -78,7 +79,7 @@ const Button = ({
               {iconName ? <Ionicons name={iconName} size={23} color="#FFFFFF" style={styles.leadingIcon} /> :
                 icon ? (!iconImage ? <Image source={icon} style={[styles.imageIcon, iconStyle, { tintColor: "#FFFFFF" }]} /> :
                 <Entypo name={iconImageIcon as React.ComponentProps<typeof Entypo>["name"]} size={24} color="#FFFFFF" style={styles.leadingIcon} />) : null}
-              <Text style={styles.buttonText}>{children === children.toUpperCase() ? children.toLowerCase().replace(/(^|\s)\S/g, letter => letter.toUpperCase()) : children}</Text>
+              <Text style={styles.buttonText}>{displayLabel(children)}</Text>
             </View>
           ) : (
             children

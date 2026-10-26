@@ -87,9 +87,9 @@ interface AuthState {
     role: string;
     avatar?: string;
     authProvider?: string;
-    createdAt: string;
-    daysLeft: string;
-    plan: string;
+    createdAt?: string;
+    daysLeft?: string;
+    plan?: string;
   };
   token: string | null;
   refreshToken: string | null;

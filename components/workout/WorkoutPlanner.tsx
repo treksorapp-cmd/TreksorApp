@@ -1,3 +1,4 @@
+import {colors} from "@/theme/architect";
 import React, { useEffect, useMemo, useState } from "react"
 import { Text, TouchableOpacity, View } from "react-native"
 import AsyncStorage from "@react-native-async-storage/async-storage"
@@ -71,7 +72,7 @@ export default function WorkoutPlanner({ exercises, days, location }: Props) {
   return <View style={{ marginTop: 28 }}>
     <Text style={{ color: "white", fontSize: 22, fontWeight: "700", marginBottom: 8 }}>Your Weekly Plan</Text>
     <Text style={{ color: "#AEB4BC", marginBottom: 16 }}>Select exercises and mark each exercise complete. Your choices are stored on this device.</Text>
-    {sessions.map((session, day) => <View key={day} style={{ backgroundColor: "#1A1D22", borderRadius: 14, padding: 16, marginBottom: 12 }}>
+    {sessions.map((session, day) => <View key={day} style={{ backgroundColor: colors.surface, borderRadius: 14, padding: 16, marginBottom: 12 }}>
       <Text style={{ color: "#D7B877", fontWeight: "700", fontSize: 17, marginBottom: 10 }}>Day {day + 1} · {session.name}</Text>
       {!session.exercises.length && <Text style={{ color: "#AEB4BC" }}>Exercises will appear when they are published in the library.</Text>}
       {session.exercises.map(exercise => {

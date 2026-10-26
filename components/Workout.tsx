@@ -1,3 +1,4 @@
+import {Ionicons} from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
@@ -56,15 +57,14 @@ const Workout = ({
             }}
           >
             <View style={{
+                flex:1,
+                marginRight:12,
                 gap:10,
                 flexDirection:'row',
                 alignItems:"center"
             }}>
-              <Image
-                source={icon}
-                style={{ marginRight: 10, width: 30, height: 26 }}
-              />
-              <View style={{ gap: 10 }}>
+              <Ionicons name="barbell-outline" size={26} color="#D7B877"/>
+              <View style={{ gap: 6,flex:1 }}>
                 <Text style={styles.title}>{title}</Text>
                 <Text style={styles.description}>{description}</Text>
               </View>
@@ -86,8 +86,8 @@ const { width } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    width: width - 40, // Full width minus margins
-    height: 100,
+    width: "100%", // Full width minus margins
+    minHeight: 110,
     borderRadius: 12,
     overflow: "hidden",
     marginVertical: 10,
@@ -98,7 +98,8 @@ const styles = StyleSheet.create({
     padding: 1, // This creates the border thickness
   },
   innerGradient: {
-    flex: 1,
+    minHeight: 108,
+    paddingVertical: 16,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 11, // Slightly smaller than outer radius
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
   description: {
     color: "#D7B877",
     fontSize: 16,
-    fontWeight: "medium",
+    fontWeight: "500",
   },
 });
 

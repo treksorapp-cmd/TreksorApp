@@ -1,3 +1,4 @@
+import {colors} from "@/theme/architect";
 "use client"
 
 import Button from "@/components/ui/Button"
@@ -145,10 +146,10 @@ export default function ProfileScreen() {
 
   useFocusEffect(useCallback(()=>{let active=true; if(user?.id){getEntries(user.id).then(entries=>{if(active)setMoodSummary(moodAverage(entries,"month"))}).catch(()=>{if(active)setMoodSummary({average:null,days:0})})}return()=>{active=false}},[user?.id]));
 
-  const imageUrl = `https://app.treksor.com/${user?.avatar}`;
+  const imageUrl = user?.avatar?.startsWith("http") ? user.avatar : `https://app.treksor.com/${user?.avatar || ""}`;
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: 0 }]}>
       <ScrollView style={styles.content}>
         <View style={styles.profileHeader}>
           <View style={styles.avatarSection}>
@@ -156,7 +157,7 @@ export default function ProfileScreen() {
               <Image source={{ uri: imageUrl }} style={styles.avatar} />
             ) : (
               <View style={styles.avatarPlaceholder}>
-                <Text style={styles.avatarText}>{user.name.charAt(0)}</Text>
+                <Text style={styles.avatarText}>{(user.name || "T").charAt(0)}</Text>
               </View>
             )}
           </View>
@@ -209,7 +210,7 @@ export default function ProfileScreen() {
             <Ionicons name="chevron-forward" size={20} color="#AAAAAA" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.menuItem, {backgroundColor: 'red',opacity:0.8}]} onPress={handleDeactivateAccount}>
+          <TouchableOpacity style={[styles.menuItem, {backgroundColor:"rgba(231,163,160,0.10)",borderWidth:1,borderColor:"rgba(231,163,160,0.25)"}]} onPress={handleDeactivateAccount}>
             <AntDesign name="deleteuser" size={22} color="#FFFFFF" style={styles.menuIcon} />
             <Text style={styles.menuText}>Delete Account</Text>
             <Ionicons name="chevron-forward" size={20} color="#AAAAAA" />
@@ -284,7 +285,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
@@ -316,14 +317,14 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: "#3498db",
+    backgroundColor: colors.surfaceRaised,
     justifyContent: "center",
     alignItems: "center",
   },
   avatarText: {
     fontSize: 36,
     fontWeight: "bold",
-    color: "#FFFFFF",
+    color: "#D7B877",
   },
   profileInfo: {
     alignItems: "center",

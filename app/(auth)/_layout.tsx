@@ -55,8 +55,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   backgroundImage: {
-    width,
-    height,
+    flex: 1,
   },
   imageStyle: {
     opacity: 0.9,

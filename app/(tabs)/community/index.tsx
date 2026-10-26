@@ -1,3 +1,5 @@
+import {colors} from "@/theme/architect";
+import CommunityConnections from "@/components/CommunityConnections";
 import React, { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, FlatList, Linking, Text, TextInput, TouchableOpacity, View } from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
@@ -23,18 +25,21 @@ export default function Community() {
  const [events,setEvents]=useState<Event[]>([]);
  const [city,setCity]=useState("Brisbane");
  const [loading,setLoading]=useState(true);
+ const [feedError,setFeedError]=useState(false);
+ const [retry,setRetry]=useState(0);
  const [now,setNow]=useState(()=>new Date());
  useEffect(()=>{const timer=setInterval(()=>setNow(new Date()),60000);return()=>clearInterval(timer)},[]);
- useEffect(()=>{let mounted=true; axios.get<{data:Event[]}>(FEED,{timeout:12000}).then(r=>{if(mounted)setEvents(Array.isArray(r.data?.data)?r.data.data:[])}).catch(()=>{if(mounted)setEvents([])}).finally(()=>{if(mounted)setLoading(false)});return()=>{mounted=false}},[]);
+ useEffect(()=>{let mounted=true;setLoading(true);setFeedError(false); axios.get<{data:Event[]}>(FEED,{timeout:12000}).then(r=>{if(mounted)setEvents(Array.isArray(r.data?.data)?r.data.data:[])}).catch(()=>{if(mounted){setEvents([]);setFeedError(true)}}).finally(()=>{if(mounted)setLoading(false)});return()=>{mounted=false}},[retry]);
  const place=city.trim()||"Brisbane";
  const visible=useMemo(()=>events.filter(e=>(e.city||"").toLowerCase().includes(city.trim().toLowerCase())&&(!e.starts_at||new Date(e.starts_at).getTime()>=now.getTime())).sort((a,b)=>new Date(a.starts_at).getTime()-new Date(b.starts_at).getTime()),[events,city,now]);
  const weekEnd=new Date(now);weekEnd.setHours(23,59,59,999);weekEnd.setDate(weekEnd.getDate()+((7-weekEnd.getDay())%7));
  const thisWeek=visible.filter(e=>e.starts_at&&new Date(e.starts_at).getTime()<=weekEnd.getTime());
  const search=(keyword:string)=>Linking.openURL("https://www.meetup.com/find/?keywords="+encodeURIComponent(keyword)+"&location="+encodeURIComponent(place+", Australia")).catch(()=>{});
- return <SafeAreaView edges={["top"]} style={{flex:1,backgroundColor:"#08090B"}}>
+ return <SafeAreaView edges={["top"]} style={{flex:1,backgroundColor: colors.background}}>
  <FlatList data={visible} keyExtractor={e=>String(e.id)} contentContainerStyle={{paddingHorizontal:20,paddingBottom:130}}
  ListHeaderComponent={<>
   <BodyPageHeading trail="CONNECT & EXPLORE" title="Community" style={{marginHorizontal:-20,paddingRight:22,marginTop:12}} />
+  <CommunityConnections />
   <Text style={{color:"#EDE9E0",fontSize:13,fontWeight:"600",marginTop:25,marginBottom:8}}>YOUR LOCATION</Text>
   <TextInput accessibilityLabel="Search city or destination" placeholder="City or destination" placeholderTextColor="#B5B2AA" value={city} onChangeText={setCity} autoCapitalize="words" style={{color:"#FFFFFF",backgroundColor:GLASS,borderRadius:13,padding:15,fontSize:16}}/>
   <View style={{marginTop:22,padding:17,backgroundColor:GLASS,borderRadius:14}}>
@@ -47,9 +52,10 @@ export default function Community() {
   </TouchableOpacity>)}
   </View>
   
+  <Text style={{color:"#A5AAAF",fontSize:12,lineHeight:18,marginTop:12}}>Local activity searches open Meetup.</Text>
   {loading&&<ActivityIndicator color={GOLD} style={{marginVertical:16}}/>}
  </>}
- ListEmptyComponent={null}
+ ListEmptyComponent={loading?null:feedError?<View style={{paddingVertical:20,gap:8}}><Text style={{color:"#C8C3BA",lineHeight:22}}>Activities could not be loaded. Your community connections are still available above.</Text><TouchableOpacity accessibilityRole="button" onPress={()=>setRetry(value=>value+1)} style={{paddingVertical:14}}><Text style={{color:GOLD,fontWeight:"600"}}>Try again</Text></TouchableOpacity></View>:<Text style={{color:"#A5AAAF",fontSize:14,lineHeight:21,marginTop:20,marginBottom:24}}>No upcoming Treksor activities found for this location. Explore local activities above or find a group on Treksor web.</Text>}
  renderItem={({item})=><View style={{padding:18,borderRadius:14,backgroundColor:GLASS,marginBottom:12}}>
   <Text style={{color:GOLD,fontSize:12,fontWeight:"700"}}>{(item.category||"ACTIVITY").toUpperCase()} · {item.city}</Text>
   <Text style={{color:"#FFFFFF",fontSize:18,lineHeight:25,fontWeight:"600",marginTop:9}}>{item.title}</Text>

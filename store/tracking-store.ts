@@ -72,10 +72,10 @@ export const useTrackingStore = create<TrackingStore>()(
           // Get existing tracking data to preserve IDs and custom categories
           let oldTrackingData = [...get().trackingData];
           
-          const bodyCategory = oldTrackingData.find(track => track.title === 'BODY' || track.title === 'Body') || { id: "1", title: "BODY" };
-          const mindCategory = oldTrackingData.find(track => track.title === 'MIND' || track.title === 'Mind') || { id: "2", title: "MIND" };
-          const spiritualCategory = oldTrackingData.find(track => track.title === 'SPIRITUAL' || track.title === 'Spiritual') || { id: "3", title: "SPIRITUAL" };
-          const articlesCategory = oldTrackingData.find(track => track.title === 'ARTICLES' || track.title === 'Articles') || { id: "4", title: "ARTICLES" };
+          const bodyCategory: Partial<TrackingCategory> & {id:string;title:string} = oldTrackingData.find(track => track.title === 'BODY' || track.title === 'Body') || { id: "1", title: "BODY" };
+          const mindCategory: Partial<TrackingCategory> & {id:string;title:string} = oldTrackingData.find(track => track.title === 'MIND' || track.title === 'Mind') || { id: "2", title: "MIND" };
+          const spiritualCategory: Partial<TrackingCategory> & {id:string;title:string} = oldTrackingData.find(track => track.title === 'SPIRITUAL' || track.title === 'Spiritual') || { id: "3", title: "SPIRITUAL" };
+          const articlesCategory: Partial<TrackingCategory> & {id:string;title:string} = oldTrackingData.find(track => track.title === 'ARTICLES' || track.title === 'Articles') || { id: "4", title: "ARTICLES" };
 
           const updatedTrackingData: TrackingCategory[] = [
             {

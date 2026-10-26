@@ -1,9 +1,11 @@
+import {colors} from "@/theme/architect";
+import {SafeAreaView} from "react-native-safe-area-context";
 import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
 
 import ProgressSyncStatus from "@/components/ProgressSyncStatus";
 import ActivityLogModal from "@/components/ActivityLogModal";
-import { getEntries, moodAverage } from "@/lib/mood-journal";
+import { localDate } from "@/lib/mood-journal";
 import { useAuthStore } from "@/store/auth-store";
 import AddTrackerModal from "@/components/AddTrackerModal";
 import CalendarModal from "@/components/ui/CalendarModal";
@@ -15,7 +17,6 @@ import { StatusBar } from "expo-status-bar";
 import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -25,15 +26,11 @@ import {
 
 export default function TrackingScreen() {
   const { trackingData, fetchTrackingData, loading } = useTrackingStore();
-  const userId = useAuthStore(s => s.user?.id);
-  const [moodPeriod, setMoodPeriod] = useState<"week"|"month"|"year">("week");
-  const [moodSummary, setMoodSummary] = useState<{average:number|null;days:number}>({average:null,days:0});
-
   const [showAddTracker, setShowAddTracker] = useState(false);
   const [showActivityLog, setShowActivityLog] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split("T")[0]
+    localDate()
   );
   
   const [selectedCategory, setSelectedCategory] = useState<
@@ -46,14 +43,14 @@ export default function TrackingScreen() {
     }, [])
   );
 
-  useFocusEffect(useCallback(() => { let active = true; if (userId) { getEntries(userId).then(entries => { if (active) setMoodSummary(moodAverage(entries,moodPeriod)); }).catch(() => { if (active) setMoodSummary({average:null,days:0}); }); } return () => { active=false; }; }, [userId,moodPeriod]));
+
 
   const customTrackers=trackingData.filter(d=>d.custom && !["BODY","MIND","SPIRITUAL","BALANCE","PURPOSE","ARTICLES"].includes(d.title.toUpperCase()));
   const pillarProgress = [
-    {name:"BODY",icon:"barbell-outline" as const,keys:["body","physical","fitness","workout","exercise"]},
-    {name:"MIND",icon:"book-outline" as const,keys:["mind","mental","journal","mood"]},
-    {name:"BALANCE",icon:"shield-outline" as const,keys:["balance","spiritual","meditation","recovery"]},
-    {name:"PURPOSE",icon:"compass-outline" as const,keys:["purpose","habit","goal","vision"]}
+    {name:"Body",route:"/body",icon:"barbell-outline" as const,keys:["body","physical","fitness","workout","exercise"]},
+    {name:"Mind",route:"/mental",icon:"book-outline" as const,keys:["mind","mental","journal","mood"]},
+    {name:"Balance",route:"/spiritual",icon:"shield-outline" as const,keys:["balance","spiritual","meditation","recovery"]},
+    {name:"Purpose",route:"/purpose",icon:"compass-outline" as const,keys:["purpose","habit","goal","vision"]}
   ].map(p=>{const matches=trackingData.filter(d=>p.keys.some(k=>d.title.toLowerCase().includes(k)));const pct=matches.length?Math.round(matches.reduce((sum,d)=>sum+Math.max(0,Math.min(100,Number(d.percentage)||0)),0)/matches.length):null;return {...p,pct}});
   const handleDateSelect = (date: string) => {   
     setSelectedDate(date);
@@ -80,19 +77,16 @@ export default function TrackingScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={["top"]} style={styles.container}>
       <StatusBar style="light" />
 
-      <BodyPageHeading trail="YOUR JOURNEY" title="Progress" style={{paddingRight:22,paddingTop:12}} />
-      <Text style={styles.periodNote}>Small steps. Real momentum.</Text>
-      <Text style={styles.periodHeading}>{moodPeriod==="week"?"Weekly progress":moodPeriod==="month"?"Monthly progress":"Yearly progress"}</Text>
-      <View style={styles.periodRow}>{(["week","month","year"] as const).map(period=><TouchableOpacity key={period} onPress={()=>setMoodPeriod(period)} style={[styles.periodButton,moodPeriod===period&&styles.periodActive]}><Text style={[styles.periodText,moodPeriod===period&&styles.periodTextActive]}>{period==="week"?"Week":period==="month"?"Month":"Year"}</Text></TouchableOpacity>)}</View>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <BodyPageHeading trail="YOUR JOURNEY" title="Progress" subtitle="Small steps. Real momentum." style={{paddingHorizontal:0,paddingTop:12,paddingBottom:24}} />
         <ProgressSyncStatus />
         <View style={{backgroundColor:"rgba(67,72,72,0.28)",borderWidth:1,borderColor:"rgba(239,214,169,0.30)",borderRadius:18,padding:20,marginTop:17}}>
           <Text style={{color:"#F6F2EA",fontSize:18,fontWeight:"700"}}>The four pillars</Text>
-          <Text style={{color:"#BBB5A9",fontSize:12,marginTop:6,marginBottom:23}}>Your progress, all in one place.</Text>
-          {pillarProgress.map((p,i)=><View key={p.name} style={{marginBottom:i===3?0:23}}>
+          <Text style={{color:"#BBB5A9",fontSize:12,marginTop:6,marginBottom:23}}>Your recorded activity so far, across the four pillars.</Text>
+          {pillarProgress.map((p,i)=><TouchableOpacity accessibilityRole="button" accessibilityLabel={`Open ${p.name}`} onPress={()=>router.push(p.route as any)} key={p.name} style={{marginBottom:i===3?0:23}}>
             <View style={{flexDirection:"row",alignItems:"center",marginBottom:11,gap:10}}>
               <Ionicons name={p.icon} size={19} color="#D7B877"/>
               <Text style={{color:"#F3EFE8",fontSize:13,fontWeight:"700",letterSpacing:1,flex:1}}>{p.name}</Text>
@@ -101,7 +95,7 @@ export default function TrackingScreen() {
             <View style={{height:8,backgroundColor:"#383831",borderRadius:6,overflow:"hidden"}}>
               <View style={{height:"100%",width:`${p.pct??0}%`,backgroundColor:"#D7B877",borderRadius:6}}/>
             </View>
-          </View>)}
+          </TouchableOpacity>)}
           <Text style={{color:"#928D83",fontSize:11,marginTop:20,lineHeight:17}}>— means there is no tracking data for that pillar yet.</Text>
         </View>
         {customTrackers.length>0&&<View style={{marginTop:20,backgroundColor:"rgba(67,72,72,0.28)",borderWidth:1,borderColor:"rgba(239,214,169,0.28)",borderRadius:16,padding:19}}>
@@ -154,7 +148,7 @@ const styles = StyleSheet.create({
   sectionHeading: { color: "#F5F4F1", fontSize: 18, fontWeight: "600", marginBottom: 16, lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   container: {
     flex: 1,
-    backgroundColor: "#050505",
+    backgroundColor: colors.background,
   },
   streakContainer: {
     flexDirection: "row",

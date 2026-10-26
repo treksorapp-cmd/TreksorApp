@@ -22,7 +22,7 @@ export default function ArticlesLayout() {
       <Stack.Screen
         name="[id]"
         options={{
-          headerShown:true,
+          headerShown:false,
           header:()=><Header title="ARTICLES" showBackButton={true} showAvatar={false} />
         }}
       />

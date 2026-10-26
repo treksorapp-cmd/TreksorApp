@@ -1,10 +1,19 @@
-import { Text, TouchableOpacity, View, Linking } from 'react-native';
-import { useProgressSyncStore } from '@/store/progress-sync-store';
-export default function ProgressSyncStatus(){
-  const sync=useProgressSyncStore();
-  return <View style={{borderWidth:1,borderColor:'#29333D',borderRadius:12,padding:16,marginBottom:20,gap:8}}>
-    <Text style={{color:'#D7B877',fontSize:15,fontWeight:'600'}}>App & web, one journey</Text>
-    <Text style={{color:'#AAB4BE',fontSize:12}}>{sync.message}{sync.lastSynced?' Last synced '+new Date(sync.lastSynced).toLocaleString()+'.':''}</Text>
-    <View style={{flexDirection:'row',gap:24}}><TouchableOpacity disabled={sync.status==='syncing'} onPress={sync.requestSync}><Text style={{color:'#F5F4F1',fontSize:12}}>{sync.status==='syncing'?'Syncing…':'Sync now ↻'}</Text></TouchableOpacity><TouchableOpacity onPress={()=>Linking.openURL('https://treksor-community.oceanicman.chatgpt.site/#/progress')}><Text style={{color:'#D7B877',fontSize:12}}>Open web profile ↗</Text></TouchableOpacity></View>
+import { Ionicons } from "@expo/vector-icons";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useProgressSyncStore } from "@/store/progress-sync-store";
+import { openTreksorWeb } from "@/lib/treksor-links";
+import { colors, surface, type } from "@/theme/architect";
+export default function ProgressSyncStatus() {
+    const sync = useProgressSyncStore();
+    const busy = sync.status === "syncing";
+    return <View style={styles.card}>
+  <View style={styles.row}><Ionicons name="sync-outline" size={20} color={colors.gold}/><Text style={styles.title}>One profile. One journey.</Text></View>
+  <Text style={styles.copy}>Your app progress, also on Treksor web.</Text>
+  <Text accessibilityLiveRegion="polite" style={styles.caption}>{sync.message}{sync.lastSynced ? ` Last synced ${new Date(sync.lastSynced).toLocaleString()}.` : ""}</Text>
+  <View style={styles.actions}>
+   <TouchableOpacity accessibilityRole="button" accessibilityState={{ disabled: busy, busy }} disabled={busy} onPress={sync.requestSync} style={styles.action}><Text style={styles.actionText}>{busy ? "Syncing…" : "Sync now"}</Text><Ionicons name="refresh-outline" size={17} color={colors.gold}/></TouchableOpacity>
+   <TouchableOpacity accessibilityRole="link" onPress={() => void openTreksorWeb("progress")} style={styles.action}><Text style={styles.actionText}>View on web</Text><Ionicons name="open-outline" size={17} color={colors.gold}/></TouchableOpacity>
   </View>
+ </View>;
 }
+const styles = StyleSheet.create({ card: { ...surface.card, gap: 10, marginBottom: 20 }, row: { flexDirection: "row", alignItems: "center", gap: 10 }, title: { ...type.card, flex: 1 }, copy: type.body, caption: type.caption, actions: { flexDirection: "row", flexWrap: "wrap", gap: 12 }, action: { minHeight: 44, flexDirection: "row", gap: 10, alignItems: "center", paddingHorizontal: 12, backgroundColor: colors.goldSoft, borderRadius: 12 }, actionText: { color: colors.gold, fontSize: 14, fontWeight: "600" } });

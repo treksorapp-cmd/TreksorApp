@@ -17,7 +17,7 @@ const ArticleCard = ({
   handleArticlePress: (item: Article) => void;
 }) => {
   // Construct full image URL
-  const imageUrl = `https://app.treksor.com/${item.image}`;
+  const imageUrl = item.image?.startsWith("http") ? item.image : `https://app.treksor.com/${item.image}`;
 
   return (
     <TouchableOpacity

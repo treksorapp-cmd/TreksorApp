@@ -132,7 +132,7 @@ export default function WorkoutDetailScreen() {
 
   if (!workout) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top }]}>
+      <View style={[styles.container, { paddingTop: 0 }]}>
         <ImageBackground
           source={require("@/assets/images/Rutine_2.png")}
           contentFit="cover"
@@ -140,9 +140,9 @@ export default function WorkoutDetailScreen() {
           imageStyle={styles.imageStyle}
         >
           <StatusBar style="light" />
-          <BodyPageHeading trail="BODY / WORKOUT / GYM / EXERCISE LIBRARY" title={String(Array.isArray(workoutId)?workoutId[0]:workoutId || "EXERCISES")} style={{position:"absolute",top:insets.top+12,left:0,right:0,zIndex:10}} />
+          <BodyPageHeading trail="BODY / WORKOUT / GYM / EXERCISE LIBRARY" title={String(Array.isArray(workoutId)?workoutId[0]:workoutId || "EXERCISES")} style={{paddingTop:insets.top+12,paddingBottom:18}} />
           <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>Loading workout...</Text>
+            <Text style={styles.loadingText}>Choose a workout from the exercise library.</Text>
           </View>
         </ImageBackground>
       </View>
@@ -161,7 +161,7 @@ export default function WorkoutDetailScreen() {
         imageStyle={styles.imageStyle}
       >
         <StatusBar style="light" />
-        <BodyPageHeading trail="BODY / WORKOUT / GYM / EXERCISE LIBRARY" title={String(Array.isArray(workoutId)?workoutId[0]:workoutId || "EXERCISES")} style={{position:"absolute",top:insets.top+12,left:0,right:0,zIndex:10}} />
+        <BodyPageHeading trail="BODY / WORKOUT / GYM / EXERCISE LIBRARY" title={String(Array.isArray(workoutId)?workoutId[0]:workoutId || "EXERCISES")} style={{paddingTop:insets.top+12,paddingBottom:18}} />
         <ScrollView
           style={styles.content}
           contentContainerStyle={styles.scrollContent}
@@ -204,11 +204,11 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     marginTop: 0,
-    paddingTop: 145,
+    paddingTop: 0,
   },
   scrollContent: {
     padding: 20,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     flexGrow: 1,
     paddingBottom: 100,
   },
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     gap: 0,
   },
   exerciseCard: {
-    width: width - 40, // Full width minus margins
+    width: "100%", // Full width minus margins
     minHeight: 70,
     borderRadius: 12,
     flexGrow: 1, // Allow the card to grow dynamically
@@ -233,7 +233,9 @@ const styles = StyleSheet.create({
   cardContent: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    width: "100%",
   },
   checkboxContainer: {
     marginRight: 16,
@@ -268,7 +270,8 @@ const styles = StyleSheet.create({
   },
   exerciseDetails: {
     fontSize: 14,
-    color: "#D7B877",
+    lineHeight:21,
+    color: "#C8C3BA",
     fontWeight: "500",
   },
   borderGradient: {
@@ -283,8 +286,7 @@ const styles = StyleSheet.create({
     borderRadius: 11, // Slightly smaller than outer radius
   },
   backgroundImage: {
-    width,
-    height,
+    flex: 1,
   },
   imageStyle: {
     opacity: 1,

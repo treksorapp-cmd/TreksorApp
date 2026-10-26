@@ -1,3 +1,6 @@
+import Button from "@/components/ui/Button";
+import BodyPageHeading from "@/components/BodyPageHeading";
+import {useReflectionContext} from "@/hooks/useReflectionContext";
 "use client"
 
 import { useMySpaceStore } from "@/store/myspace-store"
@@ -27,6 +30,7 @@ const moodOptions = ["Happy", "Sad", "Stressed", "Anxious", "Calm", "Frustrated"
 
 export default function EditEntryScreen() {
   const insets = useSafeAreaInsets()
+  const {origin,home,trail}=useReflectionContext();
   const { id } = useLocalSearchParams()
   const { myspaces, updateMySpace } = useMySpaceStore()
   const [mood, setMood] = useState("Happy")
@@ -105,20 +109,7 @@ export default function EditEntryScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar style="light" />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton} onPress={handleBack}>
-          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Edit Entry</Text>
-        <TouchableOpacity
-          style={[styles.headerButton, !hasChanges && styles.disabledButton]}
-          onPress={handleSaveEntry}
-          disabled={!hasChanges}
-        >
-          <Text style={[styles.saveText, !hasChanges && styles.disabledText]}>Save</Text>
-        </TouchableOpacity>
-      </View>
+      <BodyPageHeading trail={trail} title="Edit reflection" onBack={handleBack} style={{paddingTop:12,paddingBottom:16}} />
 
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.keyboardAvoid}>
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
@@ -132,7 +123,7 @@ export default function EditEntryScreen() {
             <Text style={styles.sectionTitle}>Select Mood</Text>
             <TouchableOpacity style={styles.dropdownButton} onPress={() => setShowMoodDropdown(!showMoodDropdown)}>
               <Text style={styles.dropdownButtonText}>{mood}</Text>
-              <Ionicons name={showMoodDropdown ? "chevron-up" : "chevron-down"} size={20} color="#E5B94B" />
+              <Ionicons name={showMoodDropdown ? "chevron-up" : "chevron-down"} size={20} color="#D7B877" />
             </TouchableOpacity>
 
             {showMoodDropdown && (
@@ -166,15 +157,7 @@ export default function EditEntryScreen() {
             />
           </View>
 
-          {/* Save Button */}
-          <TouchableOpacity
-            style={[styles.saveButton, !hasChanges && styles.disabledSaveButton]}
-            onPress={handleSaveEntry}
-            activeOpacity={0.8}
-            disabled={!hasChanges}
-          >
-            <Text style={[styles.saveButtonText, !hasChanges && styles.disabledSaveButtonText]}>Save Changes</Text>
-          </TouchableOpacity>
+          <Button iconName="checkmark-outline" disabled={!hasChanges} onPress={handleSaveEntry}>Save changes</Button>
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
@@ -225,10 +208,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginVertical: 20,
-    height: height * 0.2,
+    height: 110,
   },
   illustration: {
-    width: width * 0.6,
+    width: "70%",
     height: "100%",
   },
   sectionContainer: {
@@ -274,7 +257,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   dropdownItemTextSelected: {
-    color: "#E5B94B",
+    color: "#D7B877",
   },
   textInput: {
     backgroundColor: "#1A1A1A",
