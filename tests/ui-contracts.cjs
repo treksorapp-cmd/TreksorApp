@@ -13,11 +13,16 @@ let isLocked=false;
 const navigation=[];
 const router={dismissTo:v=>navigation.push(v),push:v=>navigation.push(v),replace:v=>navigation.push(v),back:()=>{},canGoBack:()=>true};
 const wrap=({children})=>React.createElement(RN.View,null,children);
+wrap.Screen=()=>null;
+const Redirect=()=>null;
+let auth={isAuthenticated:false,isVerified:false,isChangePassword:false};
 const media=({children,...props})=>React.createElement('div',{'data-media':'true','aria-label':props.accessibilityLabel},children);
 const store={mediation:[meditation],locked:[],markMediationAsRead:()=>{},myspaces:[],deleteMySpace:()=>{}};
 const mocks={
  'react-native':{...RN,Alert:{alert:()=>{}},Image:media},
- 'expo-router':{router,usePathname:()=>pathname,useLocalSearchParams:()=>params},
+ 'expo-router':{router,Redirect,Stack:wrap,Tabs:wrap,usePathname:()=>pathname,useLocalSearchParams:()=>params},
+ 'react-native-toast-message':()=>null,
+ '@/store/auth-store':{useAuthStore:()=>auth},
  'react-native-safe-area-context':{SafeAreaView:wrap,useSafeAreaInsets:()=>({top:44,bottom:34,left:0,right:0})},
  'expo-image':{Image:media,ImageBackground:media},'expo-linear-gradient':{LinearGradient:wrap},'expo-blur':{BlurView:wrap},
  'expo-status-bar':{StatusBar:()=>null},
@@ -45,6 +50,26 @@ function load(name){
  cache.set(file,module.exports);return module.exports;
 }
 const {resolvePillar,reflectionHome,reflectionOrigin,displayLabel}=load('lib/pillar-navigation.ts');
+// Both route groups have an index: startup redirects must use an explicit group.
+const TabsIndex=load('app/(tabs)/index.tsx').default;
+const TabsLayout=load('app/(tabs)/_layout.tsx').default;
+const AuthLayout=load('app/(auth)/_layout.tsx').default;
+assert.equal(TabsIndex().type,Redirect);
+assert.equal(TabsIndex().props.href,'/(tabs)/home');
+for(const state of [{isAuthenticated:false,isVerified:false},{isAuthenticated:true,isVerified:false}]){
+ auth={...state,isChangePassword:false};
+ assert.equal(TabsLayout().type,Redirect);
+ assert.equal(TabsLayout().props.href,'/(auth)');
+}
+auth={isAuthenticated:true,isVerified:true,isChangePassword:false};
+assert.equal(AuthLayout().props.href,'/(tabs)/home');
+const tabs=React.Children.toArray(TabsLayout().props.children).find(child=>child.type===wrap);
+assert.equal(tabs.props.initialRouteName,'home');
+const indexScreen=React.Children.toArray(tabs.props.children).find(child=>child.props.name==='index');
+assert.equal(indexScreen.props.options.href,null);
+assert.equal(indexScreen.props.redirect,undefined,'The index redirect must remain reachable');
+auth.isChangePassword=true;
+assert.notEqual(AuthLayout().type,Redirect,'Password reset must remain reachable');
 assert.equal(resolvePillar('/spiritual/mediation/beginner'),'balance');
 assert.equal(resolvePillar('/mental/myspace/edit-entry/123','purpose'),'purpose');
 assert.equal(resolvePillar('/body/workout','purpose'),'body');
@@ -88,4 +113,4 @@ for(const file of ['components/BodyPageHeading.tsx','components/PillarMenuScreen
 }
 assert(!fs.readFileSync('app/_layout.tsx','utf8').includes('isPillarDetail'));
 assert(!fs.readFileSync('app/(tabs)/tracking/_layout.tsx','utf8').includes('<Header'));
-console.log('PASS: pillar navigation, Purpose return context, full heading text, beverage/meditation order, completion state, reflection empty state and duplicate-header regressions');
+console.log('PASS: startup redirects, pillar navigation, Purpose return context, full heading text, beverage/meditation order, completion state, reflection empty state and duplicate-header regressions');

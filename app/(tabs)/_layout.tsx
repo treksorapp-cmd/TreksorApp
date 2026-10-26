@@ -20,7 +20,7 @@ import {
 export default function TabLayout() {
   const { isAuthenticated, isVerified } = useAuthStore();
 
-  if (!isAuthenticated || !isVerified) return <Redirect href="/" />;
+  if (!isAuthenticated || !isVerified) return <Redirect href="/(auth)" />;
 
   return (
     <View style={styles.container}>
@@ -31,6 +31,7 @@ export default function TabLayout() {
 
       {/* tabs */}
       <Tabs
+        initialRouteName="home"
         screenOptions={{
           animation: "shift",
           sceneStyle: {
@@ -88,7 +89,7 @@ export default function TabLayout() {
         <Tabs.Screen name="articles" options={{href:null}} />
 
         <Tabs.Screen name="community" options={{title:"Community",tabBarIcon:({color})=><View style={styles.iconContainer}><MaterialIcons name="groups" size={24} color={color} /></View>}} />
-        <Tabs.Screen name="index" redirect />
+        <Tabs.Screen name="index" options={{ href: null }} />
       </Tabs>
     </View>
   );

@@ -9,7 +9,7 @@ import Toast from "react-native-toast-message";
 export default function AuthLayout() {
 
   const { isAuthenticated, isVerified, isChangePassword } = useAuthStore();
-  if(isAuthenticated && isVerified && !isChangePassword) return <Redirect href="/(tabs)" />;
+  if(isAuthenticated && isVerified && !isChangePassword) return <Redirect href="/(tabs)/home" />;
 
   return (
     <View style={styles.container}>
