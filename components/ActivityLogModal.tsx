@@ -1,453 +1,64 @@
-import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {colors} from "@/theme/architect";
-"use client"
-
-import { calcPercentage } from "@/lib/utils"
-import { useTrackingStore } from "@/store/tracking-store"
-import { TrackingItem } from "@/types/tracking"
-import { Ionicons } from "@expo/vector-icons"
-import { BlurView } from "expo-blur"
-import { LinearGradient } from "expo-linear-gradient"
-import { useEffect, useState } from "react"
-import {
-  Alert,
-  Dimensions,
-  Modal,
-  Animated as RNAnimated,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native"
-
-const { width } = Dimensions.get("window")
-
-interface ActivityLogModalProps {
-  visible: boolean
-  onClose: () => void
-  selectedDate: string
-}
-
-export default function ActivityLogModal({ visible, onClose, selectedDate }: ActivityLogModalProps) {
-  const insets=useSafeAreaInsets();
-  const { trackingData, updateTrackingCategory } = useTrackingStore()
-
-  const [userTrackers, setUserTrackers] = useState(() => {
-    return trackingData.filter(track => track.custom).map((track) => ({
-      ...track,
-      color: "#FF6B6B",
-    }))
-  })
-
-  const [trackerStates, setTrackerStates] = useState<{ [key: string]: TrackingItem[] }>({})
-
+import React, { useEffect, useState } from "react";
+import { Alert, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { useTrackingStore } from "@/store/tracking-store";
+import { applyTrackerDay, dayKey, displayDay, isScheduled, trackerCompletion } from "@/lib/progress-metrics";
+import type { TrackingCategory } from "@/types/tracking";
+import { colors, surface, type } from "@/theme/architect";
+interface Props { visible: boolean; onClose: () => void; selectedDate: string; selectedCategory?: string; onCreate?: () => void; onDismiss?: () => void }
+export default function ActivityLogModal({ visible, onClose, selectedDate, selectedCategory, onCreate, onDismiss }: Props) {
+  const insets = useSafeAreaInsets();
+  const [trackers, setTrackers] = useState<TrackingCategory[]>([]);
+  const [checked, setChecked] = useState<Record<string, Record<string, boolean>>>({});
+  // Snapshot on open. Background sync must not replace an unfinished edit.
   useEffect(() => {
-    const initialStates: { [key: string]: TrackingItem[] } = {}
-    const updatedUserTrackers = trackingData.filter(track => track.custom).map((track) => ({
-      ...track,
-      color: "#FF6B6B",
-    }))
-    updatedUserTrackers.forEach((tracker) => {
-      initialStates[tracker.id] = [...tracker.items]
-    })
-    setUserTrackers(updatedUserTrackers)
-    setTrackerStates(initialStates)
-  }, [trackingData])
-
-  const toggleItemCompletion = (trackerId: string, itemId: string) => {
-    setTrackerStates((prev) => ({
-      ...prev,
-      [trackerId]: prev[trackerId].map((item) =>
-        item.id === itemId
-          ? {
-              ...item,
-              record: {
-                ...item.record,
-                [selectedDate]: !(item.record?.[selectedDate]),
-              },
-            }
-          : item,
-      ),
-    }))
-  }
-
-  const handleSaveProgress = () => {
-    let totalCompleted = 0
-    let totalItems = 0
-
-    // Calculate completion stats
-    Object.values(trackerStates).forEach((items) => {
-      totalItems += items.length
-      totalCompleted += items.filter((item) => item.record?.[selectedDate]).length
-    })
-
-    if (totalCompleted === 0) {
-      Alert.alert("No Progress", "Please mark at least one item as completed before saving.")
-      return
-    }
-
-    // Save progress (in real app, you'd save to your tracking store)
-    const completionPercentage = Math.round((totalCompleted / totalItems) * 100)
-
-    Alert.alert(
-      "Progress Saved!",
-      `You completed ${totalCompleted} out of ${totalItems} items (${completionPercentage}%) for ${formatDate(selectedDate)}.`,
-      [
-        {
-          text: "OK",
-          onPress: () => {
-            Object.keys(trackerStates).forEach(id => {
-              const tracker = userTrackers.find(tracker => tracker.id === id);
-              if(tracker)
-              {
-                const trackerItems = trackerStates[id];
-                tracker.items = trackerItems;
-                const done = tracker.items.reduce((count, item) => {
-                  return count + Object.values(item?.record || {}).filter(t => t === true).length;
-                }, 0);
-                const total = tracker.items.reduce((count, item) => {
-                  return count + Object.keys(item?.record || {}).length;
-                }, 0);
-                tracker.percentage = calcPercentage(done,total)
-                updateTrackingCategory(tracker.id,tracker)
-              }
-            })
-            onClose()
-          },
-        },
-      ],
-    )
-  }
-
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-  }
-
-  const getCompletionStats = (trackerId: string) => {
-    const items = trackerStates[trackerId] || []
-    const completed = items.filter((item) => item.record?.[selectedDate]).length
-    const total = items.length
-    return { completed, total, percentage: total > 0 ? Math.round((completed / total) * 100) : 0 }
-  }
-
-  return (
-    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
-      <BlurView intensity={20} style={[styles.overlay,{paddingTop:insets.top+12,paddingBottom:insets.bottom+12}]}>
-        <RNAnimated.View style={[styles.modalContainer]}>
-          <LinearGradient
-            colors={["rgba(255, 255, 255, 0.1)", "rgba(255, 255, 255, 0.05)"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.gradientBorder}
-          >
-            <View style={styles.modalContent}>
-              {/* Header */}
-              <View style={styles.header}>
-                <Text style={styles.headerTitle}>Log Daily Activities</Text>
-                <TouchableOpacity accessibilityRole="button" accessibilityLabel="Close" style={styles.closeButton} onPress={onClose}>
-                  <Ionicons name="close" size={24} color="#FFFFFF" />
-                </TouchableOpacity>
-              </View>
-
-              <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-                {/* Date */}
-                <View style={styles.dateContainer}>
-                  <Ionicons name="calendar" size={20} color="#D7B877" />
-                  <Text style={styles.dateText}>{formatDate(selectedDate)}</Text>
-                </View>
-
-                {/* User Trackers */}
-                <View style={styles.trackersContainer}>
-                  {userTrackers.map((tracker) => {
-                    const stats = getCompletionStats(tracker.id)
-                    return (
-                      <View key={tracker.id} style={styles.trackerCard}>
-                        <LinearGradient
-                          colors={[`${tracker.color}20`, `${tracker.color}10`]}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 1, y: 1 }}
-                          style={styles.trackerGradient}
-                        >
-                          {/* Tracker Header */}
-                          <View style={styles.trackerHeader}>
-                            <View style={styles.trackerTitleRow}>
-                              <View style={[styles.trackerDot, { backgroundColor: tracker.color }]} />
-                              <Text style={styles.trackerTitle}>{tracker.title}</Text>
-                            </View>
-                            <View style={styles.trackerStats}>
-                              <Text style={styles.trackerStatsText}>
-                                {stats.completed}/{stats.total}
-                              </Text>
-                              <Text style={styles.trackerPercentage}>{stats.percentage}%</Text>
-                            </View>
-                          </View>
-
-                          {/* Tracker Items */}
-                          <View style={styles.trackerItems}>
-                            {trackerStates[tracker.id]?.map((item) => (
-                              <TouchableOpacity
-                                key={item.id}
-                                style={[styles.trackerItem, item.record?.[selectedDate] && styles.trackerItemCompleted]}
-                                onPress={() => toggleItemCompletion(tracker.id, item.id)}
-                                activeOpacity={0.7}
-                              >
-                                <View style={styles.itemLeft}>
-                                  <View
-                                    style={[
-                                      styles.checkbox,
-                                      item.record?.[selectedDate] && [styles.checkboxCompleted, { backgroundColor: tracker.color }],
-                                    ]}
-                                  >
-                                    {item.record?.[selectedDate] && <Ionicons name="checkmark" size={14} color="#FFFFFF" />}
-                                  </View>
-                                  <Text style={[styles.itemLabel, item.record?.[selectedDate] && styles.itemLabelCompleted]}>
-                                    {item.label}
-                                  </Text>
-                                </View>
-
-                                <TouchableOpacity
-                                  style={[
-                                    styles.markDoneButton,
-                                    item.record?.[selectedDate] && [
-                                      styles.markDoneButtonCompleted,
-                                      { backgroundColor: tracker.color },
-                                    ],
-                                  ]}
-                                  onPress={() => toggleItemCompletion(tracker.id, item.id)}
-                                >
-                                  <Text style={[styles.markDoneText, item.record?.[selectedDate] && styles.markDoneTextCompleted]}>
-                                    {item.record?.[selectedDate] ? "Done" : "Mark Done"}
-                                  </Text>
-                                </TouchableOpacity>
-                              </TouchableOpacity>
-                            ))}
-                          </View>
-                        </LinearGradient>
-                      </View>
-                    )
-                  })}
-                </View>
-              </ScrollView>
-
-              {/* Actions */}
-              <View style={styles.actions}>
-                <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-                  <Text style={styles.cancelButtonText}>Cancel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.saveButton} onPress={handleSaveProgress}>
-                  <Text style={styles.saveButtonText}>Save Progress</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </LinearGradient>
-        </RNAnimated.View>
-      </BlurView>
-    </Modal>
-  )
+    if (!visible) return;
+    const selected = useTrackingStore.getState().trackingData.filter(t => t.custom && (!selectedCategory || t.id === selectedCategory));
+    setTrackers(selected);
+    setChecked(Object.fromEntries(selected.map(t => [t.id, Object.fromEntries(t.items.filter(i => isScheduled(i, selectedDate)).map(i => [i.id, !!i.record?.[selectedDate]]))])));
+  }, [visible, selectedDate, selectedCategory]);
+  const today = dayKey();
+  const scheduled = trackers.reduce((n, t) => n + t.items.filter(i => isScheduled(i, selectedDate)).length, 0);
+  const future = selectedDate > today;
+  const save = () => {
+    const store = useTrackingStore.getState();
+    store.trackingData.filter(t => t.custom && checked[t.id]).forEach(t => {
+      const items = applyTrackerDay(t.items, selectedDate, checked[t.id], today);
+      store.updateTrackingCategory(t.id, { items, percentage: trackerCompletion(items, today).percentage ?? 0 });
+    });
+    onClose();
+  };
+  const remove = () => {
+    if (!selectedCategory || trackers.length !== 1) return;
+    Alert.alert("Delete this tracker?", "This removes its scheduled actions and saved check-ins from this device.", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Delete", style: "destructive", onPress: () => { useTrackingStore.getState().deleteTrackingCategory(selectedCategory); onClose(); } },
+    ]);
+  };
+  return <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} onDismiss={onDismiss}>
+    <View style={[styles.overlay, { paddingTop: insets.top + 20 }]}><View style={[styles.sheet, { paddingBottom: insets.bottom + 20 }]}>
+      <View style={styles.header}><View style={styles.flex}><Text style={styles.eyebrow}>PERSONAL TRACKERS · MANUAL</Text><Text style={styles.title}>Log your actions</Text></View><TouchableOpacity accessibilityRole="button" accessibilityLabel="Close tracker log" onPress={onClose} style={styles.close}><Ionicons name="close" size={24} color={colors.text}/></TouchableOpacity></View>
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.date}>{displayDay(selectedDate)}</Text><Text style={styles.copy}>Check what you completed. Uncheck an item to correct it. Changes apply when you save.</Text>
+        {future && <Text style={styles.copy}>Future days are not available to log.</Text>}
+        {trackers.map(t => {
+          const due = t.items.filter(i => isScheduled(i, selectedDate));
+          return <View key={t.id} style={styles.card}><Text style={styles.cardTitle}>{t.title}</Text>{!due.length && <Text style={styles.copy}>No actions scheduled for this date.</Text>}{due.map(item => {
+            const done = !!checked[t.id]?.[item.id];
+            return <TouchableOpacity key={item.id} accessibilityRole="checkbox" accessibilityState={{ checked: done, disabled: future }} disabled={future} onPress={() => setChecked(s => ({ ...s, [t.id]: { ...s[t.id], [item.id]: !done } }))} style={styles.item}><View style={[styles.checkbox, done && styles.checked]}>{done && <Ionicons name="checkmark" size={18} color={colors.background}/>}</View><Text style={styles.itemText}>{item.label}</Text><Text style={styles.state}>{done ? "Done" : "To do"}</Text></TouchableOpacity>;
+          })}</View>;
+        })}
+        {!trackers.length && <View style={styles.card}><Text style={styles.cardTitle}>Start with one daily action</Text><Text style={styles.copy}>Create a tracker first. Gym sessions and journal entries are recorded in their own sections.</Text>{onCreate && <TouchableOpacity accessibilityRole="button" onPress={onCreate} style={styles.create}><Text style={styles.gold}>Create a tracker</Text></TouchableOpacity>}</View>}
+        {selectedCategory && trackers.length === 1 && <TouchableOpacity accessibilityRole="button" onPress={remove} style={styles.delete}><Text style={styles.deleteText}>Delete tracker</Text></TouchableOpacity>}
+      </ScrollView>
+      <View style={styles.actions}><TouchableOpacity accessibilityRole="button" onPress={onClose} style={styles.cancel}><Text style={styles.cancelText}>Cancel</Text></TouchableOpacity><TouchableOpacity accessibilityRole="button" accessibilityState={{ disabled: !scheduled || future }} disabled={!scheduled || future} onPress={save} style={[styles.save, (!scheduled || future) && styles.disabled]}><Text style={styles.saveText}>Save changes</Text></TouchableOpacity></View>
+    </View></View>
+  </Modal>;
 }
-
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContainer: {
-    width: "90%",
-    maxWidth: 520,
-    maxHeight: "85%",
-    borderRadius: 20,
-    overflow: "hidden",
-  },
-  gradientBorder: {
-    borderRadius: 20,
-    padding: 1,
-  },
-  modalContent: {
-    backgroundColor: colors.surface,
-    borderRadius: 19,
-    maxHeight: "100%",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.1)",
-  },
-  headerTitle: {
-    flex: 1,
-    marginRight: 12,
-    fontSize: 22,
-    fontWeight: "600",
-    color: "#F5F4F1", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
-  closeButton: {
-    minWidth: 44,
-    minHeight: 44,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  content: {
-    maxHeight: 400,
-  },
-  dateContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    margin: 20,
-    padding: 12,
-    backgroundColor: "rgba(215,184,119, 0.1)",
-    borderRadius: 10,
-  },
-  dateText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  trackersContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    gap: 16,
-  },
-  trackerCard: {
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  trackerGradient: {
-    padding: 16,
-  },
-  trackerHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  trackerTitleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  trackerDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-  trackerTitle: {
-    color: "#F5F4F1",
-    fontSize: 18,
-    fontWeight: "600", lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
-  trackerStats: {
-    alignItems: "flex-end",
-  },
-  trackerStatsText: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  trackerPercentage: {
-    color: "#D7B877",
-    fontSize: 12,
-    fontWeight: "500",
-  },
-  trackerItems: {
-    gap: 8,
-  },
-  trackerItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
-    padding: 12,
-    borderRadius: 8,
-  },
-  trackerItemCompleted: {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-  },
-  itemLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    flex: 1,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
-    borderWidth: 2,
-    borderColor: "#666",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  checkboxCompleted: {
-    borderColor: "transparent",
-  },
-  itemLabel: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "500",
-    flex: 1,
-  },
-  itemLabelCompleted: {
-    textDecorationLine: "line-through",
-    opacity: 0.7,
-  },
-  markDoneButton: {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.2)",
-  },
-  markDoneButtonCompleted: {
-    borderColor: "transparent",
-  },
-  markDoneText: {
-    color: "#FFFFFF",
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  markDoneTextCompleted: {
-    color: "#FFFFFF",
-  },
-  actions: {
-    flexDirection: "row",
-    padding: 20,
-    gap: 12,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(255, 255, 255, 0.1)",
-  },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: colors.surfaceRaised,
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  cancelButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  saveButton: {
-    flex: 1,
-    backgroundColor: "#D7B877",
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  saveButtonText: {
-    color: "#000000",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-})
+  overlay: { flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.72)" }, sheet: { backgroundColor: colors.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: "95%", borderWidth: 1, borderColor: colors.border },
+  flex: { flex: 1 }, header: { padding: 20, flexDirection: "row", alignItems: "center", gap: 12 }, eyebrow: { ...type.eyebrow, fontSize: 10 }, title: { ...type.section, marginTop: 6 }, close: { width: 44, height: 44, alignItems: "center", justifyContent: "center" }, content: { paddingHorizontal: 20, paddingBottom: 16, gap: 14 }, date: { ...type.card, color: colors.gold }, copy: type.body,
+  card: { ...surface.card, backgroundColor: colors.surfaceRaised, padding: 16, gap: 12 }, cardTitle: type.card, item: { minHeight: 56, flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 10 }, checkbox: { width: 26, height: 26, borderRadius: 7, borderWidth: 1, borderColor: colors.gold, alignItems: "center", justifyContent: "center" }, checked: { backgroundColor: colors.gold }, itemText: { ...type.body, color: colors.text, flex: 1 }, state: type.caption,
+  actions: { flexDirection: "row", gap: 12, paddingHorizontal: 20, paddingTop: 12 }, cancel: { flex: 1, minHeight: 48, borderRadius: 12, backgroundColor: colors.surfaceRaised, padding: 14, alignItems: "center", justifyContent: "center" }, cancelText: { color: colors.text, fontWeight: "600", fontSize: 14 }, save: { flex: 1, minHeight: 48, borderRadius: 12, backgroundColor: colors.gold, padding: 14, alignItems: "center", justifyContent: "center" }, saveText: { color: colors.background, fontWeight: "700", fontSize: 14 }, disabled: { opacity: 0.4 }, create: { paddingVertical: 12, minHeight: 44 }, gold: { color: colors.gold, fontWeight: "600" }, delete: { alignSelf: "flex-start", minHeight: 44, justifyContent: "center" }, deleteText: { color: colors.danger, fontSize: 13 },
+});

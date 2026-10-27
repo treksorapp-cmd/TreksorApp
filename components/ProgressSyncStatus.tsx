@@ -8,8 +8,9 @@ export default function ProgressSyncStatus() {
     const busy = sync.status === "syncing";
     return <View style={styles.card}>
   <View style={styles.row}><Ionicons name="sync-outline" size={20} color={colors.gold}/><Text style={styles.title}>One profile. One journey.</Text></View>
-  <Text style={styles.copy}>Your app progress, also on Treksor web.</Text>
+  <Text style={styles.copy}>Supported app records, linked to your web profile.</Text>
   <Text accessibilityLiveRegion="polite" style={styles.caption}>{sync.message}{sync.lastSynced ? ` Last synced ${new Date(sync.lastSynced).toLocaleString()}.` : ""}</Text>
+  <Text style={styles.caption}>Private journals, reflection text and vision answers stay on this device.</Text>
   <View style={styles.actions}>
    <TouchableOpacity accessibilityRole="button" accessibilityState={{ disabled: busy, busy }} disabled={busy} onPress={sync.requestSync} style={styles.action}><Text style={styles.actionText}>{busy ? "Syncing…" : "Sync now"}</Text><Ionicons name="refresh-outline" size={17} color={colors.gold}/></TouchableOpacity>
    <TouchableOpacity accessibilityRole="link" onPress={() => void openTreksorWeb("progress")} style={styles.action}><Text style={styles.actionText}>View on web</Text><Ionicons name="open-outline" size={17} color={colors.gold}/></TouchableOpacity>

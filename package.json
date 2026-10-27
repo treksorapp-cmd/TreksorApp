@@ -13,7 +13,8 @@
     "test:ui": "node tests/ui-contracts.cjs",
     "test:integrity": "node tests/source-integrity.cjs",
     "test:progress": "node tests/progress-sync.cjs",
-    "test:audio": "node tests/audio-lifecycle.cjs"
+    "test:audio": "node tests/audio-lifecycle.cjs",
+    "test:dashboard": "node tests/progress-dashboard.cjs"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",

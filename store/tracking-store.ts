@@ -1,3 +1,4 @@
+import { makeTrackerRecords, trackerCompletion } from "@/lib/progress-metrics";
 import { calcPercentage, errorHandler, generateRandomId } from "@/lib/utils";
 import { trackingData as initialTrackingData } from "@/mock/tracking";
 import { TrackingCategory } from "@/types/tracking";
@@ -72,10 +73,10 @@ export const useTrackingStore = create<TrackingStore>()(
           // Get existing tracking data to preserve IDs and custom categories
           let oldTrackingData = [...get().trackingData];
           
-          const bodyCategory: Partial<TrackingCategory> & {id:string;title:string} = oldTrackingData.find(track => track.title === 'BODY' || track.title === 'Body') || { id: "1", title: "BODY" };
-          const mindCategory: Partial<TrackingCategory> & {id:string;title:string} = oldTrackingData.find(track => track.title === 'MIND' || track.title === 'Mind') || { id: "2", title: "MIND" };
-          const spiritualCategory: Partial<TrackingCategory> & {id:string;title:string} = oldTrackingData.find(track => track.title === 'SPIRITUAL' || track.title === 'Spiritual') || { id: "3", title: "SPIRITUAL" };
-          const articlesCategory: Partial<TrackingCategory> & {id:string;title:string} = oldTrackingData.find(track => track.title === 'ARTICLES' || track.title === 'Articles') || { id: "4", title: "ARTICLES" };
+          const bodyCategory: Partial<TrackingCategory> & {id:string;title:string} = oldTrackingData.find(track => !track.custom && (track.title === 'BODY' || track.title === 'Body')) || { id: "1", title: "BODY" };
+          const mindCategory: Partial<TrackingCategory> & {id:string;title:string} = oldTrackingData.find(track => !track.custom && (track.title === 'MIND' || track.title === 'Mind')) || { id: "2", title: "MIND" };
+          const spiritualCategory: Partial<TrackingCategory> & {id:string;title:string} = oldTrackingData.find(track => !track.custom && (track.title === 'SPIRITUAL' || track.title === 'Spiritual')) || { id: "3", title: "SPIRITUAL" };
+          const articlesCategory: Partial<TrackingCategory> & {id:string;title:string} = oldTrackingData.find(track => !track.custom && (track.title === 'ARTICLES' || track.title === 'Articles')) || { id: "4", title: "ARTICLES" };
 
           const updatedTrackingData: TrackingCategory[] = [
             {
@@ -127,10 +128,10 @@ export const useTrackingStore = create<TrackingStore>()(
           ];
 
             // Update or add tracking categories
-            const bodyIndex = oldTrackingData.findIndex(track => track.title === 'BODY' || track.title === 'Body')
-            const mentalIndex = oldTrackingData.findIndex(track => track.title === 'MIND' || track.title === 'Mind')
-            const spiritualIndex = oldTrackingData.findIndex(track => track.title === 'SPIRITUAL' || track.title === 'Spiritual')
-            const articlesIndex = oldTrackingData.findIndex(track => track.title === 'ARTICLES' || track.title === 'Articles')
+            const bodyIndex = oldTrackingData.findIndex(track => !track.custom && (track.title === 'BODY' || track.title === 'Body'))
+            const mentalIndex = oldTrackingData.findIndex(track => !track.custom && (track.title === 'MIND' || track.title === 'Mind'))
+            const spiritualIndex = oldTrackingData.findIndex(track => !track.custom && (track.title === 'SPIRITUAL' || track.title === 'Spiritual'))
+            const articlesIndex = oldTrackingData.findIndex(track => !track.custom && (track.title === 'ARTICLES' || track.title === 'Articles'))
 
             // Update existing categories
             if (bodyIndex !== -1) {
@@ -159,7 +160,7 @@ export const useTrackingStore = create<TrackingStore>()(
               oldTrackingData.push(updatedTrackingData[3]);
             }
 
-            set({ trackingData: oldTrackingData, loading: false });
+            set({ trackingData: oldTrackingData.map(t => t.custom ? { ...t, percentage: trackerCompletion(t.items).percentage ?? 0 } : t), loading: false });
         } catch (error: any) {
           console.error("fetchTrackingData error:", { error });
           set({ error: error?.response?.data?.message || "Something went wrong", loading: false });
@@ -173,19 +174,10 @@ export const useTrackingStore = create<TrackingStore>()(
         const updatedCategory = {
           ...category,
           items: category.items.map((item) => {
-            const days = Math.min(365, Math.max(0, parseInt(item.value,10)||0));
-            const record: Record<string, boolean> = {};
-      
-            for (let i = 0; i < days; i++) {
-              const date = new Date();
-              date.setDate(date.getDate() + i);
-              const isoDate = date.toISOString().split("T")[0]; // YYYY-MM-DD
-              record[isoDate] = false;
-            }
-      
             return {
               ...item,
-              record,
+              id: item.id || generateRandomId(),
+              record: makeTrackerRecords(Number(item.value)),
             };
           }),
         };

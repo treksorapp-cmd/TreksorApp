@@ -1,3 +1,4 @@
+import { dayKey } from "@/lib/progress-metrics";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {colors} from "@/theme/architect";
 "use client"
@@ -15,9 +16,11 @@ interface CalendarModalProps {
   onClose: () => void
   onDateSelect: (date: string) => void
   selectedDate?: string
+  maxDate?: string
+  onDismiss?: () => void
 }
 
-export default function CalendarModal({ visible, onClose, onDateSelect, selectedDate }: CalendarModalProps) {
+export default function CalendarModal({ visible, onClose, onDateSelect, selectedDate, maxDate, onDismiss }: CalendarModalProps) {
   const insets=useSafeAreaInsets();
   const [currentMonth, setCurrentMonth] = useState(new Date())
 
@@ -52,7 +55,7 @@ export default function CalendarModal({ visible, onClose, onDateSelect, selected
   }
 
   const formatDate = (date: Date) => {
-    return date.toISOString().split("T")[0]
+    return dayKey(date)
   }
 
   const isToday = (date: Date) => {
@@ -70,7 +73,7 @@ export default function CalendarModal({ visible, onClose, onDateSelect, selected
   }
 
   const navigateMonth = (direction: "prev" | "next") => {
-    const newMonth = new Date(currentMonth)
+    const newMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
     if (direction === "prev") {
       newMonth.setMonth(newMonth.getMonth() - 1)
     } else {
@@ -99,7 +102,7 @@ export default function CalendarModal({ visible, onClose, onDateSelect, selected
   const days = getDaysInMonth(currentMonth)
 
   return (
-    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
+    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose} onDismiss={onDismiss}>
       <BlurView intensity={20} style={[styles.overlay,{paddingTop:insets.top+12,paddingBottom:insets.bottom+12}]}>
         <RNAnimated.View style={[styles.modalContainer]}>
           <LinearGradient
@@ -143,11 +146,15 @@ export default function CalendarModal({ visible, onClose, onDateSelect, selected
                         style={[
                           styles.day,
                           !date && styles.emptyDay,
+                          date && maxDate && formatDate(date) > maxDate ? { opacity: 0.25 } : undefined,
                           date && isToday(date) && styles.today,
                           date && isSelected(date) && styles.selectedDay,
                         ]}
                         onPress={() => date && handleDatePress(date)}
-                        disabled={!date}
+                        accessibilityRole="button"
+                        accessibilityLabel={date ? formatDate(date) : undefined}
+                        accessibilityState={{ selected: !!date && isSelected(date), disabled: !date || !!maxDate && formatDate(date) > maxDate }}
+                        disabled={!date || !!maxDate && formatDate(date) > maxDate}
                       >
                         {date && (
                           <Text

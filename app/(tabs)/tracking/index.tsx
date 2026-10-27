@@ -1,195 +1,88 @@
-import {colors} from "@/theme/architect";
-import {SafeAreaView} from "react-native-safe-area-context";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { ActivityIndicator, AppState, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { router, useFocusEffect } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import BodyPageHeading from "@/components/BodyPageHeading";
-"use client";
-
+import ProgressDashboard from "@/components/progress/ProgressDashboard";
 import ProgressSyncStatus from "@/components/ProgressSyncStatus";
 import ActivityLogModal from "@/components/ActivityLogModal";
-import { localDate } from "@/lib/mood-journal";
-import { useAuthStore } from "@/store/auth-store";
 import AddTrackerModal from "@/components/AddTrackerModal";
 import CalendarModal from "@/components/ui/CalendarModal";
+import { useAuthStore } from "@/store/auth-store";
 import { useTrackingStore } from "@/store/tracking-store";
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { useFocusEffect } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { useCallback, useState } from "react";
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useWorkoutStore } from "@/store/workout-store";
+import { useMySpaceStore } from "@/store/myspace-store";
+import { useMediationStore } from "@/store/mediation-store";
+import { useArticleStore } from "@/store/article-store";
+import { getEntries } from "@/lib/mood-journal";
+import { buildProgressOverview, dayKey } from "@/lib/progress-metrics";
+import { isProgressAccountReady, prepareProgressAccount } from "@/lib/local-progress";
+import { colors } from "@/theme/architect";
 
 export default function TrackingScreen() {
-  const { trackingData, fetchTrackingData, loading } = useTrackingStore();
+  const userId = useAuthStore(s => s.user?.id);
+  const trackingData = useTrackingStore(s => s.trackingData);
+  const { checkIns, gymSets } = useWorkoutStore();
+  const reflections = useMySpaceStore(s => s.myspaces);
+  const meditations = useMediationStore(s => s.mediation);
+  const { articles } = useArticleStore();
+  const [period, setPeriod] = useState<7 | 30>(7);
+  const [now, setNow] = useState(new Date());
+  const [reload, setReload] = useState(0);
+  const [extras, setExtras] = useState<{ owner?: string; ready: boolean; accountError: boolean; journalDates: string[]; visionAnswers: unknown[] | null; journalLoading: boolean; visionLoading: boolean; journalError: boolean; visionError: boolean }>({ ready: false, accountError: false, journalDates: [], visionAnswers: null, journalLoading: true, visionLoading: true, journalError: false, visionError: false });
   const [showAddTracker, setShowAddTracker] = useState(false);
-  const [showActivityLog, setShowActivityLog] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(
-    localDate()
-  );
-  
-  const [selectedCategory, setSelectedCategory] = useState<
-    string | undefined
-  >();
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchTrackingData();
-    }, [])
-  );
-
-
-
-  const customTrackers=trackingData.filter(d=>d.custom && !["BODY","MIND","SPIRITUAL","BALANCE","PURPOSE","ARTICLES"].includes(d.title.toUpperCase()));
-  const pillarProgress = [
-    {name:"Body",route:"/body",icon:"barbell-outline" as const,keys:["body","physical","fitness","workout","exercise"]},
-    {name:"Mind",route:"/mental",icon:"book-outline" as const,keys:["mind","mental","journal","mood"]},
-    {name:"Balance",route:"/spiritual",icon:"shield-outline" as const,keys:["balance","spiritual","meditation","recovery"]},
-    {name:"Purpose",route:"/purpose",icon:"compass-outline" as const,keys:["purpose","habit","goal","vision"]}
-  ].map(p=>{const matches=trackingData.filter(d=>p.keys.some(k=>d.title.toLowerCase().includes(k)));const pct=matches.length?Math.round(matches.reduce((sum,d)=>sum+Math.max(0,Math.min(100,Number(d.percentage)||0)),0)/matches.length):null;return {...p,pct}});
-  const handleDateSelect = (date: string) => {   
-    setSelectedDate(date);
-    setShowActivityLog(true);
+  const pendingModalAction = useRef<(() => void) | null>(null);
+  const afterDismiss = () => { const action = pendingModalAction.current; pendingModalAction.current = null; action?.(); };
+  const afterClose = (close: () => void, action: () => void) => {
+    if (Platform.OS === "ios") pendingModalAction.current = action;
+    close();
+    if (Platform.OS !== "ios") action();
   };
+  const [log, setLog] = useState<{ date: string; trackerId?: string } | null>(null);
 
-  const handleCategoryLog = (categoryTitle: string) => {
-    setSelectedCategory(categoryTitle);
-    setShowActivityLog(true);
-  };
+  useFocusEffect(useCallback(() => {
+    let active = true;
+    setNow(new Date());
+    setExtras({ owner: userId, ready: false, accountError: false, journalDates: [], visionAnswers: null, journalLoading: true, visionLoading: true, journalError: false, visionError: false });
+    void (async () => {
+      try { if (userId && !isProgressAccountReady(userId)) await prepareProgressAccount(userId); }
+      catch { if (active) setExtras(s => ({ ...s, accountError: true })); return; }
+      if (!active) return;
+      setExtras(s => ({ ...s, ready: true }));
+    void getEntries(userId || "").then(entries => {
+      if (active) setExtras(s => ({ ...s, journalDates: entries.map(e => e.date), journalLoading: false }));
+    }).catch(() => { if (active) setExtras(s => ({ ...s, journalError: true, journalLoading: false })); });
+    void AsyncStorage.getItem("treksor.vision-board.v1").then(raw => {
+      const saved = raw ? JSON.parse(raw) : [];
+      const answers = Array.isArray(saved) ? saved : saved?.answers;
+      if (!Array.isArray(answers)) throw new Error("Invalid saved vision");
+      if (active) setExtras(s => ({ ...s, visionAnswers: answers, visionLoading: false }));
+    }).catch(() => { if (active) setExtras(s => ({ ...s, visionError: true, visionLoading: false })); });
+    })();
+    return () => { active = false; };
+  }, [userId, reload]));
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", state => { if (state === "active") setReload(v => v + 1); });
+    const clock = setInterval(() => setNow(new Date()), 60000);
+    return () => { sub.remove(); clearInterval(clock); };
+  }, []);
 
-  const openCalendar = () => {
-    setSelectedCategory(undefined);
-    setShowCalendar(true);
-  };
-
-  if(loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#D7B877" />
-        <Text style={styles.loadingText}>Loading...</Text>
-      </View>
-    )
-  }
-
-  return (
-    <SafeAreaView edges={["top"]} style={styles.container}>
-      <StatusBar style="light" />
-
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <BodyPageHeading trail="YOUR JOURNEY" title="Progress" subtitle="Small steps. Real momentum." style={{paddingHorizontal:0,paddingTop:12,paddingBottom:24}} />
-        <ProgressSyncStatus />
-        <View style={{backgroundColor:"rgba(67,72,72,0.28)",borderWidth:1,borderColor:"rgba(239,214,169,0.30)",borderRadius:18,padding:20,marginTop:17}}>
-          <Text style={{color:"#F6F2EA",fontSize:18,fontWeight:"700"}}>The four pillars</Text>
-          <Text style={{color:"#BBB5A9",fontSize:12,marginTop:6,marginBottom:23}}>Your recorded activity so far, across the four pillars.</Text>
-          {pillarProgress.map((p,i)=><TouchableOpacity accessibilityRole="button" accessibilityLabel={`Open ${p.name}`} onPress={()=>router.push(p.route as any)} key={p.name} style={{marginBottom:i===3?0:23}}>
-            <View style={{flexDirection:"row",alignItems:"center",marginBottom:11,gap:10}}>
-              <Ionicons name={p.icon} size={19} color="#D7B877"/>
-              <Text style={{color:"#F3EFE8",fontSize:13,fontWeight:"700",letterSpacing:1,flex:1}}>{p.name}</Text>
-              <Text style={{color:p.pct===null?"#8C8983":"#D7B877",fontWeight:"800",fontSize:14}}>{p.pct===null?"—":p.pct+"%"}</Text>
-            </View>
-            <View style={{height:8,backgroundColor:"#383831",borderRadius:6,overflow:"hidden"}}>
-              <View style={{height:"100%",width:`${p.pct??0}%`,backgroundColor:"#D7B877",borderRadius:6}}/>
-            </View>
-          </TouchableOpacity>)}
-          <Text style={{color:"#928D83",fontSize:11,marginTop:20,lineHeight:17}}>— means there is no tracking data for that pillar yet.</Text>
-        </View>
-        {customTrackers.length>0&&<View style={{marginTop:20,backgroundColor:"rgba(67,72,72,0.28)",borderWidth:1,borderColor:"rgba(239,214,169,0.28)",borderRadius:16,padding:19}}>
-          <Text style={{color:"#F5F1E8",fontWeight:"700",fontSize:17,marginBottom:15}}>Your trackers</Text>
-          {customTrackers.map(t=><TouchableOpacity key={t.id} onPress={()=>{setSelectedCategory(t.id);setShowActivityLog(true)}} style={{flexDirection:"row",alignItems:"center",gap:13,paddingVertical:12,borderBottomWidth:1,borderBottomColor:"#34332F"}}>
-            <View style={{height:35,width:35,borderRadius:10,backgroundColor:"#30281C",alignItems:"center",justifyContent:"center"}}><Ionicons name="bookmark-outline" size={20} color="#D7B877"/></View>
-            <View style={{flex:1}}><Text style={{color:"#F5F1E8",fontSize:15,fontWeight:"700"}}>{t.title}</Text><Text style={{color:"#BEB8AD",fontSize:12,marginTop:3}}>{t.items.length} tracking {t.items.length===1?"item":"items"}</Text></View>
-            <Ionicons name="chevron-forward" color="#D7B877" size={18}/>
-          </TouchableOpacity>)}
-        </View>}
-        <View style={{flexDirection:"row",gap:12,marginTop:16}}>
-          <TouchableOpacity onPress={()=>setShowAddTracker(true)} style={{flex:1,padding:15,borderRadius:12,backgroundColor:"rgba(103,107,105,0.25)",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:8}}><Ionicons name="add" size={19} color="#D7B877"/><Text style={{color:"#D7B877",fontWeight:"700"}}>Add tracker</Text></TouchableOpacity>
-          <TouchableOpacity onPress={openCalendar} style={{flex:1,padding:15,borderRadius:12,backgroundColor:"#24231E",flexDirection:"row",justifyContent:"center",alignItems:"center",gap:8}}><Ionicons name="calendar-outline" size={18} color="#D7B877"/><Text style={{color:"#D7B877",fontWeight:"700"}}>Calendar</Text></TouchableOpacity>
-        </View>
-      </ScrollView>
-      <AddTrackerModal
-        visible={showAddTracker}
-        onClose={() => setShowAddTracker(false)}
-      />
-
-      <ActivityLogModal
-        visible={showActivityLog}
-        onClose={() => {
-          setShowActivityLog(false);
-          setSelectedCategory(undefined);
-        }}
-        selectedDate={selectedDate}
-      />
-
-      <CalendarModal
-        visible={showCalendar}
-        onClose={() => setShowCalendar(false)}
-        onDateSelect={handleDateSelect}
-        selectedDate={selectedDate}
-      />
-    </SafeAreaView>
-  );
+  const ownExtras = extras.owner === userId;
+  const data = buildProgressOverview({ checkIns, gymSets, reflections, meditations, articles, trackers: trackingData, journalDates: ownExtras ? extras.journalDates : [], visionAnswers: ownExtras ? extras.visionAnswers : null }, period, now);
+  const openLog = (date: string, trackerId?: string) => setLog({ date, trackerId });
+  return <SafeAreaView edges={["top"]} style={styles.screen}>
+    <StatusBar style="light"/>
+    <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <BodyPageHeading trail="YOUR JOURNEY" title="Progress" subtitle="See the steps. Understand the progress." style={styles.heading}/>
+      {!ownExtras || !extras.ready ? <View style={styles.loading}>{extras.accountError ? <><Text style={styles.loadingText}>Unable to load your saved progress.</Text><TouchableOpacity accessibilityRole="button" onPress={() => setReload(v => v + 1)} style={styles.retry}><Text style={styles.retryText}>Try again</Text></TouchableOpacity></> : <><ActivityIndicator color={colors.gold}/><Text style={styles.loadingText}>Loading your saved progress…</Text></>}</View> : <ProgressDashboard data={data} period={period} onPeriod={setPeriod} trackers={trackingData} today={dayKey(now)} journalLoading={!ownExtras || extras.journalLoading} visionLoading={!ownExtras || extras.visionLoading} journalError={ownExtras && extras.journalError} visionError={ownExtras && extras.visionError} onRetry={() => setReload(v => v + 1)} onRoute={route => router.push(route as any)} onLog={openLog} onCreate={() => setShowAddTracker(true)} onCalendar={() => setShowCalendar(true)}/>}
+      <ProgressSyncStatus/>
+    </ScrollView>
+    <AddTrackerModal visible={showAddTracker} onClose={() => setShowAddTracker(false)}/>
+    <ActivityLogModal visible={!!log} onClose={() => setLog(null)} selectedDate={log?.date ?? dayKey(now)} selectedCategory={log?.trackerId} onDismiss={afterDismiss} onCreate={() => afterClose(() => setLog(null), () => setShowAddTracker(true))}/>
+    <CalendarModal visible={showCalendar} onClose={() => setShowCalendar(false)} onDismiss={afterDismiss} onDateSelect={date => afterClose(() => setShowCalendar(false), () => openLog(date))} selectedDate={log?.date ?? dayKey(now)} maxDate={dayKey(now)}/>
+  </SafeAreaView>;
 }
-
-const styles = StyleSheet.create({
-  premiumTitle: { color: "#F5F1E8", fontSize: 34, fontWeight: "600", textAlign: "left", marginHorizontal: 20, marginTop: 20, marginBottom: 4, lineHeight: 42, letterSpacing: -0.6, includeFontPadding: false, },
-  trackingSubtitle: { color:"#F5F1E8",fontSize:16,fontWeight:"600",letterSpacing:-1.2,marginHorizontal:20,marginBottom:3 },
-  periodHeading: { color:"#F5F1E8",fontSize: 22,fontWeight: "600",marginHorizontal:20,marginTop:18,marginBottom:12, lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
-  periodRow: { flexDirection: "row", marginHorizontal: 18, backgroundColor: "rgba(255,255,255,0.06)", borderRadius: 10, padding: 4 },
-  periodButton: { flex: 1, paddingVertical: 11, alignItems: "center", borderRadius: 8 },
-  periodActive: { backgroundColor: "rgba(255,255,255,0.18)" },
-  periodText: { color: "#aaa", fontWeight: "600" },
-  periodTextActive: { color: "#FFFFFF" },
-  periodNote: { color: "#999", fontSize: 12, textAlign: "left", marginHorizontal: 20, marginTop: 4, marginBottom: 12 },
-  sectionHeading: { color: "#F5F4F1", fontSize: 18, fontWeight: "600", marginBottom: 16, lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  streakContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-  streakContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  streakText: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#FFFFFF",
-  },
-  calendarButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 120,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loadingText: {
-    color: "#AAAAAA",
-    fontSize: 16,
-    marginTop: 10,
-  },
-});
+const styles = StyleSheet.create({ loading: { paddingVertical: 40, alignItems: "center", gap: 16 }, loadingText: { color: colors.secondary, fontSize: 15 }, retry: { padding: 14, minHeight: 44 }, retryText: { color: colors.gold, fontWeight: "600" }, screen: { flex: 1, backgroundColor: colors.background }, content: { paddingHorizontal: 20, paddingBottom: 130 }, heading: { paddingHorizontal: 0, paddingTop: 12, paddingBottom: 0 } });
