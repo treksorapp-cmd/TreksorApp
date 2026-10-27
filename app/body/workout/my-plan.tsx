@@ -1,59 +1,67 @@
-import {colors} from "@/theme/architect";
-import {playCompletionFeedback} from "@/lib/completion-feedback";
-import React,{useEffect,useState} from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {Alert,KeyboardAvoidingView,Platform,ScrollView,Text,TextInput,TouchableOpacity,View} from "react-native";
-import {router} from "expo-router";
-import {Ionicons} from "@expo/vector-icons";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import Button from "@/components/ui/Button";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
+import { exercisesForMuscles, GymExercise, mergeGymExercises } from "@/lib/gym-library";
+import { useWorkoutStore } from "@/store/workout-store";
+import { colors } from "@/theme/architect";
+import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
-import {useWorkoutStore} from "@/store/workout-store";
-const GOLD="#D7B877";
-const GLASS="rgba(183,221,240,0.075)";
+import { router } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import React, { useEffect, useMemo, useState } from "react";
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
-type Exercise={id:string;name:string;muscle_group:string;location:string;sets:number;reps:string;rest_seconds:number};
-const splits=(n:number)=>n===2?["Full Body A","Full Body B"]:n===3?["Full Body A","Full Body B","Full Body C"]:n===4?["Upper A","Lower A","Upper B","Lower B"]:["Push","Pull","Legs","Upper","Lower","Full Body"].slice(0,n);
+const GOLD = "#D7B877";
+const GLASS = "rgba(183,221,240,0.075)";
+const splits = (n:number) => n===2?["Full Body A","Full Body B"]:n===3?["Full Body A","Full Body B","Full Body C"]:n===4?["Upper A","Lower A","Upper B","Lower B"]:["Push","Pull","Legs","Upper","Lower","Full Body"].slice(0,n);
 const groups:Record<string,string[]>={"Full Body":["Chest","Back","Legs","Shoulders","Arms","Glutes","Core"],Upper:["Chest","Back","Shoulders","Arms"],Lower:["Legs","Glutes","Core"],Push:["Chest","Shoulders","Arms"],Pull:["Back","Arms"],Legs:["Legs","Glutes","Core"]};
+function weekKey(){const date=new Date();date.setDate(date.getDate()-(date.getDay()+6)%7);date.setHours(0,0,0,0);return [date.getFullYear(),String(date.getMonth()+1).padStart(2,"0"),String(date.getDate()).padStart(2,"0")].join("-")}
+
 export default function MyPlan(){
- const insets=useSafeAreaInsets();
- const plan=useWorkoutStore(s=>s.trainingPlan),checkIns=useWorkoutStore(s=>s.checkIns),checkIn=useWorkoutStore(s=>s.checkIn),undo=useWorkoutStore(s=>s.undoCheckIn);
- const exerciseOverrides=useWorkoutStore(s=>s.exerciseOverrides)||{},setDayExercises=useWorkoutStore(s=>s.setDayExercises);
- const [editingDay,setEditingDay]=useState<number|null>(null);
- const [expandedExercise,setExpandedExercise]=useState<string|null>(null);
- const gymSets=useWorkoutStore(s=>s.gymSets)||[],addGymSet=useWorkoutStore(s=>s.addGymSet),removeGymSet=useWorkoutStore(s=>s.removeGymSet);
- const [exercises,setExercises]=useState<Exercise[]>([]),[expanded,setExpanded]=useState(0);
- const [libraryLoading,setLibraryLoading]=useState(true),[libraryError,setLibraryError]=useState(false);
- const [logs,setLogs]=useState<Record<string,{kg:string;sets:string;reps:string;done:boolean}>>({});
- useEffect(()=>{AsyncStorage.getItem("treksor.workout.exercise-logs.v1").then(raw=>{if(raw)setLogs(JSON.parse(raw))}).catch(()=>{})},[]);
- const updateLog=(id:string,field:"kg"|"sets"|"reps"|"done",value:string|boolean)=>{setLogs(old=>{const next={...old,[id]:{kg:old[id]?.kg||"",sets:old[id]?.sets||"",reps:old[id]?.reps||"",done:old[id]?.done||false,[field]:value}};void AsyncStorage.setItem("treksor.workout.exercise-logs.v1",JSON.stringify(next)).catch(()=>{});return next})};
- useEffect(()=>{let active=true;axios.get("https://treksor-admin-production.up.railway.app/api/public/discover?type=exercises",{timeout:12000}).then(r=>{if(active)setExercises(Array.isArray(r.data?.data)?r.data.data:[])}).catch(()=>{if(active)setLibraryError(true)}).finally(()=>{if(active)setLibraryLoading(false)});return()=>{active=false}},[]);
- const d=new Date();d.setDate(d.getDate()-(d.getDay()+6)%7);d.setHours(0,0,0,0);const week=[d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
- const done=(checkIns[week]||[]).length;
- return <KeyboardAvoidingView style={{flex:1,backgroundColor: colors.background}} behavior={Platform.OS==="ios"?"padding":undefined}><ScrollView keyboardShouldPersistTaps="handled" style={{flex:1,backgroundColor: colors.background}} contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:insets.bottom+90}}>
- <BodyPageHeading trail="BODY / GYM" title="My plan" style={{marginHorizontal:-22}} />
- {!plan?<><Text style={{color:"#D5D1C9",marginTop:18,lineHeight:22}}>Create a plan to see your weekly sessions and exercises here.</Text><Button borderless iconName="options-outline" onPress={()=>router.push("/body/workout/guide")}>BUILD MY PLAN</Button></>:<>
- <Text style={{color:"#C9C5BC",marginTop:10}}>{plan.days} sessions per week · {plan.location}</Text>
- <TouchableOpacity onPress={()=>router.push("/body/workout/progress")} style={{flexDirection:"row",alignItems:"center",gap:9,marginTop:18,padding:14,backgroundColor:GLASS,borderRadius:16}}><Ionicons name="stats-chart-outline" size={20} color={GOLD}/><Text style={{color:GOLD,fontWeight:"800",flex:1}}>Gym progress</Text><Ionicons name="chevron-forward" size={18} color={GOLD}/></TouchableOpacity>
- <View style={{backgroundColor:GLASS,padding:20,borderRadius:20,marginTop:24}}>
- <Text style={{color:GOLD,fontWeight:"800",letterSpacing:1}}>THIS WEEK</Text>
- <Text style={{color:"white",fontSize:28,fontWeight:"800",marginTop:9}}>{Math.min(done,plan.days)} / {plan.days} completed</Text>
- <View style={{flexDirection:"row",gap:9,marginTop:15}}>{Array.from({length:plan.days},(_,i)=><View key={i} style={{flex:1,height:9,borderRadius:6,backgroundColor:i<done?GOLD:"#44423D"}}/>)}</View>
- <TouchableOpacity disabled={done>=plan.days} onPress={()=>{checkIn(week);void playCompletionFeedback();Alert.alert(done+1>=plan.days?"🏆 Goal achieved!":"✨ Session completed",done+1>=plan.days?"You completed your weekly goal.":"Another step towards your goal.")}} style={{backgroundColor:GLASS,padding:15,borderRadius:16,marginTop:20}}><Text style={{color:"#FFFFFF",textAlign:"center",fontWeight:"800"}}>{done>=plan.days?"✓ WEEK COMPLETE":"✓ MARK SESSION COMPLETE"}</Text></TouchableOpacity>
- {done>0&&<TouchableOpacity onPress={()=>Alert.alert("Correct last check-in?","Remove your most recent session from this week?",[{text:"Cancel",style:"cancel"},{text:"Remove",style:"destructive",onPress:()=>undo(week)}])} style={{alignSelf:"flex-end",marginTop:14,padding:6}}><Text style={{color:"#9F9B93",fontSize:12}}>Correct last check-in</Text></TouchableOpacity>}
- </View>
- <Text style={{color:"white",fontSize:22,lineHeight:29,fontWeight:"600",letterSpacing:-0.2,marginTop:32,marginBottom:5}}>Training days</Text><Text style={{color:"#AFA99F",fontSize:12,marginBottom:16}}>Open a day to see your exercises. Tap an exercise to record each set.</Text>
- {splits(plan.days).map((name,i)=>{const key=name.replace(/ [ABC]$/,"");const allowed=groups[key]||groups["Full Body"];const available=exercises.filter(e=>(e.location===plan.location||e.location==="Both")&&allowed.includes(e.muscle_group));const suggested=available.slice(i%Math.max(1,available.length)).concat(available.slice(0,i%Math.max(1,available.length))).slice(0,5);const custom=exerciseOverrides[String(i+1)];const picks=custom?custom.map(id=>exercises.find(e=>e.id===id)).filter((e):e is Exercise=>Boolean(e)):suggested;return <View key={i} style={{backgroundColor:GLASS,borderRadius:19,marginBottom:11,overflow:"hidden"}}><TouchableOpacity onPress={()=>setExpanded(expanded===i?-1:i)} style={{padding:17,flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}><View style={{flex:1,marginRight:12}}><Text style={{color:GOLD,fontSize:11,fontWeight:"800"}}>DAY {i+1}</Text><Text style={{color:"white",fontSize:18,lineHeight:25,fontWeight:"600",marginTop:5}}>{name}</Text></View><Ionicons name={expanded===i?"chevron-up":"chevron-down"} size={20} color={GOLD}/></TouchableOpacity>{expanded===i&&<View style={{paddingHorizontal:17,paddingBottom:17}}>
- <TouchableOpacity onPress={()=>setEditingDay(editingDay===i?null:i)} style={{flexDirection:"row",alignItems:"center",gap:8,paddingVertical:13}}><Ionicons name="options-outline" size={17} color={GOLD}/><Text style={{color:GOLD,fontSize:12,fontWeight:"800"}}>{editingDay===i?"DONE EDITING":"CUSTOMIZE EXERCISES"}</Text></TouchableOpacity>
- {editingDay===i&&<View style={{backgroundColor:GLASS,borderRadius:14,padding:13,marginBottom:13}}><Text style={{color:"white",fontWeight:"700",marginBottom:8}}>Choose exercises for Day {i+1}</Text><Text style={{color:"#B9B3A8",fontSize:12,marginBottom:11}}>Suggested by Treksor. Tap to add or remove (up to 8).</Text>
- {available.map(e=>{const selected=picks.some(p=>p.id===e.id);return <TouchableOpacity key={e.id} onPress={()=>{const ids=picks.map(p=>p.id);if(!selected&&ids.length>=8){Alert.alert("Day is full","Choose up to 8 exercises.");return}setDayExercises(i+1,selected?ids.filter(id=>id!==e.id):[...ids,e.id])}} style={{paddingVertical:11,flexDirection:"row",alignItems:"center",gap:9,borderBottomWidth:1,borderBottomColor:"rgba(205,235,248,0.12)"}}><Ionicons name={selected?"checkbox":"square-outline"} size={20} color={selected?GOLD:"#A9A397"}/><Text style={{color:"white",flex:1,fontSize:13}}>{e.name}</Text><Text style={{color:"#A8A094",fontSize:11}}>{e.muscle_group}</Text></TouchableOpacity>})}
- <TouchableOpacity onPress={()=>setDayExercises(i+1,suggested.map(e=>e.id))} style={{padding:12,alignItems:"center"}}><Text style={{color:GOLD,fontSize:12}}>Restore suggestions</Text></TouchableOpacity></View>}
- {picks.length?picks.map(e=><View key={e.id} style={{padding:13,borderRadius:13,backgroundColor:GLASS,marginTop:9}}><TouchableOpacity onPress={()=>setExpandedExercise(expandedExercise===`${i}-${e.id}`?null:`${i}-${e.id}`)} style={{flexDirection:"row",alignItems:"center",gap:10,paddingVertical:5}}><Ionicons name="barbell-outline" size={21} color={GOLD}/><View style={{flex:1}}><Text style={{color:"#F4F1EB",fontSize:16,fontWeight:"700"}}>{e.name}</Text><Text style={{color:"#B9B5AB",marginTop:4,fontSize:12}}>{e.muscle_group}</Text></View><Ionicons name={expandedExercise===`${i}-${e.id}`?"chevron-up":"chevron-down"} color={GOLD} size={19}/></TouchableOpacity>{expandedExercise===`${i}-${e.id}`&&<><Text style={{color:"#D6C8AB",marginTop:14,fontSize:12}}>Suggested {plan.goal==="strength"?"3–5":plan.goal==="definition"?"2–3":"3–4"} sets · {plan.goal==="strength"?"3–6":plan.goal==="definition"?"10–15":"6–12"} reps</Text><Text style={{color:"#D3C7AE",fontSize:11,marginTop:7}}>Log one set at a time. Each saved set contributes to Gym Progress.</Text><View style={{flexDirection:"row",alignItems:"center",gap:8,marginTop:10}}>{(["kg","reps"] as const).map(field=><View key={field} style={{flex:1}}><Text style={{color:"#B5AFA2",fontSize:10,marginBottom:5}}>{field.toUpperCase()}</Text><TextInput keyboardType={field==="kg"?"decimal-pad":"number-pad"} value={logs[`${i}-${e.id}`]?.[field]||""} onChangeText={v=>updateLog(`${i}-${e.id}`,field,v)} placeholder="—" placeholderTextColor="#888" style={{backgroundColor:GLASS,color:"white",borderRadius:10,padding:9,}}/></View>)}<TouchableOpacity onPress={()=>updateLog(`${i}-${e.id}`,"done",!logs[`${i}-${e.id}`]?.done)} style={{marginTop:16,padding:9,borderRadius:8,backgroundColor:logs[`${i}-${e.id}`]?.done?GOLD:"#35332D"}}><Ionicons name="checkmark" size={21} color={logs[`${i}-${e.id}`]?.done?"#14110B":GOLD}/></TouchableOpacity></View>
- <TouchableOpacity onPress={()=>{const entry=logs[`${i}-${e.id}`];const kg=Number(entry?.kg?.replace(",",".")),reps=Number(entry?.reps);if(!entry?.kg?.trim()||!entry?.reps?.trim()||!Number.isFinite(kg)||kg<=0||!Number.isInteger(reps)||reps<1||reps>30){Alert.alert("Enter a valid set","Enter weight in kg and repetitions (1–30) to record a set.");return}addGymSet({id:Date.now().toString()+"-"+Math.random().toString(36).slice(2),exerciseId:e.id,exerciseName:e.name,day:i+1,kg,reps,recordedAt:new Date().toISOString()});updateLog(`${i}-${e.id}`,"done",true);void playCompletionFeedback()}} style={{backgroundColor:"rgba(183,221,240,0.13)",padding:12,borderRadius:12,marginTop:12,alignItems:"center"}}><Text style={{color:"#FFFFFF",fontWeight:"700"}}>+ SAVE COMPLETED SET</Text></TouchableOpacity>
- {gymSets.filter(set=>set.exerciseId===e.id&&set.day===i+1).slice(-5).reverse().map(set=><View key={set.id} style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between",paddingTop:9}}><Text style={{color:"#CFC7B9",fontSize:12}}>{new Date(set.recordedAt).toLocaleDateString()} · {set.kg} kg × {set.reps} reps</Text><TouchableOpacity onPress={()=>Alert.alert("Remove set?","Delete this recorded set?",[{text:"Cancel",style:"cancel"},{text:"Remove",style:"destructive",onPress:()=>removeGymSet(set.id)}])}><Ionicons name="trash-outline" color="#A7A096" size={16}/></TouchableOpacity></View>)}
- </>}</View>):<Text style={{color:"#C9C4BA"}}>{libraryLoading?"Loading your exercise suggestions…":libraryError?"Exercise suggestions are temporarily unavailable. Check your connection and reopen My Plan.":"No exercises are available for this training day yet. Visit the Exercise Library to explore other movements."}</Text>}</View>}</View>})}
- <TouchableOpacity onPress={()=>router.push("/body/workout/guide")} style={{padding:16,alignItems:"center"}}><Text style={{color:GOLD,fontWeight:"700"}}>EDIT MY PLAN →</Text></TouchableOpacity>
- </>}
- </ScrollView></KeyboardAvoidingView>
+  const insets=useSafeAreaInsets();
+  const plan=useWorkoutStore(s=>s.trainingPlan),checkIns=useWorkoutStore(s=>s.checkIns)||{},active=useWorkoutStore(s=>s.activeGymWorkout),start=useWorkoutStore(s=>s.startGymWorkout),discard=useWorkoutStore(s=>s.discardGymWorkout);
+  const overrides=useWorkoutStore(s=>s.exerciseOverrides)||{},setDayExercises=useWorkoutStore(s=>s.setDayExercises);
+  const [exerciseList,setExerciseList]=useState<GymExercise[]>(mergeGymExercises([]));
+  const [openDay,setOpenDay]=useState(0),[editDay,setEditDay]=useState<number|null>(null),[libraryError,setLibraryError]=useState(false);
+  useEffect(()=>{let mounted=true;axios.get("https://treksor-admin-production.up.railway.app/api/public/discover?type=exercises",{timeout:12000}).then(r=>{if(mounted&&Array.isArray(r.data?.data))setExerciseList(mergeGymExercises(r.data.data))}).catch(()=>{if(mounted)setLibraryError(true)});return()=>{mounted=false}},[]);
+  const dayNames=useMemo(()=>plan?splits(plan.days):[],[plan]);
+  const done=(checkIns[weekKey()]||[]).length;
+  function startDay(day:number,name:string,items:GymExercise[]){
+    if(!items.length){Alert.alert("Your routine is empty","Choose at least one exercise before starting this session.");return}
+    if(active){
+      if(active.day===day+1){router.push("/body/workout/session");return}
+      Alert.alert("Workout in progress","You already have a session in progress.",[
+        {text:"Resume session",onPress:()=>router.push("/body/workout/session")},
+        {text:"Start this day",style:"destructive",onPress:()=>{discard();const id=start(day+1,name,items.map(x=>x.id));if(id)router.push("/body/workout/session")}},
+        {text:"Cancel",style:"cancel"},
+      ]);return;
+    }
+    start(day+1,name,items.map(x=>x.id));router.push("/body/workout/session");
+  }
+  return <ScrollView style={{flex:1,backgroundColor:colors.background}} contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:insets.bottom+100}}>
+    <BodyPageHeading trail="BODY / GYM" title="My plan" style={{marginHorizontal:-22}} />
+    {!plan?<View style={{paddingTop:24}}><Text style={{color:"#D5D1C9",lineHeight:23}}>Build a routine around your schedule, goal and experience.</Text><Button borderless iconName="options-outline" onPress={()=>router.push("/body/workout/guide")}>BUILD MY PLAN</Button></View>:<>
+      <Text style={{color:"#C9C5BC",marginTop:10}}>{plan.days} training days per week · {plan.location}{plan.goal?` · ${plan.goal}`:""}</Text>
+      <TouchableOpacity onPress={()=>router.push("/body/workout/progress")} style={{flexDirection:"row",alignItems:"center",gap:10,marginTop:18,padding:15,backgroundColor:GLASS,borderRadius:16}}><Ionicons name="stats-chart-outline" size={20} color={GOLD}/><Text style={{color:GOLD,fontWeight:"800",flex:1}}>Gym progress</Text><Text style={{color:"white",fontWeight:"700"}}>{done}/{plan.days} this week</Text><Ionicons name="chevron-forward" size={18} color={GOLD}/></TouchableOpacity>
+      {active&&<TouchableOpacity onPress={()=>router.push("/body/workout/session")} style={{marginTop:12,padding:16,borderRadius:16,borderWidth:1,borderColor:"rgba(215,184,119,0.5)",backgroundColor:"rgba(215,184,119,0.09)",flexDirection:"row",alignItems:"center",gap:10}}><Ionicons name="play-circle" size={23} color={GOLD}/><Text style={{color:GOLD,fontWeight:"800",flex:1}}>RESUME {active.dayName.toUpperCase()}</Text><Ionicons name="arrow-forward" size={18} color={GOLD}/></TouchableOpacity>}
+      <Text style={{color:"white",fontSize:22,lineHeight:29,fontWeight:"600",marginTop:29,marginBottom:5}}>Your routines</Text><Text style={{color:"#AFA99F",fontSize:12,marginBottom:15}}>Choose a day to review its exercises or start a live workout.</Text>
+      {dayNames.map((name,i)=>{
+        const key=name.replace(/ [ABC]$/,""),allowed=groups[key]||groups["Full Body"];
+        const available=exercisesForMuscles(exerciseList,allowed,plan.location);
+        const suggested=available.slice(i%Math.max(1,available.length)).concat(available.slice(0,i%Math.max(1,available.length))).slice(0,5);
+        const chosen=overrides[String(i+1)];
+        const picks=chosen?chosen.map(id=>available.find(e=>e.id===id)).filter((e):e is GymExercise=>Boolean(e)):suggested;
+        const isOpen=openDay===i;
+        return <View key={name} style={{backgroundColor:GLASS,borderRadius:18,marginBottom:12,overflow:"hidden",borderWidth:1,borderColor:isOpen?"rgba(215,184,119,0.23)":"rgba(255,255,255,0.04)"}}>
+          <TouchableOpacity onPress={()=>setOpenDay(isOpen?-1:i)} style={{padding:17,flexDirection:"row",alignItems:"center",gap:12}}><View style={{width:38,height:38,borderRadius:12,backgroundColor:"rgba(215,184,119,0.12)",alignItems:"center",justifyContent:"center"}}><Text style={{color:GOLD,fontWeight:"800"}}>{String(i+1).padStart(2,"0")}</Text></View><View style={{flex:1}}><Text style={{color:"#AFA99F",fontSize:10,fontWeight:"800",letterSpacing:1}}>DAY {i+1}</Text><Text style={{color:"white",fontSize:17,fontWeight:"700",marginTop:4}}>{name}</Text><Text style={{color:"#AFA99F",fontSize:11,marginTop:4}}>{picks.length} exercises · {picks.reduce((sum,e)=>sum+e.sets,0)} working sets</Text></View><Ionicons name={isOpen?"chevron-up":"chevron-down"} size={20} color={GOLD}/></TouchableOpacity>
+          {isOpen&&<View style={{paddingHorizontal:16,paddingBottom:16}}>
+            {picks.length?picks.map((exercise,index)=><View key={exercise.id} style={{flexDirection:"row",alignItems:"center",gap:11,paddingVertical:12,borderTopWidth:1,borderTopColor:"rgba(255,255,255,0.07)"}}><View style={{width:27,height:27,borderRadius:9,borderWidth:1,borderColor:"rgba(215,184,119,0.32)",alignItems:"center",justifyContent:"center"}}><Text style={{color:GOLD,fontSize:11,fontWeight:"700"}}>{index+1}</Text></View><View style={{flex:1}}><Text style={{color:"#F4F1EB",fontSize:14,fontWeight:"700"}}>{exercise.name}</Text><Text style={{color:"#AAA59A",fontSize:11,marginTop:4}}>{exercise.muscle_group} · {exercise.sets} × {exercise.reps} {exercise.metric} · {exercise.rest_seconds}s rest</Text></View>{!!exercise.videoUrl&&<Ionicons name="videocam-outline" size={18} color={GOLD}/>}</View>):<Text style={{color:"#BBB3A5",paddingVertical:14}}>{libraryError?"Using your Treksor exercise library.":"No exercises match this day yet."}</Text>}
+            <TouchableOpacity onPress={()=>setEditDay(editDay===i?null:i)} style={{flexDirection:"row",alignItems:"center",gap:7,paddingVertical:13}}><Ionicons name="options-outline" color={GOLD} size={17}/><Text style={{color:GOLD,fontSize:11,fontWeight:"800",letterSpacing:.7}}>{editDay===i?"DONE":"CUSTOMIZE ROUTINE"}</Text></TouchableOpacity>
+            {editDay===i&&<View style={{padding:12,borderRadius:12,backgroundColor:"rgba(0,0,0,0.22)",marginBottom:11}}><Text style={{color:"white",fontWeight:"700",marginBottom:7}}>Exercises for {name}</Text><Text style={{color:"#AAA59A",fontSize:11,marginBottom:10}}>Tap to add or remove · up to 8 exercises</Text>{available.map(exercise=>{const selected=picks.some(e=>e.id===exercise.id);return <TouchableOpacity key={exercise.id} onPress={()=>{if(!selected&&picks.length>=8){Alert.alert("Routine is full","Choose up to 8 exercises.");return}setDayExercises(i+1,selected?picks.filter(e=>e.id!==exercise.id).map(e=>e.id):[...picks.map(e=>e.id),exercise.id])}} style={{paddingVertical:10,flexDirection:"row",alignItems:"center",gap:9,borderBottomWidth:1,borderBottomColor:"rgba(255,255,255,0.06)"}}><Ionicons name={selected?"checkbox":"square-outline"} color={selected?GOLD:"#8F8B82"} size={19}/><Text style={{color:"white",flex:1,fontSize:12}}>{exercise.name}</Text><Text style={{color:"#9D978D",fontSize:10}}>{exercise.muscle_group}</Text></TouchableOpacity>})}<TouchableOpacity onPress={()=>setDayExercises(i+1,suggested.map(e=>e.id))} style={{padding:12,alignItems:"center"}}><Text style={{color:GOLD,fontSize:11}}>RESTORE SUGGESTED EXERCISES</Text></TouchableOpacity></View>}
+            <TouchableOpacity onPress={()=>startDay(i,name,picks)} style={{minHeight:50,borderRadius:13,backgroundColor:GOLD,flexDirection:"row",alignItems:"center",justifyContent:"center",gap:9}}><Ionicons name="play" size={18} color="#17140F"/><Text style={{color:"#17140F",fontWeight:"900",letterSpacing:.7}}>{active?.day===i+1?"RESUME WORKOUT":"START WORKOUT"}</Text></TouchableOpacity>
+          </View>}
+        </View>;
+      })}
+      <TouchableOpacity onPress={()=>router.push("/body/workout/guide")} style={{padding:15,alignItems:"center",marginTop:6}}><Text style={{color:GOLD,fontWeight:"700",fontSize:12,letterSpacing:.6}}>EDIT TRAINING GOAL & SCHEDULE →</Text></TouchableOpacity>
+    </>}
+  </ScrollView>;
 }

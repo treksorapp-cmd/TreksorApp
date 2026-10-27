@@ -5,17 +5,22 @@ import axios from "axios"
 
 const API = "https://treksor-admin-production.up.railway.app"
 
-export default function ExerciseVideo({ exerciseId }: { exerciseId: string }) {
-  const [url, setUrl] = useState<string | null>(null)
+export default function ExerciseVideo({ exerciseId, videoUrl }: { exerciseId: string; videoUrl?: string }) {
+  const [url, setUrl] = useState<string | null>(videoUrl ?? null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const player = useVideoPlayer(url, p => { p.loop = true })
+
+  useEffect(() => {
+    if (videoUrl) setUrl(videoUrl)
+  }, [videoUrl])
 
   useEffect(() => {
     return () => { player.pause() }
   }, [player])
 
   async function load() {
+    if (!exerciseId) { setError("No video is linked to this exercise yet."); return }
     setLoading(true)
     setError("")
     try {

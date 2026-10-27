@@ -4,11 +4,18 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-export type GymSet = { id:string; exerciseId:string; exerciseName:string; day:number; kg:number; reps:number; recordedAt:string };
+export type GymSet = { id:string; exerciseId:string; exerciseName:string; day:number; kg:number; reps:number; recordedAt:string; sessionId?:string; setNumber?:number; setType?:string };
+export type ActiveGymWorkout = { id:string; day:number; dayName:string; exerciseIds:string[]; completedSetIds:string[]; startedAt:string; restEndsAt?:string|null };
 export type TrainingPlan = { days:number; location:"Gym"|"Home"; savedAt:string; age?:number; heightCm?:number; weightKg?:number; goal?:"strength"|"muscle"|"definition"; experience?:"beginner"|"intermediate"|"advanced" };
 interface WorkoutState {
     trainingPlan: TrainingPlan | null;
     gymSets: GymSet[];
+    activeGymWorkout: ActiveGymWorkout | null;
+    startGymWorkout: (day:number, dayName:string, exerciseIds:string[])=>string;
+    completeGymSet: (entry:GymSet)=>void;
+    setGymRestEnd: (value:string|null)=>void;
+    finishGymWorkout: (week:string)=>void;
+    discardGymWorkout: ()=>void;
     addGymSet: (entry:GymSet)=>void;
     removeGymSet: (id:string)=>void;
     checkIns: Record<string,string[]>;
@@ -31,8 +38,32 @@ export const useWorkoutStore = create<WorkoutState>()(
     (set,get) => ({
         trainingPlan: null,
         gymSets: [],
+        activeGymWorkout: null,
+        startGymWorkout: (day,dayName,exerciseIds) => {
+          const existing = get().activeGymWorkout;
+          if (existing) return existing.id;
+          const workout = { id:Date.now().toString()+"-"+Math.random().toString(36).slice(2), day, dayName, exerciseIds, completedSetIds:[], startedAt:new Date().toISOString(), restEndsAt:null };
+          set({activeGymWorkout:workout});
+          return workout.id;
+        },
+        completeGymSet: entry => set(state => {
+          const existing = state.gymSets.some(item=>item.id===entry.id);
+          const key = entry.exerciseId+":"+entry.setNumber;
+          const active = state.activeGymWorkout;
+          return {
+            gymSets: existing ? state.gymSets : [...(state.gymSets||[]),entry],
+            activeGymWorkout: active ? {...active,completedSetIds:active.completedSetIds.includes(key)?active.completedSetIds:[...active.completedSetIds,key]} : active,
+          };
+        }),
+        setGymRestEnd: restEndsAt => set(state=>({activeGymWorkout:state.activeGymWorkout?{...state.activeGymWorkout,restEndsAt}:null})),
+        finishGymWorkout: week => set(state=>({checkIns:{...state.checkIns,[week]:[...(state.checkIns[week]||[]),new Date().toISOString()]},activeGymWorkout:null})),
+        discardGymWorkout: ()=>set({activeGymWorkout:null}),
         addGymSet: entry=>set(state=>({gymSets:[...(state.gymSets||[]),entry]})),
-        removeGymSet: id=>set(state=>({gymSets:(state.gymSets||[]).filter(e=>e.id!==id)})),
+        removeGymSet: id=>set(state=>{
+          const removed=(state.gymSets||[]).find(e=>e.id===id);
+          const key=removed?.exerciseId+":"+removed?.setNumber;
+          return {gymSets:(state.gymSets||[]).filter(e=>e.id!==id),activeGymWorkout:removed?.sessionId&&state.activeGymWorkout?{...state.activeGymWorkout,completedSetIds:state.activeGymWorkout.completedSetIds.filter(value=>value!==key)}:state.activeGymWorkout};
+        }),
         checkIns: {},
         exerciseOverrides: {},
         setDayExercises: (day,exerciseIds)=>set(state=>({exerciseOverrides:{...state.exerciseOverrides,[String(day)]:exerciseIds}})),
@@ -63,7 +94,7 @@ export const useWorkoutStore = create<WorkoutState>()(
         
         clearData: () => {
           set({
-            trainingPlan: null, gymSets: [], checkIns: {}, exerciseOverrides: {},
+            trainingPlan: null, gymSets: [], activeGymWorkout:null, checkIns: {}, exerciseOverrides: {},
             workouts: WorkoutsData,
             workoutContent: workoutContent,
           })

@@ -21,7 +21,7 @@ export default function GymScreen() {
   useEffect(() => { if(reducedMotion){pulse.setValue(0);return;} const loop = Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true}),Animated.timing(pulse,{toValue:0,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true})]));loop.start();return()=>loop.stop(); },[pulse,reducedMotion]);
   const plan = useWorkoutStore(s => s.trainingPlan);
   const checkIns = useWorkoutStore(s => s.checkIns);
-  const checkIn = useWorkoutStore(s => s.checkIn);
+  const activeWorkout = useWorkoutStore(s => s.activeGymWorkout);
   const resetTrainingPlan = useWorkoutStore(s => s.resetTrainingPlan);
   const now = new Date();
   const monday = new Date(now);
@@ -32,12 +32,7 @@ export default function GymScreen() {
   const goal = plan?.days ?? 0;
   const progress = goal ? Math.min(1, completed / goal) : 0;
 
-  const completeSession = () => {
-    if (!plan || completed >= goal) return;
-    checkIn(week);
-    void playCompletionFeedback();
-    Alert.alert(completed + 1 >= goal ? "WEEKLY GOAL ACHIEVED" : "SESSION COMPLETE", completed + 1 >= goal ? "You reached your weekly training goal." : "Your session has been added to this week.");
-  };
+  const openTraining = () => router.push(activeWorkout ? "/body/workout/session" : "/body/workout/my-plan");
 
   const confirmReset = () => Alert.alert(
     "Reset your training plan?",
@@ -77,9 +72,9 @@ export default function GymScreen() {
                 <Text style={styles.weekCaption}>Monday – Sunday · Every session counts</Text>
               </View>
               <Button borderless iconName="calendar-outline" onPress={() => router.push("/body/workout/my-plan")}>OPEN MY PLAN</Button>
-              <TouchableOpacity accessibilityRole="button" disabled={completed >= goal} onPress={completeSession} style={[styles.checkIn, completed >= goal && styles.checkInDone]}>
+              <TouchableOpacity accessibilityRole="button" onPress={openTraining} style={styles.checkIn}>
                 <Ionicons name={completed >= goal ? "checkmark-circle" : "checkmark-circle-outline"} size={21} color="#FFFFFF"/>
-                <Text style={styles.checkInText}>{completed >= goal ? "WEEKLY GOAL COMPLETE" : "MARK SESSION COMPLETE"}</Text>
+                <Text style={styles.checkInText}>{activeWorkout ? "RESUME WORKOUT" : completed >= goal ? "TRAIN ANOTHER DAY" : "START A WORKOUT"}</Text>
               </TouchableOpacity>
             </>
           ) : (

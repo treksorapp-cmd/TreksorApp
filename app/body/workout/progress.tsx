@@ -14,7 +14,8 @@ export default function GymProgress(){
  const checkIns=useWorkoutStore(s=>s.checkIns)||{};
  const plan=useWorkoutStore(s=>s.trainingPlan);
  const stats=useMemo(()=>{
-  const valid=sets.filter(s=>Number.isFinite(s.kg)&&s.kg>0&&Number.isFinite(s.reps)&&s.reps>=1).sort((a,b)=>a.recordedAt.localeCompare(b.recordedAt));
+  const recorded=sets.filter(s=>Number.isFinite(s.kg)&&s.kg>=0&&Number.isFinite(s.reps)&&s.reps>=1);
+  const valid=recorded.filter(s=>s.kg>0).sort((a,b)=>a.recordedAt.localeCompare(b.recordedAt));
   const map=new Map<string,typeof valid>();
   for(const s of valid){const key=s.exerciseId||s.exerciseName;map.set(key,[...(map.get(key)||[]),s])}
   const exercises=Array.from(map.values()).map(history=>{
@@ -26,7 +27,7 @@ export default function GymProgress(){
   const volume=valid.reduce((n,s)=>n+s.kg*s.reps,0);
   const positive=exercises.filter(e=>e.sets>=2);
   const meanChange=positive.length?positive.reduce((n,e)=>n+e.change,0)/positive.length:null;
-  return {exercises,volume,meanChange,sets:valid.length};
+  return {exercises,volume,meanChange,sets:recorded.length};
  },[sets]);
  const sessions=Object.values(checkIns).reduce((sum,arr)=>sum+arr.length,0);
  return <ScrollView style={{flex:1,backgroundColor: colors.background}} contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:100}}>
