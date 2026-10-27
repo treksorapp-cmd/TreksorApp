@@ -1,25 +1,17 @@
-# Treksor Dynamic Atmosphere
+# Home image approval workflow
 
-Home displays one shared AI-generated portrait landscape to all users. The background is generated server-side every 72 hours, with a daily 03:00 UTC check, and stored in the public `treksor-atmosphere` Supabase Storage bucket. The app reads the newest `public.atmosphere_images` row, caches via expo-image and falls back to bundled daily imagery when none is published or networking fails.
+Home reads the newest approved `atmosphere_images` publication whose `published_at` is due. It refreshes on focus, foreground and each minute while Home is visible.
 
-## Deployment (completed)
-- `public.atmosphere_images` has RLS public SELECT, backend service role write only.
-- Supabase Edge Function `treksor-atmosphere` deployed with JWT gateway verification disabled, but rejects all requests without a cryptographically random shared cron token verified server-side via restricted `verify_atmosphere_cron` RPC. Never expose this token to the app.
-- `pg_cron` job `treksor-atmosphere-daily-check` runs at 03:00 UTC; `pg_net` invokes the Edge Function with the secret from Supabase Vault (`treksor_atmosphere_cron_token`). The function checks if the latest published image is less than 72 hours old and skips regeneration if so.
-- OpenAI key is read only from Supabase Edge Function secret `OPENAI_API_KEY`; model `gpt-image-1-mini` generates one 1024×1536 image at medium quality per successful rotation.
-- A first test on 2026-10-22 returned provider 429 `credit_balance_exhausted`. **API billing credits must be added to the Treksor OpenAI organization** before any image can be generated. No image was published during that test.
+## Sources and schedule
 
-## Operations
-- Billing: https://platform.openai.com/settings/organization/billing/overview
-- Edge Functions: https://supabase.com/dashboard/project/niakfwerfqmrmhuypkpd/functions
-- Storage: https://supabase.com/dashboard/project/niakfwerfqmrmhuypkpd/storage/buckets
-- To verify scheduler: `select jobname, schedule, active from cron.job where jobname='treksor-atmosphere-daily-check';`
-- To verify generated images: `select id,published_at,storage_path from public.atmosphere_images order by published_at desc limit 10;`
-- For HTTP failures inspect `net._http_response` and Supabase Edge Function logs. Do not log or reveal API keys or cron tokens.
-- A manual invocation requires the Vault token and must be performed server-side; never put it in a client or shared chat.
+A curated collection of four free Pexels photographs shows men hiking, finding direction and making room for stillness. `home_image_sources` retains the source URL, photographer and title. All four CDN URLs were checked successfully as image/jpeg. License: https://www.pexels.com/license/ . This is a rotating curated collection, not unlimited API search; expand the catalogue to add variety.
 
-## Design
-Photographic black/charcoal and muted gold, cinematic outdoor scenery, no typography or logos. Home adds a dark gradient to keep all text legible. App binaries retain local imagery for resilience.
+`treksor-home-photo-approval-queue` runs hourly and ensures a pending candidate exists for the current and next 48-hour slot. The previous AI generation cron was disabled. No image is generated or purchased by this workflow.
 
-## Future hardening
-Consider keeping only a rolling number of images, adding an admin preview/approval workflow, provider cost monitoring, and validating image generation after billing activation. Do not claim generation works until a published image has been verified.
+The dashboard's Home atmosphere approval inbox polls every minute and previews pending candidates, credits and Brisbane rotation dates. An admin can approve or reject. Approval publishes immediately for a due slot, or schedules a future publication. Rejection preserves the current approved background. Until the first approval, bundled images remain visible.
+
+## Access
+
+Sources and candidate rows require verified admin membership. `review_home_image` checks membership inside the database and locks the candidate before changing it. Re-review is rejected. Pending candidates never appear in the public Home image table. The authenticated API is covered by same-origin middleware.
+
+Migration SQL: `home-image-approval.sql`. Production cron and initial two pending candidates were checked. Phone push notifications are not part of this dashboard inbox.

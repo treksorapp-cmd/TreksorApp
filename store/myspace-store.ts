@@ -12,9 +12,9 @@ interface MySpaceState {
   myspaces: MySpace[]
   loading: boolean;
   error: string | null;
-  addMySpace: (data: addMySpaceRequest) => void;
+  addMySpace: (data: addMySpaceRequest) => Promise<void>;
   fetchMySpace: (id: string) => void;
-  updateMySpace: (id: string, updates: any) => void,
+  updateMySpace: (id: string, updates: any) => Promise<void>,
   deleteMySpace: (id: string) => void,
   clearData: () => void;
 }
@@ -31,7 +31,7 @@ export const useMySpaceStore = create<MySpaceState>()(
           return mySpace
       },
 
-      addMySpace: (data) => {
+      addMySpace: async (data) => {
         const payload = {
             id: `${Date.now()}-${Math.random().toString(36).slice(2,9)}`,
             mood: data.mood,
@@ -42,10 +42,14 @@ export const useMySpaceStore = create<MySpaceState>()(
             }),
             text: data.text,
         }          
-        set(state => ({ myspaces: [payload, ...state.myspaces] }));
+        const myspaces=[payload,...get().myspaces];
+        await AsyncStorage.setItem("myspace-storage",JSON.stringify({state:{myspaces},version:0}));
+        set({myspaces});
       },
 
-      updateMySpace: (id, updates) => {
+      updateMySpace: async (id, updates) => {
+        const myspaces=get().myspaces.map(space=>space.id===id?{...space,...updates}:space);
+        await AsyncStorage.setItem("myspace-storage",JSON.stringify({state:{myspaces},version:0}));
         set((state) => ({
           myspaces: state.myspaces.map((space) => (space.id === id ? { ...space, ...updates } : space)),
         }))

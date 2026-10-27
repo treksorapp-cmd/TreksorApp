@@ -1,3 +1,4 @@
+import PillarUpdates from "@/components/PillarUpdates";
 import { useContentRefresh } from "@/hooks/useContentRefresh";
 import {colors} from "@/theme/architect";
 import {useReducedMotion} from "@/hooks/useReducedMotion";
@@ -10,7 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image, ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, type Href } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, AppState, Easing, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -52,17 +53,11 @@ export default function HomeScreen() {
   const firstName = user?.name?.trim().split(" ")[0] || "Explorer";
   const [now,setNow]=useState(()=>new Date());
   const [atmosphereUrl,setAtmosphereUrl]=useState<string | null>(null);
-  useEffect(()=>{
-    let active=true;
-    const controller=new AbortController();
-    const timeout=setTimeout(()=>controller.abort(),8000);
-    fetch(ATMOSPHERE_ENDPOINT.replace("published_at=lte.", "published_at=lte." + encodeURIComponent(new Date().toISOString())),{headers:{apikey:SUPABASE_PUBLISHABLE_KEY},signal:controller.signal})
-      .then(async response=>response.ok?await response.json():[])
-      .then(rows=>{const url=rows?.[0]?.public_url;if(active&&typeof url==="string"&&url.startsWith("https://"))setAtmosphereUrl(url)})
-      .catch(()=>{})
-      .finally(()=>clearTimeout(timeout));
-    return()=>{active=false;clearTimeout(timeout);controller.abort()};
+  const refreshAtmosphere=useCallback(async()=>{
+    const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),8000);
+    try{const response=await fetch(ATMOSPHERE_ENDPOINT.replace("published_at=lte.","published_at=lte."+encodeURIComponent(new Date().toISOString())),{headers:{apikey:SUPABASE_PUBLISHABLE_KEY},signal:controller.signal});if(!response.ok)return;const rows=await response.json();const url=rows?.[0]?.public_url;if(typeof url==="string"&&url.startsWith("https://"))setAtmosphereUrl(url)}catch{}finally{clearTimeout(timeout)}
   },[]);
+  useContentRefresh(refreshAtmosphere);
   const reveal=useRef(new Animated.Value(0)).current;
   const reducedMotion=useReducedMotion();
   const pulse=useRef(new Animated.Value(0)).current;
@@ -123,7 +118,7 @@ export default function HomeScreen() {
               </View>
               <View style={styles.tileBottom}>
                 <Text style={styles.tileTitle}>{pillar.name}</Text>
-                <Text style={styles.tileCaption}>{pillar.subtitle}</Text>
+                <Text style={styles.tileCaption}>{pillar.subtitle}</Text><PillarUpdates pillar={pillar.name} compact/>
 
               </View>
             </TouchableOpacity>

@@ -13,6 +13,7 @@ import {
   Alert,
   Dimensions,
   KeyboardAvoidingView,
+  Keyboard,
   Platform,
   ScrollView,
   StyleSheet,
@@ -31,22 +32,26 @@ const moodOptions = ["Happy", "Sad", "Stressed", "Anxious", "Calm", "Frustrated"
 export default function NewEntryScreen() {
   const insets = useSafeAreaInsets()
   const {origin,home,trail}=useReflectionContext();
+  const [saving,setSaving]=useState(false)
   const [mood, setMood] = useState("Happy")
   const {addMySpace} = useMySpaceStore();
   const [entryText, setEntryText] = useState("")
   const [showMoodDropdown, setShowMoodDropdown] = useState(false)
 
-  const handleAddEntry = () => {
+  const handleAddEntry = async () => {
+    Keyboard.dismiss()
     if (!entryText.trim()) {
       Alert.alert("Error", "Please enter some text for your entry.")
       return
     }
+    if(saving)return
+    setSaving(true)
     try {
-      addMySpace({mood,text:entryText.trim()})
+      await addMySpace({mood,text:entryText.trim()})
       router.replace(home);
     } catch (error) {
       Alert.alert('Unable to save entry', 'Please try again.');
-    }
+    } finally {setSaving(false)}
   }
 
   const selectMood = (selectedMood: string) => {
@@ -67,6 +72,7 @@ export default function NewEntryScreen() {
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
           showsVerticalScrollIndicator={false}
           bounces={false}
         >
@@ -117,6 +123,9 @@ export default function NewEntryScreen() {
             <Text style={styles.sectionTitle}>Your reflection</Text>
             <TextInput
               style={styles.textInput}
+              returnKeyType="done"
+              submitBehavior="blurAndSubmit"
+              onSubmitEditing={()=>Keyboard.dismiss()}
               multiline
               placeholder={origin === "purpose" ? "What matters to you, and what is one step you can take?" : "Write your thoughts here..."}
               placeholderTextColor="#666"
@@ -126,8 +135,9 @@ export default function NewEntryScreen() {
             />
           </View>
 
+          <TouchableOpacity onPress={()=>Keyboard.dismiss()} style={{padding:14,alignItems:"flex-end"}}><Text style={{color:"#D7B877",fontWeight:"700"}}>DONE WRITING ✓</Text></TouchableOpacity>
           {/* Add Button */}
-          <Button iconName="checkmark-outline" onPress={handleAddEntry}>SAVE ENTRY</Button>
+          <Button disabled={saving||!entryText.trim()} iconName="checkmark-outline" onPress={handleAddEntry}>{saving?"SAVING…":"SAVE ENTRY"}</Button>
           <View style={styles.bottomPadding} />
         </ScrollView>
       </KeyboardAvoidingView>

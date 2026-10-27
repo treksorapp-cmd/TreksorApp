@@ -1,3 +1,4 @@
+import { recordedDay } from "@/lib/progress-metrics";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {useReflectionContext} from "@/hooks/useReflectionContext";
@@ -30,7 +31,7 @@ export default function MySpaceScreen() {
   const { myspaces, deleteMySpace } = useMySpaceStore()
   const scores: Record<string,number> = {Happy:5,Grateful:5,Calm:4,Tired:3,Anxious:2,Stressed:2,Frustrated:2,Sad:1}
   const moodDays: Record<string,{sum:number,count:number}> = {}
-  for(const entry of myspaces){const d=new Date(entry.date);const score=scores[entry.mood];if(!Number.isFinite(d.getTime())||!score)continue;const day=d.toISOString().slice(0,10);const prev=moodDays[day]||{sum:0,count:0};moodDays[day]={sum:prev.sum+score,count:prev.count+1}}
+  for(const entry of myspaces){const day=recordedDay(entry.date);const score=scores[entry.mood];if(!day||!score)continue;const prev=moodDays[day]||{sum:0,count:0};moodDays[day]={sum:prev.sum+score,count:prev.count+1}}
   const moodTrend=Object.keys(moodDays).sort().slice(-7).map(day=>({day,score:moodDays[day].sum/moodDays[day].count}))
   const animatedValues = myspaces.map(() => new RNAnimated.Value(1))
   const [selectedEntry, setSelectedEntry] = useState<string | null>(null)
@@ -156,10 +157,13 @@ export default function MySpaceScreen() {
       <View style={{marginHorizontal:20,marginTop:16,padding:18,borderRadius:18,backgroundColor:"rgba(255,255,255,0.08)",borderWidth:1,borderColor:"rgba(255,255,255,0.22)"}}>
         <Text style={{color:"#FFFFFF",fontWeight:"700",fontSize:15}}>Mood over time</Text>
         <Text style={{color:"#CCC6BC",marginTop:6}}>{moodTrend.length<2?"Record moods on different days to see your trend":moodTrend[moodTrend.length-1].score>moodTrend[0].score?"Mood improving":moodTrend[moodTrend.length-1].score<moodTrend[0].score?"Mood declining":"Mood stable"}</Text>
+        <Text style={{color:"#D7B877",marginTop:12,fontSize:12}}>1 Low · 2 Difficult · 3 Neutral · 4 Settled · 5 Positive</Text>
+        <Text style={{color:"#AAA",fontSize:11,marginTop:7}}>Reflection mood index · based on your selected mood, not a clinical measure</Text>
         <View style={{height:130,flexDirection:"row",justifyContent:"space-around",alignItems:"flex-end"}}>
           {moodTrend.map(item=><View key={item.day} style={{alignItems:"center",flex:1}}><View style={{height:Math.max(6,item.score*18),width:7,borderRadius:5,backgroundColor:"#D7B877"}}/><Text style={{color:"#C8C2B6",fontSize:10,marginTop:7}}>{item.day.slice(5)}</Text></View>)}
           {moodTrend.length===0&&<Text style={{color:"#AAA"}}>Your mood history will appear here.</Text>}
         </View>
+        <Text style={{color:"#D7B877",marginTop:10}}>{moodTrend.length?`Average: ${(moodTrend.reduce((sum,item)=>sum+item.score,0)/moodTrend.length).toFixed(1)} / 5 · ${moodTrend.length} recorded days`:"No moods recorded yet. Save a reflection with a mood to start your chart."}</Text>
       </View>
       <View style={{paddingHorizontal:20}}><Button iconName="create-outline" onPress={()=>router.push({pathname:"/mental/myspace/new-entry",params:{pillar:origin}})}>TODAY'S ENTRY</Button></View>
       {/* Thoughts List */}

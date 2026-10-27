@@ -1,3 +1,4 @@
+import PillarUpdates from "@/components/PillarUpdates";
 import { Ionicons } from "@expo/vector-icons";
 import Button from "@/components/ui/Button";
 import PillarMenuScreen from "@/components/PillarMenuScreen";
@@ -20,6 +21,7 @@ export default function PremiumPillarScreen({ title, headline, subtitle, image, 
     const trail = title === "Body" ? "YOUR FOUNDATION" : title === "Mind" ? "CLARITY & GROWTH" : title === "Balance" ? "STILLNESS & PRESENCE" : "DIRECTION & INTENTION";
     const copy = headline === headline.toUpperCase() ? headline.toLowerCase().split("\n").map(line => line.charAt(0).toUpperCase() + line.slice(1)).join("\n") : headline;
     return <PillarMenuScreen title={title} trail={trail} image={image} headline={copy} subtitle={subtitle}>
+    <PillarUpdates pillar={title}/>
     {actions.map(action => <Button borderless key={action.label} onPress={() => router.push(action.href)} iconName={action.icon}>{action.label}</Button>)}
   </PillarMenuScreen>;
 }

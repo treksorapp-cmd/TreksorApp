@@ -13,6 +13,7 @@ import {
   Alert,
   Dimensions,
   KeyboardAvoidingView,
+  Keyboard,
   Platform,
   ScrollView,
   StyleSheet,
@@ -74,7 +75,8 @@ export default function EditEntryScreen() {
     }
   }
 
-  const handleSaveEntry = () => {
+  const handleSaveEntry = async () => {
+    Keyboard.dismiss()
     if (!entry) return
 
     if (!entryText.trim()) {
@@ -82,8 +84,7 @@ export default function EditEntryScreen() {
       return
     }
 
-    updateMySpace(entry.id, { mood, text: entryText.trim() })
-    router.back()
+    try {await updateMySpace(entry.id, { mood, text: entryText.trim() });router.back()}catch{Alert.alert("Unable to save","Please try again.")}
   }
 
   const selectMood = (selectedMood: string) => {
@@ -112,7 +113,8 @@ export default function EditEntryScreen() {
       <BodyPageHeading trail={trail} title="Edit reflection" onBack={handleBack} style={{paddingTop:12,paddingBottom:16}} />
 
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.keyboardAvoid}>
-        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive">
           {/* Illustration */}
           <View style={styles.illustrationContainer}>
             <Image source={require("@/assets/images/new-entry.png")} style={styles.illustration} contentFit="contain" />
@@ -148,6 +150,9 @@ export default function EditEntryScreen() {
             <Text style={styles.sectionTitle}>Edit entry text</Text>
             <TextInput
               style={styles.textInput}
+              returnKeyType="done"
+              submitBehavior="blurAndSubmit"
+              onSubmitEditing={()=>Keyboard.dismiss()}
               multiline
               placeholder="Write your thoughts here..."
               placeholderTextColor="#666"

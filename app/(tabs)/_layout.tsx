@@ -69,7 +69,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="chat"
           options={{
-            title: "Chat",
+            title: "Mentor",
             tabBarIcon: ({ color }) => (
               <View style={styles.iconContainer}><Octicons name="dependabot" size={24} color={color} /></View>
             ),
