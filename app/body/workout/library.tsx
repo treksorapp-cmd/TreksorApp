@@ -1,14 +1,14 @@
-import {colors} from "@/theme/architect";
 import BodyPageHeading from "@/components/BodyPageHeading";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import React from "react";
-import {ScrollView,Text,TouchableOpacity,View} from "react-native";
-import {router} from "expo-router";
+import {GymExercise,mergeGymExercises} from "@/lib/gym-library";
+import {useContentRefresh} from "@/hooks/useContentRefresh";
 import {Ionicons} from "@expo/vector-icons";
-const GOLD="#D7B877";
+import {router} from "expo-router";
+import {useCallback,useState} from "react";
+import {ScrollView,Text,TextInput,TouchableOpacity,View,RefreshControl} from "react-native";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 export default function ExerciseLibrary(){
- const insets=useSafeAreaInsets();return <ScrollView style={{flex:1,backgroundColor: colors.background}} contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:90}}>
-<BodyPageHeading trail="BODY / WORKOUT / GYM" title="EXERCISE LIBRARY" style={{paddingLeft:0,paddingRight:0}} />
-<Text style={{color:"#C9C5BC",marginTop:9,lineHeight:21,marginBottom:24}}>Explore classic training splits independently from your personal plan.</Text>
-{[{name:"Push",desc:"Chest · Shoulders · Triceps",icon:"arrow-up-circle-outline"},{name:"Pull",desc:"Back · Biceps",icon:"repeat-outline"},{name:"Legs",desc:"Quads · Hamstrings · Glutes",icon:"walk-outline"}].map(item=><TouchableOpacity key={item.name} onPress={()=>router.push({pathname:"/body/workout/exercises",params:{workoutId:item.name.toLowerCase()}})} style={{backgroundColor:"rgba(183,221,240,0.075)",borderRadius:17,padding:20,marginBottom:13,flexDirection:"row",alignItems:"center",gap:14}}><Ionicons name={item.icon as any} size={25} color={GOLD}/><View style={{flex:1}}><Text style={{color:"white",fontSize:18,lineHeight:25,fontWeight:"600"}}>{item.name}</Text><Text style={{color:"#C7C2B7",marginTop:5}}>{item.desc}</Text></View><Ionicons name="chevron-forward" color={GOLD} size={20}/></TouchableOpacity>)}
-</ScrollView>}
+ const insets=useSafeAreaInsets();const [items,setItems]=useState<GymExercise[]>(mergeGymExercises([])),[query,setQuery]=useState(""),[group,setGroup]=useState("All"),[loading,setLoading]=useState(false),[error,setError]=useState("");
+ const refresh=useCallback(async()=>{setLoading(true);try{const r=await fetch("https://treksor-admin-production.up.railway.app/api/public/discover?type=exercises");if(!r.ok)throw Error();const data=await r.json();setItems(mergeGymExercises(data.data||[]));setError("")}catch{setError("Showing the saved Treksor library. Pull to retry the dashboard connection.")}finally{setLoading(false)}},[]);useContentRefresh(refresh);
+ const visible=items.filter(item=>(group==="All"||item.muscle_group===group)&&item.name.toLowerCase().includes(query.trim().toLowerCase()));
+ return <ScrollView style={{flex:1,backgroundColor:"#02050C"}} contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:90}} refreshControl={<RefreshControl refreshing={loading} onRefresh={refresh} tintColor="#D7B877"/>} keyboardShouldPersistTaps="handled"><BodyPageHeading trail="BODY / GYM" title="Exercise library" subtitle="Your exercises, technique cues and demonstrations." style={{paddingHorizontal:0}}/><TextInput accessibilityLabel="Search exercises" value={query} onChangeText={setQuery} placeholder="Search exercises…" placeholderTextColor="#999" style={{marginTop:20,padding:15,borderRadius:13,backgroundColor:"#131C27",color:"white"}}/><ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginVertical:16}}>{["All","Chest","Back","Shoulders","Arms","Legs","Glutes","Core"].map(value=><TouchableOpacity key={value} onPress={()=>setGroup(value)} style={{padding:11,marginRight:8,borderRadius:12,backgroundColor:group===value?"#D7B877":"#18212C"}}><Text style={{color:group===value?"#15110A":"#DDD"}}>{value}</Text></TouchableOpacity>)}</ScrollView>{!!error&&<Text style={{color:"#D7B877",marginBottom:13}}>{error}</Text>}<Text style={{color:"#A9A398",marginBottom:12}}>{visible.length} exercises</Text>{visible.map(item=><TouchableOpacity key={item.id} onPress={()=>router.push({pathname:"/body/workout/details",params:{id:item.id}})} style={{padding:17,marginBottom:11,borderRadius:16,backgroundColor:"rgba(183,221,240,.075)",flexDirection:"row",alignItems:"center",gap:12}}><Ionicons name="barbell-outline" size={25} color="#D7B877"/><View style={{flex:1}}><Text style={{color:"white",fontSize:16,fontWeight:"700"}}>{item.name}</Text><Text style={{color:"#BDB5A6",marginTop:6,fontSize:12}}>{item.muscle_group} · {item.sets} × {item.reps}</Text></View><Ionicons name="play-circle-outline" color="#D7B877" size={25}/></TouchableOpacity>)}{!visible.length&&<Text style={{color:"#C3BCAF"}}>No exercises match this search.</Text>}</ScrollView>;
+}

@@ -3,6 +3,7 @@ import type { Workout } from "@/types/workout";
 
 export type GymExercise = {
   id: string;
+  serverId?: string;
   name: string;
   muscle_group: string;
   location: string;
@@ -65,7 +66,8 @@ export function mergeGymExercises(remote: Partial<GymExercise>[]): GymExercise[]
     if (!item || typeof item.id !== "string" || typeof item.name !== "string") continue;
     const index = merged.findIndex(exercise => normalize(exercise.name) === normalize(item.name!));
     const next: GymExercise = {
-      id: item.id,
+      id: index >= 0 ? merged[index].id : item.id,
+      serverId: item.id,
       name: item.name,
       muscle_group: item.muscle_group ?? "Core",
       location: item.location ?? "Both",
