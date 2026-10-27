@@ -55,12 +55,20 @@ export const useArticleStore = create<ArticleState>()(
           if (results.every(result => result.status === "rejected")) throw new Error("Unable to load articles");
           if (results[1].status === "rejected") throw new Error("Dashboard content unavailable");
           if (!Array.isArray(editorial) || !Array.isArray(legacy)) throw new Error("Invalid article feed");
-          const merged = [...legacy, ...editorial.filter(article => matchesCategory(article.category, category))];
-          const unique = Array.from(new Map(merged.map(article => [article._id, article])).values());
-          set(state => ({
-            loading: false,
-            articles: { ...state.articles, [key]: unique.map(article => ({ ...article, isRead: Object.values(state.articles).flat().some(old => old._id === article._id && old.isRead) })) }
-          }));
+          const unique = Array.from(new Map([...legacy, ...editorial].map(article => [article._id, article])).values());
+          set(state => {
+            const records = unique.map(article => ({ ...article, isRead: Object.values(state.articles).flat().some(old => old._id === article._id && old.isRead) }));
+            const next = { ...state.articles, [key]: records.filter(article => matchesCategory(article.category, category)) };
+            // The dashboard returns the full editorial catalogue: populate every pillar
+            // immediately, rather than leaving a stale category cache behind.
+            for (const pillar of ["Body", "Mind", "Mental", "Balance", "Spiritual", "Purpose"]) {
+              const previous = (state.articles[pillar] || []).filter(article => !editorial.some(item => item._id === article._id));
+              const current = records.filter(article => matchesCategory(article.category, pillar));
+              next[pillar] = Array.from(new Map([...previous, ...current].map(article => [article._id, article])).values());
+            }
+            if (category === "all") next["All Articles"] = records;
+            return { loading: false, articles: next };
+          });
         } catch (error) {
           set({ loading: false, error: "Unable to load articles" });
           console.error("Article sync failed", error);

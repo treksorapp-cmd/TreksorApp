@@ -40,7 +40,7 @@ export default function ArticlesScreen({ mode = "tab", category = "All Articles"
   const [totalPages, setTotalPages] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("newest");
-  const categories = ["All Articles", "Body", "Mental", "Spiritual", "Purpose"]
+  const categories = ["All Articles", "Body", "Mind", "Balance", "Purpose"]
 
   const fetchArticlesMethod = async (pageNum = 1, refresh = false, category?: string) => {
     if (pageNum === 1) {
