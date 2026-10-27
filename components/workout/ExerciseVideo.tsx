@@ -6,17 +6,16 @@ import axios from "axios"
 const API = "https://treksor-admin-production.up.railway.app"
 
 export default function ExerciseVideo({ exerciseId, videoUrl }: { exerciseId: string; videoUrl?: string }) {
-  const [url, setUrl] = useState<string | null>(videoUrl ?? null)
+  const [url, setUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const player = useVideoPlayer(url, p => { p.loop = true })
 
-  useEffect(() => {
-    if (videoUrl) setUrl(videoUrl)
-  }, [videoUrl])
+  useEffect(() => { if(url) void player.replaceAsync(url).catch(()=>setError("Unable to play this video. Please retry.")) }, [url,player])
+  useEffect(() => { void load() }, [exerciseId,videoUrl])
 
   useEffect(() => {
-    return () => { player.pause() }
+    return () => { try { player.pause() } catch { /* Player may already be released by the video hook. */ } }
   }, [player])
 
   async function load() {
@@ -29,7 +28,8 @@ export default function ExerciseVideo({ exerciseId, videoUrl }: { exerciseId: st
       })
       setUrl(response.data.url)
     } catch {
-      setError("Video temporarily unavailable. Please try again.")
+      if(videoUrl) setUrl(videoUrl)
+      else setError("No demonstration is linked yet. Link this exercise in dashboard Media.")
     } finally {
       setLoading(false)
     }
