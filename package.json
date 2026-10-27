@@ -14,7 +14,8 @@
     "test:integrity": "node tests/source-integrity.cjs",
     "test:progress": "node tests/progress-sync.cjs",
     "test:audio": "node tests/audio-lifecycle.cjs",
-    "test:dashboard": "node tests/progress-dashboard.cjs"
+    "test:dashboard": "node tests/progress-dashboard.cjs",
+    "test:content": "node tests/content-sync.cjs"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",

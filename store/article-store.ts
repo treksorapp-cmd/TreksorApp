@@ -1,3 +1,4 @@
+import { matchesCategory } from "@/lib/content-publication";
 import { api } from "@/api/axios";
 import axios from "axios";
 const CONTENT_FEED = "https://treksor-admin-production.up.railway.app/api/public/content";
@@ -46,17 +47,19 @@ export const useArticleStore = create<ArticleState>()(
         const key = category === "all" ? "All Articles" : category;
         try {
           const results = await Promise.allSettled([
-            api.get<ArticleResponse>(`article?${query}&date=${new Date().toISOString().split("T")[0]}`),
+            api.get<ArticleResponse>(`article?${query}&date=${new Date().toISOString().split("T")[0]}`, { timeout: 12000 }),
             axios.get<ArticleResponse>(`${CONTENT_FEED}?type=articles`, { timeout: 12000 }),
           ]);
           const legacy = results[0].status === "fulfilled" ? results[0].value.data.data : [];
           const editorial = results[1].status === "fulfilled" ? results[1].value.data.data : [];
           if (results.every(result => result.status === "rejected")) throw new Error("Unable to load articles");
-          const merged = [...editorial.filter(article => category === "all" || category === "default" || article.category === category), ...legacy];
+          if (results[1].status === "rejected") throw new Error("Dashboard content unavailable");
+          if (!Array.isArray(editorial) || !Array.isArray(legacy)) throw new Error("Invalid article feed");
+          const merged = [...legacy, ...editorial.filter(article => matchesCategory(article.category, category))];
           const unique = Array.from(new Map(merged.map(article => [article._id, article])).values());
           set(state => ({
             loading: false,
-            articles: { ...state.articles, [key]: unique.map(article => ({ ...article, isRead: state.articles[key]?.find(old => old._id === article._id)?.isRead ?? false })) }
+            articles: { ...state.articles, [key]: unique.map(article => ({ ...article, isRead: Object.values(state.articles).flat().some(old => old._id === article._id && old.isRead) })) }
           }));
         } catch (error) {
           set({ loading: false, error: "Unable to load articles" });
@@ -93,37 +96,11 @@ export const useArticleStore = create<ArticleState>()(
       },
 
       markArticleAsRead: (type: string, id: string) => {
-        const allArticles = get().articles;
-
-        if (type === 'All Articles') {
-          const existingArticles = allArticles[type] || [];
-          const articleIndex = existingArticles.findIndex(article => article._id === id);
-          if (articleIndex !== -1) {
-            existingArticles[articleIndex].isRead = true;
-            const existingCategoryArticles = allArticles[existingArticles[articleIndex].category] || [];
-            const categoryArticleIndex = existingCategoryArticles.findIndex(article => article._id === id);
-            if (categoryArticleIndex !== -1) {
-              existingCategoryArticles[categoryArticleIndex].isRead = true;
-            }
-            allArticles[existingArticles[articleIndex].category] = existingCategoryArticles;
-          }
-        } else {
-          const existingArticles = allArticles[type] || [];
-          const articleIndex = existingArticles.findIndex(article => article._id === id);
-          if (articleIndex !== -1) {
-            existingArticles[articleIndex].isRead = true;
-          }
-          const existingCategoryArticles = allArticles['All Articles'] || [];
-          const categoryArticleIndex = existingCategoryArticles.findIndex(article => article._id === id);
-          if (categoryArticleIndex !== -1) {
-            existingCategoryArticles[categoryArticleIndex].isRead = true;
-          }
-          allArticles['All Articles'] = existingCategoryArticles;
-        }
-        const totalArticles = allArticles['All Articles'] || [];
-        const allArticlesRead = totalArticles ? countRead(totalArticles) : 0;
-      
-        set({ articles: allArticles, unreadArticlesCount: totalArticles.length - allArticlesRead });
+        set(state => {
+          const articles = Object.fromEntries(Object.entries(state.articles).map(([key, list]) => [key, list.map(article => article._id === id ? { ...article, isRead: true } : article)]));
+          const all = articles["All Articles"] || [];
+          return { articles, unreadArticlesCount: all.length - countRead(all) };
+        });
       },
 
     }),

@@ -1,3 +1,4 @@
+import { useContentRefresh } from "@/hooks/useContentRefresh";
 import {colors} from "@/theme/architect";
 import {useReducedMotion} from "@/hooks/useReducedMotion";
 import JourneyCard from "@/components/JourneyCard";
@@ -46,7 +47,7 @@ export default function HomeScreen() {
   const powerThoughts = usePowerThoughtStore(state => state.powerThoughts);
   const fetchPowerThoughts = usePowerThoughtStore(state => state.fetchPowerThoughts);
   const markRead = usePowerThoughtStore(state => state.markPowerThoughtAsRead);
-  useEffect(() => { fetchPowerThoughts(); }, [fetchPowerThoughts]);
+  useContentRefresh(fetchPowerThoughts);
 
   const firstName = user?.name?.trim().split(" ")[0] || "Explorer";
   const [now,setNow]=useState(()=>new Date());

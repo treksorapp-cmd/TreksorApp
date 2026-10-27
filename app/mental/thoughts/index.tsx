@@ -1,3 +1,4 @@
+import { useContentRefresh } from "@/hooks/useContentRefresh";
 import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
 
@@ -8,11 +9,10 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
 import {
   Alert,
   Dimensions,
-  Animated as RNAnimated,
+  RefreshControl,
   ScrollView,
   Share,
   StyleSheet,
@@ -24,26 +24,9 @@ import {
 const { width } = Dimensions.get("window");
 
 export default function PowerThoughtsScreen() {
-  const {powerThoughts} = usePowerThoughtStore();
+  const { powerThoughts, loading, error, fetchPowerThoughts } = usePowerThoughtStore();
+  useContentRefresh(fetchPowerThoughts);
   const insets = useSafeAreaInsets();
-  const [animatedValues] = useState(
-    powerThoughts.map(() => new RNAnimated.Value(0))
-  );
-
-  useEffect(() => {
-    // Stagger the card animations
-    const animations = animatedValues.map((animatedValue, index) =>
-      RNAnimated.timing(animatedValue, {
-        toValue: 1,
-        duration: 600,
-        delay: index * 100,
-        useNativeDriver: true,
-      })
-    );
-
-    RNAnimated.stagger(80, animations).start();
-  }, []);
-
   const handleBackPress = () => {
     router.back();
   };
@@ -61,35 +44,8 @@ export default function PowerThoughtsScreen() {
   };
 
   const renderThoughtCard = (thought: PowerThought, index: number) => {
-    const animatedValue = animatedValues[index];
-    if (!animatedValue) return null;
-
-    const translateY = animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [30, 0],
-    });
-
-    const opacity = animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 1],
-    });
-
-    const scale = animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0.95, 1],
-    });
-
     return (
-      <RNAnimated.View
-        key={thought._id}
-        style={[
-          styles.thoughtCard,
-          {
-            opacity,
-            transform: [{ translateY }, { scale }],
-          },
-        ]}
-      >
+      <View key={thought._id} style={styles.thoughtCard}>
         {/* Outer LinearGradient for the border */}
         <LinearGradient
           colors={["rgba(205,235,248,0.22)", "rgba(205,235,248,0.08)"]}
@@ -124,7 +80,7 @@ export default function PowerThoughtsScreen() {
             </View>
           </LinearGradient>
         </LinearGradient>
-      </RNAnimated.View>
+      </View>
     );
   };
 
@@ -144,6 +100,7 @@ export default function PowerThoughtsScreen() {
       <BodyPageHeading trail="MIND" title="Power thoughts" style={{paddingTop:insets.top+12,paddingBottom:20}} />
       {/* Thoughts List */}
       <ScrollView
+        refreshControl={<RefreshControl refreshing={loading} onRefresh={fetchPowerThoughts} tintColor="#D7B877" />}
         style={styles.content}
         contentContainerStyle={{
           paddingHorizontal: 20,
@@ -153,6 +110,8 @@ export default function PowerThoughtsScreen() {
         showsVerticalScrollIndicator={false}
         // showsVerticalScrollIndicator={false}
       >
+        {error && <TouchableOpacity onPress={fetchPowerThoughts} accessibilityRole="button"><Text style={styles.dateText}>{error}. Tap to retry.</Text></TouchableOpacity>}
+        {!loading && !error && powerThoughts.length === 0 && <Text style={styles.thoughtText}>Your next moment of inspiration is on its way.</Text>}
         {powerThoughts.map((thought, index) =>
           renderThoughtCard(thought, index)
         )}

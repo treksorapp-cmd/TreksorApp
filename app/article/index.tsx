@@ -1,3 +1,4 @@
+import { useContentRefresh } from "@/hooks/useContentRefresh";
 import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
 
@@ -31,7 +32,7 @@ const { width } = Dimensions.get("window");
 const cardWidth = (width - 60) / 2; // Account for padding and gap
 
 export default function ArticlesScreen({ mode = "tab", category = "All Articles" }: ArticlesScreenProps) {
-  const { fetchArticles, loading, articles } = useArticleStore();
+  const { fetchArticles, loading, articles, error } = useArticleStore();
   const insets = useSafeAreaInsets();
   const [activeCategory, setActiveCategory] = useState(category)
   const [refreshing, setRefreshing] = useState(false);
@@ -49,7 +50,7 @@ export default function ArticlesScreen({ mode = "tab", category = "All Articles"
     }
     const categoryParam = category && category !== "All Articles" ? `${category}` : "all"
     try {
-      fetchArticles(`category=${categoryParam}&page=${pageNum}`);
+      await fetchArticles(`category=${categoryParam}&page=${pageNum}`);
       //   const response = await fetch(`https://app.treksor.app/api/v1/article?category=Body&page=${pageNum}`)
       //   const data: ApiResponse = await response.json()
 
@@ -71,18 +72,12 @@ export default function ArticlesScreen({ mode = "tab", category = "All Articles"
     }
   };
 
-  // useEffect(() => {
-  //   fetchArticlesMethod(1);
-  // }, []);
-
-  useEffect(() => {
-    fetchArticlesMethod(1, false, activeCategory === "All Articles" ? undefined : activeCategory)
-  }, [activeCategory])
-
-  const handleRefresh = useCallback(() => {
-    // fetchArticlesMethod(1, true);
-    fetchArticlesMethod(1, true, activeCategory === "All Articles" ? undefined : activeCategory)
-  }, []);
+  const refreshContent = useCallback(() => fetchArticles(`category=${encodeURIComponent(activeCategory === "All Articles" ? "all" : activeCategory)}&page=1`), [activeCategory, fetchArticles]);
+  useContentRefresh(refreshContent);
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try { await refreshContent(); } finally { setRefreshing(false); }
+  }, [refreshContent]);
 
   const handleLoadMore = () => {
     if (!loadingMore && page < totalPages) {
@@ -174,9 +169,10 @@ export default function ArticlesScreen({ mode = "tab", category = "All Articles"
         <CategoryFilter categories={categories} activeCategory={activeCategory} onCategoryChange={handleCategoryChange} />
       )}
 
+      {error && <TouchableOpacity onPress={handleRefresh} accessibilityRole="button"><Text style={{ color: "#D7B877", padding: 16 }}>{error}. Tap to retry.</Text></TouchableOpacity>}
       {/* Articles List */}
       <View style={styles.content}>
-        {loading ? (
+        {loading && !(articles[activeCategory]?.length) ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#D7B877" />
             <Text style={styles.loadingText}>Loading articles...</Text>
