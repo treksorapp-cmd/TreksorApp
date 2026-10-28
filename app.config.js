@@ -4,7 +4,7 @@ export default {
   expo: {
     name: isIphoneDev ? "Treksor Dev" : "Treksor",
     slug: isIphoneDev ? "treksorapp" : "Treksor",
-    ...(isIphoneDev ? { owner: "treksorapps-team" } : {}),
+    owner: "treksorapps-team",
     version: "1.1.0",
     orientation: "portrait",
     icon: "./assets/images/appicon-treksor.png",
@@ -90,7 +90,7 @@ export default {
     extra: {
       router: {},
       eas: {
-        projectId: isIphoneDev ? "14f7500b-1aba-4cea-9c2b-ded2c67821e2" : "67c51458-b4bc-49a9-a9a9-c9117a576b2d"
+        projectId: isIphoneDev ? "14f7500b-1aba-4cea-9c2b-ded2c67821e2" : "fff5ba02-2ec6-45e0-99b6-7daf868561f4"
       }
     },
   },
