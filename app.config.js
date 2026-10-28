@@ -5,7 +5,7 @@ export default {
     name: isIphoneDev ? "Treksor Dev" : "Treksor",
     slug: isIphoneDev ? "treksorapp" : "Treksor",
     ...(isIphoneDev ? { owner: "treksorapps-team" } : {}),
-    version: "1.0.3",
+    version: "1.1.0",
     orientation: "portrait",
     icon: "./assets/images/appicon-treksor.png",
     scheme: isIphoneDev ? "treksor-dev" : "treksorapp",
@@ -20,7 +20,7 @@ export default {
       supportsTablet: true,
       bundleIdentifier: isIphoneDev ? "com.treksor.dev" : "com.treksor.prod",
       googleServicesFile: process.env.GOOGLE_SERVICES_INFOPLIST,
-      buildNumber: "3",
+      buildNumber: "5",
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         NSPhotoLibraryUsageDescription:
