@@ -96,6 +96,9 @@ params={id:nutrition.beverages.data[0].id};
 let html=renderToStaticMarkup(React.createElement(load('app/body/nutrition/beverage-details.tsx').default));
 const beverageName=displayLabel(nutrition.beverages.data[0].name);
 assert(html.indexOf(beverageName)<html.indexOf('data-media="true"'),'Drink heading must precede its photo');
+for(const item of nutrition.beverages.data){params={id:item.id};const result=renderToStaticMarkup(React.createElement(load('app/body/nutrition/beverage-details.tsx').default));assert(result.indexOf(displayLabel(item.name))<result.indexOf('data-media="true"'));assert(result.includes('Ingredients'))}
+pathname='/body/nutrition/supplement-details';
+for(const item of nutrition.supplements.data){params={id:item.id};const result=renderToStaticMarkup(React.createElement(load('app/body/nutrition/supplement-details.tsx').default));assert(result.indexOf(displayLabel(item.name))<result.indexOf('data-media="true"'));assert(result.includes('Overview'))}
 pathname='/spiritual/mediation/beginner';params={id:'beginner'};
 const Meditation=load('app/spiritual/mediation/[id].tsx').default;
 html=renderToStaticMarkup(React.createElement(Meditation));

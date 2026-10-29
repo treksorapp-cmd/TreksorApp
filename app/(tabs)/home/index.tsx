@@ -142,7 +142,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
-  content: { paddingHorizontal: 20, paddingTop: 13, paddingBottom: 118 },
+  content: { paddingHorizontal: 20, paddingTop: 13, paddingBottom: 28 },
   hero: { minHeight: 276, marginHorizontal: -20, marginTop: -8, marginBottom: 26, overflow: "hidden", backgroundColor: "#151715" },
   heroContent: { flex: 1, paddingTop: 88, justifyContent: "flex-end", paddingHorizontal: 24, paddingBottom: 28 },
   heroTitle: { color: "#F7F5F0", fontSize: 34, lineHeight: 42, fontWeight: "600", letterSpacing: -0.6, includeFontPadding: false, },

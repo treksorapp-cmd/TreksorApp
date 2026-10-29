@@ -1,3 +1,4 @@
+import NutritionArtwork from "@/components/nutrition/NutritionArtwork";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import { Nutritions } from "@/mock/nutrition";
 import { Ionicons } from "@expo/vector-icons";
@@ -15,7 +16,8 @@ const BORDER = "rgba(205,235,248,0.20)";
 type Beverage = (typeof Nutritions.beverages.data)[number];
 
 export default function BeverageDetails() {
-  const { id } = useLocalSearchParams<{id:string}>();
+  const params = useLocalSearchParams<{id:string|string[]}>();
+  const id=Array.isArray(params.id)?params.id[0]:params.id;
   const insets = useSafeAreaInsets();
   const [showReferences, setShowReferences] = useState(false);
   const beverage = Nutritions.beverages.data.find(item => item.id === id) as Beverage | undefined;
@@ -33,11 +35,7 @@ export default function BeverageDetails() {
     <StatusBar style="light"/>
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:insets.bottom+48}}>
       <BodyPageHeading trail="BODY / BEVERAGES" title={beverage.name} style={{paddingTop:insets.top+12,paddingBottom:24}} />
-      <View style={styles.hero}>
-        <ImageBackground source={beverage.backgroundImage} contentFit="cover" style={StyleSheet.absoluteFill}/>
-        <LinearGradient colors={["rgba(2,5,12,0.35)","rgba(2,5,12,0.45)","#02050C"]} locations={[0,0.48,1]} style={StyleSheet.absoluteFill}/>
-
-      </View>
+      <View style={{paddingHorizontal:22,marginBottom:22}}><NutritionArtwork source={beverage.backgroundImage} label={beverage.name}/></View>
       <View style={styles.content}>
         <View style={styles.descriptionCard}>
           <Text style={styles.sectionEyebrow}>THE RITUAL</Text>

@@ -1,10 +1,10 @@
+import {cachedGymCatalogue,getGymCatalogue} from "@/lib/gym-catalogue";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import Button from "@/components/ui/Button";
 import { exercisesForMuscles, GymExercise, mergeGymExercises } from "@/lib/gym-library";
 import { useWorkoutStore } from "@/store/workout-store";
 import { colors } from "@/theme/architect";
 import { Ionicons } from "@expo/vector-icons";
-import axios from "axios";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React, { useEffect, useMemo, useState } from "react";
@@ -20,9 +20,9 @@ export default function MyPlan(){
   const insets=useSafeAreaInsets();
   const plan=useWorkoutStore(s=>s.trainingPlan),checkIns=useWorkoutStore(s=>s.checkIns)||{},active=useWorkoutStore(s=>s.activeGymWorkout),start=useWorkoutStore(s=>s.startGymWorkout),discard=useWorkoutStore(s=>s.discardGymWorkout);
   const overrides=useWorkoutStore(s=>s.exerciseOverrides)||{},setDayExercises=useWorkoutStore(s=>s.setDayExercises);
-  const [exerciseList,setExerciseList]=useState<GymExercise[]>(mergeGymExercises([]));
+  const [exerciseList,setExerciseList]=useState<GymExercise[]>(cachedGymCatalogue);
   const [openDay,setOpenDay]=useState(0),[editDay,setEditDay]=useState<number|null>(null),[libraryError,setLibraryError]=useState(false);
-  useEffect(()=>{let mounted=true;axios.get("https://treksor-admin-production.up.railway.app/api/public/discover?type=exercises",{timeout:12000}).then(r=>{if(mounted&&Array.isArray(r.data?.data))setExerciseList(mergeGymExercises(r.data.data))}).catch(()=>{if(mounted)setLibraryError(true)});return()=>{mounted=false}},[]);
+  useEffect(()=>{let mounted=true;getGymCatalogue().then(items=>{if(mounted)setExerciseList(items)}).catch(()=>{if(mounted)setLibraryError(true)});return()=>{mounted=false}},[]);
   const dayNames=useMemo(()=>plan?splits(plan.days):[],[plan]);
   const done=(checkIns[weekKey()]||[]).length;
   function startDay(day:number,name:string,items:GymExercise[]){

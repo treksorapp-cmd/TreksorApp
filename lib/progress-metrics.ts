@@ -51,14 +51,16 @@ export function applyTrackerDay(items: TrackingItem[], date: string, checked: Re
 }
 
 export type ProgressEvent = {
-  id: string; date: string; kind: "session" | "set" | "reflection" | "journal" | "habit";
+  id: string; date: string; kind: "session" | "set" | "reflection" | "journal" | "habit" | "checkin" | "moment";
   title: string; source: string; route?: string; trackerId?: string;
 };
 export interface ProgressInput {
   checkIns: Record<string, string[]>;
-  gymSets: { id: string; exerciseName: string; kg: number; reps: number; recordedAt: string }[];
+  gymSets: { id: string; exerciseName: string; kg: number; reps: number; recordedAt: string; metric?:string }[];
   reflections: { id: string; date: string }[];
   journalDates: string[];
+  dailyCheckInDates?:string[];
+  momentDates?:string[];
   trackers: TrackingCategory[];
   meditations: { id: string; isRead?: boolean }[];
   articles: Record<string, { _id: string; isRead?: boolean }[]>;
@@ -72,9 +74,11 @@ export function buildProgressOverview(input: ProgressInput, period: 7 | 30, now 
     if (date && date >= days[0] && date <= today) events.push({ ...event, date });
   };
   [...new Set(Object.values(input.checkIns).flat())].forEach(stamp => add({ id: `session:${stamp}`, kind: "session", title: "Training session completed", source: "Body · My plan", route: "/body/workout/my-plan" }, stamp));
-  [...new Map(input.gymSets.map(s => [s.id, s])).values()].filter(s => Number.isFinite(s.kg) && s.kg > 0 && Number.isInteger(s.reps) && s.reps >= 1 && s.reps <= 30).forEach(s => add({ id: `set:${s.id}`, kind: "set", title: s.exerciseName, source: `Gym · ${s.reps} reps × ${s.kg} kg`, route: "/body/workout/progress" }, s.recordedAt));
+  [...new Map(input.gymSets.map(s => [s.id, s])).values()].filter(s => Number.isFinite(s.kg) && s.kg >= 0 && Number.isInteger(s.reps) && s.reps >= 1 && s.reps <= 300).forEach(s => add({ id: `set:${s.id}`, kind: "set", title: s.exerciseName, source: s.metric==="seconds"?`Gym · ${s.reps} seconds`:s.kg===0?`Gym · ${s.reps} bodyweight reps`:`Gym · ${s.reps} reps × ${s.kg} kg`, route: "/body/workout/progress" }, s.recordedAt));
   [...new Map(input.reflections.map(r => [r.id, r])).values()].forEach(r => add({ id: `reflection:${r.id}`, kind: "reflection", title: "Reflection saved", source: "My space · Private", route: "/mental/myspace" }, r.date));
   [...new Set(input.journalDates)].forEach(date => add({ id: `journal:${date}`, kind: "journal", title: "Personal journal entry", source: "Mind · Private", route: "/mind/journal" }, date));
+  [...new Set(input.dailyCheckInDates||[])].forEach(date=>add({id:`checkin:${date}`,kind:"checkin",title:"Daily check-in saved",source:"Progress · Private self-report",route:"/(tabs)/tracking"},date));
+  [...new Set(input.momentDates||[])].forEach(date=>add({id:`moment:${date}`,kind:"moment",title:"Life moment captured",source:"Mind · Personal calendar",route:"/mind/moments"},date));
   input.trackers.filter(t => t.custom).forEach(t => t.items.forEach(item => Object.entries(item.record ?? {}).filter(([, value]) => value === true).forEach(([date]) => add({ id: `habit:${t.id}:${item.id}:${date}`, kind: "habit", title: item.label, source: `Personal tracker · ${t.title}`, trackerId: t.id }, date))));
   events.sort((a, b) => b.date.localeCompare(a.date) || a.id.localeCompare(b.id));
   const active = new Set(events.map(e => e.date));

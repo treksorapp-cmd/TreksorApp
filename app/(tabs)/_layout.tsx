@@ -34,13 +34,14 @@ export default function TabLayout() {
         initialRouteName="home"
         screenOptions={{
           animation: "shift",
+          tabBarHideOnKeyboard: true,
           sceneStyle: {
             backgroundColor: colors.background,
           },
           tabBarBackground: () => <View pointerEvents="none" style={StyleSheet.absoluteFill}><View style={styles.goldDivider}/></View>,
           tabBarStyle: Platform.select({
             ios: {
-              position: "absolute",
+              position: "relative",
               backgroundColor: colors.background,
               borderTopWidth: 0,
               elevation: 0,

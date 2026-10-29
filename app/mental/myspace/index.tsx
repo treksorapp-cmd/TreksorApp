@@ -166,6 +166,7 @@ export default function MySpaceScreen() {
         <Text style={{color:"#D7B877",marginTop:10}}>{moodTrend.length?`Average: ${(moodTrend.reduce((sum,item)=>sum+item.score,0)/moodTrend.length).toFixed(1)} / 5 · ${moodTrend.length} recorded days`:"No moods recorded yet. Save a reflection with a mood to start your chart."}</Text>
       </View>
       <View style={{paddingHorizontal:20}}><Button iconName="create-outline" onPress={()=>router.push({pathname:"/mental/myspace/new-entry",params:{pillar:origin}})}>TODAY'S ENTRY</Button></View>
+      <View style={{paddingHorizontal:20}}><Button iconName="images-outline" onPress={()=>router.push("/mind/moments")}>MY MOMENTS & PHOTO CALENDAR</Button></View>
       {/* Thoughts List */}
       <View style={{paddingHorizontal:20,gap:16,paddingVertical:10}}>
         {myspaces.length === 0 && <View style={{padding:22,borderRadius:18,backgroundColor:"#111820",gap:8}}><Text style={{color:"#F5F4F1",fontSize:18,lineHeight:25,fontWeight:"600"}}>Start with one thought</Text><Text style={{color:"#C8C3BA",fontSize:15,lineHeight:23}}>Your saved reflections will appear here. There is no right way to begin.</Text></View>}

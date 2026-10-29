@@ -1,11 +1,11 @@
-const isIphoneDev = process.env.EAS_BUILD_PROFILE === "iphone-dev" || process.env.TREKSOR_IPHONE_DEV === "1";
+const isIphoneDev = process.env.EAS_BUILD_PROFILE ? process.env.EAS_BUILD_PROFILE === "iphone-dev" : process.env.TREKSOR_IPHONE_DEV === "1";
 
 export default {
   expo: {
     name: isIphoneDev ? "Treksor Dev" : "Treksor",
     slug: isIphoneDev ? "treksorapp" : "Treksor",
     ...(isIphoneDev ? { owner: "treksorapps-team" } : {}),
-    version: "1.0.3",
+    version: "1.1.0",
     orientation: "portrait",
     icon: "./assets/images/appicon-treksor.png",
     scheme: isIphoneDev ? "treksor-dev" : "treksorapp",
@@ -53,7 +53,7 @@ export default {
         "expo-image-picker",
         {
           photosPermission:
-            "The app accesses your photos to let you change your profile picture.",
+            "Choose photos for your profile and private Life moments calendar. Photos are shared only when you choose to publish them.",
         },
       ],
       // [

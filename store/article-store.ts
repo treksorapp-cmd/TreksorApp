@@ -75,18 +75,13 @@ export const useArticleStore = create<ArticleState>()(
         }
       },
 
-      fetchArticleById: async (data) => {
-        try {
-          set({ loading: true, error: null });
-          const articles = get().articles[data.category] = get().articles[`${data.category}`] || [];
-          const article = articles.find(article => article._id === data.id);
-          set({ loading: false });
-          return article;
-        } catch (error: any) {
-          console.error("fetchArticleById error:", { error: error.response.data });
-          set({ error: error.response.data.message, loading: false });
-          errorHandler(error);
-        }
+      fetchArticleById: async ({id}) => {
+        const find=()=>Object.values(get().articles).flat().find(article=>article._id===id);
+        const cached=find();
+        if(cached)return cached;
+        // Fresh pillar cards can be the first entry point, before any article list was opened.
+        await get().fetchArticles("category=all");
+        return find();
       },
 
       clearData: () => {

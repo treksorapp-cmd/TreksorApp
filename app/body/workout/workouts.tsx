@@ -23,6 +23,7 @@ const WorkoutHome = () => {
           alignItems: "stretch",
           paddingTop:insets.top+12,
           paddingHorizontal: 20,
+          paddingBottom:28,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -46,10 +47,10 @@ export default WorkoutHome;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1,backgroundColor:"#02050C",
   },
   content: {
     flex: 1,
-    paddingTop:10
+    paddingTop:0
   },
 });

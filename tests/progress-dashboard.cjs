@@ -83,7 +83,7 @@ const dashboard=harness('components/progress/ProgressDashboard.tsx');
 let dashboardTree=dashboard({...props,onPeriod:value=>chosenPeriod=value});
 const monthTab=nodes(dashboardTree,n=>n.props?.accessibilityRole==='tab')[1];monthTab.props.onPress();assert.equal(chosenPeriod,30);
 const bodyCard=nodes(dashboardTree,n=>n.props?.accessibilityLabel?.startsWith('Body:'))[0];bodyCard.props.onPress();dashboardTree=dashboard(props);
-assert(nodes(dashboardTree,n=>typeof n.props?.children==='string'&&n.props.children.includes('Mark session complete')).length);
+assert(nodes(dashboardTree,n=>typeof n.props?.children==='string'&&n.props.children.includes('Finish workout')).length);
 let navigated='';dashboardTree=dashboard({...props,onRoute:route=>navigated=route});
 const sourceAction=nodes(dashboardTree,n=>n.props?.onPress&&nodes(n,c=>c.props?.children==='Open my plan').length)[0];sourceAction.props.onPress();assert.equal(navigated,'/body/workout/my-plan');
 

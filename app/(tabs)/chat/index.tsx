@@ -149,7 +149,7 @@ export default function ChatScreen() {
       )}
 
       {/* Input */}
-      <View style={[styles.inputContainer, { paddingBottom: keyboardHeight > 0 ? 12 : insets.bottom + 82, marginBottom: keyboardHeight > 0 ? 12 : 0 }]}>
+      <View style={[styles.inputContainer, { paddingBottom: keyboardHeight > 0 ? 12 : 16, marginBottom: keyboardHeight > 0 ? 12 : 0 }]}>
           <TextInput
             style={styles.textInput}
             accessibilityLabel="Message Treksor"

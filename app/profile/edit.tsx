@@ -36,20 +36,11 @@ export default function EditProfile() {
 
   useEffect(() => { if (user?.name) setName(user.name); if (user?.avatar) setAvatar(user.avatar) }, [user?.name,user?.avatar])
 
-  useEffect(() => {
-    // Request permission for image library
-    const requestPermission = async () => {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-      if (status !== "granted") {
-        Alert.alert("Permission Required", "Sorry, we need camera roll permissions to upload an avatar.")
-      }
-    }
-
-    requestPermission()
-  }, [])
-
   const handlePickImage = async () => {
     try {
+      const permission=await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if(!permission.granted){Alert.alert("Photo access needed","Allow selected photos to choose a profile picture.");return}
+
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
         base64: true,

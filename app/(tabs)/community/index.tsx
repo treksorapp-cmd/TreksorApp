@@ -5,6 +5,7 @@ import { ActivityIndicator, Keyboard, FlatList, Linking, Text, TextInput, Toucha
 import {SafeAreaView} from "react-native-safe-area-context";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import axios from "axios";
+import {router} from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 type Event = { id:string; title:string; category:string; city:string; starts_at:string; description:string; capacity:number; organizer_name:string };
@@ -38,14 +39,14 @@ export default function Community() {
  const thisWeek=visible.filter(e=>e.starts_at&&new Date(e.starts_at).getTime()<=weekEnd.getTime());
  const search=(keyword:string)=>Linking.openURL("https://www.meetup.com/find/?keywords="+encodeURIComponent(keyword)+"&location="+encodeURIComponent(place+", Australia")).catch(()=>{});
  return <SafeAreaView edges={["top"]} style={{flex:1,backgroundColor: colors.background}}>
- <FlatList data={searchedCity?visible:[]} keyboardShouldPersistTaps="handled" keyExtractor={e=>String(e.id)} contentContainerStyle={{paddingHorizontal:20,paddingBottom:130}}
+ <FlatList data={searchedCity?visible:[]} keyboardShouldPersistTaps="handled" keyExtractor={e=>String(e.id)} contentContainerStyle={{paddingHorizontal:20,paddingBottom:28}}
  ListHeaderComponent={<>
   <BodyPageHeading trail="CONNECT & EXPLORE" title="Community" style={{marginHorizontal:-20,paddingRight:22,marginTop:12}} />
 
   <Text style={{color:"#EDE9E0",fontSize:13,fontWeight:"600",marginTop:25,marginBottom:8}}>YOUR LOCATION</Text>
   <View style={{flexDirection:"row",gap:10}}><TextInput accessibilityLabel="Search city or destination" placeholder="City or destination" placeholderTextColor="#B5B2AA" value={city} onChangeText={setCity} returnKeyType="search" onSubmitEditing={searchCity} autoCapitalize="words" style={{flex:1,color:"#FFFFFF",backgroundColor:GLASS,borderWidth:1,borderColor:"rgba(215,184,119,.25)",borderRadius:13,padding:15,fontSize:16}}/><TouchableOpacity accessibilityRole="button" accessibilityLabel="Search this city" onPress={searchCity} style={{backgroundColor:GOLD,borderRadius:13,paddingHorizontal:17,justifyContent:"center",alignItems:"center",gap:4}}><Ionicons name="search" size={22} color="#17140E"/><Text style={{color:"#17140E",fontSize:10,fontWeight:"800"}}>SEARCH</Text></TouchableOpacity></View>
   {!searchedCity&&<Text style={{color:"#BDB6A9",marginTop:18,lineHeight:22}}>Choose your city and tap Search to discover activities, groups and connections nearby.</Text>}
-  {!!searchedCity&&<><Text style={{color:GOLD,marginTop:17,fontSize:12,fontWeight:"700"}}>EXPLORING {searchedCity.toUpperCase()}</Text><CommunityConnections />
+  {!!searchedCity&&<><Text style={{color:GOLD,marginTop:17,fontSize:12,fontWeight:"700"}}>EXPLORING {searchedCity.toUpperCase()}</Text><CommunityConnections /><TouchableOpacity onPress={()=>router.push("/profile/moments")} style={{padding:17,borderRadius:16,backgroundColor:"rgba(215,184,119,.1)",flexDirection:"row",alignItems:"center",gap:12}}><Ionicons name="images-outline" color={GOLD} size={24}/><View style={{flex:1}}><Text style={{color:"white",fontWeight:"700",fontSize:16}}>Community moments</Text><Text style={{color:"#BAB2A5",fontSize:12,marginTop:5}}>Explore experiences shared by public profiles</Text></View><Ionicons name="arrow-forward" color={GOLD} size={19}/></TouchableOpacity>
   <View style={{marginTop:22,padding:17,backgroundColor:GLASS,borderRadius:14}}>
    <Text style={{color:GOLD,fontSize:11,fontWeight:"800",letterSpacing:1.3}}>YOUR WEEKLY DISCOVERY</Text>
    <Text style={{color:"#F8F5ED",fontSize:18,lineHeight:25,fontWeight:"600",marginTop:9}}>{loading?"Finding what's happening...":thisWeek.length?thisWeek.length+" Treksor "+(thisWeek.length===1?"activity":"activities")+" this week":"Your next experience starts here."}</Text>

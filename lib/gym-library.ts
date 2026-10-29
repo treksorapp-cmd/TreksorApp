@@ -78,7 +78,7 @@ export function mergeGymExercises(remote: Partial<GymExercise>[]): GymExercise[]
       reps: item.reps ?? "8-12",
       rest_seconds: item.rest_seconds ?? 90,
       video_path: item.video_path ?? null,
-      videoUrl: item.video_path ? undefined : (item.videoUrl ?? (index >= 0 ? merged[index].videoUrl : undefined)),
+      videoUrl: item.videoUrl ?? (item.video_path ? undefined : (index >= 0 ? merged[index].videoUrl : undefined)),
     };
     if (index >= 0) merged[index] = next;
     else merged.push(next);

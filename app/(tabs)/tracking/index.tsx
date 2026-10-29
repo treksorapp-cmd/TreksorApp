@@ -1,3 +1,6 @@
+import JourneyDashboard from "@/components/progress/JourneyDashboard";
+import {getJourneyCheckIns} from "@/lib/journey-checkins";
+import {getLifeMoments} from "@/lib/life-moments";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, AppState, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -28,10 +31,11 @@ export default function TrackingScreen() {
   const reflections = useMySpaceStore(s => s.myspaces);
   const meditations = useMediationStore(s => s.mediation);
   const { articles } = useArticleStore();
+  const [detailsOpen,setDetailsOpen]=useState(false);
   const [period, setPeriod] = useState<7 | 30>(7);
   const [now, setNow] = useState(new Date());
   const [reload, setReload] = useState(0);
-  const [extras, setExtras] = useState<{ owner?: string; ready: boolean; accountError: boolean; journalDates: string[]; visionAnswers: unknown[] | null; journalLoading: boolean; visionLoading: boolean; journalError: boolean; visionError: boolean }>({ ready: false, accountError: false, journalDates: [], visionAnswers: null, journalLoading: true, visionLoading: true, journalError: false, visionError: false });
+  const [extras, setExtras] = useState<{ owner?: string; ready: boolean; accountError: boolean; journalDates: string[]; journeyDates:string[]; momentDates:string[]; visionAnswers: unknown[] | null; journalLoading: boolean; visionLoading: boolean; journalError: boolean; visionError: boolean }>({ ready: false, accountError: false, journalDates: [], journeyDates:[], momentDates:[], visionAnswers: null, journalLoading: true, visionLoading: true, journalError: false, visionError: false });
   const [showAddTracker, setShowAddTracker] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const pendingModalAction = useRef<(() => void) | null>(null);
@@ -46,12 +50,15 @@ export default function TrackingScreen() {
   useFocusEffect(useCallback(() => {
     let active = true;
     setNow(new Date());
-    setExtras({ owner: userId, ready: false, accountError: false, journalDates: [], visionAnswers: null, journalLoading: true, visionLoading: true, journalError: false, visionError: false });
+    setDetailsOpen(false);
+    setExtras({ owner: userId, ready: false, accountError: false, journalDates: [], journeyDates:[], momentDates:[], visionAnswers: null, journalLoading: true, visionLoading: true, journalError: false, visionError: false });
     void (async () => {
       try { if (userId && !isProgressAccountReady(userId)) await prepareProgressAccount(userId); }
       catch { if (active) setExtras(s => ({ ...s, accountError: true })); return; }
       if (!active) return;
       setExtras(s => ({ ...s, ready: true }));
+    void getJourneyCheckIns(userId||"").then(rows=>{if(active)setExtras(s=>({...s,journeyDates:rows.map(row=>row.date)}))}).catch(()=>{});
+    void getLifeMoments(userId||"").then(rows=>{if(active)setExtras(s=>({...s,momentDates:rows.map(row=>row.date)}))}).catch(()=>{});
     void getEntries(userId || "").then(entries => {
       if (active) setExtras(s => ({ ...s, journalDates: entries.map(e => e.date), journalLoading: false }));
     }).catch(() => { if (active) setExtras(s => ({ ...s, journalError: true, journalLoading: false })); });
@@ -71,13 +78,13 @@ export default function TrackingScreen() {
   }, []);
 
   const ownExtras = extras.owner === userId;
-  const data = buildProgressOverview({ checkIns, gymSets, reflections, meditations, articles, trackers: trackingData, journalDates: ownExtras ? extras.journalDates : [], visionAnswers: ownExtras ? extras.visionAnswers : null }, period, now);
+  const data = buildProgressOverview({ checkIns, gymSets, reflections, meditations, articles, trackers: trackingData, journalDates: ownExtras ? extras.journalDates : [], dailyCheckInDates:ownExtras?extras.journeyDates:[], momentDates:ownExtras?extras.momentDates:[], visionAnswers: ownExtras ? extras.visionAnswers : null }, period, now);
   const openLog = (date: string, trackerId?: string) => setLog({ date, trackerId });
   return <SafeAreaView edges={["top"]} style={styles.screen}>
     <StatusBar style="light"/>
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      <BodyPageHeading trail="YOUR JOURNEY" title="Progress" subtitle="See the steps. Understand the progress." style={styles.heading}/>
-      {!ownExtras || !extras.ready ? <View style={styles.loading}>{extras.accountError ? <><Text style={styles.loadingText}>Unable to load your saved progress.</Text><TouchableOpacity accessibilityRole="button" onPress={() => setReload(v => v + 1)} style={styles.retry}><Text style={styles.retryText}>Try again</Text></TouchableOpacity></> : <><ActivityIndicator color={colors.gold}/><Text style={styles.loadingText}>Loading your saved progress…</Text></>}</View> : <ProgressDashboard data={data} period={period} onPeriod={setPeriod} trackers={trackingData} today={dayKey(now)} journalLoading={!ownExtras || extras.journalLoading} visionLoading={!ownExtras || extras.visionLoading} journalError={ownExtras && extras.journalError} visionError={ownExtras && extras.visionError} onRetry={() => setReload(v => v + 1)} onRoute={route => router.push(route as any)} onLog={openLog} onCreate={() => setShowAddTracker(true)} onCalendar={() => setShowCalendar(true)}/>}
+      <BodyPageHeading trail="YOUR JOURNEY" title="Progress" subtitle="Your days, your growth, your next step." style={styles.heading}/>
+      {!ownExtras || !extras.ready ? <View style={styles.loading}>{extras.accountError ? <><Text style={styles.loadingText}>Unable to load your saved progress.</Text><TouchableOpacity accessibilityRole="button" onPress={() => setReload(v => v + 1)} style={styles.retry}><Text style={styles.retryText}>Try again</Text></TouchableOpacity></> : <><ActivityIndicator color={colors.gold}/><Text style={styles.loadingText}>Loading your saved progress…</Text></>}</View> : <><JourneyDashboard data={data} period={period} onPeriod={setPeriod} detailsOpen={detailsOpen} onDetails={()=>setDetailsOpen(value=>!value)} onCheckInSaved={date=>setExtras(s=>({...s,journeyDates:Array.from(new Set([...s.journeyDates,date]))}))}/>{detailsOpen&&<ProgressDashboard compactOverview data={data} period={period} onPeriod={setPeriod} trackers={trackingData} today={dayKey(now)} journalLoading={!ownExtras || extras.journalLoading} visionLoading={!ownExtras || extras.visionLoading} journalError={ownExtras && extras.journalError} visionError={ownExtras && extras.visionError} onRetry={() => setReload(v => v + 1)} onRoute={route => router.push(route as any)} onLog={openLog} onCreate={() => setShowAddTracker(true)} onCalendar={() => setShowCalendar(true)}/>}</>}
       <ProgressSyncStatus/>
     </ScrollView>
     <AddTrackerModal visible={showAddTracker} onClose={() => setShowAddTracker(false)}/>
@@ -85,4 +92,4 @@ export default function TrackingScreen() {
     <CalendarModal visible={showCalendar} onClose={() => setShowCalendar(false)} onDismiss={afterDismiss} onDateSelect={date => afterClose(() => setShowCalendar(false), () => openLog(date))} selectedDate={log?.date ?? dayKey(now)} maxDate={dayKey(now)}/>
   </SafeAreaView>;
 }
-const styles = StyleSheet.create({ loading: { paddingVertical: 40, alignItems: "center", gap: 16 }, loadingText: { color: colors.secondary, fontSize: 15 }, retry: { padding: 14, minHeight: 44 }, retryText: { color: colors.gold, fontWeight: "600" }, screen: { flex: 1, backgroundColor: colors.background }, content: { paddingHorizontal: 20, paddingBottom: 130 }, heading: { paddingHorizontal: 0, paddingTop: 12, paddingBottom: 0 } });
+const styles = StyleSheet.create({ loading: { paddingVertical: 40, alignItems: "center", gap: 16 }, loadingText: { color: colors.secondary, fontSize: 15 }, retry: { padding: 14, minHeight: 44 }, retryText: { color: colors.gold, fontWeight: "600" }, screen: { flex: 1, backgroundColor: colors.background }, content: { paddingHorizontal: 20, paddingBottom: 28 }, heading: { paddingHorizontal: 0, paddingTop: 12, paddingBottom: 0 } });

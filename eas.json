@@ -18,6 +18,12 @@
       "env": {
         "GOOGLE_SERVICES_INFOPLIST": "./GoogleService-Info.plist",
         "GOOGLE_SERVICES_JSON": "./google-services.json"
+      },
+      "distribution": "store",
+      "autoIncrement": true,
+      "ios": {
+        "simulator": false,
+        "image": "macos-sequoia-15.6-xcode-26.2"
       }
     },
     "iphone-dev": {
@@ -41,5 +47,8 @@
         "appleTeamId": "ABUM4S9VHY"
       }
     }
+  },
+  "cli": {
+    "appVersionSource": "remote"
   }
 }

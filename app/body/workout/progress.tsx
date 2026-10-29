@@ -15,7 +15,7 @@ export default function GymProgress(){
  const plan=useWorkoutStore(s=>s.trainingPlan);
  const stats=useMemo(()=>{
   const recorded=sets.filter(s=>Number.isFinite(s.kg)&&s.kg>=0&&Number.isFinite(s.reps)&&s.reps>=1);
-  const valid=recorded.filter(s=>s.kg>0).sort((a,b)=>a.recordedAt.localeCompare(b.recordedAt));
+  const valid=recorded.filter(s=>s.kg>0&&s.metric!=="seconds").sort((a,b)=>a.recordedAt.localeCompare(b.recordedAt));
   const map=new Map<string,typeof valid>();
   for(const s of valid){const key=s.exerciseId||s.exerciseName;map.set(key,[...(map.get(key)||[]),s])}
   const exercises=Array.from(map.values()).map(history=>{

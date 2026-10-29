@@ -27,7 +27,7 @@ async function backup(userId: string) {
   const workout = useWorkoutStore.getState();
   // These account caches stay on the device; journal and vision text never enter a cloud payload.
   await AsyncStorage.setItem(CACHE + userId, JSON.stringify({
-    workout: {trainingPlan: workout.trainingPlan, gymSets: workout.gymSets, checkIns: workout.checkIns, exerciseOverrides: workout.exerciseOverrides, workouts: workout.workouts},
+    workout: {activeGymWorkout:workout.activeGymWorkout,trainingPlan: workout.trainingPlan, gymSets: workout.gymSets, checkIns: workout.checkIns, exerciseOverrides: workout.exerciseOverrides, workouts: workout.workouts},
     tracking: useTrackingStore.getState().trackingData,
     articles: useArticleStore.getState().articles,
     meditation: useMediationStore.getState().mediation.map(m => ({id:m.id,isRead:!!m.isRead})),

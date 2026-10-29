@@ -26,6 +26,7 @@ const mocks={
  await thoughts.getState().fetchPowerThoughts(); assert.equal(thoughts.getState().powerThoughts.length,1);assert(thoughts.getState().powerThoughts[0].isToday);
  const articles=load('store/article-store.ts',mocks).useArticleStore;
  articleRows=[{_id:'mind',category:'Mind',title:'Mind article'},{_id:'balance',category:'Balance',title:'Balance article'}];
+ assert.equal((await articles.getState().fetchArticleById({id:'mind'}))._id,'mind','Cold deep link loads the catalogue');
  await articles.getState().fetchArticles('category=Mental');assert.equal(articles.getState().articles.Mental[0]._id,'mind');
  articles.getState().markArticleAsRead('Mental','mind');
  await articles.getState().fetchArticles('category=all');assert(articles.getState().articles['All Articles'].find(a=>a._id==='mind').isRead);

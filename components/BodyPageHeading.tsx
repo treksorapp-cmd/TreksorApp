@@ -21,12 +21,13 @@ export default function BodyPageHeading({ title, trail, subtitle, pillar, naviga
     }>();
     const key = pillar ?? resolvePillar(pathname, params.pillar);
     const destination = key ? pillars[key] : undefined;
+    const goBack = onBack ?? (typeof router.canGoBack === "function" && router.canGoBack() && !["/body","/mental","/spiritual","/purpose"].includes(pathname) ? () => router.back() : undefined);
     const showNavigation = navigation ?? Boolean(destination);
     return <View style={[styles.container, style]}>
     <View style={styles.topRow}>
       <Text style={styles.trail}>{trail.toUpperCase()}</Text>
       {showNavigation && <View style={styles.actions}>
-        {onBack && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go back" style={styles.icon} onPress={onBack}><Ionicons name="arrow-back" size={21} color={colors.text}/></TouchableOpacity>}
+        {goBack && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go back" style={styles.icon} onPress={goBack}><Ionicons name="arrow-back" size={21} color={colors.text}/></TouchableOpacity>}
         <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go to Home" style={styles.icon} onPress={() => router.dismissTo("/(tabs)/home")}><Ionicons name="home-outline" size={21} color={colors.text}/></TouchableOpacity>
         {destination && <TouchableOpacity accessibilityRole="button" accessibilityLabel={`Return to ${destination.name}`} style={styles.icon} onPress={() => router.dismissTo(destination.route as Href)}><Ionicons name={destination.icon} size={22} color={colors.gold}/></TouchableOpacity>}
       </View>}

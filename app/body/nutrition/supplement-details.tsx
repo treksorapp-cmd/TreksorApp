@@ -1,3 +1,4 @@
+import NutritionArtwork from "@/components/nutrition/NutritionArtwork";
 import {colors} from "@/theme/architect";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import { Nutritions } from "@/mock/nutrition";
@@ -7,12 +8,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
 import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 const GOLD = "#D7B877";
 const supplements = Nutritions.supplements.data;
 
 export default function SupplementDetails() {
+  const insets=useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id?: string | string[] }>();
   const selectedId = Array.isArray(id) ? id[0] : id;
   const supplement = supplements.find(item => item.id === selectedId);
@@ -39,11 +41,11 @@ export default function SupplementDetails() {
 
   return (
     <View style={styles.screen}>
-      <ImageBackground source={supplement.backgroundImage} contentFit="cover" style={StyleSheet.absoluteFill} />
-      <LinearGradient colors={["rgba(5,5,5,0.58)", "rgba(5,5,5,0.84)", "#050505"]} locations={[0,0.48,1]} style={StyleSheet.absoluteFill} />
-      <SafeAreaView style={styles.safe}>
-        <BodyPageHeading trail="BODY / NUTRITION / SUPPLEMENTS" title={supplement.name} style={{marginTop:12}} />
-        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{paddingTop:insets.top+12,paddingBottom:insets.bottom+40}} showsVerticalScrollIndicator={false}>
+        <BodyPageHeading trail="BODY / NUTRITION / SUPPLEMENTS" title={supplement.name}/>
+        <View style={{paddingHorizontal:22,marginTop:24}}>
+          <NutritionArtwork source={supplement.backgroundImage} label={supplement.name}/>
+          <View style={{height:22}}/>
           <View style={styles.glassCard}>
             <LinearGradient pointerEvents="none" colors={["rgba(255,255,255,0.10)", "rgba(255,255,255,0.025)"]} style={StyleSheet.absoluteFill} />
             <Text style={styles.sectionTitle}>Overview</Text>
@@ -57,8 +59,8 @@ export default function SupplementDetails() {
             <Text style={styles.sourceText}>{supplement.source}</Text>
             <Ionicons name="open-outline" size={17} color={GOLD} />
           </TouchableOpacity>
-        </ScrollView>
-      </SafeAreaView>
+        </View>
+      </ScrollView>
     </View>
   );
 }
