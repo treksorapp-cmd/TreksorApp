@@ -20,7 +20,8 @@
     "release:check": "npm run typecheck && npm run test:integrity && npm run test:progress && npm run test:dashboard && npm run test:journey && npm run test:audio && npm run test:content && npm run test:video && npm run test:clock",
     "release:ios": "npm run release:check && npx --yes eas-cli@26.0.0 build --platform ios --profile production --auto-submit",
     "test:video": "node tests/exercise-video-lifecycle.cjs",
-    "test:clock": "node tests/workout-clock.cjs"
+    "test:clock": "node tests/workout-clock.cjs",
+    "build:iphone-preview": "npx --yes eas-cli@26.0.0 build --platform ios --profile iphone-preview"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",

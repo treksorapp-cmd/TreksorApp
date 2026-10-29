@@ -37,6 +37,15 @@
         "GOOGLE_SERVICES_INFOPLIST": "./GoogleService-Info.plist",
         "GOOGLE_SERVICES_JSON": "./google-services.json"
       }
+    },
+    "iphone-preview": {
+      "extends": "iphone-dev",
+      "developmentClient": false,
+      "distribution": "internal",
+      "ios": {
+        "simulator": false,
+        "buildConfiguration": "Release"
+      }
     }
   },
   "submit": {

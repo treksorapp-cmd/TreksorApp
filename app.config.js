@@ -1,4 +1,4 @@
-const isIphoneDev = process.env.EAS_BUILD_PROFILE ? process.env.EAS_BUILD_PROFILE === "iphone-dev" : process.env.TREKSOR_IPHONE_DEV === "1";
+const isIphoneDev = process.env.EAS_BUILD_PROFILE ? ["iphone-dev", "iphone-preview"].includes(process.env.EAS_BUILD_PROFILE) : process.env.TREKSOR_IPHONE_DEV === "1";
 
 export default {
   expo: {
