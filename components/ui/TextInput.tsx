@@ -3,7 +3,6 @@ import { LinearGradient } from "expo-linear-gradient"
 import { useState } from "react"
 import {
   Animated,
-  Dimensions,
   TextInput as RNTextInput,
   StyleSheet,
   Text,
@@ -12,7 +11,7 @@ import {
   View
 } from "react-native"
 
-const { width } = Dimensions.get("window")
+
 
 interface EnhancedTextInputProps extends TextInputProps {
   icon?: keyof typeof Ionicons.glyphMap
@@ -75,7 +74,7 @@ const TextInput = (props: EnhancedTextInputProps) => {
           />
 
           {secureTextEntry && (
-            <TouchableOpacity style={styles.eyeIcon} onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+            <TouchableOpacity accessibilityRole="button" accessibilityLabel={isPasswordVisible ? "Hide password" : "Show password"} style={styles.eyeIcon} onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
               <Ionicons
                 name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
                 size={20}
@@ -93,8 +92,8 @@ const TextInput = (props: EnhancedTextInputProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: width - 40,
-    height: 56,
+    width: "100%",
+    minHeight: 56,
     borderRadius: 12,
     overflow: "visible", // Changed to visible to show error text
     marginVertical: 10,
@@ -106,16 +105,16 @@ const styles = StyleSheet.create({
     right: -3,
     bottom: -3,
     borderRadius: 15,
-    backgroundColor: "#3498db",
+    backgroundColor: "#D7B877",
     zIndex: -1,
   },
   borderGradient: {
-    height: 56,
+    minHeight: 56,
     borderRadius: 12,
     padding: 1,
   },
   innerGradient: {
-    flex: 1,
+    minHeight: 54,
     borderRadius: 11,
     paddingHorizontal: 16,
     justifyContent: "center",
@@ -127,7 +126,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "400",
-    height: "100%",
+    minHeight: 54,
+    paddingVertical: 14,
+    lineHeight: 24,
   },
   icon: {
     position: "absolute",
@@ -135,12 +136,16 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   eyeIcon: {
-    padding: 8,
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: "center",
+    justifyContent: "center",
   },
   errorText: {
     color: "#ff6b6b",
     fontSize: 12,
-    marginTop: 4,
+    lineHeight: 18,
+    marginTop: 6,
     marginLeft: 4,
   },
 })

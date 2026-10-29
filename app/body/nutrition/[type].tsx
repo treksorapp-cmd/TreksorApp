@@ -1,117 +1,13 @@
-import Button from "@/components/ui/Button";
-import Header from "@/components/ui/Header";
-import { Nutritions } from "@/mock/nutrition";
-import { useAuthStore } from "@/store/auth-store";
-import { Ionicons } from "@expo/vector-icons";
-import { ImageBackground } from "expo-image";
-import { router, useLocalSearchParams } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import React from "react";
-import {
-  Dimensions,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-const BeveragesHome = () => {
-  const insets = useSafeAreaInsets();
-  const { type } = useLocalSearchParams();
-  const { backgroundImage, data, route, headerTitle } =
-    Nutritions[type as string];
-    const { user } = useAuthStore();
-
-  return (
-    <View style={styles.container}>
-      <StatusBar style="light" />
-      <ImageBackground
-        source={backgroundImage}
-        contentFit="cover"
-        style={styles.backgroundImage}
-        imageStyle={styles.imageStyle}
-      >
-        {/* Header */}
-         {!user?.plan && <Header showTitle={false} showBackButton={false} showAvatar={false} />}
-        <View style={[styles.header, { paddingTop: user?.plan && (insets.top + 10), position: !user?.plan ? "relative": "absolute" }]}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-          >
-            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>{headerTitle}</Text>
-          <View style={styles.headerSpacer} />
-        </View>
-
-        <View style={[styles.content, { paddingBottom: insets.bottom + 30 }]}>
-          {data?.map((item) => (
-            <Button
-              key={item.id}
-              onPress={() =>
-                router.push({ pathname: route, params: { id: item.id } })
-              }
-              icon={item.icon}
-            >
-              {item.name}
-            </Button>
-          ))}
-        </View>
-      </ImageBackground>
-    </View>
-  );
-};
-
-export default BeveragesHome;
-
-const { width, height } = Dimensions.get("window");
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  backgroundImage: {
-    width,
-    height,
-  },
-  imageStyle: {
-    opacity: 1,
-  },
-  scrollView: {
-    flex: 1,
-    justifyContent: "center",
-  },
-  content: {
-    flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "center",
-    paddingHorizontal: 20,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 10,
-  },
-  backButton: {
-    padding: 5,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#FFFFFF",
-    textShadowColor: "rgba(0, 0, 0, 0.5)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
-  headerSpacer: {
-    width: 34,
-  },
-});
+import BodyPageHeading from "@/components/BodyPageHeading";
+import NutritionArtwork from "@/components/nutrition/NutritionArtwork";
+import {Nutritions} from "@/mock/nutrition";
+import {router,useLocalSearchParams} from "expo-router";
+import {Ionicons} from "@expo/vector-icons";
+import {ScrollView,StyleSheet,Text,TouchableOpacity,View} from "react-native";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
+import {colors,type as typography} from "@/theme/architect";
+export default function NutritionCategory(){
+ const {type}=useLocalSearchParams<{type:string}>(),insets=useSafeAreaInsets(),category=Nutritions[type==="supplements"?"supplements":"beverages"];
+ return <ScrollView style={s.screen} contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:insets.bottom+40}}><BodyPageHeading title={category.headerTitle} trail="BODY / NUTRITION" subtitle={type==="supplements"?"Learn about your options, one at a time.":"A moment to prepare. A ritual to return to."} style={{paddingHorizontal:0}}/><View style={s.list}>{category.data.map((item,index)=><TouchableOpacity key={item.id} accessibilityRole="button" accessibilityLabel={`Open ${item.name}`} onPress={()=>router.push({pathname:category.route,params:{id:item.id}})} activeOpacity={.85} style={s.card}><View style={{width:93}}><NutritionArtwork source={item.backgroundImage} label={item.name} height={115}/></View><View style={{flex:1}}><Text style={s.eyebrow}>RITUAL {String(index+1).padStart(2,"0")}</Text><Text style={s.title}>{item.name.toLowerCase().replace(/\b\w/g,c=>c.toUpperCase())}</Text><Text style={s.note}>{"quantity" in item?item.quantity.replace(/[()]/g,""):"Overview & references"}</Text></View><Ionicons name="chevron-forward" size={19} color={colors.gold}/></TouchableOpacity>)}</View></ScrollView>;
+}
+const s=StyleSheet.create({screen:{flex:1,backgroundColor:colors.background},list:{gap:14,marginTop:25},card:{padding:11,gap:14,borderRadius:20,flexDirection:"row",alignItems:"center",backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border},eyebrow:{...typography.eyebrow,fontSize:9,lineHeight:15},title:{...typography.card,marginTop:7,fontSize:17,lineHeight:23},note:{...typography.caption,marginTop:7}});

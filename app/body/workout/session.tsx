@@ -1,0 +1,100 @@
+import WorkoutClock from "@/components/workout/WorkoutClock";
+import {workoutClock} from "@/lib/workout-clock";
+import * as Haptics from "expo-haptics";
+import {cachedGymCatalogue,getGymCatalogue} from "@/lib/gym-catalogue";
+import BodyPageHeading from "@/components/BodyPageHeading";
+import Button from "@/components/ui/Button";
+import {resolveExerciseVideo} from "@/lib/exercise-video";
+import ExerciseVideo from "@/components/workout/ExerciseVideo";
+import { playCompletionFeedback } from "@/lib/completion-feedback";
+import { exercisesForMuscles, GymExercise, mergeGymExercises } from "@/lib/gym-library";
+import { useWorkoutStore } from "@/store/workout-store";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Alert, AppState, ScrollView, useWindowDimensions, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const GOLD="#D7B877",GLASS="rgba(183,221,240,0.075)";
+const weekKey=()=>{const d=new Date();d.setDate(d.getDate()-(d.getDay()+6)%7);d.setHours(0,0,0,0);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-")};
+const muscles:Record<string,string[]>={"Full Body":["Chest","Back","Legs","Shoulders","Arms","Glutes","Core"],Upper:["Chest","Back","Shoulders","Arms"],Lower:["Legs","Glutes","Core"],Push:["Chest","Shoulders","Arms"],Pull:["Back","Arms"],Legs:["Legs","Glutes","Core"]};
+type SetKind="Working"|"Warm-up"|"Drop"|"Failure";
+const nextKind=(kind:SetKind):SetKind=>kind==="Working"?"Warm-up":kind==="Warm-up"?"Drop":kind==="Drop"?"Failure":"Working";
+const kindLabel=(kind:SetKind)=>kind==="Warm-up"?"WARM UP":kind==="Drop"?"DROP SET":kind==="Failure"?"FAILURE":"WORKING";
+
+export default function WorkoutSession(){
+  const insets=useSafeAreaInsets();
+  const active=useWorkoutStore(s=>s.activeGymWorkout),sets=useWorkoutStore(s=>s.gymSets)||[],completeSet=useWorkoutStore(s=>s.completeGymSet),setRestEnd=useWorkoutStore(s=>s.setGymRestEnd),finish=useWorkoutStore(s=>s.finishGymWorkout),discard=useWorkoutStore(s=>s.discardGymWorkout);
+  const [library,setLibrary]=useState<GymExercise[]>(cachedGymCatalogue);
+  const [values,setValues]=useState<Record<string,{kg:string;reps:string}>>({});
+  const [kinds,setKinds]=useState<Record<string,SetKind>>({});
+  const [visibleExercise,setVisibleExercise]=useState<string|null>(null);
+  const positions=useRef<Record<string,number>>({});
+  const {height:windowHeight}=useWindowDimensions();
+  const [now,setNow]=useState(Date.now());
+  const [summary,setSummary]=useState<{sets:number;volume:number;seconds:number}|null>(null);
+  useEffect(()=>{let mounted=true;getGymCatalogue().then(items=>{if(mounted)setLibrary(items)}).catch(()=>{});return()=>{mounted=false}},[]);
+  useEffect(()=>{const timer=setInterval(()=>{if(AppState.currentState==="active")setNow(Date.now())},500);const resume=AppState.addEventListener("change",state=>{if(state==="active")setNow(Date.now())});return()=>{clearInterval(timer);resume.remove()}},[]);
+  const exercises=useMemo(()=>{
+    if(!active)return[];
+    const selected=active.exerciseIds.map(id=>library.find(item=>item.id===id)).filter((item):item is GymExercise=>Boolean(item));
+    if(selected.length)return selected;
+    const all=exercisesForMuscles(library,[...new Set(Object.values(muscles).flat())],"Gym");
+    return all.slice(0,5);
+  },[active,library]);
+  const demos=exercises.filter(item=>!!item.videoUrl||!!item.video_path);
+  const playingId=visibleExercise||demos[0]?.id;
+  const playingIndex=demos.findIndex(item=>item.id===playingId);
+  useEffect(()=>{for(const item of demos.slice(Math.max(0,playingIndex),Math.max(0,playingIndex)+2))void resolveExerciseVideo(item.serverId||item.id,item.video_path,item.videoUrl).catch(()=>{});},[playingId,library]);
+  const logged=active?sets.filter(item=>item.sessionId===active.id):[];
+  const completedKeys=new Set(active?.completedSetIds||[]);
+  const rest=active?workoutClock(active,now).remaining:0;
+  const notifiedRest=useRef<string|null>(null);
+  useEffect(()=>{const deadline=active?.restEndsAt;if(deadline&&rest===0&&Date.parse(deadline)<=now&&notifiedRest.current!==deadline&&AppState.currentState==="active"){notifiedRest.current=deadline;void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(()=>{})}},[rest,active?.restEndsAt,now]);
+  if(summary)return <View style={{flex:1,backgroundColor:"#02050C",padding:24,paddingTop:insets.top+30}}><BodyPageHeading trail="BODY / GYM" title="Workout saved" subtitle="Another step forward."/><Text style={{color:GOLD,fontSize:34,marginTop:28,fontWeight:"700"}}>{summary.sets} sets completed</Text><Text style={{color:"white",fontSize:18,marginTop:20}}>{Math.round(summary.volume).toLocaleString()} kg total volume · {Math.floor(summary.seconds/60)} minutes</Text><Text style={{color:"#BEB8AD",marginTop:20}}>Your session has been added to your weekly progress.</Text><Button onPress={()=>router.dismissTo("/body/workout")}>BACK TO GYM</Button><Button onPress={()=>router.replace("/body/workout/progress")}>VIEW PROGRESS</Button></View>;
+  if(!active)return <View style={{flex:1,backgroundColor:"#02050C",padding:22,paddingTop:insets.top+12}}><BodyPageHeading trail="BODY / GYM" title="No active session" subtitle="Choose a routine day to begin training."/><Button onPress={()=>router.replace("/body/workout/my-plan")}>OPEN MY PLAN</Button></View>;
+  const activeId=active?.id??"", activeDay=active?.day??0;
+  const completedCount=logged.length;
+  const plannedCount=exercises.reduce((sum,exercise)=>sum+exercise.sets,0);
+  function seedValue(exercise:GymExercise,setNumber:number){
+    const key=`${exercise.id}:${setNumber}`;
+    if(values[key])return values[key];
+    const previous=sets.filter(item=>item.exerciseId===exercise.id&&!item.sessionId).slice(-1)[0]||sets.filter(item=>item.exerciseId===exercise.id).slice(-1)[0];
+    const reps=exercise.reps.match(/\d+/)?.[0]||"8";
+    return {kg:previous?String(previous.kg):exercise.equipment==="Bodyweight"?"0":"",reps:previous?String(previous.reps):reps};
+  }
+  function logSet(exercise:GymExercise,setNumber:number){
+    const key=`${exercise.id}:${setNumber}`,entry=values[key]||seedValue(exercise,setNumber),kg=Number(entry.kg.replace(",",".")),reps=Number(entry.reps);
+    if(!entry.kg.trim()||!entry.reps.trim()||!Number.isFinite(kg)||kg<0||(exercise.equipment!=="Bodyweight"&&kg<=0)||!Number.isInteger(reps)||reps<1||reps>300){Alert.alert("Check this set","Enter a valid weight in kg and a completed rep count.");return}
+    const kind=kinds[key]||"Working";
+    completeSet({id:`${activeId}:${key}`,sessionId:activeId,exerciseId:exercise.id,exerciseName:exercise.name,day:activeDay,setNumber,kg,reps,recordedAt:new Date().toISOString(),setType:kind,metric:exercise.metric});
+    void playCompletionFeedback();
+    setRestEnd(kind!=="Drop"&&exercise.rest_seconds>0?new Date(Date.now()+exercise.rest_seconds*1000).toISOString():null);setNow(Date.now());
+  }
+  function finishSession(){
+    if(!logged.length){Alert.alert("Log a set first","Your training session will count when you have recorded at least one set.");return}
+    Alert.alert("Finish workout?",`${logged.length} sets saved. Your session will be added to this week's progress.`,[{text:"Keep training",style:"cancel"},{text:"Finish workout",onPress:()=>{const current=useWorkoutStore.getState().activeGymWorkout;if(!current||current.id!==activeId)return;setSummary({sets:logged.length,volume:logged.filter(set=>set.metric!=="seconds").reduce((sum,set)=>sum+set.kg*set.reps,0),seconds:Math.max(0,Math.floor((Date.now()-new Date(current.startedAt).getTime())/1000))});finish(weekKey());void playCompletionFeedback()}}]);
+  }
+  return <View style={{flex:1,backgroundColor:"#02050C"}}>
+    <WorkoutClock active={active} now={now} completed={logged.length} planned={plannedCount} topInset={insets.top} onSkip={()=>{setRestEnd(null);setNow(Date.now())}} onExtend={()=>{useWorkoutStore.getState().extendGymRest(15);setNow(Date.now())}}/>
+    <ScrollView scrollEventThrottle={120} onScroll={event=>{const target=event.nativeEvent.contentOffset.y+Math.min(180,windowHeight*.2);const candidate=demos.filter(item=>(positions.current[item.id]??Infinity)<=target).slice(-1)[0]||demos[0];if(candidate&&candidate.id!==visibleExercise)setVisibleExercise(candidate.id)}} contentContainerStyle={{padding:20,paddingTop:12,paddingBottom:insets.bottom+32}} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+      <BodyPageHeading trail="BODY / GYM / LIVE SESSION" title={active.dayName} subtitle="One set at a time. Your progress saves as you train." style={{paddingHorizontal:0}}/>
+      <View style={{padding:17,borderRadius:16,backgroundColor:GLASS,marginTop:17}}><View style={{flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}><View><Text style={{color:"#AAA59A",fontSize:10,fontWeight:"800",letterSpacing:1}}>SESSION PROGRESS</Text><Text style={{color:"white",fontSize:22,fontWeight:"800",marginTop:5}}>{completedCount}<Text style={{color:"#AFA99F",fontSize:14,fontWeight:"500"}}> / {plannedCount} sets</Text></Text></View><View style={{alignItems:"flex-end"}}><Text style={{color:"#AAA59A",fontSize:10,fontWeight:"800",letterSpacing:1}}>STARTED</Text><Text style={{color:GOLD,fontWeight:"700",marginTop:5}}>{new Date(active.startedAt).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}</Text></View></View><View style={{height:6,borderRadius:6,backgroundColor:"rgba(255,255,255,0.12)",overflow:"hidden",marginTop:14}}><View style={{height:"100%",width:`${Math.min(100,plannedCount?completedCount/plannedCount*100:0)}%`,backgroundColor:GOLD}}/></View></View>
+
+      {exercises.map((exercise,index)=><View key={exercise.id} onLayout={event=>{positions.current[exercise.id]=event.nativeEvent.layout.y}} style={{marginTop:14,padding:16,borderRadius:18,backgroundColor:GLASS,borderWidth:1,borderColor:"rgba(255,255,255,0.055)"}}>
+        <View style={{flexDirection:"row",alignItems:"flex-start",gap:11}}><View style={{width:31,height:31,borderRadius:10,backgroundColor:"rgba(215,184,119,0.13)",alignItems:"center",justifyContent:"center"}}><Text style={{color:GOLD,fontWeight:"800",fontSize:12}}>{String(index+1).padStart(2,"0")}</Text></View><View style={{flex:1}}><Text style={{color:"#F6F3EC",fontSize:16,fontWeight:"800",lineHeight:22}}>{exercise.name}</Text><Text style={{color:"#AFA99F",fontSize:11,marginTop:5}}>{exercise.muscle_group}{exercise.equipment?` · ${exercise.equipment}`:""}</Text></View>{(!!exercise.videoUrl||!!exercise.video_path)&&<TouchableOpacity onPress={()=>setVisibleExercise(exercise.id)} accessibilityRole="button" style={{padding:7}}><Ionicons name="videocam-outline" size={20} color={GOLD}/></TouchableOpacity>}</View>
+        {!!exercise.instructions&&<Text style={{color:"#C8C2B7",fontSize:12,lineHeight:18,marginTop:11}}>{exercise.instructions}</Text>}
+        {(!!exercise.videoUrl||!!exercise.video_path)&&<ExerciseVideo exerciseId={exercise.serverId||exercise.id} videoUrl={exercise.videoUrl} videoPath={exercise.video_path} active={playingId===exercise.id} loadEnabled={playingId===exercise.id||demos[playingIndex+1]?.id===exercise.id}/>}
+        <View style={{flexDirection:"row",justifyContent:"space-between",marginTop:18,marginBottom:8,paddingHorizontal:3}}><Text style={{color:"#8E8A80",fontSize:9,fontWeight:"800",letterSpacing:1}}>SET</Text><Text style={{color:"#8E8A80",fontSize:9,fontWeight:"800",letterSpacing:1}}>PREVIOUS</Text><Text style={{color:"#8E8A80",fontSize:9,fontWeight:"800",letterSpacing:1}}>LOAD × {exercise.metric.toUpperCase()}</Text><View style={{width:40}}/></View>
+        {Array.from({length:exercise.sets},(_,indexSet)=>{
+          const number=indexSet+1,key=`${exercise.id}:${number}`,isDone=completedKeys.has(key),loggedSet=logged.find(item=>item.exerciseId===exercise.id&&item.setNumber===number),input=loggedSet?{kg:String(loggedSet.kg),reps:String(loggedSet.reps)}:seedValue(exercise,number),previous=sets.filter(item=>item.exerciseId===exercise.id&&(!item.sessionId||item.sessionId!==active.id)).slice(-1)[0];
+          const kind=(kinds[key]||"Working") as SetKind;
+          return <View key={key} style={{paddingVertical:9,borderTopWidth:1,borderTopColor:"rgba(255,255,255,0.06)"}}><View style={{flexDirection:"row",alignItems:"center",gap:6}}><Text style={{color:isDone?GOLD:"#D8D3CA",fontSize:13,fontWeight:"800",width:28}}>{number}</Text><Text style={{color:"#8D887E",fontSize:10,flex:1}}>{previous?`${exercise.equipment==="Bodyweight"?"BW":`${previous.kg} kg`} × ${previous.reps} ${exercise.metric}`:"New set"}</Text>{exercise.equipment==="Bodyweight"?<View style={{width:53,alignItems:"center",backgroundColor:"rgba(0,0,0,0.24)",borderRadius:9,paddingVertical:10}}><Text style={{color:GOLD,fontSize:11,fontWeight:"800"}}>BW</Text></View>:<TextInput editable={!isDone} accessibilityLabel={`Set ${number} weight in kilograms for ${exercise.name}`} keyboardType="decimal-pad" value={input.kg} onChangeText={kg=>setValues(old=>({...old,[key]:{...input,kg}}))} placeholder="kg" placeholderTextColor="#827D74" style={{width:53,textAlign:"center",color:"white",backgroundColor:"rgba(0,0,0,0.24)",borderRadius:9,paddingVertical:9,fontSize:13}}/>}<Text style={{color:"#817C72"}}>×</Text><TextInput editable={!isDone} accessibilityLabel={`Set ${number} ${exercise.metric} for ${exercise.name}`} keyboardType="number-pad" value={input.reps} onChangeText={reps=>setValues(old=>({...old,[key]:{...input,reps}}))} placeholder={exercise.metric==="seconds"?"sec":"reps"} placeholderTextColor="#827D74" style={{width:54,textAlign:"center",color:"white",backgroundColor:"rgba(0,0,0,0.24)",borderRadius:9,paddingVertical:9,fontSize:13}}/><TouchableOpacity disabled={isDone} onPress={()=>setKinds(old=>({...old,[key]:nextKind(kind)}))} style={{width:46,alignItems:"center",padding:5}}><Text style={{color:kind==="Working"?"#A9A398":GOLD,fontSize:8,fontWeight:"900"}}>{isDone?"DONE":kindLabel(kind)}</Text></TouchableOpacity><TouchableOpacity onPress={()=>isDone&&loggedSet?Alert.alert("Undo this set?","This set will be removed from this session and progress.",[{text:"Keep",style:"cancel"},{text:"Undo",style:"destructive",onPress:()=>{useWorkoutStore.getState().removeGymSet(loggedSet.id)}}]):logSet(exercise,number)} style={{width:34,height:34,borderRadius:11,alignItems:"center",justifyContent:"center",backgroundColor:isDone?GOLD:"rgba(255,255,255,0.10)"}}><Ionicons name={isDone?"checkmark":"add"} size={19} color={isDone?"#15120C":GOLD}/></TouchableOpacity></View></View>;
+        })}
+        {!!exercise.rest_seconds&&<Text style={{color:"#89847B",fontSize:10,marginTop:8}}>Rest timer · {exercise.rest_seconds}s after each working set. Tap set type to mark warm-up, drop set or failure.</Text>}
+      </View>)}
+      <TouchableOpacity disabled={!logged.length} onPress={finishSession} style={{height:54,borderRadius:14,backgroundColor:logged.length?GOLD:"rgba(215,184,119,0.22)",flexDirection:"row",alignItems:"center",justifyContent:"center",gap:9,marginTop:19}}><Ionicons name="checkmark-done-outline" size={20} color={logged.length?"#15120C":"#867A61"}/><Text style={{color:logged.length?"#15120C":"#867A61",fontWeight:"900",letterSpacing:.7}}>FINISH WORKOUT</Text></TouchableOpacity>
+      <TouchableOpacity onPress={()=>Alert.alert("Discard this session?","Recorded sets stay in Gym Progress. The unfinished workout will be cleared.",[{text:"Keep training",style:"cancel"},{text:"Discard session",style:"destructive",onPress:()=>{discard();router.replace("/body/workout/my-plan")}}])} style={{padding:16,alignItems:"center",marginTop:4}}><Text style={{color:"#908A80",fontSize:11,fontWeight:"700"}}>DISCARD SESSION</Text></TouchableOpacity>
+    </ScrollView>
+  </View>;
+}

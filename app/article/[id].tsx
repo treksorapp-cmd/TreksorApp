@@ -1,10 +1,11 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
 
 import { useArticleStore } from "@/store/article-store";
 import { Audio } from "expo-av";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, usePathname } from "expo-router";
 import * as Speech from 'expo-speech';
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
@@ -39,6 +40,8 @@ interface ArticlesDetailsScreenProps {
 
 export default function ArticleDetailScreen({ mode = "stack" }: ArticlesDetailsScreenProps) {
   const insets = useSafeAreaInsets();
+  const pathname = usePathname();
+  const pillarTrail = pathname.startsWith("/body/") ? "BODY / READING / ARTICLES" : pathname.startsWith("/spiritual/") ? "BALANCE / READING / ARTICLES" : "MIND / READING / ARTICLES";
   const { id, category } = useLocalSearchParams();
   const [article, setArticle] = useState<Article | null>(null);
   const [isRead, setIsRead] = useState(false)
@@ -118,14 +121,16 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
       >
         <StatusBar style="light" />
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#F39C12" />
+          <ActivityIndicator size="large" color="#D7B877" />
           <Text style={styles.loadingText}>Loading article...</Text>
         </View>
       </View>
     );
   }
 
-  const imageUrl = `https://app.treksor.com/${article?.image}`;
+  if(!article)return <View style={[styles.container,{paddingTop:insets.top+12}]}><BodyPageHeading title="Article unavailable" trail={pillarTrail} navigation subtitle="Return to your pillar to choose another article." /></View>;
+
+  const imageUrl = article.image?.startsWith("http") ? article.image : `https://app.treksor.com/${article.image}`;
 
   // Create HTML content for WebView to render the body with proper styling
   const htmlContent = `
@@ -149,12 +154,13 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
   `;
 
   return (
-    <View style={[styles.container, { paddingBottom: insets.bottom + (mode === "tab" ? 80 : 20) }]}>
+    <View style={[styles.container, { paddingBottom: 0 }]}>
       <StatusBar style="light" />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: mode === 'tab' ? insets.bottom + 40 : 0}}
+      contentContainerStyle={{paddingBottom:24}}
       >
+        <BodyPageHeading trail={pillarTrail} title={article?.title || "Article"} navigation style={{paddingHorizontal:0,paddingTop:insets.top+12,paddingBottom:20}} />
         {/* Article Image */}
         <Image
           source={{ uri: imageUrl }}
@@ -165,12 +171,6 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
         {/* Article Content */}
         <View style={styles.articleContent}>
           {/* <Text style={styles.category}>{article?.category}</Text> */}
-          <View style={styles.titleRow}>          
-            <Text style={styles.title}>{article?.title}</Text>
-            {/* <Pressable onPress={() => handleSpeak(article?.title, article?.description, article?.body)}>
-              <Ionicons name="volume-high-outline" size={24} color="gray" />
-            </Pressable> */}
-          </View>
           <Text style={styles.description}>{article?.description}</Text>
 
           {/* Article Body */}
@@ -192,7 +192,7 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
         </View>
       </ScrollView>
 
-      <View style={[styles.bottomSection, { bottom: mode === 'tab' ? insets.bottom + 20 : 0 }]}>
+      <View style={[styles.bottomSection, {paddingBottom:insets.bottom+(mode === "tab"?80:12)}]}>
           <TouchableOpacity
             style={[styles.markAsReadButton, isRead && styles.markAsReadButtonRead]}
             onPress={handleMarkAsRead}
@@ -200,7 +200,7 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
             activeOpacity={0.8}
           >
             <LinearGradient
-              colors={isRead ? ["#4CAF50", "#45A049"] : ["#F39C12", "#E67E22"]}
+              colors={isRead ? ["rgba(183,221,240,0.07)", "rgba(183,221,240,0.04)"] : ["rgba(183,221,240,0.16)", "rgba(183,221,240,0.07)"]}
               style={styles.buttonGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -216,7 +216,7 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000000",
+    backgroundColor: "#02050C",
   },
   loadingContainer: {
     flex: 1,
@@ -244,30 +244,30 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingTop: 0,
+    paddingBottom: 20,
   },
   articleImage: {
     width: "100%",
     height: 200,
-    borderRadius: 12,
+    borderRadius: 18,
   },
   articleContent: {
     paddingVertical: 20,
   },
   category: {
     fontSize: 14,
-    color: "#F39C12",
+    color: "#D7B877",
     fontWeight: "600",
     marginBottom: 8,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-    lineHeight: 28,
+    fontSize: 22,
+    fontWeight: "600",
+    color: "#F5F4F1",
+    lineHeight: 29,
     marginBottom: 16,
-    maxWidth:"80%"
-  },
+    maxWidth:"100%", letterSpacing: -0.2, includeFontPadding: false, },
   description: {
     fontSize: 16,
     color: "#FFFFFF",
@@ -282,8 +282,6 @@ const styles = StyleSheet.create({
     height: 400,
   },
   bottomSection: {
-    position: "absolute",
-    bottom: 0,
     left: 0,
     right: 0,
     backgroundColor: "rgba(10, 10, 10, 0.95)",
@@ -292,7 +290,9 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   markAsReadButton: {
-    borderRadius: 12,
+    borderRadius: 16,
+    borderWidth:1,
+    borderColor:"rgba(205,235,248,0.20)",
     overflow: "hidden",
   },
   markAsReadButtonRead: {
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonText: {
-    color: "#000000",
+    color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "600",
   },

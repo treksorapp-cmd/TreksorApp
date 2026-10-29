@@ -18,10 +18,37 @@
       "env": {
         "GOOGLE_SERVICES_INFOPLIST": "./GoogleService-Info.plist",
         "GOOGLE_SERVICES_JSON": "./google-services.json"
+      },
+      "distribution": "store",
+      "autoIncrement": true,
+      "ios": {
+        "simulator": false,
+        "image": "macos-sequoia-15.6-xcode-26.2"
+      }
+    },
+    "iphone-dev": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": false
+      },
+      "env": {
+        "TREKSOR_IPHONE_DEV": "1",
+        "GOOGLE_SERVICES_INFOPLIST": "./GoogleService-Info.plist",
+        "GOOGLE_SERVICES_JSON": "./google-services.json"
+      }
+    },
+    "iphone-preview": {
+      "extends": "iphone-dev",
+      "developmentClient": false,
+      "distribution": "internal",
+      "ios": {
+        "simulator": false,
+        "buildConfiguration": "Release"
       }
     }
   },
-   "submit": {
+  "submit": {
     "production": {
       "ios": {
         "appleId": "barbadeindio@gmail.com",
@@ -29,5 +56,8 @@
         "appleTeamId": "ABUM4S9VHY"
       }
     }
+  },
+  "cli": {
+    "appVersionSource": "remote"
   }
 }

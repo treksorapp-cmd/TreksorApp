@@ -1,3 +1,6 @@
+import Button from "@/components/ui/Button";
+import BodyPageHeading from "@/components/BodyPageHeading";
+import {useReflectionContext} from "@/hooks/useReflectionContext";
 "use client"
 
 import { useMySpaceStore } from "@/store/myspace-store"
@@ -10,8 +13,8 @@ import {
   Alert,
   Dimensions,
   KeyboardAvoidingView,
+  Keyboard,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -28,6 +31,7 @@ const moodOptions = ["Happy", "Sad", "Stressed", "Anxious", "Calm", "Frustrated"
 
 export default function EditEntryScreen() {
   const insets = useSafeAreaInsets()
+  const {origin,home,trail}=useReflectionContext();
   const { id } = useLocalSearchParams()
   const { myspaces, updateMySpace } = useMySpaceStore()
   const [mood, setMood] = useState("Happy")
@@ -71,7 +75,8 @@ export default function EditEntryScreen() {
     }
   }
 
-  const handleSaveEntry = () => {
+  const handleSaveEntry = async () => {
+    Keyboard.dismiss()
     if (!entry) return
 
     if (!entryText.trim()) {
@@ -79,8 +84,7 @@ export default function EditEntryScreen() {
       return
     }
 
-    updateMySpace(entry.id, { mood, text: entryText.trim() })
-    router.back()
+    try {await updateMySpace(entry.id, { mood, text: entryText.trim() });router.back()}catch{Alert.alert("Unable to save","Please try again.")}
   }
 
   const selectMood = (selectedMood: string) => {
@@ -90,7 +94,7 @@ export default function EditEntryScreen() {
 
   if (!entry) {
     return (
-      <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
+      <View style={[styles.container, { paddingTop: insets.top }]}>
         <StatusBar style="light" />
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>Entry not found</Text>
@@ -98,31 +102,19 @@ export default function EditEntryScreen() {
             <Text style={styles.backButtonText}>Go Back</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </View>
     )
   }
 
   return (
-    <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar style="light" />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton} onPress={handleBack}>
-          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Edit Entry</Text>
-        <TouchableOpacity
-          style={[styles.headerButton, !hasChanges && styles.disabledButton]}
-          onPress={handleSaveEntry}
-          disabled={!hasChanges}
-        >
-          <Text style={[styles.saveText, !hasChanges && styles.disabledText]}>Save</Text>
-        </TouchableOpacity>
-      </View>
+      <BodyPageHeading trail={trail} title="Edit reflection" onBack={handleBack} style={{paddingTop:12,paddingBottom:16}} />
 
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.keyboardAvoid}>
-        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive">
           {/* Illustration */}
           <View style={styles.illustrationContainer}>
             <Image source={require("@/assets/images/new-entry.png")} style={styles.illustration} contentFit="contain" />
@@ -133,7 +125,7 @@ export default function EditEntryScreen() {
             <Text style={styles.sectionTitle}>Select Mood</Text>
             <TouchableOpacity style={styles.dropdownButton} onPress={() => setShowMoodDropdown(!showMoodDropdown)}>
               <Text style={styles.dropdownButtonText}>{mood}</Text>
-              <Ionicons name={showMoodDropdown ? "chevron-up" : "chevron-down"} size={20} color="#E5B94B" />
+              <Ionicons name={showMoodDropdown ? "chevron-up" : "chevron-down"} size={20} color="#D7B877" />
             </TouchableOpacity>
 
             {showMoodDropdown && (
@@ -158,6 +150,9 @@ export default function EditEntryScreen() {
             <Text style={styles.sectionTitle}>Edit entry text</Text>
             <TextInput
               style={styles.textInput}
+              returnKeyType="done"
+              submitBehavior="blurAndSubmit"
+              onSubmitEditing={()=>Keyboard.dismiss()}
               multiline
               placeholder="Write your thoughts here..."
               placeholderTextColor="#666"
@@ -167,18 +162,10 @@ export default function EditEntryScreen() {
             />
           </View>
 
-          {/* Save Button */}
-          <TouchableOpacity
-            style={[styles.saveButton, !hasChanges && styles.disabledSaveButton]}
-            onPress={handleSaveEntry}
-            activeOpacity={0.8}
-            disabled={!hasChanges}
-          >
-            <Text style={[styles.saveButtonText, !hasChanges && styles.disabledSaveButtonText]}>Save Changes</Text>
-          </TouchableOpacity>
+          <Button iconName="checkmark-outline" disabled={!hasChanges} onPress={handleSaveEntry}>Save changes</Button>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   )
 }
 
@@ -200,14 +187,13 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "600",
-    color: "#FFFFFF",
-  },
+    color: "#F5F4F1", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   saveText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#EFB33F",
+    color: "#D7B877",
   },
   disabledButton: {
     opacity: 0.5,
@@ -227,10 +213,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginVertical: 20,
-    height: height * 0.2,
+    height: 110,
   },
   illustration: {
-    width: width * 0.6,
+    width: "70%",
     height: "100%",
   },
   sectionContainer: {
@@ -239,9 +225,8 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#FFFFFF",
-    marginBottom: 10,
-  },
+    color: "#F5F4F1",
+    marginBottom: 10, lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   dropdownButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -277,7 +262,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   dropdownItemTextSelected: {
-    color: "#E5B94B",
+    color: "#D7B877",
   },
   textInput: {
     backgroundColor: "#1A1A1A",
@@ -291,7 +276,7 @@ const styles = StyleSheet.create({
     borderColor: "#333",
   },
   saveButton: {
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     borderRadius: 10,
     padding: 15,
     alignItems: "center",
@@ -320,7 +305,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   backButton: {
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,

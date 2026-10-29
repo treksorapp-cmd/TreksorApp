@@ -1,6 +1,10 @@
+import {colors} from "@/theme/architect";
 "use client"
 
 import Button from "@/components/ui/Button"
+import { getEntries, moodAverage } from "@/lib/mood-journal"
+import { useFocusEffect } from "expo-router"
+import { useCallback } from "react"
 import PDFViewer from "@/components/ui/PDFViewer"
 import { useAuthStore } from "@/store/auth-store"
 import { useUserStore } from "@/store/user-store"
@@ -14,6 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
+  const [moodSummary,setMoodSummary]=useState<{average:number|null;days:number}>({average:null,days:0});
   const {isAuthenticated, logout, user, loading, requestResetPassword, getCurrentUser} = useAuthStore();
   const {deactivateAccount, cancelSubscription, setShowPackages} = useUserStore();
   const [showPDF, setShowPDF] = useState<{
@@ -139,10 +144,12 @@ export default function ProfileScreen() {
     }
   };  
 
-  const imageUrl = `https://app.treksor.com/${user?.avatar}`;
+  useFocusEffect(useCallback(()=>{let active=true; if(user?.id){getEntries(user.id).then(entries=>{if(active)setMoodSummary(moodAverage(entries,"month"))}).catch(()=>{if(active)setMoodSummary({average:null,days:0})})}return()=>{active=false}},[user?.id]));
+
+  const imageUrl = user?.avatar?.startsWith("http") ? user.avatar : `https://app.treksor.com/${user?.avatar || ""}`;
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: 0 }]}>
       <ScrollView style={styles.content}>
         <View style={styles.profileHeader}>
           <View style={styles.avatarSection}>
@@ -150,7 +157,7 @@ export default function ProfileScreen() {
               <Image source={{ uri: imageUrl }} style={styles.avatar} />
             ) : (
               <View style={styles.avatarPlaceholder}>
-                <Text style={styles.avatarText}>{user.name.charAt(0)}</Text>
+                <Text style={styles.avatarText}>{(user.name || "T").charAt(0)}</Text>
               </View>
             )}
           </View>
@@ -165,12 +172,15 @@ export default function ProfileScreen() {
           </Button>
         </View>
 
+        <TouchableOpacity onPress={()=>router.push("/mind/moments")} style={{marginHorizontal:20,padding:18,borderRadius:16,backgroundColor:"rgba(215,184,119,.08)",marginTop:18}}><Text style={{color:"#D7B877",fontWeight:"700",fontSize:17}}>Life moments & photo calendar →</Text><Text style={{color:"#AAA",marginTop:7}}>Private memories, with selected moments shared by choice.</Text></TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("/mind/journal")} style={{marginHorizontal:20,marginVertical:16,padding:18,borderRadius:16,backgroundColor:"rgba(67,72,78,0.30)",borderWidth:1,borderColor:"rgba(242,215,164,0.42)"}}><Text style={{color:"#D7B877",fontSize:12,letterSpacing:2}}>MIND · PRIVATE</Text><Text style={{color:"#fff",fontSize:21,fontWeight:"700",marginTop:7}}>My Journal & Mood Tracking →</Text><Text style={{color:"#aaa",marginTop:7}}>{moodSummary.days > 0 ? `Last 30 days · ${moodSummary.average?.toFixed(1)} / 5 · ${moodSummary.days} check-ins` : "Record how you feel and review your progress."}</Text></TouchableOpacity>
+
         {/* Subscription Plan Section */}
         {user?.plan && (
           <TouchableOpacity onPress={()=> setShowPackages(true)} style={styles.subscriptionSection}>
             <View style={styles.subscriptionCard}>
               <View style={styles.subscriptionHeader}>
-                <Ionicons name="checkmark-circle" size={24} color="#EFB33F" />
+                <Ionicons name="checkmark-circle" size={24} color="#D7B877" />
                 <Text style={styles.subscriptionTitle}>Active Plan</Text>
               </View>
               <Text style={styles.planName}>
@@ -201,7 +211,7 @@ export default function ProfileScreen() {
             <Ionicons name="chevron-forward" size={20} color="#AAAAAA" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.menuItem, {backgroundColor: 'red',opacity:0.8}]} onPress={handleDeactivateAccount}>
+          <TouchableOpacity style={[styles.menuItem, {backgroundColor:"rgba(231,163,160,0.10)",borderWidth:1,borderColor:"rgba(231,163,160,0.25)"}]} onPress={handleDeactivateAccount}>
             <AntDesign name="deleteuser" size={22} color="#FFFFFF" style={styles.menuIcon} />
             <Text style={styles.menuText}>Delete Account</Text>
             <Ionicons name="chevron-forward" size={20} color="#AAAAAA" />
@@ -276,7 +286,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
@@ -308,14 +318,14 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: "#3498db",
+    backgroundColor: colors.surfaceRaised,
     justifyContent: "center",
     alignItems: "center",
   },
   avatarText: {
     fontSize: 36,
     fontWeight: "bold",
-    color: "#FFFFFF",
+    color: "#D7B877",
   },
   profileInfo: {
     alignItems: "center",
@@ -341,14 +351,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-    marginBottom: 15,
-  },
+    fontWeight: "600",
+    color: "#F5F4F1",
+    marginBottom: 15, lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#1A1A1A",
+    backgroundColor: "rgba(67,72,72,0.30)",
     padding: 15,
     borderRadius: 12,
     marginBottom: 10,
@@ -378,11 +387,11 @@ const styles = StyleSheet.create({
     borderBottomColor: "rgba(255, 255, 255, 0.1)",
   },
   subscriptionCard: {
-    backgroundColor: "#1A1A1A",
+    backgroundColor: "rgba(67,72,72,0.30)",
     borderRadius: 12,
     padding: 20,
     borderWidth: 1,
-    borderColor: "#EFB33F",
+    borderColor: "#D7B877",
   },
   subscriptionHeader: {
     flexDirection: "row",
@@ -391,10 +400,9 @@ const styles = StyleSheet.create({
   },
   subscriptionTitle: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#EFB33F",
-    marginLeft: 10,
-  },
+    fontWeight: "600",
+    color: "#D7B877",
+    marginLeft: 10, lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   planName: {
     fontSize: 20,
     fontWeight: "600",

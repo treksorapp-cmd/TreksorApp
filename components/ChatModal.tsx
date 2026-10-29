@@ -1,3 +1,4 @@
+import {colors} from "@/theme/architect";
 "use client"
 
 import { useAuthStore } from "@/store/auth-store"
@@ -30,7 +31,7 @@ interface ChatModalProps {
   onClose: () => void
 }
 
-const quickActions = [
+const quickActions: {id:string;text:string;icon:string}[] = [
   // { id: "1", text: "💡 What is WappGPT?", icon: "💡" },
   // { id: "2", text: "🔒 Pricing", icon: "🔒" },
   // { id: "3", text: "🤔 FAQs", icon: "🤔" },
@@ -38,12 +39,14 @@ const quickActions = [
 
 export default function ChatModal({ visible, onClose }: ChatModalProps) {
   const insets = useSafeAreaInsets()
-  const {messages, sendMessage, loading, error} = useChatStore();
+  const {chats,currentUserId,sendMessage,loading,error,setUserId,loadHistory}=useChatStore();
+  const messages=currentUserId?chats[currentUserId]||[]:[];
   const [inputText, setInputText] = useState("")
   const [slideAnim] = useState(new RNAnimated.Value(height))
   const [fadeAnim] = useState(new RNAnimated.Value(0))
   const flatListRef = useRef<FlatList>(null)
   const {user} = useAuthStore();
+  useEffect(()=>{if(visible&&user?.id){setUserId(user.id);void loadHistory();}},[visible,user?.id,setUserId,loadHistory]);
 
   useEffect(() => {
     if (visible) {
@@ -79,10 +82,10 @@ export default function ChatModal({ visible, onClose }: ChatModalProps) {
     flatListRef.current?.scrollToEnd({ animated: true })
   },[messages])
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (inputText.trim() && !loading) {
-      sendMessage(inputText.trim())
-      setInputText("")
+      const sent=await sendMessage(inputText.trim());
+      if(sent)setInputText("")
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true })
       }, 100)
@@ -126,7 +129,7 @@ export default function ChatModal({ visible, onClose }: ChatModalProps) {
   )
 
   return (
-    <Modal visible={visible} transparent animationType="none" statusBarTranslucent>
+    <Modal visible={visible} transparent animationType="none" statusBarTranslucent onRequestClose={onClose}>
       <RNAnimated.View style={[styles.overlay, { opacity: fadeAnim }]}>
         <BlurView intensity={20} style={styles.blurView}>
           <RNAnimated.View
@@ -224,7 +227,7 @@ export default function ChatModal({ visible, onClose }: ChatModalProps) {
                       onPress={handleSendMessage}
                       disabled={!inputText.trim()}
                     >
-                      <Ionicons name="send" size={20} color={inputText.trim() ? "#EFB33F" : "#666"} />
+                      <Ionicons name="send" size={20} color={inputText.trim() ? "#D7B877" : "#666"} />
                     </TouchableOpacity>
                   </View>
                 </KeyboardAvoidingView>
@@ -260,7 +263,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     flex: 1,
-    backgroundColor: "#1a1a1a",
+    backgroundColor: colors.surface,
     borderRadius: 23,
   },
   header: {
@@ -280,7 +283,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -289,9 +292,8 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-  },
+    fontWeight: "600",
+    color: "#F5F4F1", lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   onlineStatus: {
     flexDirection: "row",
     alignItems: "center",
@@ -337,7 +339,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -348,7 +350,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -361,11 +363,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   aiBubble: {
-    backgroundColor: "#2a2a2a",
+    backgroundColor: colors.surfaceRaised,
     borderBottomLeftRadius: 4,
   },
   userBubble: {
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     borderBottomRightRadius: 4,
   },
   messageText: {
@@ -403,7 +405,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   typingBubble: {
-    backgroundColor: "#2a2a2a",
+    backgroundColor: colors.surfaceRaised,
     padding: 12,
     borderRadius: 16,
     borderBottomLeftRadius: 4,
@@ -421,15 +423,15 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   quickActionButton: {
-    backgroundColor: "rgba(239, 179, 63, 0.2)",
+    backgroundColor: "rgba(215,184,119, 0.2)",
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "rgba(239, 179, 63, 0.3)",
+    borderColor: "rgba(215,184,119, 0.3)",
   },
   quickActionText: {
-    color: "#EFB33F",
+    color: "#D7B877",
     fontSize: 12,
     fontWeight: "500",
   },
@@ -444,7 +446,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    backgroundColor: "#2a2a2a",
+    backgroundColor: colors.surfaceRaised,
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -456,7 +458,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "rgba(239, 179, 63, 0.2)",
+    backgroundColor: "rgba(215,184,119, 0.2)",
     alignItems: "center",
     justifyContent: "center",
   },

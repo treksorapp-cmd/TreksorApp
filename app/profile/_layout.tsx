@@ -1,3 +1,4 @@
+import {colors} from "@/theme/architect";
 import Header from "@/components/ui/Header";
 import { router, Stack } from "expo-router";
 
@@ -6,10 +7,11 @@ export default function ProfileLayout() {
     <Stack
       screenOptions={{
         contentStyle: {
-          backgroundColor: "black",
+          backgroundColor: colors.background,
         },
       }}
     >
+      <Stack.Screen name="moments" options={{headerShown:false}} />
       <Stack.Screen
         name="index"
         options={{

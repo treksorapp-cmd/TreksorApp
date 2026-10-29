@@ -1,3 +1,6 @@
+import Button from "@/components/ui/Button";
+import BodyPageHeading from "@/components/BodyPageHeading";
+import {useReflectionContext} from "@/hooks/useReflectionContext";
 "use client"
 
 import { useMySpaceStore } from "@/store/myspace-store"
@@ -5,7 +8,7 @@ import { Ionicons } from "@expo/vector-icons"
 import { LinearGradient } from "expo-linear-gradient"
 import { router, useLocalSearchParams } from "expo-router"
 import { StatusBar } from "expo-status-bar"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
     Alert,
     Dimensions,
@@ -23,6 +26,7 @@ const { width } = Dimensions.get("window")
 
 export default function ViewEntryScreen() {
   const insets = useSafeAreaInsets()
+  const {origin,home,trail}=useReflectionContext();
   const { id } = useLocalSearchParams()
   const { myspaces, deleteMySpace } = useMySpaceStore()
   const [fadeAnim] = useState(new RNAnimated.Value(0))
@@ -31,7 +35,7 @@ export default function ViewEntryScreen() {
   // Find the entry by ID
   const entry = myspaces.find((space) => space.id === id)
 
-  useState(() => {
+  useEffect(() => {
     // Start animations
     RNAnimated.parallel([
       RNAnimated.timing(fadeAnim, {
@@ -45,14 +49,15 @@ export default function ViewEntryScreen() {
         useNativeDriver: true,
       }),
     ]).start()
-  })
+    return ()=>{fadeAnim.stopAnimation();scaleAnim.stopAnimation();};
+  },[fadeAnim,scaleAnim])
 
   const handleBack = () => {
     router.back()
   }
 
   const handleEdit = () => {
-    router.push(`/mental/myspace/edit-entry/${id}`)
+    router.push(`/mental/myspace/edit-entry/${id}?pillar=${origin}`)
   }
 
   const handleDelete = () => {
@@ -104,16 +109,7 @@ export default function ViewEntryScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar style="light" />
 
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton} onPress={handleBack}>
-          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>View Entry</Text>
-        <TouchableOpacity style={styles.headerButton} onPress={handleShare}>
-          <Ionicons name="share-outline" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-      </View>
+      <BodyPageHeading trail={trail} title="Your reflection" onBack={handleBack} style={{paddingTop:12,paddingBottom:16}} />
 
       <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
         <RNAnimated.View
@@ -151,6 +147,7 @@ export default function ViewEntryScreen() {
           </LinearGradient>
         </RNAnimated.View>
 
+        <Button iconName="share-outline" onPress={handleShare}>Share reflection</Button>
         {/* Action Buttons */}
         <View style={styles.actionButtons}>
           <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
@@ -186,10 +183,9 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "600",
-    color: "#FFFFFF",
-  },
+    color: "#F5F4F1", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   content: {
     flex: 1,
   },
@@ -219,7 +215,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#EFB33F",
+    color: "#D7B877",
   },
   mood: {
     paddingHorizontal: 12,
@@ -227,7 +223,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.2)",
-    backgroundColor: "rgba(239, 179, 63, 0.2)",
+    backgroundColor: "rgba(215,184,119, 0.2)",
   },
   moodText: {
     color: "#FFFFFF",
@@ -249,7 +245,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     paddingVertical: 16,
     borderRadius: 12,
     gap: 8,
@@ -288,7 +284,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   backButton: {
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,

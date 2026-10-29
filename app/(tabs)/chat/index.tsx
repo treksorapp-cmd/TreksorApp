@@ -1,19 +1,20 @@
+import {colors} from "@/theme/architect";
 "use client"
 
 import { useAuthStore } from "@/store/auth-store"
 import { useChatStore } from "@/store/chat-store"
 import { Message } from "@/types/message"
 import { Ionicons } from "@expo/vector-icons"
-import { Image } from "expo-image"
-import { router } from "expo-router"
+import { Image, ImageBackground } from "expo-image"
+import { LinearGradient } from "expo-linear-gradient"
 import { StatusBar } from "expo-status-bar"
 import { useEffect, useRef, useState } from "react"
 import {
   Dimensions,
+  Keyboard,
   FlatList,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
@@ -23,35 +24,50 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 const { width } = Dimensions.get("window")
+const CAMPFIRE_URL = "https://niakfwerfqmrmhuypkpd.supabase.co/storage/v1/object/public/treksor-atmosphere/chat/campfire.png"
 
 export default function ChatScreen() {
   const insets = useSafeAreaInsets()
-  const {getMessages,sendMessage, loading, error, setUserId } = useChatStore()
-  const messages = getMessages();
+  const user = useAuthStore(state => state.user)
+  const chats = useChatStore(state => state.chats)
+  const currentUserId = useChatStore(state => state.currentUserId)
+  const loading = useChatStore(state => state.loading)
+  const error = useChatStore(state => state.error)
+  const sendMessage = useChatStore(state => state.sendMessage)
+  const setUserId = useChatStore(state => state.setUserId)
+  const loadHistory = useChatStore(state => state.loadHistory)
+  const messages = currentUserId ? chats[currentUserId] || [] : [];
   const [inputText, setInputText] = useState("")
+  const [campfireAvailable, setCampfireAvailable] = useState(true)
+  const [keyboardHeight, setKeyboardHeight] = useState(0)
+  useEffect(() => {
+    const show = Keyboard.addListener(Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow", e => setKeyboardHeight(e.endCoordinates.height))
+    const hide = Keyboard.addListener(Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide", () => setKeyboardHeight(0))
+    return () => { show.remove(); hide.remove() }
+  }, [])
   const flatListRef = useRef<FlatList>(null)
-  const { user } = useAuthStore()
 
   useEffect(()=>{
-    setUserId(useAuthStore.getState().user.id)
-  },[setUserId])
+    if (user?.id) setUserId(user.id)
+  },[setUserId,user?.id])
+
+  useEffect(() => {
+    if (user?.id && currentUserId === user.id) void loadHistory()
+  }, [currentUserId, user?.id, loadHistory])
 
   useEffect(() => {
     flatListRef.current?.scrollToEnd({ animated: true })
   }, [messages])
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (inputText.trim() && !loading) {
-      sendMessage(inputText.trim())
-      setInputText("")
+      const text=inputText.trim()
+      const sent=await sendMessage(text)
+      if(sent)setInputText("")
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true })
       }, 100)
     }
-  }
-
-  const handleBack = () => {
-    router.back()
   }
 
   const renderMessage = ({ item }: { item: Message }) => (
@@ -76,7 +92,7 @@ export default function ChatScreen() {
       {item.role === "user" && (
         <View style={styles.userAvatar}>
           {user?.avatar ? (
-            <Image source={{ uri: `https://app.treksor.com/${user?.avatar}` }} style={{ width: 30, height: 30, borderRadius: 15 }} />
+            <Image source={{ uri: user.avatar.startsWith("http") ? user.avatar : `https://app.treksor.com/${user.avatar.replace(/^\//, "")}` }} style={{ width: 30, height: 30, borderRadius: 15 }} />
           ) : (
             <Text style={styles.userAvatarText}>👤</Text>
           )}
@@ -86,36 +102,25 @@ export default function ChatScreen() {
   )
 
   return (
-    <SafeAreaView style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom + 80 }]}>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : undefined} keyboardVerticalOffset={0}>
       <StatusBar style="light" />
+      <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+        <ImageBackground source={campfireAvailable ? { uri: CAMPFIRE_URL } : require("@/assets/images/mental-home-bg.jpeg")} onError={() => setCampfireAvailable(false)} contentFit="cover" style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={["rgba(4,5,5,0.93)","rgba(4,5,5,0.82)","rgba(4,5,5,0.95)"]} style={StyleSheet.absoluteFill} />
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(7,11,12,0.14)" }]} />
+      </View>
 
-      {/* Header */}
-      {/* <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
 
-        <View style={styles.headerCenter}>
-          <View style={styles.aiHeaderAvatar}>
-            <Image source={require("@/assets/images/bot.png")} style={{ width: 40, height: 40, borderRadius: 20 }} />
-          </View>
-          <View>
-            <Text style={styles.headerTitle}>AI Assistant</Text>
-            <View style={styles.onlineStatus}>
-              <View style={styles.onlineDot} />
-              <Text style={styles.onlineText}>Online</Text>
-            </View>
-          </View>
-        </View>
-
-        <TouchableOpacity style={styles.moreButton}>
-          <Ionicons name="ellipsis-vertical" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-      </View> */}
-
+      {/* Single Chat title is provided by the tab navigation. */}
       {/* Messages */}
       <FlatList
         ref={flatListRef}
+        ListEmptyComponent={<View style={styles.welcomeAI}>
+          <Text style={styles.welcomeEyebrow}>YOUR SPACE</Text>
+          <Text style={styles.welcomeTitle}>What's on your mind?</Text>
+          <Text style={styles.welcomeAIText}>Talk about what matters to you. Find clarity, build healthy habits and move forward at your own pace.</Text>
+          <Text style={styles.welcomeNote}>AI support, not professional mental health care.</Text>
+        </View>}
         data={messages}
         renderItem={renderMessage}
         keyExtractor={(item) => item.id}
@@ -144,21 +149,21 @@ export default function ChatScreen() {
       )}
 
       {/* Input */}
-      <KeyboardAvoidingView 
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? -(insets.bottom + 30) : 20}
-      >
-        <View style={[styles.inputContainer,{paddingBottom: insets.bottom + 40}]}>
+      <View style={[styles.inputContainer, { paddingBottom: keyboardHeight > 0 ? 12 : 16, marginBottom: keyboardHeight > 0 ? 12 : 0 }]}>
           <TextInput
             style={styles.textInput}
-            placeholder="Type your message here..."
+            accessibilityLabel="Message Treksor"
+            placeholder="Message..."
             placeholderTextColor="#666"
             value={inputText}
             onChangeText={setInputText}
             multiline
+            scrollEnabled
             maxLength={500}
           />
           <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Send message"
             style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
             onPress={handleSendMessage}
             disabled={!inputText.trim() || loading}
@@ -166,19 +171,29 @@ export default function ChatScreen() {
             {loading ? (
               <View style={styles.loadingDot} />
             ) : (
-              <Ionicons name="send" size={20} color={inputText.trim() ? "#EFB33F" : "#666"} />
+              <Ionicons name="send" size={20} color={inputText.trim() ? "#D7B877" : "#666"} />
             )}
           </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      </View>
+    </KeyboardAvoidingView>
   )
 }
 
 const styles = StyleSheet.create({
+  premiumHeader: { height: 62, flexDirection: "row", justifyContent: "center", alignItems: "center", paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: "#292720" },
+  headerBack: { width: 28, alignItems: "flex-start" },
+  premiumHeaderCenter: { flexDirection: "row", alignItems: "center", gap: 8 },
+  premiumHeaderTitle: { fontSize: 34, fontWeight: "600", color: "#F5F1E8", letterSpacing: -0.6, lineHeight: 42, includeFontPadding: false, },
+  beta: { color: "#161008", fontSize: 10, fontWeight: "800", backgroundColor: "#D7B877", paddingHorizontal: 9, paddingVertical: 4, borderRadius: 9 },
+  welcomeAI: { backgroundColor: "rgba(19,21,21,0.72)", marginHorizontal: 20, marginTop: 24, padding: 22, borderRadius: 18, borderWidth: 1, borderColor: "rgba(255,238,197,0.24)" },
+  welcomeEyebrow: { color: "#D7B877", fontSize: 10, fontWeight: "700", letterSpacing: 2.4, marginBottom: 12 },
+  welcomeTitle: { color: "#F5F1E8", fontSize: 22, fontWeight: "600", marginBottom: 12, lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
+  welcomeNote: { color: "#A9A397", fontSize: 11, lineHeight: 16, marginTop: 18 },
+  welcomeAIText: { color: "#F0F0F0", fontSize: 14, lineHeight: 22 },
+
   container: {
     flex: 1,
-    backgroundColor: "#02050C",
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: "row",
@@ -208,15 +223,14 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     alignItems: "center",
     justifyContent: "center",
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-  },
+    fontWeight: "600",
+    color: "#F5F4F1", lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   onlineStatus: {
     flexDirection: "row",
     alignItems: "center",
@@ -262,7 +276,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -270,7 +284,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -283,11 +297,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   aiBubble: {
-    backgroundColor: "#2a2a2a",
+    backgroundColor: "rgba(26,28,28,0.88)",
     borderBottomLeftRadius: 4,
   },
   userBubble: {
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     borderBottomRightRadius: 4,
   },
   messageText: {
@@ -309,7 +323,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   typingBubble: {
-    backgroundColor: "#2a2a2a",
+    backgroundColor: colors.surfaceRaised,
     padding: 12,
     borderRadius: 16,
     borderBottomLeftRadius: 4,
@@ -339,15 +353,13 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     paddingHorizontal: 10,
     paddingVertical: 15,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(255, 255, 255, 0.1)",
     gap: 12,
-    backgroundColor: "#02050C",
+    backgroundColor: colors.background,
   },
   textInput: {
     flex: 1,
-    backgroundColor: "#2a2a2a",
-    borderRadius: 20,
+    backgroundColor: "rgba(32,34,34,0.86)",
+    borderRadius: 22,
     paddingHorizontal: 16,
     paddingVertical: 12,
     color: "#FFFFFF",
@@ -360,7 +372,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "rgba(239, 179, 63, 0.2)",
+    backgroundColor: "rgba(215,184,119, 0.2)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -371,6 +383,6 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
   },
 })

@@ -1,5 +1,8 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
+import {useReflectionContext} from "@/hooks/useReflectionContext";
 "use client"
 
+import Button from "@/components/ui/Button"
 import { useMySpaceStore } from "@/store/myspace-store"
 import { Ionicons } from "@expo/vector-icons"
 import { Image } from "expo-image"
@@ -10,8 +13,8 @@ import {
   Alert,
   Dimensions,
   KeyboardAvoidingView,
+  Keyboard,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,7 +22,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 
 const { width, height } = Dimensions.get("window")
 
@@ -28,18 +31,27 @@ const moodOptions = ["Happy", "Sad", "Stressed", "Anxious", "Calm", "Frustrated"
 
 export default function NewEntryScreen() {
   const insets = useSafeAreaInsets()
+  const {origin,home,trail}=useReflectionContext();
+  const [saving,setSaving]=useState(false)
   const [mood, setMood] = useState("Happy")
   const {addMySpace} = useMySpaceStore();
   const [entryText, setEntryText] = useState("")
   const [showMoodDropdown, setShowMoodDropdown] = useState(false)
 
-  const handleAddEntry = () => {
+  const handleAddEntry = async () => {
+    Keyboard.dismiss()
     if (!entryText.trim()) {
       Alert.alert("Error", "Please enter some text for your entry.")
       return
     }
-    addMySpace({mood,text:entryText})
-    router.push('/mental/myspace/new-entry-success');
+    if(saving)return
+    setSaving(true)
+    try {
+      await addMySpace({mood,text:entryText.trim()})
+      router.replace(home);
+    } catch (error) {
+      Alert.alert('Unable to save entry', 'Please try again.');
+    } finally {setSaving(false)}
   }
 
   const selectMood = (selectedMood: string) => {
@@ -60,10 +72,12 @@ export default function NewEntryScreen() {
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
           showsVerticalScrollIndicator={false}
           bounces={false}
         >
       
+          <BodyPageHeading trail={trail} title="New reflection" style={{paddingHorizontal:0}} />
           {/* Illustration */}
           <View style={styles.illustrationContainer}>
             <Image
@@ -75,16 +89,16 @@ export default function NewEntryScreen() {
 
           {/* Mood Selector */}
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>Select Mood</Text>
+            <Text style={styles.sectionTitle}>How are you feeling?</Text>
             <TouchableOpacity style={styles.dropdownButton} onPress={() => setShowMoodDropdown(!showMoodDropdown)}>
               <Text style={styles.dropdownButtonText}>{mood}</Text>
-              <Ionicons name={showMoodDropdown ? "chevron-up" : "chevron-down"} size={20} color="#E5B94B" />
+              <Ionicons name={showMoodDropdown ? "chevron-up" : "chevron-down"} size={20} color="#FFFFFF" />
             </TouchableOpacity>
 
             {showMoodDropdown && (
               <View style={styles.dropdownMenu}>
               <ScrollView 
-                style={styles.dropdownScroll}
+                style={styles.dropDownScroll}
                 nestedScrollEnabled={true}
                 showsVerticalScrollIndicator={false}
               >
@@ -106,11 +120,14 @@ export default function NewEntryScreen() {
 
           {/* Entry Text Input */}
           <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>Add entry text</Text>
+            <Text style={styles.sectionTitle}>Your reflection</Text>
             <TextInput
               style={styles.textInput}
+              returnKeyType="done"
+              submitBehavior="blurAndSubmit"
+              onSubmitEditing={()=>Keyboard.dismiss()}
               multiline
-              placeholder="Write your thoughts here..."
+              placeholder={origin === "purpose" ? "What matters to you, and what is one step you can take?" : "Write your thoughts here..."}
               placeholderTextColor="#666"
               value={entryText}
               onChangeText={setEntryText}
@@ -118,10 +135,9 @@ export default function NewEntryScreen() {
             />
           </View>
 
+          <TouchableOpacity onPress={()=>Keyboard.dismiss()} style={{padding:14,alignItems:"flex-end"}}><Text style={{color:"#D7B877",fontWeight:"700"}}>DONE WRITING ✓</Text></TouchableOpacity>
           {/* Add Button */}
-          <TouchableOpacity style={styles.addButton} onPress={handleAddEntry} activeOpacity={0.8}>
-            <Text style={styles.addButtonText}>Add</Text>
-          </TouchableOpacity>
+          <Button disabled={saving||!entryText.trim()} iconName="checkmark-outline" onPress={handleAddEntry}>{saving?"SAVING…":"SAVE ENTRY"}</Button>
           <View style={styles.bottomPadding} />
         </ScrollView>
       </KeyboardAvoidingView>
@@ -150,10 +166,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginVertical: 20,
-    height: height * 0.2, // Responsive height
+    height: 110, // Responsive height
   },
   illustration: {
-    width: width * 0.6,
+    width: "70%",
     height: "100%",
   },
   sectionContainer: {
@@ -163,29 +179,28 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#FFFFFF",
-    marginBottom: 10,
-  },
+    color: "#F5F4F1",
+    marginBottom: 10, lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   dropdownButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#1A1A1A",
+    backgroundColor: "rgba(255,255,255,0.08)",
     borderRadius: 10,
     padding: 15,
     borderWidth: 1,
-    borderColor: "#333",
+    borderColor: "rgba(255,255,255,0.25)",
   },
   dropdownButtonText: {
     fontSize: 16,
     color: "#FFFFFF",
   },
   dropdownMenu: {
-    backgroundColor: "#1A1A1A",
+    backgroundColor: "rgba(255,255,255,0.08)",
     borderRadius: 10,
     marginTop: 5,
     borderWidth: 1,
-    borderColor: "#333",
+    borderColor: "rgba(255,255,255,0.25)",
     maxHeight: 200,
   },
   dropdownItem: {
@@ -201,10 +216,10 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   dropdownItemTextSelected: {
-    color: "#E5B94B",
+    color: "#D7B877",
   },
   textInput: {
-    backgroundColor: "#1A1A1A",
+    backgroundColor: "rgba(255,255,255,0.08)",
     borderRadius: 10,
     padding: 15,
     color: "#FFFFFF",
@@ -212,10 +227,10 @@ const styles = StyleSheet.create({
     minHeight: 150,
     textAlignVertical: "top",
     borderWidth: 1,
-    borderColor: "#333",
+    borderColor: "rgba(255,255,255,0.25)",
   },
   addButton: {
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
     borderRadius: 10,
     padding: 15,
     alignItems: "center",
