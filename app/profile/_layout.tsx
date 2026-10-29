@@ -11,6 +11,7 @@ export default function ProfileLayout() {
         },
       }}
     >
+      <Stack.Screen name="moments" options={{headerShown:false}} />
       <Stack.Screen
         name="index"
         options={{
