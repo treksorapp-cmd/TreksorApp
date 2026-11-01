@@ -18,11 +18,13 @@ export default {
     },
     ios: {
       supportsTablet: true,
+      entitlements: { "com.apple.developer.healthkit": true },
       bundleIdentifier: isIphoneDev ? "com.treksor.dev" : "com.treksor.prod",
       googleServicesFile: process.env.GOOGLE_SERVICES_INFOPLIST,
       buildNumber: "3",
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
+        NSHealthShareUsageDescription: "Read your Apple Watch and Garmin workouts from Apple Health so you can review them in Treksor. Upload to your private Treksor account only when you choose Save to my ecosystem.",
         NSPhotoLibraryUsageDescription:
           "This app needs access to your photo library to let you pick and upload images.",
         NSCameraUsageDescription:
