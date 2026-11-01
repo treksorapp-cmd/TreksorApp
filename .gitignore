@@ -40,3 +40,7 @@ app-example
 
 android/
 ios/
+# Local Expo native modules are source, unlike generated root ios/.
+!modules/**/ios/
+!modules/**/ios/**
+.qa-health-*/

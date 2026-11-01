@@ -1,3 +1,4 @@
+import {readBalance,balanceSyncPayload} from '@/lib/balance/practice';
 import { useEffect } from 'react';
 import { AppState, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -50,7 +51,8 @@ export function useProgressSync() {
         await useTrackingStore.getState().fetchTrackingData();
         const thoughts=await AsyncStorage.getItem('treksor.thoughts.read.v1');
         const vision=await AsyncStorage.getItem('treksor.vision-board.v1');
-        const payload=buildProgressPayload({device:Platform.OS==='ios'?'iPhone / iPad':Platform.OS==='android'?'Android':'Treksor app',workout:useWorkoutStore.getState(),tracking:useTrackingStore.getState().trackingData,articles:useArticleStore.getState().articles,meditations:useMediationStore.getState().mediation,thoughtDates:thoughts?JSON.parse(thoughts):{},vision:vision?JSON.parse(vision):null});
+        const balance=balanceSyncPayload(await readBalance(userId));
+        const payload=buildProgressPayload({balance,device:Platform.OS==='ios'?'iPhone / iPad':Platform.OS==='android'?'Android':'Treksor app',workout:useWorkoutStore.getState(),tracking:useTrackingStore.getState().trackingData,articles:useArticleStore.getState().articles,meditations:useMediationStore.getState().mediation,thoughtDates:thoughts?JSON.parse(thoughts):{},vision:vision?JSON.parse(vision):null});
         const json=JSON.stringify(payload);
         if(!force&&json===lastPayload)return;
         status({status:'syncing',message:'Syncing with your web profile…'});

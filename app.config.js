@@ -24,7 +24,7 @@ export default {
       buildNumber: "3",
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
-        NSHealthShareUsageDescription: "Read your Apple Watch and Garmin workouts from Apple Health so you can review them in Treksor. Upload to your private Treksor account only when you choose Save to my ecosystem.",
+        NSHealthShareUsageDescription: "Read workouts and optional sleep records from Apple Health so you can review your movement and rest. Each import is uploaded to your private Treksor account only after you review and choose to save it.",
         NSPhotoLibraryUsageDescription:
           "This app needs access to your photo library to let you pick and upload images.",
         NSCameraUsageDescription:

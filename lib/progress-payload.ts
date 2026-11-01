@@ -1,5 +1,6 @@
 // Deliberate allowlist: no journal text, mood records, vision answers, tokens, or email.
 export function buildProgressPayload(input: {
+  balance?: {goal:string;weeklyDays:number;sessions:{id:string;practiceId:string;completedAt:string;seconds:number;method:string}[]};
   device: string;
   workout: {trainingPlan: unknown; gymSets: unknown[]; checkIns: Record<string,string[]>; workouts:{exercises:{completed:boolean}[]}[]};
   tracking: {id:string;title:string;percentage:number;custom:boolean;items:{id:string;label:string;value:string;record?:Record<string,boolean>}[]}[];
@@ -16,6 +17,7 @@ export function buildProgressPayload(input: {
   const answers = Array.isArray(vision) ? vision : vision?.answers || [];
   return {
     version:1, device:input.device,
+    ...(input.balance?{balance:{goal:input.balance.goal,weeklyDays:input.balance.weeklyDays,sessions:input.balance.sessions.map(({id,practiceId,completedAt,seconds,method})=>({id,practiceId,completedAt,seconds,method}))}}:{}),
     trainingPlan:input.workout.trainingPlan,
     gymSets:input.workout.gymSets,
     checkIns:input.workout.checkIns,

@@ -1,3 +1,6 @@
+import {meditationAudio,meditationCacheKey} from "@/lib/balance/audio";
+import {recordPractice,dateKey} from "@/lib/balance/practice";
+import {useAuthStore} from "@/store/auth-store";
 import React, { useEffect, useRef, useState } from "react";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
@@ -75,7 +78,7 @@ export default function MeditationDetailScreen() {
             }
             if (!FileSystem.cacheDirectory)
                 throw new Error("Audio storage unavailable");
-            const fileUri = FileSystem.cacheDirectory + encodeURIComponent(meditation.audioUrl);
+            const fileUri = FileSystem.cacheDirectory + encodeURIComponent(meditationCacheKey(meditation.id,meditation.audioUrl));
             const info = await FileSystem.getInfoAsync(fileUri);
             if (version !== session.current) return;
             let uri = fileUri;
@@ -83,7 +86,9 @@ export default function MeditationDetailScreen() {
                 setProgress(0);
                 partial = `${fileUri}.download-${Date.now()}-${version}`;
                 temporaryFile.current = partial;
-                const task = FileSystem.createDownloadResumable(meditation.audioUrl, partial, {}, p => {
+                const mediaUrl = await meditationAudio(meditation.id,meditation.audioUrl);
+                if(version !== session.current) return;
+                const task = FileSystem.createDownloadResumable(mediaUrl, partial, {}, p => {
                     if (version === session.current)
                         setProgress(p.totalBytesExpectedToWrite > 0 ? Math.min(100, Math.round(p.totalBytesWritten / p.totalBytesExpectedToWrite * 100)) : null);
                 });
@@ -157,7 +162,7 @@ export default function MeditationDetailScreen() {
       </View>
       <View style={styles.experience}><Text style={styles.section}>What you’ll experience</Text>{meditation.content.experience.map((item, index) => <View key={index} style={styles.bullet}><View style={styles.dot}/><Text style={styles.body}>{item}</Text></View>)}</View>
       {meditation.tip ? <View style={styles.tip}><Text style={styles.eyebrow}>A GENTLE REMINDER</Text><Text style={styles.body}>{meditation.tip}</Text></View> : null}
-      <Button disabled={Boolean(meditation.isRead) || locked} iconName="checkmark-circle-outline" onPress={() => markComplete(meditation.id)}>{meditation.isRead ? "Practice completed" : locked ? "Complete the previous level first" : "Mark practice complete"}</Button>
+      <Button disabled={locked} iconName="checkmark-circle-outline" onPress={() => {markComplete(meditation.id);const owner=useAuthStore.getState().user?.id;if(owner)void recordPractice(owner,{id:`guided-${meditation.id}-${dateKey(new Date())}`,practiceId:meditation.id,completedAt:new Date().toISOString(),seconds:0,method:"self-report"}).catch(()=>setError("Completion was marked, but your practice history could not be saved."))}}>{meditation.isRead ? "Log this practice again" : locked ? "Complete the previous level first" : "Mark practice complete"}</Button>
       <Text style={styles.caption}>Practices for relaxation and mindfulness. If you have health concerns, consult your healthcare professional.</Text>
     </View>
   </ScrollView>;

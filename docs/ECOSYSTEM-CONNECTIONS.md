@@ -6,7 +6,7 @@
 - Owner-only `health_snapshots`: one atomic snapshot per Treksor account, automatic server timestamp; no Community or Mentor reader. A new save replaces the previous import, including removed records. Another phone replaces this snapshot rather than adding duplicate snapshots.
 - Private app/web journal, per-source 7/30 day view, duration, sessions, active days, prior-week comparison. Exact record IDs deduplicated. Sources are selected, never summed; gym sessions stay separate. 30-day view has no comparison against unavailable previous 30 days.
 - Source labels, last saved time, missing-data states, refresh on explicit import, delete import from either client. No health data in logs, analytics, AI prompts or community.
-- No imported steps, sleep, HR, readiness, GPS or route data. No automatic health read/upload, watch control or watchOS companion binary.
+- Workout imports contain no steps, sleep, HR, readiness, GPS or route data. Balance now offers a separate explicit opt-in sleep-duration import; see BALANCE-REDESIGN.md. No automatic health read/upload, watch control or watchOS companion binary.
 
 ## Activation still required
 1. Compile/sign a new iOS build (`iphone-preview` or production) with HealthKit capability and test on a real iPhone. Existing installed Dev app cannot gain this native module through Metro or OTA. Expo authentication is still required; this task does not create a signed binary.
