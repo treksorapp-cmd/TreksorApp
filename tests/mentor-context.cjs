@@ -37,7 +37,7 @@ assert.equal(core.buildMentorBrief(null,now).activeDays,0);assert.equal(core.par
  assert.equal((await request({action:'send',message:'Review',brief:{...brief,health:'SECRET'},shareBrief:true,mode:'weekly_review'})).status,200);assert.equal(providerCalls,1);assert.equal(providerBody.store,false);assert(!JSON.stringify(providerBody).includes('SECRET'));
  assert(!providerBody.instructions.includes('Keep it manageable'),'User memories are not system instructions');assert(providerBody.input[0].content.includes('Keep it manageable'));
  assert(dbCalls.filter(q=>q.table==='ai_memories'&&q.op==='select'&&!q.opts?.head).some(q=>q.filters.some(([k,v])=>k==='user_approved'&&v===true)));
- const saved=dbCalls.find(q=>q.table==='ai_messages'&&q.op==='insert');assert(saved.values[0].content.includes('Shared with Mentor'));
+ const saved=dbCalls.find(q=>q.table==='ai_messages'&&q.op==='insert');assert(saved.values[0].content.includes('Shared with Mentor'));assert(Date.parse(saved.values[1].created_at)>Date.parse(saved.values[0].created_at),'Persisted reply follows its user message');
  assert(dbCalls.filter(q=>q.table==='ai_messages'&&q.op==='select').every(q=>q.filters.some(([k,v])=>k==='user_id'&&v===userId)));
  assert(!dbCalls.some(q=>['health_snapshots','sleep_snapshots','app_progress'].includes(q.table)),'No automatic private-data reads');
  console.log('PASS Mentor totals, consent allowlist, real dates, account switch, memory ownership, HTTP validation, approved context and private-data exclusions');
