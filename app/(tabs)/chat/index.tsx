@@ -1,3 +1,6 @@
+import {useFocusEffect,useLocalSearchParams} from "expo-router";
+import MentorCompanion from "@/components/mentor/MentorCompanion";
+import type {MentorMode} from "@/supabase/functions/_shared/mentor";
 import {colors} from "@/theme/architect";
 "use client"
 
@@ -8,8 +11,9 @@ import { Ionicons } from "@expo/vector-icons"
 import { Image, ImageBackground } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
 import { StatusBar } from "expo-status-bar"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import {
+  Alert,
   Dimensions,
   Keyboard,
   FlatList,
@@ -28,6 +32,7 @@ const CAMPFIRE_URL = "https://niakfwerfqmrmhuypkpd.supabase.co/storage/v1/object
 
 export default function ChatScreen() {
   const insets = useSafeAreaInsets()
+  const params=useLocalSearchParams<{intent?:string}>()
   const user = useAuthStore(state => state.user)
   const chats = useChatStore(state => state.chats)
   const currentUserId = useChatStore(state => state.currentUserId)
@@ -36,8 +41,12 @@ export default function ChatScreen() {
   const sendMessage = useChatStore(state => state.sendMessage)
   const setUserId = useChatStore(state => state.setUserId)
   const loadHistory = useChatStore(state => state.loadHistory)
-  const messages = currentUserId ? chats[currentUserId] || [] : [];
+  const messages = currentUserId === user?.id ? chats[currentUserId] || [] : [];
   const [inputText, setInputText] = useState("")
+  const [mode,setMode] = useState<MentorMode>("conversation")
+  const clearConversation=useChatStore(s=>s.clearConversation)
+  const inputRef=useRef<TextInput>(null)
+  useEffect(()=>{setInputText("");setMode("conversation")},[user?.id])
   const [campfireAvailable, setCampfireAvailable] = useState(true)
   const [keyboardHeight, setKeyboardHeight] = useState(0)
   useEffect(() => {
@@ -51,9 +60,10 @@ export default function ChatScreen() {
     if (user?.id) setUserId(user.id)
   },[setUserId,user?.id])
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     if (user?.id && currentUserId === user.id) void loadHistory()
-  }, [currentUserId, user?.id, loadHistory])
+  }, [currentUserId, user?.id, loadHistory]))
+  useEffect(()=>{if(params.intent==="meal"){setInputText("Help me improve a meal with one simple change. Ask about the ingredients, portions, preferences and allergies first.");setMode("meal_ideas")}},[params.intent])
 
   useEffect(() => {
     flatListRef.current?.scrollToEnd({ animated: true })
@@ -62,8 +72,8 @@ export default function ChatScreen() {
   const handleSendMessage = async () => {
     if (inputText.trim() && !loading) {
       const text=inputText.trim()
-      const sent=await sendMessage(text)
-      if(sent)setInputText("")
+      const sent=await sendMessage(text,{mode})
+      if(sent){setInputText(previous=>previous.trim()===text?"":previous);setMode("conversation")}
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true })
       }, 100)
@@ -112,12 +122,14 @@ export default function ChatScreen() {
 
 
       {/* Single Chat title is provided by the tab navigation. */}
+      {(messages.length>0||keyboardHeight>0)&&<MentorCompanion compact busy={loading} onShare={sendMessage} onPrompt={(text,nextMode)=>{setInputText(text);setMode(nextMode);inputRef.current?.focus()}}/>}
       {/* Messages */}
       <FlatList
         ref={flatListRef}
+        ListHeaderComponent={messages.length===0&&keyboardHeight===0?<MentorCompanion busy={loading} onShare={sendMessage} onPrompt={(text,nextMode)=>{setInputText(text);setMode(nextMode);inputRef.current?.focus()}}/>:null}
         ListEmptyComponent={<View style={styles.welcomeAI}>
           <Text style={styles.welcomeEyebrow}>YOUR SPACE</Text>
-          <Text style={styles.welcomeTitle}>What's on your mind?</Text>
+          <Text style={styles.welcomeTitle}>Start wherever you are.</Text>
           <Text style={styles.welcomeAIText}>Talk about what matters to you. Find clarity, build healthy habits and move forward at your own pace.</Text>
           <Text style={styles.welcomeNote}>AI support, not professional mental health care.</Text>
         </View>}
@@ -148,18 +160,20 @@ export default function ChatScreen() {
         </View>
       )}
 
+      {messages.length>0&&<TouchableOpacity disabled={loading} accessibilityRole="button" onPress={()=>Alert.alert("Delete this conversation?","This removes the conversation and any shared summaries from your Treksor account. Your context notes are managed separately.",[{text:"Cancel",style:"cancel"},{text:"Delete",style:"destructive",onPress:()=>void clearConversation()}])} style={{paddingHorizontal:24,paddingVertical:10}}><Text style={{color:colors.muted,fontSize:12}}>Delete conversation</Text></TouchableOpacity>}
       {/* Input */}
       <View style={[styles.inputContainer, { paddingBottom: keyboardHeight > 0 ? 12 : 16, marginBottom: keyboardHeight > 0 ? 12 : 0 }]}>
           <TextInput
+            ref={inputRef}
             style={styles.textInput}
             accessibilityLabel="Message Treksor"
-            placeholder="Message..."
+            placeholder="Ask Mentor…"
             placeholderTextColor="#666"
             value={inputText}
             onChangeText={setInputText}
             multiline
             scrollEnabled
-            maxLength={500}
+            maxLength={2000}
           />
           <TouchableOpacity
             accessibilityRole="button"
