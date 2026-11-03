@@ -24,6 +24,7 @@ export default {
       buildNumber: "3",
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
+        NSAlarmKitUsageDescription: "Schedule the wake-up time and sound you choose, including system alerts on a paired Apple Watch.",
         NSHealthShareUsageDescription: "Read workouts and optional sleep records from Apple Health so you can review your movement and rest. Each import is uploaded to your private Treksor account only after you review and choose to save it.",
         NSPhotoLibraryUsageDescription:
           "This app needs access to your photo library to let you pick and upload images.",
@@ -49,6 +50,7 @@ export default {
     },
     plugins: [
       "expo-router",
+      ["expo-notifications", {sounds: Array.from({length:15},(_,i)=>`./assets/audio/wake/wake_${String(i+1).padStart(2,"0")}.wav`)}],
       "expo-web-browser",
       ["expo-location", {locationWhenInUsePermission: "Use your current city to find Community activities when you choose Use my current location.", isIosBackgroundLocationEnabled: false, isAndroidBackgroundLocationEnabled: false}],
       "expo-apple-authentication",

@@ -1,3 +1,4 @@
+import DiscoveryCard from "@/components/discovery/DiscoveryCard";
 import PillarUpdates from "@/components/PillarUpdates";
 import { useContentRefresh } from "@/hooks/useContentRefresh";
 import {colors} from "@/theme/architect";
@@ -125,6 +126,7 @@ export default function HomeScreen() {
           ))}
         </Animated.View>
 
+        <DiscoveryCard />
         <JourneyCard />
         <View style={styles.thoughtSection}>
           <View style={styles.thoughtHeading}><Ionicons name="sunny-outline" color={GOLD} size={19} /><Text style={styles.thoughtLabel}>TODAY ON TREKSOR</Text></View>

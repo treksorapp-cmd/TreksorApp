@@ -38,9 +38,7 @@ export default function WorkoutSession(){
   const exercises=useMemo(()=>{
     if(!active)return[];
     const selected=active.exerciseIds.map(id=>library.find(item=>item.id===id)).filter((item):item is GymExercise=>Boolean(item));
-    if(selected.length)return selected;
-    const all=exercisesForMuscles(library,[...new Set(Object.values(muscles).flat())],"Gym");
-    return all.slice(0,5);
+    return selected.map(e=>({...e,...active.prescriptions?.[e.id]}));
   },[active,library]);
   const demos=exercises.filter(item=>!!item.videoUrl||!!item.video_path);
   const playingId=visibleExercise||demos[0]?.id;
@@ -81,6 +79,7 @@ export default function WorkoutSession(){
       <BodyPageHeading trail="BODY / GYM / LIVE SESSION" title={active.dayName} subtitle="One set at a time. Your progress saves as you train." style={{paddingHorizontal:0}}/>
       <View style={{padding:17,borderRadius:16,backgroundColor:GLASS,marginTop:17}}><View style={{flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}><View><Text style={{color:"#AAA59A",fontSize:10,fontWeight:"800",letterSpacing:1}}>SESSION PROGRESS</Text><Text style={{color:"white",fontSize:22,fontWeight:"800",marginTop:5}}>{completedCount}<Text style={{color:"#AFA99F",fontSize:14,fontWeight:"500"}}> / {plannedCount} sets</Text></Text></View><View style={{alignItems:"flex-end"}}><Text style={{color:"#AAA59A",fontSize:10,fontWeight:"800",letterSpacing:1}}>STARTED</Text><Text style={{color:GOLD,fontWeight:"700",marginTop:5}}>{new Date(active.startedAt).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}</Text></View></View><View style={{height:6,borderRadius:6,backgroundColor:"rgba(255,255,255,0.12)",overflow:"hidden",marginTop:14}}><View style={{height:"100%",width:`${Math.min(100,plannedCount?completedCount/plannedCount*100:0)}%`,backgroundColor:GOLD}}/></View></View>
 
+      {exercises.length<active.exerciseIds.length&&<Text style={{color:GOLD,paddingVertical:14}}>Some exercises from this session are unavailable. Reopen your plan to review the routine. Your recorded sets are still saved.</Text>}
       {exercises.map((exercise,index)=><View key={exercise.id} onLayout={event=>{positions.current[exercise.id]=event.nativeEvent.layout.y}} style={{marginTop:14,padding:16,borderRadius:18,backgroundColor:GLASS,borderWidth:1,borderColor:"rgba(255,255,255,0.055)"}}>
         <View style={{flexDirection:"row",alignItems:"flex-start",gap:11}}><View style={{width:31,height:31,borderRadius:10,backgroundColor:"rgba(215,184,119,0.13)",alignItems:"center",justifyContent:"center"}}><Text style={{color:GOLD,fontWeight:"800",fontSize:12}}>{String(index+1).padStart(2,"0")}</Text></View><View style={{flex:1}}><Text style={{color:"#F6F3EC",fontSize:16,fontWeight:"800",lineHeight:22}}>{exercise.name}</Text><Text style={{color:"#AFA99F",fontSize:11,marginTop:5}}>{exercise.muscle_group}{exercise.equipment?` · ${exercise.equipment}`:""}</Text></View>{(!!exercise.videoUrl||!!exercise.video_path)&&<TouchableOpacity onPress={()=>setVisibleExercise(exercise.id)} accessibilityRole="button" style={{padding:7}}><Ionicons name="videocam-outline" size={20} color={GOLD}/></TouchableOpacity>}</View>
         {!!exercise.instructions&&<Text style={{color:"#C8C2B7",fontSize:12,lineHeight:18,marginTop:11}}>{exercise.instructions}</Text>}

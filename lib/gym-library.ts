@@ -1,3 +1,4 @@
+import {exerciseIdentity} from "./exercise-identities";
 import { WorkoutsData, workoutContent } from "@/mock/workouts";
 import type { Workout } from "@/types/workout";
 
@@ -64,7 +65,8 @@ export function mergeGymExercises(remote: Partial<GymExercise>[]): GymExercise[]
   const merged = [...builtInGymExercises];
   for (const item of remote) {
     if (!item || typeof item.id !== "string" || typeof item.name !== "string") continue;
-    const index = merged.findIndex(exercise => normalize(exercise.name) === normalize(item.name!));
+    const knownId=exerciseIdentity(item.video_path)||exerciseIdentity(item.videoUrl);
+    const index = merged.findIndex(exercise => (knownId ? exercise.id===knownId : normalize(exercise.name) === normalize(item.name!)));
     const next: GymExercise = {
       id: index >= 0 ? merged[index].id : item.id,
       serverId: item.id,

@@ -1,3 +1,5 @@
+import WakeRuntime from "@/components/wake/WakeRuntime";
+import DiscoveryProvider from "@/components/discovery/DiscoveryProvider";
 import { useProgressSync } from "@/hooks/useProgressSync";
 import SubscriptionScreen from "@/components/SubscriptionScreen";
 import { useNotifications } from "@/hooks/useNotifications";
@@ -169,7 +171,7 @@ export default function RootLayout() {
 
   // ✅ UI
   return (
-    <>
+    <DiscoveryProvider>
       {showPackages && (
         <SubscriptionScreen onClose={()=> setShowPackages(false)}/>
       )}
@@ -182,7 +184,8 @@ export default function RootLayout() {
         }}
       />
 
-    </>
+      <WakeRuntime />
+    </DiscoveryProvider>
   );
 }
 

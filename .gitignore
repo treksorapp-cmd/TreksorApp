@@ -46,3 +46,7 @@ ios/
 .qa-health-*/
 
 .qa-mentor-*/
+
+!modules/**/android/
+!modules/**/android/**
+.qa-wake-*/

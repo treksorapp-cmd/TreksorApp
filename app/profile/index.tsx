@@ -1,3 +1,4 @@
+import DiscoveryCard from "@/components/discovery/DiscoveryCard";
 import {colors} from "@/theme/architect";
 "use client"
 
@@ -151,6 +152,7 @@ export default function ProfileScreen() {
   return (
     <View style={[styles.container, { paddingTop: 0 }]}>
       <ScrollView style={styles.content}>
+        <DiscoveryCard />
         <View style={styles.profileHeader}>
           <View style={styles.avatarSection}>
             {user.avatar ? (

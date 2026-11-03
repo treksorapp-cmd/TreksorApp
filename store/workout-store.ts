@@ -5,13 +5,13 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 export type GymSet = { id:string; exerciseId:string; exerciseName:string; day:number; kg:number; reps:number; recordedAt:string; sessionId?:string; setNumber?:number; setType?:string; metric?:"reps"|"seconds" };
-export type ActiveGymWorkout = { id:string; day:number; dayName:string; exerciseIds:string[]; completedSetIds:string[]; startedAt:string; restEndsAt?:string|null; restDuration?:number };
+export type ActiveGymWorkout = { id:string; day:number; dayName:string; exerciseIds:string[]; completedSetIds:string[]; startedAt:string; restEndsAt?:string|null; restDuration?:number; prescriptions?: Record<string,{sets:number;reps:string;rest_seconds:number}> };
 export type TrainingPlan = { days:number; location:"Gym"|"Home"; savedAt:string; age?:number; heightCm?:number; weightKg?:number; goal?:"strength"|"muscle"|"definition"; experience?:"beginner"|"intermediate"|"advanced" };
 interface WorkoutState {
     trainingPlan: TrainingPlan | null;
     gymSets: GymSet[];
     activeGymWorkout: ActiveGymWorkout | null;
-    startGymWorkout: (day:number, dayName:string, exerciseIds:string[])=>string;
+    startGymWorkout: (day:number, dayName:string, exerciseIds:string[],prescriptions?:Record<string,{sets:number;reps:string;rest_seconds:number}>)=>string;
     completeGymSet: (entry:GymSet)=>void;
     setGymRestEnd: (value:string|null)=>void;
     extendGymRest: (seconds:number)=>void;
@@ -40,10 +40,10 @@ export const useWorkoutStore = create<WorkoutState>()(
         trainingPlan: null,
         gymSets: [],
         activeGymWorkout: null,
-        startGymWorkout: (day,dayName,exerciseIds) => {
+        startGymWorkout: (day,dayName,exerciseIds,prescriptions) => {
           const existing = get().activeGymWorkout;
           if (existing) return existing.id;
-          const workout = { id:Date.now().toString()+"-"+Math.random().toString(36).slice(2), day, dayName, exerciseIds, completedSetIds:[], startedAt:new Date().toISOString(), restEndsAt:null };
+          const workout = { id:Date.now().toString()+"-"+Math.random().toString(36).slice(2), day, dayName, exerciseIds, prescriptions, completedSetIds:[], startedAt:new Date().toISOString(), restEndsAt:null };
           set({activeGymWorkout:workout});
           return workout.id;
         },

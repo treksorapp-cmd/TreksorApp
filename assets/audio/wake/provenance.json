@@ -1,0 +1,114 @@
+{
+  "author": "Kenney",
+  "license": "CC0-1.0",
+  "sourcePage": "https://kenney.nl/assets/music-jingles",
+  "download": "https://opengameart.org/sites/default/files/jingleSounds_Kenney.zip",
+  "adaptation": "15 separate bank recordings converted to 16-second PCM WAV: low-pass, reduced gain, spaced repeats and gentle fades. Names are Treksor labels, not original recording titles.",
+  "sounds": [
+    {
+      "id": "wake_01",
+      "name": "First light",
+      "family": "Plucked",
+      "source": "OGG/jingles_PIZZA/jingles_PIZZA00.ogg",
+      "sha256": "e236e236c4ff3f9e49c371de398ba4fb707bf5f6deeedf0c2010a97fa26faf2a"
+    },
+    {
+      "id": "wake_02",
+      "name": "Soft horizon",
+      "family": "Plucked",
+      "source": "OGG/jingles_PIZZA/jingles_PIZZA01.ogg",
+      "sha256": "7719f87853a8ea062670fa0a72a4b3054ac2062bf7d8a41d88675f9e708bb654"
+    },
+    {
+      "id": "wake_03",
+      "name": "Quiet beginning",
+      "family": "Plucked",
+      "source": "OGG/jingles_PIZZA/jingles_PIZZA03.ogg",
+      "sha256": "eab671b376ecbbd6a1269ae9fb2338ebeeafb4497081d0e3986f0d8f771a9346"
+    },
+    {
+      "id": "wake_04",
+      "name": "Golden hour",
+      "family": "Plucked",
+      "source": "OGG/jingles_PIZZA/jingles_PIZZA05.ogg",
+      "sha256": "0a1c02e1669f6151e5817813b7abcec534af408359a7f00bc4513d0502089ca6"
+    },
+    {
+      "id": "wake_05",
+      "name": "Open sky",
+      "family": "Plucked",
+      "source": "OGG/jingles_PIZZA/jingles_PIZZA07.ogg",
+      "sha256": "4e514fc14729539d4b0b877a5f3f340b6318e2009de4286077c9794842ae3a1f"
+    },
+    {
+      "id": "wake_06",
+      "name": "Warm welcome",
+      "family": "Bell-like",
+      "source": "OGG/jingles_STEEL/jingles_STEEL00.ogg",
+      "sha256": "fd13ac53a61b0467f89618387a2aabd8231d831189d8bfbeac3d828abfd79263"
+    },
+    {
+      "id": "wake_07",
+      "name": "Gentle glow",
+      "family": "Bell-like",
+      "source": "OGG/jingles_STEEL/jingles_STEEL01.ogg",
+      "sha256": "2346f5640d40cb46251b0f55e12c921290bc0445e1ed0195510d381239c8ecbe"
+    },
+    {
+      "id": "wake_08",
+      "name": "Morning rhythm",
+      "family": "Bell-like",
+      "source": "OGG/jingles_STEEL/jingles_STEEL03.ogg",
+      "sha256": "9640728f0fc5bda2ea6c54a65ae0692af849502f2ebf5da44c5fbe56f46a6b07"
+    },
+    {
+      "id": "wake_09",
+      "name": "Amber dawn",
+      "family": "Bell-like",
+      "source": "OGG/jingles_STEEL/jingles_STEEL05.ogg",
+      "sha256": "f6e766cea417032d24d7365bfd58cdcdd1e0901bbf27c6d52d596ae28bc671ea"
+    },
+    {
+      "id": "wake_10",
+      "name": "Slow sunrise",
+      "family": "Bell-like",
+      "source": "OGG/jingles_STEEL/jingles_STEEL07.ogg",
+      "sha256": "71084f1c65bda1ef896f72cd68c4b257f06c3fce2778af50e883ca07977d4531"
+    },
+    {
+      "id": "wake_11",
+      "name": "Blue hour",
+      "family": "Warm brass",
+      "source": "OGG/jingles_SAX/jingles_SAX00.ogg",
+      "sha256": "c1c483402bc0e14f8b56d47d4563b2ef96004464721805ac69191bc3b28392d5"
+    },
+    {
+      "id": "wake_12",
+      "name": "Clear morning",
+      "family": "Warm brass",
+      "source": "OGG/jingles_SAX/jingles_SAX01.ogg",
+      "sha256": "21c23584107681bc728f8ba986d16ff0e40b735e71d34274bb75663ab43424db"
+    },
+    {
+      "id": "wake_13",
+      "name": "Silver light",
+      "family": "Warm brass",
+      "source": "OGG/jingles_SAX/jingles_SAX03.ogg",
+      "sha256": "0e3f36ddb232d0e92971c423219398c186391ab180b22af1751850a7bf10d809"
+    },
+    {
+      "id": "wake_14",
+      "name": "Fresh start",
+      "family": "Warm brass",
+      "source": "OGG/jingles_SAX/jingles_SAX05.ogg",
+      "sha256": "199ea8bd7daf7e920d8fe646566e0aaa00982e656db4d4097efae8beded5acdd"
+    },
+    {
+      "id": "wake_15",
+      "name": "New day",
+      "family": "Warm brass",
+      "source": "OGG/jingles_SAX/jingles_SAX07.ogg",
+      "sha256": "46c42025c0b28a4a24072b8d94cd6cdc756e4f1fdd864ce9e00e05abf2e0da72"
+    }
+  ]
+}
