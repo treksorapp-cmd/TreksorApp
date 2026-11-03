@@ -61,7 +61,7 @@ export default function MyPlan(){
           </View>}
         </View>;
       })}
-      <TouchableOpacity onPress={()=>router.push("/body/workout/guide")} style={{padding:15,alignItems:"center",marginTop:6}}><Text style={{color:GOLD,fontWeight:"700",fontSize:12,letterSpacing:.6}}>EDIT TRAINING GOAL & SCHEDULE →</Text></TouchableOpacity>
+      <TouchableOpacity onPress={()=>router.push("/body/workout/guide")} style={{padding:15,alignItems:"center",marginTop:6}}><Text style={{color:GOLD,fontWeight:"700",fontSize:12,letterSpacing:.6}}>EDIT TRAINING GOAL & SCHEDULE</Text></TouchableOpacity>
     </>}
   </ScrollView>;
 }

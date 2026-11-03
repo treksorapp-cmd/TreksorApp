@@ -1,0 +1,19 @@
+{
+  "name": "The Architect",
+  "source": "theme/architect.ts",
+  "colors": {
+    "background": "#02050C",
+    "surface": "#111820",
+    "surfaceRaised": "#19222C",
+    "text": "#F5F4F1",
+    "secondary": "#C8C3BA",
+    "muted": "#A5AAAF",
+    "gold": "#D7B877",
+    "success": "#ACD6C0",
+    "danger": "#E7A3A0"
+  },
+  "logo": "assets/images/appicon-treksor.png",
+  "typeface": "System sans serif",
+  "iconStyle": "Outline, 1.5 stroke; no emoji navigation",
+  "motionMs": 160
+}

@@ -9,12 +9,12 @@ export default {
     orientation: "portrait",
     icon: "./assets/images/appicon-treksor.png",
     scheme: isIphoneDev ? "treksor-dev" : "treksorapp",
-    userInterfaceStyle: "automatic",
+    userInterfaceStyle: "dark",
     newArchEnabled: true,
     splash: {
       image: "./assets/images/splash-treksor.png",
       resizeMode: "cover",
-      backgroundColor: "#000000",
+      backgroundColor: "#02050C",
     },
     ios: {
       supportsTablet: true,

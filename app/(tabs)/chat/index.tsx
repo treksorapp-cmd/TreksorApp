@@ -104,7 +104,7 @@ export default function ChatScreen() {
           {user?.avatar ? (
             <Image source={{ uri: user.avatar.startsWith("http") ? user.avatar : `https://app.treksor.com/${user.avatar.replace(/^\//, "")}` }} style={{ width: 30, height: 30, borderRadius: 15 }} />
           ) : (
-            <Text style={styles.userAvatarText}>👤</Text>
+            <Ionicons name="person-outline" size={20} color="#D7B877" />
           )}
         </View>
       )}

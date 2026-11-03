@@ -121,7 +121,7 @@ export default function ChatModal({ visible, onClose }: ChatModalProps) {
                 style={{ width: 30, height: 30, borderRadius: 15 }}
               />
             ) : (
-              <Text style={styles.userAvatarText}>👤</Text>
+              <Ionicons name="person-outline" size={20} color="#D7B877" />
             )}
         </View>
       )}

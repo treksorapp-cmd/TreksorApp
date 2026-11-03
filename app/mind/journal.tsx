@@ -42,7 +42,7 @@ export default function MindJournalScreen(){
   <Text style={styles.average}>{stats.average===null?"—":stats.average.toFixed(1)} <Text style={styles.outOf}>/ 5</Text></Text><Text style={styles.subtitle}>{stats.days} recorded {stats.days===1?"day":"days"} · Missing days are not scored</Text></View>
   <Text style={[styles.section,{marginTop:24}]}>Past entries</Text>
   {entries.length===0?<Text style={styles.subtitle}>Your entries will appear here.</Text>:entries.map(entry=><TouchableOpacity key={entry.date} style={styles.history} onPress={()=>setSelectedDate(entry.date)}><View style={{flex:1,marginRight:12}}><Text style={styles.date}>{entry.date} · {labels[entry.mood-1]}</Text><Text numberOfLines={2} style={styles.subtitle}>{entry.note||"No written reflection"}</Text></View><Text style={styles.arrow}>›</Text></TouchableOpacity>)}
-  {selectedDate!==localDate()&&<TouchableOpacity onPress={()=>setSelectedDate(localDate())}><Text style={styles.return}>Return to today →</Text></TouchableOpacity>}
+  {selectedDate!==localDate()&&<TouchableOpacity onPress={()=>setSelectedDate(localDate())}><Text style={styles.return}>Return to today</Text></TouchableOpacity>}
  </ScrollView>
 }
 const styles=StyleSheet.create({
