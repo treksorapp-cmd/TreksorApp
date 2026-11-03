@@ -50,6 +50,7 @@ export default {
     plugins: [
       "expo-router",
       "expo-web-browser",
+      ["expo-location", {locationWhenInUsePermission: "Use your current city to find Community activities when you choose Use my current location.", isIosBackgroundLocationEnabled: false, isAndroidBackgroundLocationEnabled: false}],
       "expo-apple-authentication",
       [
         "expo-image-picker",
