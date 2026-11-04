@@ -209,7 +209,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container} edges={["bottom"]}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Welcome Section */}
+
         <View style={styles.sectionHeading}>
           <Text style={styles.sectionEyebrow}>YOUR JOURNEY</Text>
           <Text style={styles.sectionTitle}>The four pillars</Text>
@@ -504,7 +504,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: "#F39C12",
+    backgroundColor: "#EFB33F",
     justifyContent: "center",
     alignItems: "center",
     marginRight: 8,
