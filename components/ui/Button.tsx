@@ -1,4 +1,4 @@
-import { Entypo } from "@expo/vector-icons";
+import { Entypo, Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
@@ -16,6 +16,7 @@ type ButtonProps = {
   onPress?: () => void;
   loading?: boolean;
   icon?: string;
+  iconName?: keyof typeof Ionicons.glyphMap;
   iconStyle?: object; // Optional custom styles for the icon image
   buttonStyle?: object;
   disabled?: boolean;
@@ -28,6 +29,7 @@ const Button = ({
   onPress,
   loading,
   icon,
+  iconName,
   iconStyle,
   buttonStyle,
   disabled,
@@ -68,12 +70,15 @@ const Button = ({
           {loading ? (
             <ActivityIndicator size="small" color="#FFFFFF" />
           ) : typeof children === "string" ? (
-            icon ? (
+            (icon || iconName) ? (
               <View style={{ flexDirection: "row", alignItems: "center" }}>
-                {!iconImage ? <Image
-                  source={icon}
-                  style={[{ marginRight: 10, width: 20, height: 20 }, iconStyle]} // Apply custom styles
-                />: <Entypo style={{ marginRight: 10 }} name={iconImageIcon} size={28} color="#FFFFFF" />}
+                {iconName ? (
+                  <Ionicons name={iconName} size={22} color="#EFB33F" style={{ marginRight: 12 }} />
+                ) : !iconImage ? (
+                  <Image source={icon} style={[{ marginRight: 10, width: 20, height: 20 }, iconStyle]} />
+                ) : (
+                  <Entypo style={{ marginRight: 10 }} name={iconImageIcon} size={24} color="#EFB33F" />
+                )}
                 <Text style={styles.buttonText}>{children}</Text>
               </View>
             ) : (
