@@ -94,6 +94,8 @@ const TextInput = (props: EnhancedTextInputProps) => {
 const styles = StyleSheet.create({
   container: {
     width: width - 40,
+    maxWidth: 520,
+    alignSelf: "center",
     height: 56,
     borderRadius: 12,
     overflow: "visible", // Changed to visible to show error text
@@ -106,7 +108,7 @@ const styles = StyleSheet.create({
     right: -3,
     bottom: -3,
     borderRadius: 15,
-    backgroundColor: "#3498db",
+    backgroundColor: "#EFB33F",
     zIndex: -1,
   },
   borderGradient: {
