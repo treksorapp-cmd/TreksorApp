@@ -60,7 +60,7 @@ export default function ChatScreen() {
     >
       {!(item.role === "user") && (
         <View style={styles.aiAvatar}>
-          <Image source={require("@/assets/images/bot.png")} style={{ width: 30, height: 30 }} />
+          <Ionicons name="sparkles" size={20} color="#02050C" />
         </View>
       )}
 
@@ -125,7 +125,7 @@ export default function ChatScreen() {
       {loading && messages.length > 0 && (
         <View style={styles.typingContainer}>
           <View style={styles.aiAvatar}>
-            <Image source={require("@/assets/images/bot.png")} style={{ width: 30, height: 30 }} />
+            <Ionicons name="sparkles" size={20} color="#02050C" />
           </View>
           <View style={styles.typingBubble}>
             <Text style={styles.typingText}>Typing...</Text>
