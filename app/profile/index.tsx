@@ -4,12 +4,12 @@ import Button from "@/components/ui/Button"
 import PDFViewer from "@/components/ui/PDFViewer"
 import { useAuthStore } from "@/store/auth-store"
 import { useUserStore } from "@/store/user-store"
-import { AntDesign, Ionicons } from "@expo/vector-icons"
+import { Ionicons } from "@expo/vector-icons"
 import * as Application from 'expo-application'
 import { Image } from "expo-image"
 import { router } from "expo-router"
 import { useEffect, useState } from "react"
-import { Alert, Linking, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Linking, Modal, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 export default function ProfileScreen() {
@@ -61,6 +61,7 @@ export default function ProfileScreen() {
   }
 
   const handleChangePassword = () => {
+    if (!user?.email) return;
     requestResetPassword({ email: user.email, isChangePassword: true })
       .then(() => {
           router.push({ pathname: "/(auth)/verify-otp", params: { email:user.email, purpose: 'reset-password' } });
@@ -141,6 +142,14 @@ export default function ProfileScreen() {
 
   const imageUrl = `https://app.treksor.com/${user?.avatar}`;
 
+  if (!user) {
+    return (
+      <View style={styles.loadingProfile}>
+        <ActivityIndicator size="large" color="#EFB33F" />
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView style={styles.content}>
@@ -201,9 +210,9 @@ export default function ProfileScreen() {
             <Ionicons name="chevron-forward" size={20} color="#AAAAAA" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.menuItem, {backgroundColor: 'red',opacity:0.8}]} onPress={handleDeactivateAccount}>
-            <AntDesign name="deleteuser" size={22} color="#FFFFFF" style={styles.menuIcon} />
-            <Text style={styles.menuText}>Delete Account</Text>
+          <TouchableOpacity style={[styles.menuItem, styles.dangerItem]} onPress={handleDeactivateAccount}>
+            <Ionicons name="trash-outline" size={22} color="#FF8C8C" style={styles.menuIcon} />
+            <Text style={[styles.menuText, styles.dangerText]}>Delete Account</Text>
             <Ionicons name="chevron-forward" size={20} color="#AAAAAA" />
           </TouchableOpacity>
 
@@ -274,9 +283,23 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
+  loadingProfile: {
+    flex: 1,
+    backgroundColor: "#02050C",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  dangerItem: {
+    backgroundColor: "rgba(255,140,140,0.08)",
+    borderColor: "rgba(255,140,140,0.24)",
+    borderWidth: 1,
+  },
+  dangerText: {
+    color: "#FF9A9A",
+  },
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: "#02050C",
   },
   loadingContainer: {
     flex: 1,
@@ -308,7 +331,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: "#3498db",
+    backgroundColor: "#17212F",
     justifyContent: "center",
     alignItems: "center",
   },
