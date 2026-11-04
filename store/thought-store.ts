@@ -48,10 +48,11 @@ export const usePowerThoughtStore = create<PowerThoughtState>()(
       },
 
       markPowerThoughtAsRead: (id) => {
-        const existingThoughts = get().powerThoughts;
-        const thoughtIndex = existingThoughts.findIndex(thought => thought._id === id)
-        existingThoughts[thoughtIndex].isRead = true;
-        set({ powerThoughts: existingThoughts});
+        set((state) => ({
+          powerThoughts: state.powerThoughts.map((thought) =>
+            thought._id === id ? { ...thought, isRead: true } : thought
+          ),
+        }));
       },
 
       clearData: () => {
