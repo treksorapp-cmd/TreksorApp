@@ -241,9 +241,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     textShadowColor: "rgba(0, 0, 0, 0.7)",
     textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-    fontFamily: 'Nunito-Regular'
-  },
+    textShadowRadius: 4},
   descriptionContainer: {
     width: "100%",
     // borderRadius: 16,
@@ -261,9 +259,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     lineHeight: 24,
     textAlign: "left",
-    marginBottom: 20,
-    fontFamily: 'Nunito-Regular'
-  },
+    marginBottom: 20},
   warningContainer: {
     // marginTop: 10,
     // paddingTop: 20,
@@ -275,16 +271,13 @@ const styles = StyleSheet.create({
     color: "#F39C12",
     fontWeight: "600",
     textAlign: "left",
-    lineHeight: 20,
-    fontFamily: 'Nunito-Regular'
-  },
+    lineHeight: 20},
   sourceText: {
     fontSize: 16,
     color: "#fff",
     fontWeight: "600",
     textAlign: "left",
-    lineHeight: 20,
-    fontFamily: 'Nunito-Regular',
+    lineHeight: 20
     marginTop: 10
   },
 })
