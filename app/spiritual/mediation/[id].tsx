@@ -176,7 +176,7 @@ export default function MediationDetailScreen() {
       <View style={[styles.container, { paddingTop: insets.top }]}>
         <StatusBar style="light" />
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading mediation...</Text>
+          <Text style={styles.loadingText}>Loading meditation...</Text>
         </View>
       </View>
     );
@@ -196,8 +196,6 @@ export default function MediationDetailScreen() {
       await playSound();
     }
   }
-
-  console.log("Mediation details:", mediation);
 
   return (
     <View style={[styles.container]}>
