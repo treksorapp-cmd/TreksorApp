@@ -31,7 +31,7 @@ export default {
     android: {
       adaptiveIcon: {
         foregroundImage: "./assets/images/adaptive-icon.png",
-        backgroundColor: "#ffffff",
+        backgroundColor: "#02050C",
       },
       edgeToEdgeEnabled: true,
       package: "com.treksor.app",
@@ -72,7 +72,7 @@ export default {
                 fontDefinitions: [
                   {
                     path: "assets/fonts/Nunito-Regular.ttf",
-                    weight: 800,
+                    weight: 400,
                   },
                 ],
               },
