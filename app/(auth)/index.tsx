@@ -6,7 +6,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>TREKSOR</Text>
-      <Text style={styles.subHeading}>A Personal Development App For Men</Text>
+      <Text style={styles.subHeading}>Strengthen your body. Focus your mind. Find your purpose.</Text>
       <View style={styles.buttonContainer}>
         <Button onPress={() => router.push("/login")}>GET STARTED</Button>
       </View>
@@ -20,21 +20,23 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   heading: {
-    fontSize: 32,
+    fontSize: 36,
     fontWeight: "bold",
-    letterSpacing: 1,
+    letterSpacing: 3,
     color: "#FFFFFF",
     textAlign: "center",
   },
   subHeading: {
     fontSize: 16,
-    letterSpacing: 1,
+    letterSpacing: 0.2,
+    lineHeight: 24,
+    paddingHorizontal: 24,
     color: "#FFFFFF",
     textAlign: "center",
     marginVertical: 20,
   },
   buttonContainer: {
-    marginBottom: 40,
+    marginBottom: 54,
     alignItems: "center",
   },
 });
