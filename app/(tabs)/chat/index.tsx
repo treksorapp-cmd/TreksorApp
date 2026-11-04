@@ -32,9 +32,9 @@ export default function ChatScreen() {
   const flatListRef = useRef<FlatList>(null)
   const { user } = useAuthStore()
 
-  useEffect(()=>{
-    setUserId(useAuthStore.getState().user.id)
-  },[setUserId])
+  useEffect(() => {
+    if (user?.id) setUserId(user.id);
+  }, [setUserId, user?.id])
 
   useEffect(() => {
     flatListRef.current?.scrollToEnd({ animated: true })
@@ -78,7 +78,7 @@ export default function ChatScreen() {
           {user?.avatar ? (
             <Image source={{ uri: `https://app.treksor.com/${user?.avatar}` }} style={{ width: 30, height: 30, borderRadius: 15 }} />
           ) : (
-            <Text style={styles.userAvatarText}>👤</Text>
+            <Ionicons name="person-outline" size={18} color="#EFB33F" />
           )}
         </View>
       )}
@@ -151,7 +151,7 @@ export default function ChatScreen() {
         <View style={[styles.inputContainer,{paddingBottom: insets.bottom + 40}]}>
           <TextInput
             style={styles.textInput}
-            placeholder="Type your message here..."
+            placeholder="Ask your companion..."
             placeholderTextColor="#666"
             value={inputText}
             onChangeText={setInputText}
@@ -159,7 +159,9 @@ export default function ChatScreen() {
             maxLength={500}
           />
           <TouchableOpacity
-            style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
+            accessibilityRole="button"
+            accessibilityLabel="Send message"
+            style={[styles.sendButton, (!inputText.trim() || loading) && styles.sendButtonDisabled]}
             onPress={handleSendMessage}
             disabled={!inputText.trim() || loading}
           >
