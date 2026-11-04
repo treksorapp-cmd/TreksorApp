@@ -391,7 +391,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.3)",
   },
   activeStepDot: {
-    backgroundColor: "#3498db",
+    backgroundColor: "#EFB33F",
   },
   stepLine: {
     width: 50,
@@ -426,7 +426,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   signInText: {
-    color: "#3498db",
+    color: "#EFB33F",
     fontSize: 14,
     fontWeight: "bold",
   },
