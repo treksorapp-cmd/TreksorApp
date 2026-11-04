@@ -14,7 +14,7 @@ export default function HomeLayout() {
         name="index"
          options={{
           headerShown:true,
-          header:()=><Header title="Chat" showBackButton={false} showAvatar={false} />
+          header:()=><Header title="AI Companion" showBackButton={false} showAvatar={false} />
         }}
       />
     </Stack>
