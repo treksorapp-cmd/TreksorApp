@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#F39C12",
+    color: "#EFB33F",
   },
   shareButton: {
     padding: 4,
