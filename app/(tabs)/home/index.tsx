@@ -36,11 +36,10 @@ export default function HomeScreen() {
   const [homePowerThoughts, setHomePowerThoughts] = useState<PowerThought[]>([]);
   const thoughtsRef = useRef<FlatList>(null);
   const [expandedThoughts, setExpandedThoughts] = useState<Set<string>>(new Set());
-  const {pushToken, notification} = useNotifications();
+  const {pushToken} = useNotifications();
   const {getUnreadArticlesCount} = useArticleStore();
   const {savePushToken} = useUserStore();
-  const { login, loading, getCurrentUser, requestOtp, signInWithThirdParty } =
-      useAuthStore();
+  const { getCurrentUser } = useAuthStore();
 
   useEffect(() => {
     getCurrentUser();
@@ -62,11 +61,13 @@ export default function HomeScreen() {
       const firstUnreadThoughts = powerThoughts.filter(thought => !thought.isRead).slice(0, 3);
       const todayThought = powerThoughts.find(thought => thought.isToday);
       
-      if (todayThought) {
-        setHomePowerThoughts([todayThought, ...firstUnreadThoughts]);
-      } else {
-        setHomePowerThoughts(firstUnreadThoughts);
-      }
+      const selected = [todayThought, ...firstUnreadThoughts]
+        .filter((thought): thought is PowerThought => Boolean(thought));
+      setHomePowerThoughts(
+        selected.filter((thought, index, items) =>
+          items.findIndex((candidate) => candidate._id === thought._id) === index
+        ).slice(0, 3)
+      );
     }
   },[powerThoughts])
 
@@ -78,10 +79,8 @@ export default function HomeScreen() {
     });
   };
 
-  const handleMarkAsRead = () => {
-    const currentThought = homePowerThoughts[currentThoughtIndex];
-    markPowerThoughtAsRead(currentThought._id);
-    // setReadThoughts((prev) => new Set([...prev, currentThought._id]));
+  const handleMarkAsRead = (id: string) => {
+    markPowerThoughtAsRead(id);
   };
 
   const handleRitualPress = (ritual: RitualCard) => {
@@ -131,12 +130,8 @@ export default function HomeScreen() {
               <View style={styles.cardContent}>
                 <Text style={styles.cardTitle}>{ritual.title}</Text>
                 <View style={styles.ritualProgress}>
-                  <View style={styles.progressBadge}>
-                    <Text style={styles.progressNumber}>
-                      {ritual.ritualsCompleted}
-                    </Text>
-                  </View>
-                  <Text style={styles.progressText}>Rituals Done</Text>
+                  <Text style={styles.progressText}>Explore pillar</Text>
+                  <Ionicons name="arrow-forward" size={16} color="#EFB33F" />
                 </View>
               </View>
             </LinearGradient>
@@ -181,13 +176,15 @@ export default function HomeScreen() {
                 styles.markAsReadButton,
                 isRead && styles.markAsReadButtonRead,
               ]}
-              onPress={handleMarkAsRead}
+              onPress={() => handleMarkAsRead(item._id)}
+              accessibilityRole="button"
+              accessibilityLabel={isRead ? "Thought already read" : "Mark thought as read"}
               disabled={isRead}
             >
               <Ionicons
                 name={"checkmark"}
-                size={10}
-                color={isRead ? "#000" : "#000"}
+                size={14}
+                color="#02050C"
                 style={{
                   backgroundColor: "#EFB33F",
                   borderRadius: 6,
@@ -212,8 +209,11 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container} edges={["bottom"]}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Welcome Section */}
-        <View style={styles.welcomeSection}/>
+
+        <View style={styles.sectionHeading}>
+          <Text style={styles.sectionEyebrow}>YOUR JOURNEY</Text>
+          <Text style={styles.sectionTitle}>The four pillars</Text>
+        </View>
           {/* <View style={styles.streakContainer}>
             <Text style={styles.streakEmoji}>🔥</Text>
             <Text style={styles.streakText}>4-Day Streak</Text>
@@ -233,6 +233,10 @@ export default function HomeScreen() {
         </View>
 
         {/* Power Thought Section */}
+        <View style={styles.sectionHeading}>
+          <Text style={styles.sectionEyebrow}>DAILY REFLECTION</Text>
+          <Text style={styles.sectionTitle}>A moment to reset</Text>
+        </View>
         <View style={styles.powerThoughtSection}>
           <FlatList
             ref={thoughtsRef}
@@ -242,6 +246,7 @@ export default function HomeScreen() {
             horizontal
             pagingEnabled
             showsHorizontalScrollIndicator={false}
+            ListEmptyComponent={<Text style={styles.emptyReflection}>A new reflection will appear here soon.</Text>}
             onMomentumScrollEnd={(event) => {
               const index = Math.round(
                 event.nativeEvent.contentOffset.x / width
@@ -271,6 +276,31 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  sectionHeading: {
+    paddingHorizontal: 20,
+    marginTop: 22,
+    marginBottom: 14,
+  },
+  sectionEyebrow: {
+    color: "#EFB33F",
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 1.8,
+    marginBottom: 5,
+  },
+  sectionTitle: {
+    color: "#FFFFFF",
+    fontSize: 24,
+    fontWeight: "700",
+    letterSpacing: -0.4,
+  },
+  emptyReflection: {
+    color: "#BAC2CF",
+    fontSize: 15,
+    lineHeight: 22,
+    paddingHorizontal: 20,
+    paddingVertical: 24,
+  },
   container: {
     flex: 1,
   },
@@ -339,6 +369,7 @@ const styles = StyleSheet.create({
   ritualProgress: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 8,
   },
   progressBadge: {
     width: 24,
@@ -417,15 +448,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   markAsReadButtonRead: {
-    backgroundColor: "rgba(243, 156, 18, 0.2)",
+    backgroundColor: "rgba(239, 179, 63, 0.12)",
   },
   markAsReadText: {
     color: "#FFFFFF",
-    fontSize: 10,
-    marginLeft: 6,
+    fontSize: 13,
+    marginLeft: 8,
   },
   markAsReadTextRead: {
-    color: "#000000",
+    color: "#EFB33F",
   },
   paginationContainer: {
     flexDirection: "row",
@@ -441,7 +472,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   paginationDotActive: {
-    backgroundColor: "#F39C12",
+    backgroundColor: "#EFB33F",
   },
   powerThoughtIcon: {
     position: "absolute",
@@ -473,7 +504,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: "#F39C12",
+    backgroundColor: "#EFB33F",
     justifyContent: "center",
     alignItems: "center",
     marginRight: 8,

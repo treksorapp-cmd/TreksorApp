@@ -67,22 +67,28 @@ export default function TrackingScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
 
-      {/* Streak Section */}
+      {/* Progress actions */}
       <View style={styles.streakContainer}>
         <View style={styles.streakContent}>
-          {/* <Ionicons name="flame" size={24} color="#EFB33F" /> */}
-          {/* <Text style={styles.streakText}>4-Day Streak</Text> */}
+          <View>
+            <Text style={styles.overline}>YOUR ACTIVITY</Text>
+            <Text style={styles.trackerHeading}>Daily progress</Text>
+          </View>
         </View>
         <View style={{ flexDirection: "row", gap: 5 }}>
           <TouchableOpacity
             style={styles.calendarButton}
             onPress={() => setShowAddTracker(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Add activity tracker"
           >
             <Ionicons name="add" size={24} color="#FFFFFF" />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.calendarButton}
             onPress={openCalendar}
+            accessibilityRole="button"
+            accessibilityLabel="Open activity calendar"
           >
             <Ionicons name="calendar-outline" size={24} color="#FFFFFF" />
           </TouchableOpacity>
@@ -130,6 +136,18 @@ export default function TrackingScreen() {
 }
 
 const styles = StyleSheet.create({
+  overline: {
+    color: "#EFB33F",
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 1.5,
+    marginBottom: 3,
+  },
+  trackerHeading: {
+    color: "#FFFFFF",
+    fontSize: 22,
+    fontWeight: "700",
+  },
   container: {
     flex: 1,
     backgroundColor: "#02050C",
@@ -138,7 +156,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     paddingVertical: 16,
   },
   streakContent: {

@@ -1,50 +1,34 @@
-# Welcome to your Expo app 👋
+# Treksor
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Build strength. Find clarity. Live with purpose.**
 
-## Get started
+Treksor is a personal-development mobile app that brings daily practices for body, mind and wellbeing into one focused experience. The visual language is deliberately restrained: deep navy, warm gold, readable type and clear actions.
 
-1. Install dependencies
+## What is in the app
 
-   ```bash
-   npm install
-   ```
+- **Body:** workouts, nutrition and supporting educational content.
+- **Mind:** personal reflections, journaling and motivational thoughts.
+- **Spiritual:** meditation content and articles.
+- **AI companion:** a chat experience for guidance and reflection.
+- **Progress:** activity tracking and habit check-ins.
+- **Purpose:** an additional pillar **in development**; not advertised as available yet.
 
-2. Start the app
+Some features require a subscription. Prices, trials, renewals and eligibility are determined by the App Store or Google Play checkout; do not hard-code promotional terms into marketing assets.
 
-   ```bash
-   npx expo start
-   ```
+## Tech stack
 
-In the output, you'll find options to open the app in a
+Expo SDK 53 · React Native · TypeScript · Expo Router · Zustand · RevenueCat.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Develop
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+1. Install Node.js 20 or newer and the required iOS/Android development tools.
+2. Run `npm ci`.
+3. Provide the platform configuration and environment values required by `app.config.js`. Keep credentials out of commits.
+4. Run `npx expo start --dev-client` or build a development client using EAS.
+5. Validate with `npm run lint` and `npm run typecheck`.
 
-## Get a fresh project
+## Release quality
 
-When you're ready, run:
+Before filming promotional content or submitting a store build, complete [the release QA checklist](docs/RELEASE_QA.md). Preview releases should be tested on physical iOS and Android devices, including the subscription flow and account deletion.
 
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+This repository contains the app's client. The backend and admin dashboard are maintained separately.

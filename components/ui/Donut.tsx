@@ -26,7 +26,7 @@ const AnimatedDonutChart: React.FC<AnimatedDonutChartProps> = ({
   const circumference = 2 * Math.PI * radius
 
   useEffect(() => {
-    progress.value = withTiming(percentage / 100, {
+    progress.value = withTiming(Math.min(1, Math.max(0, percentage / 100)), {
       duration: 1500,
       easing: Easing.out(Easing.cubic),
     })
@@ -61,8 +61,8 @@ const AnimatedDonutChart: React.FC<AnimatedDonutChartProps> = ({
         />
       </Svg>
       <View style={styles.textContainer}>
-        <Text style={[styles.percentageText,{fontSize: size / 6}]}>{percentage}%</Text>
-        <Text style={[styles.completeText,{fontSize: size / 12}]}>Complete</Text>
+        <Text style={[styles.percentageText,{fontSize: Math.max(14, size / 5.8)}]}>{Math.round(percentage)}%</Text>
+        <Text style={[styles.completeText,{fontSize: Math.max(10, size / 7)}]}>Complete</Text>
       </View>
     </View>
   )
@@ -83,13 +83,13 @@ const styles = StyleSheet.create({
   },
   percentageText: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: "700",
     color: "#FFFFFF",
   },
   completeText: {
-    fontSize: 7,
+    fontSize: 10,
     color: "#FFFFFF",
-    fontWeight:'medium',
+    fontWeight: "500",
     marginTop: -2,
   },
 })

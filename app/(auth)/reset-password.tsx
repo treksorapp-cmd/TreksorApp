@@ -144,7 +144,7 @@ export default function ResetPassword() {
           ) : (
             <View style={styles.successContainer}>
               <View style={styles.successIconContainer}>
-                <Ionicons name="checkmark-circle" size={80} color="#3498db" />
+                <Ionicons name="checkmark-circle" size={80} color="#EFB33F" />
               </View>
 
               <Text style={styles.heading}>Password Reset</Text>

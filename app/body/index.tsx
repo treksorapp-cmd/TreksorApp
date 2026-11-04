@@ -42,19 +42,19 @@ const BodyHome = () => {
         <View style={[styles.content, { paddingBottom: insets.bottom + 30 }]}>
           <Button
             onPress={() => router.push("/body/workout/selection")}
-            icon={require("@/assets/images/dumbbell.png")}
+            iconName="barbell-outline"
           >
             WORKOUT
           </Button>
           <Button
             onPress={() => router.push("/body/nutrition")}
-            icon={require("@/assets/images/food-items.png")}
+            iconName="nutrition-outline"
           >
             NUTRITION
           </Button>
           <Button
             onPress={() => router.push("/body/articles")}
-            icon={require("@/assets/images/articles.png")}
+            iconName="newspaper-outline"
           >
             ARTICLES
           </Button>

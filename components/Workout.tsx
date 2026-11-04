@@ -64,9 +64,9 @@ const Workout = ({
                 source={icon}
                 style={{ marginRight: 10, width: 30, height: 26 }}
               />
-              <View style={{ gap: 10 }}>
+              <View style={{ gap: 8, flexShrink: 1 }}>
                 <Text style={styles.title}>{title}</Text>
-                <Text style={styles.description}>{description}</Text>
+                <Text style={styles.description} numberOfLines={2}>{description}</Text>
               </View>
             </View>
             <AnimatedDonutChart
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   description: {
     color: "#EFB33F",
     fontSize: 16,
-    fontWeight: "medium",
+    fontWeight: "500",
   },
 });
 

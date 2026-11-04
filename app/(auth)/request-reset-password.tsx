@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   resendText: {
-    color: "#3498db",
+    color: "#EFB33F",
     fontSize: 14,
   },
   footer: {
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   signInText: {
-    color: "#3498db",
+    color: "#EFB33F",
     fontSize: 14,
     fontWeight: "bold",
   },

@@ -13,28 +13,25 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 const { width } = Dimensions.get("window")
 
 export default function ChatScreen() {
-  const insets = useSafeAreaInsets()
   const {getMessages,sendMessage, loading, error, setUserId } = useChatStore()
   const messages = getMessages();
   const [inputText, setInputText] = useState("")
   const flatListRef = useRef<FlatList>(null)
   const { user } = useAuthStore()
 
-  useEffect(()=>{
-    setUserId(useAuthStore.getState().user.id)
-  },[setUserId])
+  useEffect(() => {
+    if (user?.id) setUserId(user.id);
+  }, [setUserId, user?.id])
 
   useEffect(() => {
     flatListRef.current?.scrollToEnd({ animated: true })
@@ -63,7 +60,7 @@ export default function ChatScreen() {
     >
       {!(item.role === "user") && (
         <View style={styles.aiAvatar}>
-          <Image source={require("@/assets/images/bot.png")} style={{ width: 30, height: 30 }} />
+          <Ionicons name="sparkles" size={20} color="#02050C" />
         </View>
       )}
 
@@ -78,7 +75,7 @@ export default function ChatScreen() {
           {user?.avatar ? (
             <Image source={{ uri: `https://app.treksor.com/${user?.avatar}` }} style={{ width: 30, height: 30, borderRadius: 15 }} />
           ) : (
-            <Text style={styles.userAvatarText}>👤</Text>
+            <Ionicons name="person-outline" size={18} color="#02050C" />
           )}
         </View>
       )}
@@ -86,7 +83,7 @@ export default function ChatScreen() {
   )
 
   return (
-    <SafeAreaView style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom + 80 }]}>
+    <View style={styles.container}>
       <StatusBar style="light" />
 
       {/* Header */}
@@ -128,7 +125,7 @@ export default function ChatScreen() {
       {loading && messages.length > 0 && (
         <View style={styles.typingContainer}>
           <View style={styles.aiAvatar}>
-            <Image source={require("@/assets/images/bot.png")} style={{ width: 30, height: 30 }} />
+            <Ionicons name="sparkles" size={20} color="#02050C" />
           </View>
           <View style={styles.typingBubble}>
             <Text style={styles.typingText}>Typing...</Text>
@@ -146,20 +143,22 @@ export default function ChatScreen() {
       {/* Input */}
       <KeyboardAvoidingView 
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? -(insets.bottom + 30) : 20}
+      keyboardVerticalOffset={0}
       >
-        <View style={[styles.inputContainer,{paddingBottom: insets.bottom + 40}]}>
+        <View style={styles.inputContainer}>
           <TextInput
             style={styles.textInput}
-            placeholder="Type your message here..."
-            placeholderTextColor="#666"
+            placeholder="Ask your companion..."
+            placeholderTextColor="#9AA4B3"
             value={inputText}
             onChangeText={setInputText}
             multiline
             maxLength={500}
           />
           <TouchableOpacity
-            style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
+            accessibilityRole="button"
+            accessibilityLabel="Send message"
+            style={[styles.sendButton, (!inputText.trim() || loading) && styles.sendButtonDisabled]}
             onPress={handleSendMessage}
             disabled={!inputText.trim() || loading}
           >
@@ -171,7 +170,7 @@ export default function ChatScreen() {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   )
 }
 
@@ -283,7 +282,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   aiBubble: {
-    backgroundColor: "#2a2a2a",
+    backgroundColor: "#151B26",
     borderBottomLeftRadius: 4,
   },
   userBubble: {
@@ -291,8 +290,8 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 4,
   },
   messageText: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
   },
   aiMessageText: {
     color: "#FFFFFF",
@@ -315,7 +314,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 4,
   },
   typingText: {
-    color: "#666",
+    color: "#B6C0CD",
     fontSize: 14,
     fontStyle: "italic",
   },
@@ -351,8 +350,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     color: "#FFFFFF",
-    fontSize: 14,
-    maxHeight: 100,
+    fontSize: 16,
+    maxHeight: 120,
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.1)",
   },

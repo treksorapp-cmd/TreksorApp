@@ -65,18 +65,19 @@ const PurposeHome = () => {
               marginTop: 20,
             }}
           >
-            Purpose (Coming Soon)
+            Purpose
           </Text>
           <Text
             style={{
-              fontSize: 18,
-              fontWeight: "medium",
+              fontSize: 16,
+              fontWeight: "500",
               color: "#FFFFFF",
               textAlign: "center",
-              marginTop: 5,
+              marginTop: 10,
+              paddingHorizontal: 24,
             }}
           >
-            Annual Subscribers Only
+            In development for annual members
           </Text>
           <LinearGradient
             colors={["rgba(255,255,255,0.3)", "rgba(255,255,255,0)"]}
@@ -97,22 +98,22 @@ const PurposeHome = () => {
             <Text
               style={{
                 color: "#FFFFFF",
-                fontSize: 18,
-                fontWeight: "semibold",
+                fontSize: 16,
+                fontWeight: "600",
                 textAlign: "center",
               }}
             >
-              Available{" "}
+              We’re building{" "}
             </Text>
             <Text
               style={{
                 color: "#EFB33F",
                 fontSize: 18,
-                fontWeight: "semibold",
+                fontWeight: "600",
                 textAlign: "center",
               }}
             >
-              Spring 2026
+              something meaningful
             </Text>
             {/* </View> */}
           </LinearGradient>

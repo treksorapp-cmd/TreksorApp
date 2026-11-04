@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   forgotPasswordText: {
-    color: "#3498db",
+    color: "#EFB33F",
     fontSize: 14,
   },
   divider: {
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   signUpText: {
-    color: "#3498db",
+    color: "#EFB33F",
     fontSize: 14,
     fontWeight: "bold",
   },

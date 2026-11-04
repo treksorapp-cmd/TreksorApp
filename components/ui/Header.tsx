@@ -31,15 +31,6 @@ const Header: React.FC<HeaderProps> = ({
   const { user } = useAuthStore();
   const {setShowPackages} = useUserStore();
 
-  console.log("user", user);
-
-//   const daysLeft = user?.createdAt
-//   ? Math.max(0, 7 - Math.floor((Date.now() - new Date(user.createdAt)) / 86400000))
-//   : null;
-
-// console.log("user?.createdAt", user?.daysLeft);
-// console.log("daysLeft", daysLeft);
-
 
 
   const handleBackPress = () => {
@@ -67,61 +58,31 @@ const Header: React.FC<HeaderProps> = ({
       end={{ x: 0, y: 1 }}
       style={[styles.container, { paddingTop: insets.top }]}
     >
-      {/* free trial banner  */}
-      {!user.plan && <View
-        style={{
-          paddingVertical: 6,
-          paddingHorizontal: 16,
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          zIndex: 9999,
-          backgroundColor: "#EFB33F",
-          marginBottom: "2%"
-        }}
-      >
-        <Text
-          style={{
-            color: "#000",
-            fontSize: 14,
-            fontWeight: "600",
-            flex: 1,
-            marginRight: 8,
-            width:"70%"
-          }}
-        >
-          🔥 You’re exploring Treksor Premium — {user?.daysLeft} {Number(user?.daysLeft) === 1 ? "day" : "days"} remaining
-        </Text>
-       <TouchableOpacity
-          onPress={() => setShowPackages(true)}
-          activeOpacity={0.8}
-          style={{
-            backgroundColor: "#000",
-            paddingVertical: 8,
-            paddingHorizontal: 16,
-            borderRadius: 50,
-            width:"30%",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text
-            style={{
-              color: "#fff",
-              fontSize: 10,
-              fontWeight: "600",
-              textTransform: "uppercase",
-              textAlign: "center",
-            }}
-          >
-            Go Premium
+      {!user?.plan && (
+        <View style={styles.trialBanner}>
+          <Ionicons name="sparkles-outline" size={18} color="#02050C" />
+          <Text style={styles.trialText} numberOfLines={2}>
+            {user?.daysLeft != null && Number.isFinite(Number(user.daysLeft))
+              ? Number(user.daysLeft) > 0
+                ? `Premium trial · ${Number(user.daysLeft)} ${Number(user.daysLeft) === 1 ? "day" : "days"} left`
+                : "Explore Treksor Premium"
+              : "Discover Treksor Premium"}
           </Text>
-        </TouchableOpacity>
-      </View>}
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Explore premium plans"
+            onPress={() => setShowPackages(true)}
+            activeOpacity={0.85}
+            style={styles.trialAction}
+          >
+            <Text style={styles.trialActionText}>Explore</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       {/* Header Content */}
       {showTitle && <View style={styles.headerContent}>
         {showBackButton ? (
-          <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
+          <TouchableOpacity style={styles.backButton} accessibilityRole="button" accessibilityLabel="Go back" onPress={handleBackPress}>
             <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
           </TouchableOpacity>
         ) : null}
@@ -129,10 +90,7 @@ const Header: React.FC<HeaderProps> = ({
         <View style={title ? styles.absoluteTitleWrapper : {}}>
           <View style={styles.titleContainer}>
             {!title ? (
-              <View style={{ flexDirection: "row" }}>
-                <Text style={styles.title}>{`${getGreeting()}, `}</Text>
-                <Text style={styles.title}>{displayName}</Text>
-              </View>
+              <Text style={styles.title} numberOfLines={1}>{getGreeting()}, {displayName}</Text>
             ) : (
               <Text style={styles.title}>{title}</Text>
             )}
@@ -148,6 +106,8 @@ const Header: React.FC<HeaderProps> = ({
         {showAvatar && (
           <TouchableOpacity
             style={styles.avatarContainer}
+            accessibilityRole="button"
+            accessibilityLabel="Open profile"
             onPress={() => router.push("/profile")}
             activeOpacity={0.8}
           >
@@ -166,6 +126,35 @@ const Header: React.FC<HeaderProps> = ({
 };
 
 const styles = StyleSheet.create({
+  trialBanner: {
+    minHeight: 50,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+    backgroundColor: "#EFB33F",
+  },
+  trialText: {
+    flex: 1,
+    color: "#02050C",
+    fontSize: 13,
+    fontWeight: "700",
+    lineHeight: 18,
+  },
+  trialAction: {
+    minHeight: 36,
+    paddingHorizontal: 14,
+    backgroundColor: "#02050C",
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  trialActionText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "700",
+  },
   container: {
     width: "100%",
     borderBottomLeftRadius: 15,
@@ -196,7 +185,9 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     overflow: "hidden",
-    backgroundColor: "#3498db",
+    backgroundColor: "#17212F",
+    borderColor: "rgba(239,179,63,0.45)",
+    borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -212,7 +203,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#3498db",
+    backgroundColor: "#17212F",
+    borderColor: "rgba(239,179,63,0.45)",
+    borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -225,9 +218,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 10,
-    paddingTop: 15,
-    paddingBottom: 5,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 12,
+    minHeight: 64,
     position: "relative",
   },
   absoluteTitleWrapper: {
@@ -236,15 +230,18 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: "center",
     justifyContent: "center",
-    zIndex: -1, // keep it under avatar/back if needed
+    zIndex: 0,
+    paddingHorizontal: 64,
   },
   titleContainer: {
+    flexShrink: 1,
     alignItems: "center",
     justifyContent: "center",
   },
   title: {
-    fontWeight: "bold",
-    fontSize: 22,
+    fontWeight: "700",
+    fontSize: 21,
+    letterSpacing: 0.2,
     color: "#FFFFFF",
     textAlign: "center",
   },

@@ -144,8 +144,8 @@ const SupplementDetails = () => {
                       Linking.openURL(supplement.url)
                   }
                 }}>
-                  {/* <Text style={[styles.sourceText, { textDecorationLine: 'underline', color: '#3498db' }]}>Click Here for Reference</Text> */}
-                  <Text style={[styles.sourceText, { textDecorationLine: 'underline', color: '#3498db' }]}>{supplement.source}</Text>
+                  {/* <Text style={[styles.sourceText, { textDecorationLine: 'underline', color: '#EFB33F' }]}>Click Here for Reference</Text> */}
+                  <Text style={[styles.sourceText, { textDecorationLine: 'underline', color: '#EFB33F' }]}>{supplement.source}</Text>
                 </Pressable>
                 </View>
                
@@ -241,9 +241,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     textShadowColor: "rgba(0, 0, 0, 0.7)",
     textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-    fontFamily: 'Nunito-Regular'
-  },
+    textShadowRadius: 4},
   descriptionContainer: {
     width: "100%",
     // borderRadius: 16,
@@ -261,9 +259,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     lineHeight: 24,
     textAlign: "left",
-    marginBottom: 20,
-    fontFamily: 'Nunito-Regular'
-  },
+    marginBottom: 20},
   warningContainer: {
     // marginTop: 10,
     // paddingTop: 20,
@@ -272,19 +268,16 @@ const styles = StyleSheet.create({
   },
   warningText: {
     fontSize: 16,
-    color: "#F39C12",
+    color: "#EFB33F",
     fontWeight: "600",
     textAlign: "left",
-    lineHeight: 20,
-    fontFamily: 'Nunito-Regular'
-  },
+    lineHeight: 20},
   sourceText: {
     fontSize: 16,
     color: "#fff",
     fontWeight: "600",
     textAlign: "left",
     lineHeight: 20,
-    fontFamily: 'Nunito-Regular',
-    marginTop: 10
+    marginTop: 10,
   },
 })

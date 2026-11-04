@@ -59,19 +59,19 @@ const BodyHome = () => {
           </View> */}
           <Button
             onPress={() => router.push("/mental/thoughts")}
-            icon={require("@/assets/images/mental-power-thoughts.png")}
+            iconName="bulb-outline"
           >
             Power Thoughts
           </Button>
           <Button
             onPress={() => router.push("/mental/articles")}
-            icon={require("@/assets/images/mental-articles.png")}
+            iconName="newspaper-outline"
           >
             Articles
           </Button>
           <Button
             onPress={() => router.push("/mental/myspace")}
-            icon={require("@/assets/images/mental-my-space.png")}
+            iconName="book-outline"
           >
             My Space
           </Button>

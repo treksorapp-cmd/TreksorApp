@@ -129,20 +129,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   categoryText: {
-    fontSize: 18,
-    fontWeight: "semibold",
+    fontSize: 16,
+    fontWeight: "600",
   },
   activeCategoryText: {
     color: "#FFFFFF",
   },
   inactiveCategoryText: {
-    color: 'rgba(255,255,255,0.5)',
+    color: 'rgba(255,255,255,0.75)',
   },
   indicator: {
     position: "absolute",
     bottom: 0,
     height: 3,
-    backgroundColor: "#F5B942",
+    backgroundColor: "#EFB33F",
     borderRadius: 1.5,
   },
 })

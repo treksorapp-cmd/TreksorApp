@@ -181,7 +181,7 @@ const OtpInput = ({ codeLength = 4, onCodeFilled, error = false }: OtpInputProps
                     onKeyPress={(e) => handleKeyPress(e, index)}
                     onFocus={() => handleFocus(index)}
                     onBlur={() => handleBlur(index)}
-                    selectionColor="#3498db"
+                    selectionColor="#EFB33F"
                     textContentType="oneTimeCode" // iOS autofill support
                   />
                 </LinearGradient>
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     right: -3,
     bottom: -3,
     borderRadius: 15,
-    backgroundColor: "#3498db",
+    backgroundColor: "#EFB33F",
     zIndex: -1,
   },
   borderGradient: {
