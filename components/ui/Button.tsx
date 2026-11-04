@@ -43,7 +43,9 @@ const Button = ({
         disabled && styles.disabledButtonContainer,
         buttonStyle,
       ]}
-      disabled={disabled}
+      disabled={disabled || loading}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: Boolean(disabled || loading), busy: Boolean(loading) }}
     >
       {/* Outer LinearGradient for the border */}
       <LinearGradient
@@ -113,8 +115,8 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFFFFF",
     fontSize: 18,
-    fontWeight: "500",
-    letterSpacing: 1,
+    fontWeight: "600",
+    letterSpacing: 0.25,
     lineHeight: 24,
   },
 });
