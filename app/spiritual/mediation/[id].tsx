@@ -324,8 +324,7 @@ export default function MediationDetailScreen() {
                 style={{
                   color: "#FFFFFF",
                   fontSize: 12,
-                  fontWeight: "400",
-                  fontFamily: "Nunito-Regular",
+                  fontWeight: "400"
                 }}
               >
                 <Text
