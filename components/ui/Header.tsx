@@ -63,7 +63,9 @@ const Header: React.FC<HeaderProps> = ({
           <Ionicons name="sparkles-outline" size={18} color="#02050C" />
           <Text style={styles.trialText} numberOfLines={2}>
             {user?.daysLeft != null && Number.isFinite(Number(user.daysLeft))
-              ? `Premium trial · ${Math.max(0, Number(user.daysLeft))} ${Number(user.daysLeft) === 1 ? "day" : "days"} left`
+              ? Number(user.daysLeft) > 0
+                ? `Premium trial · ${Number(user.daysLeft)} ${Number(user.daysLeft) === 1 ? "day" : "days"} left`
+                : "Explore Treksor Premium"
               : "Discover Treksor Premium"}
           </Text>
           <TouchableOpacity
