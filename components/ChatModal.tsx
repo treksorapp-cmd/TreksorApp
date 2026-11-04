@@ -97,10 +97,7 @@ export default function ChatModal({ visible, onClose }: ChatModalProps) {
     <View style={[styles.messageContainer, item.role === 'user' ? styles.userMessageContainer : styles.aiMessageContainer]}>
       {!(item.role === 'user') && (
         <View style={styles.aiAvatar}>
-          <Image
-            source={require("@/assets/images/chatbot.png")}
-            style={{ width: 30, height: 30 }}
-            />
+          <Ionicons name="sparkles" size={22} color="#02050C" />
         </View>
       )}
 
@@ -118,7 +115,7 @@ export default function ChatModal({ visible, onClose }: ChatModalProps) {
                 style={{ width: 30, height: 30, borderRadius: 15 }}
               />
             ) : (
-              <Ionicons name="person-outline" size={18} color="#EFB33F" />
+              <Ionicons name="person-outline" size={18} color="#02050C" />
             )}
         </View>
       )}
@@ -150,20 +147,17 @@ export default function ChatModal({ visible, onClose }: ChatModalProps) {
                 <View style={styles.header}>
                   <View style={styles.headerLeft}>
                     <View style={styles.aiHeaderAvatar}>
-                      <Image
-                        source={require("@/assets/images/chatbot.png")}
-                        style={{ width: 40, height: 40, borderRadius: 20 }}
-                      />
+                      <Ionicons name="sparkles" size={22} color="#02050C" />
                     </View>
                     <View>
-                      <Text style={styles.headerTitle}>Ai</Text>
+                      <Text style={styles.headerTitle}>Treksor AI</Text>
                       <View style={styles.onlineStatus}>
                         <View style={styles.onlineDot} />
-                        <Text style={styles.onlineText}>Online</Text>
+                        <Text style={styles.onlineText}>Your AI companion</Text>
                       </View>
                     </View>
                   </View>
-                  <TouchableOpacity style={styles.minimizeButton} onPress={onClose}>
+                  <TouchableOpacity style={styles.minimizeButton} accessibilityRole="button" accessibilityLabel="Close AI companion" onPress={onClose}>
                     <Ionicons name="remove" size={24} color="#FFFFFF" />
                   </TouchableOpacity>
                 </View>
@@ -183,10 +177,7 @@ export default function ChatModal({ visible, onClose }: ChatModalProps) {
                 {loading && messages.length > 0 && (
                   <View style={[styles.typingContainer, { alignSelf: messages[messages.length - 1].role === 'user' ? 'flex-start' : 'flex-end' }]}>
                   <View style={styles.aiAvatar}>
-                    <Image
-                    source={require("@/assets/images/chatbot.png")}
-                    style={{ width: 30, height: 30 }}
-                    />
+                    <Ionicons name="sparkles" size={22} color="#02050C" />
                   </View>
                   <View style={styles.typingBubble}>
                     <Text style={styles.typingText}>Typing...</Text>
