@@ -92,7 +92,9 @@ const { width } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    width: width - 40, // Full width minus margins
+    width: width - 40,
+    maxWidth: 520,
+    alignSelf: "center",
     height: 56,
     borderRadius: 12,
     overflow: "hidden",
