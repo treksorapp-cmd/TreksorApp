@@ -21,12 +21,9 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
   const {purchasePlan, cancelSubscription} = useUserStore();
   const appState = useRef(AppState.currentState);
   const [pendingCancel, setPendingCancel] = useState(false);
-  
-  console.log("activeSubscriptionType", activeSubscriptionType);
-  console.log("isSubscribed", isSubscribed);
-  
-  console.log("packages", packages);
-  
+
+
+
   const checkSubscriptionStatus = useCallback(async () => {
     try {
       if (await Purchases.isConfigured()) {
@@ -35,21 +32,20 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
         
         // Check if user has an active subscription
         const hasActiveSubscription = Object.keys(activeEntitlements).length > 0;
-        console.log("hasActiveSubscription", hasActiveSubscription);
-        
+
         // Determine subscription type from user.plan or RevenueCat
         let currentPlan: PlanType | null = null;
-        console.log("user?.plan", user?.plan);
+
         if (user?.plan === "monthly" || user?.plan === "yearly") {
           currentPlan = user.plan as PlanType;
-          console.log("currentPlan", currentPlan);
+
         } else if (hasActiveSubscription) {
           // Try to determine from RevenueCat entitlements
           const entitlementKeys = Object.keys(activeEntitlements);
           if (entitlementKeys.length > 0) {
             // Check package identifier from the first active entitlement
             const entitlement = activeEntitlements[entitlementKeys[0]];
-            console.log("entitlement", entitlement);
+
             if (entitlement.productIdentifier?.includes("monthly") || entitlement.productIdentifier === "$rc_monthly") {
               currentPlan = "monthly";
             } else if (entitlement.productIdentifier?.includes("annual") || entitlement.productIdentifier === "$rc_annual") {
@@ -161,8 +157,8 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
   
   const yearlyFeatures = [
     "Everything in the Monthly Plan",
-    "Plus, unlock the exclusive Purpose Pillar (coming soon in 2026)",
-    "One-time annual payment at a lower rate",
+    "Purpose Pillar included when it launches (in development)",
+    "One annual payment instead of monthly billing",
     "Full access to the complete TREKSOR framework",
   ];
   
@@ -194,9 +190,7 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
       
       // Purchase the package
       const { customerInfo, productIdentifier, transaction } = await Purchases.purchasePackage(currentPackage);
-      
-      console.log("Purchase successful:", { customerInfo, productIdentifier, transaction });
-      
+
       // Call API to update subscription on backend
       try {
         await purchasePlan({planType: planType})
@@ -411,8 +405,8 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
                         </Text>
                         <Text style={styles.planSubheading}>
                           {planType === "monthly" 
-                            ? "Includes the 7-day free trial, then automatically renews monthly."
-                            : "Includes a 14-day free trial, then renews yearly (save 40%)."}
+                            ? "Billed monthly. The store confirms any trial and your renewal terms."
+                            : "Billed annually. The store confirms any trial, price and renewal terms."}
                         </Text>
                       </>
                     )}
@@ -559,7 +553,7 @@ const styles = StyleSheet.create({
       fontWeight: "600",
     },
     planSubheading: {
-      fontSize: 10,
+      fontSize: 12,
       color: "#edc473",
       marginBottom: 20,
       fontWeight: "600",
