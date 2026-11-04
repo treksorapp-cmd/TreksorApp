@@ -187,17 +187,17 @@ const BeveragesDetails = () => {
             <View style={{ width: '100%', marginTop: 10 }}>
               {beverage.source_1 && beverage.url_1 && (
                 <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: '400'}}>
-                  <Text style={{ textDecorationLine: 'underline', color: '#3498db' }} onPress={() => Linking.openURL(beverage.url_1!)}>Source 1: {beverage.source_1}</Text>
+                  <Text style={{ textDecorationLine: 'underline', color: '#EFB33F' }} onPress={() => Linking.openURL(beverage.url_1!)}>Source 1: {beverage.source_1}</Text>
                 </Text>
               )}
               {beverage.source_2 && beverage.url_2 && (
                 <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: '400'}}>
-                  <Text style={{ textDecorationLine: 'underline', color: '#3498db' }} onPress={() => Linking.openURL(beverage.url_2!)}>Source 2: {beverage.source_2}</Text>
+                  <Text style={{ textDecorationLine: 'underline', color: '#EFB33F' }} onPress={() => Linking.openURL(beverage.url_2!)}>Source 2: {beverage.source_2}</Text>
                 </Text>
               )}
               {beverage.source_3 && beverage.url_3 && (
                 <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: '400'}}>
-                  <Text style={{ textDecorationLine: 'underline', color: '#3498db' }} onPress={() => Linking.openURL(beverage.url_3!)}>Source 3: {beverage.source_3}</Text>
+                  <Text style={{ textDecorationLine: 'underline', color: '#EFB33F' }} onPress={() => Linking.openURL(beverage.url_3!)}>Source 3: {beverage.source_3}</Text>
                 </Text>
               )}
             </View>
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
     lineHeight: 20},
   ingredientMeasurement: {
     fontSize: 14,
-    color: "#F39C12",
+    color: "#EFB33F",
     fontWeight: "500",
     lineHeight: 18},
   scrollView: {
