@@ -118,7 +118,7 @@ export default function ChatModal({ visible, onClose }: ChatModalProps) {
                 style={{ width: 30, height: 30, borderRadius: 15 }}
               />
             ) : (
-              <Text style={styles.userAvatarText}>👤</Text>
+              <Ionicons name="person-outline" size={18} color="#EFB33F" />
             )}
         </View>
       )}
@@ -391,8 +391,8 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   timestampText: {
-    fontSize: 10,
-    color: "#666",
+    fontSize: 12,
+    color: "#A6ADBA",
   },
   typingContainer: {
     flexDirection: "row",
