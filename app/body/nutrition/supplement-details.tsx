@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
     textAlign: "left",
-    lineHeight: 20
-    marginTop: 10
+    lineHeight: 20,
+    marginTop: 10,
   },
 })
