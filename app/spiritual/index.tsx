@@ -43,7 +43,7 @@ const SpiritualHome = () => {
     <View style={styles.container}>
       <StatusBar style="light" />
         <View style={[styles.content, { paddingBottom: insets.bottom + 30 }]}>
-          <Text style={{fontSize: 22, fontWeight: 'bold', color: '#FFFFFF', marginVertical: 20}}>Mediation</Text>
+          <Text style={{fontSize: 22, fontWeight: '700', color: '#FFFFFF', marginVertical: 20}}>Meditation</Text>
           <Button onPress={()=>router.push("/spiritual/mediation/beginner")} icon={require("@/assets/images/beginner.png")} iconImage iconImageIcon={"progress-one"} disabled={fetchMediationLockedStatus('beginner')} iconStyle={{width: 40, height: 13}} buttonStyle={{width: width - 20}}>Beginner</Button>
           <Button onPress={()=>router.push("/spiritual/mediation/intermediate")} icon={require("@/assets/images/intermediate.png")} iconImage iconImageIcon={"progress-two"} disabled={fetchMediationLockedStatus('intermediate')} iconStyle={{width: 40, height: 13}} buttonStyle={{width: width - 20}}>Intermediate</Button>
           <Button onPress={()=>router.push("/spiritual/mediation/advanced")} icon={require("@/assets/images/advanced.png")} iconImage iconImageIcon={"progress-full"} disabled={fetchMediationLockedStatus('advanced')} iconStyle={{width: 40, height: 13}} buttonStyle={{width: width - 20}}>Advanced</Button>
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   paginationDotActive: {
-    backgroundColor: "#F39C12",
+    backgroundColor: "#EFB33F",
   },
   viewAll: {
     height: 60,
