@@ -169,8 +169,8 @@ export default function EditProfile() {
                 </View>
               )}
               <View style={styles.editIconContainer}>
-                <LinearGradient colors={["#3498db", "#2980b9"]} style={styles.editIconGradient}>
-                  <Ionicons name="camera" size={14} color="#FFFFFF" />
+                <LinearGradient colors={["#EFB33F", "#C88E2D"]} style={styles.editIconGradient}>
+                  <Ionicons name="camera-outline" size={16} color="#02050C" />
                 </LinearGradient>
               </View>
             </TouchableOpacity>
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: "#3498db",
+    backgroundColor: "#EFB33F",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     borderColor: "#121212",
   },
   changePhotoText: {
-    color: "#3498db",
+    color: "#EFB33F",
     fontSize: 16,
     marginTop: 12,
   },
