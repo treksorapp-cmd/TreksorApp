@@ -33,7 +33,7 @@ export const ritualCards: RitualCard[] = [
     title: "PURPOSE",
     ritualsCompleted: 0,
     totalRituals: 0,
-    image: require("@/assets/images/locked-ritual.png"),
+    image: require("@/assets/images/purpose-background.png"),
     isLocked: true,
     availableDate: "In development",
     backgroundColor: "#2D2D2D",
