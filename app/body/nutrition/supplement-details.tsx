@@ -144,8 +144,8 @@ const SupplementDetails = () => {
                       Linking.openURL(supplement.url)
                   }
                 }}>
-                  {/* <Text style={[styles.sourceText, { textDecorationLine: 'underline', color: '#3498db' }]}>Click Here for Reference</Text> */}
-                  <Text style={[styles.sourceText, { textDecorationLine: 'underline', color: '#3498db' }]}>{supplement.source}</Text>
+                  {/* <Text style={[styles.sourceText, { textDecorationLine: 'underline', color: '#EFB33F' }]}>Click Here for Reference</Text> */}
+                  <Text style={[styles.sourceText, { textDecorationLine: 'underline', color: '#EFB33F' }]}>{supplement.source}</Text>
                 </Pressable>
                 </View>
                
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   },
   warningText: {
     fontSize: 16,
-    color: "#F39C12",
+    color: "#EFB33F",
     fontWeight: "600",
     textAlign: "left",
     lineHeight: 20},
