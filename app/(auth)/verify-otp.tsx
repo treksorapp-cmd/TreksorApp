@@ -138,7 +138,7 @@ export default function VerifyOtp() {
           </TouchableOpacity>
 
           <View style={styles.iconContainer}>
-            <Ionicons name="shield-checkmark-outline" size={60} color="#3498db" />
+            <Ionicons name="shield-checkmark-outline" size={60} color="#EFB33F" />
           </View>
 
           <Text style={styles.heading}>Verification Code</Text>
@@ -232,12 +232,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   resendButton: {
-    color: "#3498db",
+    color: "#EFB33F",
     fontSize: 14,
     fontWeight: "bold",
   },
   timerText: {
-    color: "#3498db",
+    color: "#EFB33F",
     fontSize: 14,
   },
 })
