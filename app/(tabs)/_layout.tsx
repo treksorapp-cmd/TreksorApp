@@ -1,106 +1,80 @@
-"use client";
-
 import { useArticleStore } from "@/store/article-store";
 import { useAuthStore } from "@/store/auth-store";
-import {
-  AntDesign,
-  MaterialIcons,
-  Octicons,
-  SimpleLineIcons,
-} from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect } from "react";
-import {
-  Platform,
-  StyleSheet,
-  View
-} from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
+
+const BACKGROUND = "#02050C";
+const ACCENT = "#EFB33F";
+const MUTED = "#9AA4B3";
 
 export default function TabLayout() {
   const { isAuthenticated, isVerified } = useAuthStore();
-  const [badge, setBadge] = React.useState<number>(0);
-  const [offerings, setOfferings] = React.useState<any>([]);
+  // Subscribe to updates without remounting all tabs when the badge changes.
+  const unreadArticles = useArticleStore((state) => state.unreadArticlesCount);
 
-
-  useEffect(() => {
-    setBadge(useArticleStore.getState().unreadArticlesCount);
-  }, [useArticleStore.getState().unreadArticlesCount]);
-
-  if (!isAuthenticated || !isVerified) return <Redirect href="/" />;
+  if (!isAuthenticated || !isVerified) {
+    return <Redirect href="/" />;
+  }
 
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-
-      {/* pricing popup/modal */}
-  
-
-      {/* tabs */}
       <Tabs
-        key={badge}
         screenOptions={{
-          animation: "shift",
-          sceneStyle: {
-            backgroundColor: "#02050C",
-          },
-          tabBarStyle: Platform.select({
-            ios: {
-              position: "absolute",
-              backgroundColor: "#02050C",
-            },
-            default: {
-              backgroundColor: "#02050C",
-            },
-          }),
-          tabBarActiveTintColor: "#EFB33F",
           headerShown: false,
+          sceneStyle: { backgroundColor: BACKGROUND },
+          tabBarActiveTintColor: ACCENT,
+          tabBarInactiveTintColor: MUTED,
+          tabBarHideOnKeyboard: true,
+          tabBarLabelStyle: styles.tabLabel,
+          tabBarItemStyle: styles.tabItem,
+          tabBarStyle: styles.tabBar,
+          tabBarBadgeStyle: styles.tabBadge,
         }}
       >
         <Tabs.Screen
           name="home"
           options={{
             title: "Home",
-            tabBarIcon: ({ color }) => (
-              <AntDesign name="home" size={24} color={color} />
+            tabBarAccessibilityLabel: "Home",
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons name={focused ? "home" : "home-outline"} size={23} color={color} />
             ),
           }}
         />
-
         <Tabs.Screen
           name="chat"
           options={{
             title: "Chat",
-            tabBarIcon: ({ color }) => (
-              <Octicons name="dependabot" size={24} color={color} />
+            tabBarAccessibilityLabel: "AI companion chat",
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons name={focused ? "chatbubble-ellipses" : "chatbubble-ellipses-outline"} size={23} color={color} />
             ),
           }}
         />
-
         <Tabs.Screen
           name="tracking"
           options={{
-            title: "Tracking",
-            tabBarIcon: ({ color }) => (
-              <SimpleLineIcons name="graph" size={24} color={color} />
+            title: "Progress",
+            tabBarAccessibilityLabel: "Progress tracking",
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons name={focused ? "stats-chart" : "stats-chart-outline"} size={23} color={color} />
             ),
           }}
         />
-
         <Tabs.Screen
           name="articles"
-          options={() => {
-            const badge = useArticleStore.getState().unreadArticlesCount;
-            return {
-              title: "Articles",
-              tabBarIcon: ({ color }) => (
-                <MaterialIcons name="article" size={24} color={color} />
-              ),
-              tabBarBadge: badge > 0 ? badge : undefined,
-            };
+          options={{
+            title: "Articles",
+            tabBarAccessibilityLabel: "Articles",
+            tabBarIcon: ({ color, focused }) => (
+              <Ionicons name={focused ? "newspaper" : "newspaper-outline"} size={23} color={color} />
+            ),
+            tabBarBadge: unreadArticles > 0 ? (unreadArticles > 99 ? "99+" : unreadArticles) : undefined,
           }}
         />
-
         <Tabs.Screen name="index" redirect />
       </Tabs>
     </View>
@@ -110,78 +84,29 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: BACKGROUND,
   },
-  modalOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 99999999,
-    flexGrow: 1,
-    height: "100%",
+  tabBar: {
+    backgroundColor: BACKGROUND,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: "rgba(255,255,255,0.14)",
+    paddingTop: 8,
+    paddingBottom: Platform.OS === "ios" ? 6 : 8,
+    minHeight: Platform.OS === "ios" ? 61 : 64,
+    elevation: 0,
   },
-  modalContainer: {
-    width: "85%",
-    backgroundColor: "rgba(0,0,0,0.6)",
-    borderRadius: 20,
-    padding: 25,
-    alignItems: "center",
+  tabItem: {
+    paddingVertical: 2,
   },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#fff",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  modalSubtitle: {
-    fontSize: 14,
-    color: "#ddd",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  packagesContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    marginBottom: 20,
-  },
-  packageCard: {
-    flex: 1,
-    backgroundColor: "rgba(255,255,255,0.1)",
-    paddingVertical: 20,
-    marginHorizontal: 8,
-    borderRadius: 14,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#EFB33F",
-  },
-  proPackageCard: {
-    backgroundColor: "#EFB33F",
-  },
-  packageTitle: {
-    fontSize: 18,
+  tabLabel: {
+    fontSize: 12,
     fontWeight: "600",
-    color: "#fff",
-    marginBottom: 5,
+    letterSpacing: 0.2,
   },
-  packagePrice: {
-    fontSize: 16,
-    color: "#fff",
-  },
-  subscribeButton: {
-    backgroundColor: "#EFB33F",
-    paddingVertical: 14,
-    paddingHorizontal: 50,
-    borderRadius: 25,
-  },
-  subscribeText: {
-    color: "#000",
+  tabBadge: {
+    backgroundColor: ACCENT,
+    color: BACKGROUND,
+    fontSize: 10,
     fontWeight: "700",
-    fontSize: 16,
   },
 });
