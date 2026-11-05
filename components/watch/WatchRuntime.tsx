@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useAuthStore } from '@/store/auth-store';
 import { useWorkoutStore } from '@/store/workout-store';
-import { useTrackingStore } from '@/store/tracking-store';
 import { handleWatchRequest } from '@/lib/watch/companion';
 import { watchBridge } from '@/lib/watch/connection';
 export default function WatchRuntime() {
@@ -17,7 +16,7 @@ export default function WatchRuntime() {
       };
       queue=queue.then(run,run);
     });
-    const off=[useAuthStore.subscribe(invalidate),useWorkoutStore.subscribe(invalidate),useTrackingStore.subscribe(invalidate)];
+    const off=[useAuthStore.subscribe(invalidate),useWorkoutStore.subscribe(invalidate)];
     return ()=>{clearTimeout(timer);sub.remove();off.forEach(f=>f())};
   },[]);
   return null;

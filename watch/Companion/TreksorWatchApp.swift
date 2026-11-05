@@ -1,138 +1,71 @@
 import SwiftUI
+import WatchKit
+import UserNotifications
 
 @main struct TreksorWatchApp: App {
     @StateObject private var link = WatchLink()
+    @StateObject private var feed = ThoughtFeed()
     @Environment(\.scenePhase) private var phase
     var body: some Scene {
         WindowGroup {
-            Home().environmentObject(link).tint(TreksorBrand.gold)
-                .onChange(of: phase) { value in
-                    if value == .active { link.activate() } else if value == .background { link.deactivate() }
-                }
+            NavigationStack { TodayView(feed:feed,link:link) }
+                .tint(TreksorBrand.gold).task(id:phase) { if phase == .active { await feed.load() } else if phase == .background { link.close() } }
         }
+        WKNotificationScene(controller: ThoughtNotification.self, category: "TREKSOR_POWER_THOUGHT")
     }
 }
-private struct Home: View {
-    @EnvironmentObject var link: WatchLink
+struct TodayView: View {
+    @ObservedObject var feed: ThoughtFeed
+    @ObservedObject var link: WatchLink
     var body: some View {
-        NavigationStack {
-            ScrollView { VStack(alignment: .leading, spacing: 10) {
-                TreksorWatchBrandHeader()
-                if let state = link.state {
-                    Route(label: "Body", icon: "dumbbell", detail: state.active?.name ?? "Gym routines") { BodyScreen() }
-                    Route(label: "Mind", icon: "heart", detail: "Daily check-in") { MindScreen() }
-                    Route(label: "Balance", icon: "leaf", detail: "Practice, sleep & wake") { BalanceScreen() }
-                    Route(label: "Purpose", icon: "scope", detail: "Today’s personal steps") { PurposeScreen() }
-                    Route(label: "Progress", icon: "chart.bar", detail: "Your last seven days") { ProgressScreen() }
-                } else { Text("Connect your watch").font(.headline); Text(link.status).font(.body).foregroundStyle(TreksorBrand.secondary) }
-                Button(link.busy ? "Syncing…" : "Refresh") { link.refresh() }.disabled(link.busy)
-            }.padding(.horizontal, 3) }.background(TreksorBrand.background)
-        }.id(link.state?.grant ?? "locked")
-        .alert("Treksor", isPresented: Binding(get: {link.notice != nil}, set: {if !$0 {link.notice = nil}})) { Button("Done") {link.notice = nil} } message: { Text(link.notice ?? "") }
+        ScrollView { VStack(alignment:.leading,spacing:12) {
+            TreksorWatchBrandHeader()
+            if let thought=feed.thought {
+                ThoughtCard(text:thought.thought,date:thought.formattedDate)
+                if feed.offline { Text("Saved on this watch").font(.caption2).foregroundStyle(TreksorBrand.secondary) }
+            } else {Text(feed.message).font(.body).foregroundStyle(TreksorBrand.secondary)}
+            NavigationLink { ProgressView(link:link) } label: {
+                HStack(spacing:8) { Image(systemName:"chart.bar").foregroundStyle(TreksorBrand.gold);Text("My progress").font(.headline);Spacer() }
+            }.accessibilityLabel("My progress, last seven days")
+            if feed.offline { Button("Retry"){Task {await feed.load()}} }
+        }.padding(.horizontal,3) }.background(TreksorBrand.background)
     }
 }
-struct Route<Destination: View>: View {
-    let label, icon, detail: String
-    @ViewBuilder let destination: () -> Destination
+struct ThoughtCard: View {
+    let text: String
+    let date: String
     var body: some View {
-        NavigationLink(destination: destination()) {
-            HStack(spacing: 8) { Image(systemName: icon).foregroundStyle(TreksorBrand.gold).frame(width: 22)
-                VStack(alignment:.leading,spacing:3) { Text(label).font(.headline); Text(detail).font(.caption).foregroundStyle(TreksorBrand.secondary) }
-            }.frame(maxWidth:.infinity, alignment:.leading).padding(.vertical, 3)
-        }.tint(TreksorBrand.surfaceRaised)
+        VStack(alignment:.leading,spacing:10) {
+            Text("POWER THOUGHT").font(.caption2.weight(.semibold)).tracking(1.1).foregroundStyle(TreksorBrand.gold)
+            Text(text).font(.system(.headline).weight(.medium)).lineSpacing(3).foregroundStyle(TreksorBrand.text).fixedSize(horizontal:false,vertical:true)
+            if !date.isEmpty { Text(date).font(.caption2).foregroundStyle(TreksorBrand.secondary) }
+        }.padding(12).frame(maxWidth:.infinity,alignment:.leading)
+         .background(LinearGradient(colors:[TreksorBrand.surfaceRaised,TreksorBrand.surface],startPoint:.topLeading,endPoint:.bottomTrailing),in:RoundedRectangle(cornerRadius:15,style:.continuous))
+         .overlay(RoundedRectangle(cornerRadius:15,style:.continuous).strokeBorder(TreksorBrand.gold.opacity(0.29),lineWidth:1))
     }
 }
-struct Page<Content: View>: View {
-    let title: String
-    @ViewBuilder let content: () -> Content
-    var body: some View { ScrollView { VStack(alignment:.leading,spacing:12) { content() }.frame(maxWidth:.infinity,alignment:.leading).padding(.horizontal,3) }.navigationTitle(title).background(TreksorBrand.background) }
-}
-struct ClockStrip: View {
-    let training: Training
-    @Environment(\.isLuminanceReduced) var dimmed
+struct ProgressView: View {
+    @ObservedObject var link: WatchLink
+    @Environment(\.scenePhase) private var phase
     var body: some View {
-        TimelineView(.periodic(from:.now,by:1)) { context in
-            let now = context.date.timeIntervalSince1970, remaining = max(0, Int(ceil(training.restUntil-now)))
-            HStack { VStack(alignment:.leading) { Text("Workout").font(.caption2); Text(time(Int(now-training.started))).monospacedDigit() }
-                Spacer(); VStack(alignment:.trailing) { Text(remaining>0 ? "Rest" : "Rest off").font(.caption2); Text(time(remaining)).monospacedDigit() }.foregroundStyle(remaining>0 && !dimmed ? TreksorBrand.gold : TreksorBrand.muted)
-            }.padding(7).background(TreksorBrand.surface,in:RoundedRectangle(cornerRadius:10))
-        }
+        ScrollView { VStack(alignment:.leading,spacing:10) {
+            Text("Last seven days").font(.headline)
+            if let p=link.totals {
+                row("Gym sessions",p.sessions);row("Saved sets",p.sets);row("Practice minutes",p.minutes)
+                Text("Practice minutes come from completed timers.").font(.caption2).foregroundStyle(TreksorBrand.secondary)
+            } else {Text(link.loading ? "Connecting to iPhone…" : link.message).font(.body).foregroundStyle(TreksorBrand.secondary)}
+            Button(link.loading ? "Syncing…" : "Refresh"){link.refresh()}.disabled(link.loading)
+        }.padding(.horizontal,3) }.background(TreksorBrand.background).navigationTitle("Progress")
+        .onAppear {link.open()}.onDisappear {link.close()}.onChange(of:phase){p in if p == .active {link.open()} else if p == .background {link.close()} }
     }
-    private func time(_ value:Int)->String { let n=max(0,value);return String(format:"%02d:%02d",n/60,n%60) }
+    private func row(_ name:String,_ count:Int)->some View { VStack(alignment:.leading,spacing:2) {Text("\(count)").font(.title2.weight(.semibold)).monospacedDigit().foregroundStyle(TreksorBrand.gold);Text(name).font(.caption).foregroundStyle(TreksorBrand.text)}.padding(.vertical,3).accessibilityElement(children:.combine) }
 }
-struct BodyScreen: View {
-    @EnvironmentObject var link: WatchLink
-    @State var confirmFinish = false
-    var body: some View {
-        if let t = link.state?.active {
-            VStack(spacing:4) { ClockStrip(training:t); ScrollView { VStack(alignment:.leading,spacing:9) {
-                Text(t.name).font(.headline); Text("\(t.done) / \(t.total) sets saved").font(.caption)
-                if let e=t.next { SetEditor(move:e,session:t.id).id("\(t.id):\(e.id):\(e.number)") }
-                else {Text("All available sets recorded.")}
-                if t.restUntil>Date().timeIntervalSince1970 { Button("Add 15 sec") { link.send("extend",["session":t.id,"deadline":t.restUntil]) }; Button("End rest") { link.send("skip",["session":t.id,"deadline":t.restUntil]) } }
-                Button("Finish workout") {confirmFinish=true}.disabled(t.done==0)
-            }.disabled(link.busy) } }.navigationTitle("Body")
-                .confirmationDialog("Save this workout?",isPresented:$confirmFinish){Button("Finish & save") {link.send("finish",["session":t.id]) {link.notice="Workout saved to Gym progress."}}}
-        } else { Page(title:"Body") { if let days=link.state?.days, !days.isEmpty { ForEach(days) { day in
-            Button {link.send("start",["day":day.day])} label: { VStack(alignment:.leading) { Text(day.name).font(.headline);Text("Start · \(day.count) exercises").font(.caption) } }.disabled(link.busy || day.count==0)
-        } } else { Text("Build your routine in Body on iPhone. Your gym days will appear here.") } } }
-    }
+struct AlertCard: View {
+    let thought:String
+    var body: some View { VStack(alignment:.leading,spacing:8){TreksorWatchBrandHeader();ThoughtCard(text:thought,date:"")} }
 }
-struct SetEditor: View {
-    @EnvironmentObject var link: WatchLink
-    let move: Movement, session: String
-    @State var kg: Double; @State var reps: Int
-    init(move:Movement,session:String) {self.move=move;self.session=session;_kg=State(initialValue:move.bodyweight ? 0:move.kg);_reps=State(initialValue:max(1,min(300,move.reps)))}
-    var body: some View { VStack(alignment:.leading,spacing:8) {
-        Text(move.name).font(.headline);Text("Set \(move.number)").font(.caption).foregroundStyle(TreksorBrand.secondary)
-        if move.bodyweight { Text("Bodyweight") } else { NavigationLink { CrownValue(title:"Weight · kg", value:$kg, limits:0...2000, step:0.5) } label: { Text("\(kg, specifier:"%g") kg") } }
-        NavigationLink { CrownValue(title:move.metric.capitalized,value:Binding(get:{Double(reps)},set:{reps=Int($0.rounded())}),limits:1...300,step:1) } label: { Text("\(reps) \(move.metric)") }
-        Button("Save set") {link.send("set",["session":session,"exercise":move.id,"number":move.number,"kg":kg,"reps":reps])}.disabled(!move.bodyweight && kg==0).tint(TreksorBrand.gold)
-    } }
-}
-struct MindScreen: View {
-    @EnvironmentObject var link: WatchLink
-    @State var mood=0, focus=0, energy=0
-    var body: some View { Page(title:"Mind") {
-        Text("Daily check-in").font(.headline);Text("Choose your own ratings from 1 (low) to 5 (high). Saving updates today’s check-in on iPhone.").font(.caption)
-        rating("Mood",$mood);rating("Focus",$focus);rating("Energy",$energy)
-        Button("Save check-in") {link.send("checkin",["date":link.state?.today ?? "","mood":mood,"focus":focus,"energy":energy]) {link.notice="Today’s check-in is saved in Progress."}}.disabled(link.busy || min(mood,min(focus,energy))==0)
-    } }
-    private func rating(_ name:String,_ binding:Binding<Int>)->some View { Picker(name,selection:binding){Text("Choose").tag(0);ForEach(1...5,id:\.self){Text(String($0)).tag($0)}}.pickerStyle(.navigationLink) }
-}
-struct PurposeScreen: View {
-    @EnvironmentObject var link: WatchLink
-    var body: some View { Page(title:"Purpose") {
-        Text("Today’s steps").font(.headline)
-        if let items=link.state?.habits,!items.isEmpty { ForEach(items,id:\.selfKey) { h in
-            Button {link.send("habit",["date":link.state?.today ?? "","category":h.category,"item":h.id,"done":!h.done])} label: { Label(h.name,systemImage:h.done ? "checkmark.circle.fill":"circle") }.disabled(link.busy)
-        } } else { Text("Create a personal tracker in Progress on iPhone and schedule a step for today.") }
-    } }
-}
-extension Habit {var selfKey:String { category+":"+id }}
-struct ProgressScreen: View {
-    @EnvironmentObject var link: WatchLink
-    var body: some View { Page(title:"Progress") { if let p=link.state?.progress {
-        Text("Last seven days").font(.headline);stat("Gym sessions",p.sessions);stat("Recorded sets",p.sets);stat("Timed practice minutes",p.minutes)
-        Text(p.sets>0 ? "You made room for movement. Your saved sets count here." : p.minutes>0 ? "You made room for a quiet moment." : "Record a set or a practice to see it here.").font(.caption).foregroundStyle(TreksorBrand.secondary)
-    } } }
-    private func stat(_ label:String,_ value:Int)->some View { VStack(alignment:.leading){Text("\(value)").font(.title2).foregroundStyle(TreksorBrand.gold);Text(label).font(.caption)} }
-}
-
-struct CrownValue: View {
-    let title: String
-    @Binding var value: Double
-    let limits: ClosedRange<Double>, step: Double
-    @Environment(\.dismiss) var dismiss
-    var body: some View {
-        VStack(spacing:8) {
-            Text(value,format:.number.precision(.fractionLength(0...1))).font(.largeTitle).monospacedDigit().foregroundStyle(TreksorBrand.gold)
-                .focusable().digitalCrownRotation($value,from:limits.lowerBound,through:limits.upperBound,by:step,sensitivity:.medium,isContinuous:false,isHapticFeedbackEnabled:true)
-            HStack {
-                Button {value=max(limits.lowerBound,value-step)} label:{Image(systemName:"minus")}.accessibilityLabel("Decrease")
-                Button {value=min(limits.upperBound,value+step)} label:{Image(systemName:"plus")}.accessibilityLabel("Increase")
-            }
-            Button("Done"){dismiss()}
-        }.navigationTitle(title)
-    }
+final class ThoughtNotification: WKUserNotificationHostingController<AlertCard> {
+    private var text = "Open Treksor for your Power Thought."
+    override var body: AlertCard { AlertCard(thought:text) }
+    override func didReceive(_ notification:UNNotification) { text=notification.request.content.body }
 }

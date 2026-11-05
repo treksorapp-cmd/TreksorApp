@@ -29,32 +29,3 @@ struct TreksorWatchBrandHeader: View {
         .accessibilityElement(children: .combine)
     }
 }
-
-// Presentation only: the workout engine must supply actual phase and remaining seconds.
-struct TreksorWatchRestCard: View {
-    enum Phase { case resting, exercising }
-    let phase: Phase
-    let remainingSeconds: Int
-    @Environment(\.isLuminanceReduced) private var isLuminanceReduced
-    private var resting: Bool { phase == .resting }
-    private var time: String {
-        let seconds = max(0, remainingSeconds)
-        return String(format: "%02d:%02d", seconds / 60, seconds % 60)
-    }
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Label(resting ? "Rest" : "Exercise", systemImage: resting ? "timer" : "figure.strengthtraining.traditional")
-                .font(.caption).foregroundStyle(TreksorBrand.secondary)
-            Text(time).font(.system(.largeTitle, design: .rounded).weight(.medium)).monospacedDigit()
-                .foregroundStyle(resting && !isLuminanceReduced ? TreksorBrand.gold : TreksorBrand.muted)
-                .lineLimit(1)
-            Text(resting ? "Time to recover" : "Rest timer paused")
-                .font(.caption2).foregroundStyle(TreksorBrand.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading).padding(12)
-        .background(TreksorBrand.surface, in: RoundedRectangle(cornerRadius: 16))
-        .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(
-            resting && !isLuminanceReduced ? TreksorBrand.gold.opacity(0.5) : TreksorBrand.muted.opacity(0.15)))
-        .accessibilityElement(children: .combine)
-    }
-}
