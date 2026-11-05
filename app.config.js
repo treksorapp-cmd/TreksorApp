@@ -1,25 +1,31 @@
+const isIphoneDev = process.env.EAS_BUILD_PROFILE ? ["iphone-dev", "iphone-preview"].includes(process.env.EAS_BUILD_PROFILE) : process.env.TREKSOR_IPHONE_DEV === "1";
+
 export default {
   expo: {
-    name: "Treksor",
-    slug: "Treksor",
-    version: "1.0.3",
+    name: isIphoneDev ? "Treksor Dev" : "Treksor",
+    slug: isIphoneDev ? "treksorapp" : "Treksor",
+    ...(isIphoneDev ? { owner: "treksorapps-team" } : {}),
+    version: "1.1.0",
     orientation: "portrait",
     icon: "./assets/images/appicon-treksor.png",
-    scheme: "treksorapp",
-    userInterfaceStyle: "automatic",
+    scheme: isIphoneDev ? "treksor-dev" : "treksorapp",
+    userInterfaceStyle: "dark",
     newArchEnabled: true,
     splash: {
       image: "./assets/images/splash-treksor.png",
-      resizeMode: "contain",
-      backgroundColor: "#000000",
+      resizeMode: "cover",
+      backgroundColor: "#02050C",
     },
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "com.treksor.prod",
+      entitlements: { "com.apple.developer.healthkit": true },
+      bundleIdentifier: isIphoneDev ? "com.treksor.dev" : "com.treksor.prod",
       googleServicesFile: process.env.GOOGLE_SERVICES_INFOPLIST,
       buildNumber: "3",
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
+        NSAlarmKitUsageDescription: "Schedule the wake-up time and sound you choose, including system alerts on a paired Apple Watch.",
+        NSHealthShareUsageDescription: "Read workouts and optional sleep records from Apple Health so you can review your movement and rest. Each import is uploaded to your private Treksor account only after you review and choose to save it.",
         NSPhotoLibraryUsageDescription:
           "This app needs access to your photo library to let you pick and upload images.",
         NSCameraUsageDescription:
@@ -43,14 +49,17 @@ export default {
       favicon: "./assets/images/favicon.png",
     },
     plugins: [
+      ["@bacons/apple-targets", {root:"./watch", match:"Companion", appleTeamId:"ABUM4S9VHY"}],
       "expo-router",
+      ["expo-notifications", {sounds: Array.from({length:15},(_,i)=>`./assets/audio/wake/wake_${String(i+1).padStart(2,"0")}.wav`)}],
       "expo-web-browser",
+      ["expo-location", {locationWhenInUsePermission: "Use your current city to find Community activities when you choose Use my current location.", isIosBackgroundLocationEnabled: false, isAndroidBackgroundLocationEnabled: false}],
       "expo-apple-authentication",
       [
         "expo-image-picker",
         {
           photosPermission:
-            "The app accesses your photos to let you change your profile picture.",
+            "Choose photos for your profile and private Life moments calendar. Photos are shared only when you choose to publish them.",
         },
       ],
       // [
@@ -87,7 +96,7 @@ export default {
     extra: {
       router: {},
       eas: {
-        projectId: "67c51458-b4bc-49a9-a9a9-c9117a576b2d"
+        projectId: isIphoneDev ? "14f7500b-1aba-4cea-9c2b-ded2c67821e2" : "67c51458-b4bc-49a9-a9a9-c9117a576b2d"
       }
     },
   },

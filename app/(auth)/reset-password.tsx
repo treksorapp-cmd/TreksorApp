@@ -1,3 +1,4 @@
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 "use client"
 
 import { Ionicons } from "@expo/vector-icons"
@@ -21,6 +22,7 @@ import TextInput from "@/components/ui/TextInput"
 import { useAuthStore } from "@/store/auth-store"
 
 export default function ResetPassword() {
+  const insets = useSafeAreaInsets();
   const { token } = useLocalSearchParams();
   if(!token)
   {
@@ -89,7 +91,7 @@ export default function ResetPassword() {
         token: token as string,
         password: password
       }).then(() => {
-        setSuccess(true)
+        if (!useAuthStore.getState().error) setSuccess(true)
       });
     }
   }
@@ -102,6 +104,7 @@ export default function ResetPassword() {
         <Animated.View
           style={[
             styles.content,
+              {paddingTop:insets.top+12,paddingBottom:insets.bottom+24},
             {
               opacity: fadeAnim,
               transform: [{ translateY: slideAnim }],
@@ -144,7 +147,7 @@ export default function ResetPassword() {
           ) : (
             <View style={styles.successContainer}>
               <View style={styles.successIconContainer}>
-                <Ionicons name="checkmark-circle" size={80} color="#3498db" />
+                <Ionicons name="checkmark-circle" size={80} color="#D7B877" />
               </View>
 
               <Text style={styles.heading}>Password Reset</Text>
@@ -178,26 +181,19 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)", // adjust opacity as needed
     zIndex: -1,
   },
-  backButton: {
-    position: "absolute",
-    top: 50,
-    left: 20,
-    zIndex: 10,
-  },
+  backButton: { alignSelf:"flex-start", minWidth:44, minHeight:44, justifyContent:"center", marginBottom:20 },
   heading: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-    textAlign: "center",
-  },
+    fontSize: 34,
+    fontWeight: "600",
+    color: "#F5F4F1",
+    textAlign: "center", lineHeight: 42, letterSpacing: -0.6, includeFontPadding: false, },
   subHeading: {
-    fontSize: 16,
+    fontSize: 18,
     color: "rgba(255, 255, 255, 0.7)",
     textAlign: "center",
     marginTop: 8,
     marginBottom: 30,
-    paddingHorizontal: 20,
-  },
+    paddingHorizontal: 20, lineHeight: 23, fontWeight: "600", letterSpacing: -0.2, includeFontPadding: false, },
   form: {
     width: "100%",
     alignItems: "center",

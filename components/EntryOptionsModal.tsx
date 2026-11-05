@@ -134,7 +134,7 @@ export default function EntryOptionsModal({
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.optionButton} onPress={handleEdit}>
-                  <Ionicons name="create-outline" size={24} color="#EFB33F" />
+                  <Ionicons name="create-outline" size={24} color="#D7B877" />
                   <Text style={styles.optionText}>Edit</Text>
                   <Ionicons name="chevron-forward" size={20} color="#666" />
                 </TouchableOpacity>
@@ -172,7 +172,8 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   modalContainer: {
-    width: width - 60,
+    width: "90%",
+    maxWidth: 520,
     borderRadius: 16,
     overflow: "hidden",
   },
@@ -187,12 +188,11 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#FFFFFF",
+    fontSize: 22,
+    fontWeight: "600",
+    color: "#F5F4F1",
     textAlign: "center",
-    marginBottom: 24,
-  },
+    marginBottom: 24, lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   optionButton: {
     flexDirection: "row",
     alignItems: "center",

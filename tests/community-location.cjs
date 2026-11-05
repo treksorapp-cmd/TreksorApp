@@ -1,0 +1,6 @@
+const fs=require('fs'),vm=require('vm'),ts=require('typescript'),assert=require('node:assert/strict');
+const moduleContext={exports:{},URLSearchParams};vm.runInNewContext(ts.transpile(fs.readFileSync('lib/community-location.ts','utf8'),{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}),moduleContext);const {matchesCity,localActivityUrl,communityRoute,upcomingEvents}=moduleContext.exports;
+assert(matchesCity('São Paulo, Brazil','sao paulo, brazil'));assert(matchesCity('Tokyo','Tokyo, Japan'));assert(!matchesCity('New York','York'));assert(!matchesCity('Paris, France','Paris, Texas'));assert(!matchesCity('Brisbane','Tokyo'));assert(matchesCity('Tokyo',''));
+assert.equal(new URL(localActivityUrl('Tokyo, Japan','hiking')).searchParams.get('query'),'hiking in Tokyo, Japan');assert.equal(communityRoute('community/groups','Tokyo, Japan'),'community/groups?city=Tokyo%2C%20Japan');
+const rows=[{city:'Tokyo',starts_at:'2027-01-02'},{city:'New York',starts_at:'2027-01-01'},{city:'Tokyo',starts_at:'invalid'},{city:'Tokyo',starts_at:'2020-01-01'}];assert.equal(upcomingEvents(rows,'Tokyo',Date.parse('2026-11-03')).length,1);
+console.log('PASS city/country matching, accents, ambiguous names, no fixed country, encoded handoff, upcoming-only dates');

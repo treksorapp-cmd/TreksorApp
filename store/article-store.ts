@@ -1,4 +1,7 @@
+import { matchesCategory } from "@/lib/content-publication";
 import { api } from "@/api/axios";
+import axios from "axios";
+const CONTENT_FEED = "https://treksor-admin-production.up.railway.app/api/public/content";
 import { countRead, errorHandler } from "@/lib/utils";
 import { Article } from "@/types/article";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -38,49 +41,47 @@ export const useArticleStore = create<ArticleState>()(
       error: null,
 
       fetchArticles: async (query) => {
+        set({ loading: true, error: null });
+        const params = new URLSearchParams(query);
+        const category = params.get("category") || "default";
+        const key = category === "all" ? "All Articles" : category;
         try {
-          set({ loading: true, error: null });
-          const { data: response } = await api.get<ArticleResponse>(`article?${query}&date=${new Date().toISOString().split('T')[0]}`);
-          const params = new URLSearchParams(query);
-          const category = params.get("category") || "default";
-          const key = category === 'all' ? 'All Articles' : category;
-          const existingArticles = get().articles[key] || [];
-        
-          if(response.data.length === 0) {
-            set(() => ({
-              loading: false,
-              articles: {}
-            }));            
-          }
-          const newArticles = response.data.filter(
-            newItem => !existingArticles.some(existing => existing._id === newItem._id)
-          );
-          set(state => ({
-            loading: false,
-            articles: {
-              ...state.articles,
-              [key]: [...existingArticles, ...newArticles],
+          const results = await Promise.allSettled([
+            api.get<ArticleResponse>(`article?${query}&date=${new Date().toISOString().split("T")[0]}`, { timeout: 12000 }),
+            axios.get<ArticleResponse>(`${CONTENT_FEED}?type=articles`, { timeout: 12000 }),
+          ]);
+          const legacy = results[0].status === "fulfilled" ? results[0].value.data.data : [];
+          const editorial = results[1].status === "fulfilled" ? results[1].value.data.data : [];
+          if (results.every(result => result.status === "rejected")) throw new Error("Unable to load articles");
+          if (results[1].status === "rejected") throw new Error("Dashboard content unavailable");
+          if (!Array.isArray(editorial) || !Array.isArray(legacy)) throw new Error("Invalid article feed");
+          const unique = Array.from(new Map([...legacy, ...editorial].map(article => [article._id, article])).values());
+          set(state => {
+            const records = unique.map(article => ({ ...article, isRead: Object.values(state.articles).flat().some(old => old._id === article._id && old.isRead) }));
+            const next = { ...state.articles, [key]: records.filter(article => matchesCategory(article.category, category)) };
+            // The dashboard returns the full editorial catalogue: populate every pillar
+            // immediately, rather than leaving a stale category cache behind.
+            for (const pillar of ["Body", "Mind", "Mental", "Balance", "Spiritual", "Purpose"]) {
+              const previous = (state.articles[pillar] || []).filter(article => !editorial.some(item => item._id === article._id));
+              const current = records.filter(article => matchesCategory(article.category, pillar));
+              next[pillar] = Array.from(new Map([...previous, ...current].map(article => [article._id, article])).values());
             }
-          }));
-        } catch (error: any) {
-          console.error("fetchArticles error:", { error: error.response.data });
-          set({ error: error.response.data.message, loading: false });
-          errorHandler(error);
+            if (category === "all") next["All Articles"] = records;
+            return { loading: false, articles: next };
+          });
+        } catch (error) {
+          set({ loading: false, error: "Unable to load articles" });
+          console.error("Article sync failed", error);
         }
       },
 
-      fetchArticleById: async (data) => {
-        try {
-          set({ loading: true, error: null });
-          const articles = get().articles[data.category] = get().articles[`${data.category}`] || [];
-          const article = articles.find(article => article._id === data.id);
-          set({ loading: false });
-          return article;
-        } catch (error: any) {
-          console.error("fetchArticleById error:", { error: error.response.data });
-          set({ error: error.response.data.message, loading: false });
-          errorHandler(error);
-        }
+      fetchArticleById: async ({id}) => {
+        const find=()=>Object.values(get().articles).flat().find(article=>article._id===id);
+        const cached=find();
+        if(cached)return cached;
+        // Fresh pillar cards can be the first entry point, before any article list was opened.
+        await get().fetchArticles("category=all");
+        return find();
       },
 
       clearData: () => {
@@ -98,37 +99,11 @@ export const useArticleStore = create<ArticleState>()(
       },
 
       markArticleAsRead: (type: string, id: string) => {
-        const allArticles = get().articles;
-
-        if (type === 'All Articles') {
-          const existingArticles = allArticles[type] || [];
-          const articleIndex = existingArticles.findIndex(article => article._id === id);
-          if (articleIndex !== -1) {
-            existingArticles[articleIndex].isRead = true;
-            const existingCategoryArticles = allArticles[existingArticles[articleIndex].category] || [];
-            const categoryArticleIndex = existingCategoryArticles.findIndex(article => article._id === id);
-            if (categoryArticleIndex !== -1) {
-              existingCategoryArticles[categoryArticleIndex].isRead = true;
-            }
-            allArticles[existingArticles[articleIndex].category] = existingCategoryArticles;
-          }
-        } else {
-          const existingArticles = allArticles[type] || [];
-          const articleIndex = existingArticles.findIndex(article => article._id === id);
-          if (articleIndex !== -1) {
-            existingArticles[articleIndex].isRead = true;
-          }
-          const existingCategoryArticles = allArticles['All Articles'] || [];
-          const categoryArticleIndex = existingCategoryArticles.findIndex(article => article._id === id);
-          if (categoryArticleIndex !== -1) {
-            existingCategoryArticles[categoryArticleIndex].isRead = true;
-          }
-          allArticles['All Articles'] = existingCategoryArticles;
-        }
-        const totalArticles = allArticles['All Articles'] || [];
-        const allArticlesRead = totalArticles ? countRead(totalArticles) : 0;
-      
-        set({ articles: allArticles, unreadArticlesCount: totalArticles.length - allArticlesRead });
+        set(state => {
+          const articles = Object.fromEntries(Object.entries(state.articles).map(([key, list]) => [key, list.map(article => article._id === id ? { ...article, isRead: true } : article)]));
+          const all = articles["All Articles"] || [];
+          return { articles, unreadArticlesCount: all.length - countRead(all) };
+        });
       },
 
     }),

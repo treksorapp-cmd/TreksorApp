@@ -1,3 +1,4 @@
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 "use client"
 
 import { Ionicons } from "@expo/vector-icons"
@@ -21,15 +22,18 @@ import OtpInput from "@/components/ui/OtpInput"
 import { useAuthStore } from "@/store/auth-store"
 
 export default function VerifyOtp() {
+  const insets = useSafeAreaInsets();
   const { verifyOtp, loading, getCurrentUser, requestOtp, requestResetPassword} = useAuthStore();
   const params = useLocalSearchParams()
   const { email, purpose = "registration" } = params
 
+  const codeLength = purpose === "reset-password" ? 8 : 6
   const [otp, setOtp] = useState("")
   const [error, setError] = useState("")
   const [timeLeft, setTimeLeft] = useState(30)
   const [canResend, setCanResend] = useState(false)
-  const timerRef = useRef<number | null>(null)
+  const [resendNotice, setResendNotice] = useState("")
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // Animation values
   const fadeAnim = React.useRef(new Animated.Value(0)).current
@@ -83,34 +87,45 @@ export default function VerifyOtp() {
   const handleVerify = () => {
     Keyboard.dismiss()
 
-    if (!otp || otp.length !== 4) {
-      setError("Please enter a valid 4-digit code")
+    if (!otp || otp.length !== codeLength) {
+      setError(`Please enter a valid ${codeLength}-digit code`)
       return
     }
 
     setError("")
+    setResendNotice("")
 
     verifyOtp({ email: email as string, otp, type: purpose as string }).then((token)=>{
       if(purpose === 'reset-password')
       {
-        router.push({ pathname: "/(auth)/reset-password", params: { token } });
+        if (token) router.push({ pathname: "/(auth)/reset-password", params: { token } });
       }
-      else {
+      else if (useAuthStore.getState().isAuthenticated) {
         getCurrentUser();
       }
+      const authError = useAuthStore.getState().error
+      if (authError) setError(authError)
     })
   }
 
   const handleResendCode = () => {
-    if (!canResend) return
+    if (!canResend || loading) return
+    setError("")
+    setResendNotice("")
 
-    if(purpose === 'reset-password')
-    {
-      requestResetPassword({ email: email as string })
-    }
-    else{
-      requestOtp({ email: email as string });
-    }
+    const resend = purpose === "reset-password"
+      ? requestResetPassword({ email: email as string })
+      : requestOtp({ email: email as string })
+    resend.then(() => {
+      const resendError = useAuthStore.getState().error
+      if (resendError) {
+        setError(resendError)
+        return
+      }
+      setOtp("")
+      setResendNotice("Request accepted. Email delivery is not guaranteed. Check your inbox and spam folder.")
+      startTimer()
+    })
   }
 
   const formatTime = (seconds: number) => {
@@ -127,6 +142,7 @@ export default function VerifyOtp() {
         <Animated.View
           style={[
             styles.content,
+              {paddingTop:insets.top+12,paddingBottom:insets.bottom+24},
             {
               opacity: fadeAnim,
               transform: [{ translateY: slideAnim }],
@@ -138,18 +154,19 @@ export default function VerifyOtp() {
           </TouchableOpacity>
 
           <View style={styles.iconContainer}>
-            <Ionicons name="shield-checkmark-outline" size={60} color="#3498db" />
+            <Ionicons name="shield-checkmark-outline" size={60} color="#D7B877" />
           </View>
 
           <Text style={styles.heading}>Verification Code</Text>
           <Text style={styles.subHeading}>
-            We've sent a 4-digit code to {email}. Enter the code below to verify your{" "}
+            If a code was issued, it will be sent to {email}. Enter the {codeLength}-digit code to verify your{" "}
             {purpose === "reset-password" ? "identity" : "account"}.
           </Text>
 
-          <OtpInput codeLength={4} onCodeFilled={setOtp} error={!!error} />
+          <OtpInput codeLength={codeLength} onCodeFilled={setOtp} error={!!error} />
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          {resendNotice ? <Text style={styles.noticeText}>{resendNotice}</Text> : null}
 
           <Button onPress={handleVerify} loading={loading}>
             VERIFY
@@ -187,39 +204,38 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
   },
-  backButton: {
-    position: "absolute",
-    top: 50,
-    left: 20,
-    zIndex: 10,
-  },
+  backButton: { alignSelf:"flex-start", minWidth:44, minHeight:44, justifyContent:"center", marginBottom:20 },
   iconContainer: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: "rgba(52, 152, 219, 0.1)",
+    backgroundColor: "rgba(215,184,119,0.12)",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
   },
   heading: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-    textAlign: "center",
-  },
+    fontSize: 34,
+    fontWeight: "600",
+    color: "#F5F4F1",
+    textAlign: "center", lineHeight: 42, letterSpacing: -0.6, includeFontPadding: false, },
   subHeading: {
-    fontSize: 16,
+    fontSize: 18,
     color: "rgba(255, 255, 255, 0.7)",
     textAlign: "center",
     marginTop: 8,
     marginBottom: 20,
-    paddingHorizontal: 20,
-  },
+    paddingHorizontal: 20, lineHeight: 23, fontWeight: "600", letterSpacing: -0.2, includeFontPadding: false, },
   errorText: {
     color: "#ff6b6b",
     fontSize: 14,
     marginBottom: 20,
+    textAlign: "center",
+  },
+  noticeText: {
+    color: "rgba(255, 255, 255, 0.7)",
+    fontSize: 13,
+    marginBottom: 16,
     textAlign: "center",
   },
   resendContainer: {
@@ -232,12 +248,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   resendButton: {
-    color: "#3498db",
+    color: "#D7B877",
     fontSize: 14,
     fontWeight: "bold",
   },
   timerText: {
-    color: "#3498db",
+    color: "#D7B877",
     fontSize: 14,
   },
 })

@@ -3,6 +3,7 @@ import * as SecureStore from "expo-secure-store";
 
 export const api = axios.create({
   baseURL: 'https://app.treksor.com/api/v1/',
+  timeout: 12000, // Never leave auth requests pending indefinitely.
   headers: {
     "Content-Type": "application/json",
   },

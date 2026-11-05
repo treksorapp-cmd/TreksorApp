@@ -28,14 +28,15 @@ const SocialButton = ({ icon, label, color, ...props }: SocialButtonProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: 50,
+    minHeight: 54,
     borderRadius: 12,
     marginVertical: 8,
     width: "48%",
     overflow: "hidden",
   },
   gradient: {
-    flex: 1,
+    minHeight: 54,
+    paddingVertical: 12,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 15,
@@ -51,6 +52,8 @@ const styles = StyleSheet.create({
   label: {
     color: "#FFFFFF",
     fontSize: 14,
+    lineHeight: 20,
+    flexShrink: 1,
     fontWeight: "500",
   },
 })

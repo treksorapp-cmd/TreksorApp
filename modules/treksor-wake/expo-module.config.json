@@ -1,0 +1,1 @@
+{"platforms":["apple","android"],"apple":{"modules":["TreksorWakeModule"]},"android":{"modules":["expo.modules.treksorwake.TreksorWakeModule"]}}

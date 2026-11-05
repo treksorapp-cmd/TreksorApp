@@ -1,3 +1,6 @@
+import { dayKey } from "@/lib/progress-metrics";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
+import {colors} from "@/theme/architect";
 "use client"
 
 import { Ionicons } from "@expo/vector-icons"
@@ -13,9 +16,12 @@ interface CalendarModalProps {
   onClose: () => void
   onDateSelect: (date: string) => void
   selectedDate?: string
+  maxDate?: string
+  onDismiss?: () => void
 }
 
-export default function CalendarModal({ visible, onClose, onDateSelect, selectedDate }: CalendarModalProps) {
+export default function CalendarModal({ visible, onClose, onDateSelect, selectedDate, maxDate, onDismiss }: CalendarModalProps) {
+  const insets=useSafeAreaInsets();
   const [currentMonth, setCurrentMonth] = useState(new Date())
 
   const getDaysInMonth = (date: Date) => {
@@ -49,7 +55,7 @@ export default function CalendarModal({ visible, onClose, onDateSelect, selected
   }
 
   const formatDate = (date: Date) => {
-    return date.toISOString().split("T")[0]
+    return dayKey(date)
   }
 
   const isToday = (date: Date) => {
@@ -67,7 +73,7 @@ export default function CalendarModal({ visible, onClose, onDateSelect, selected
   }
 
   const navigateMonth = (direction: "prev" | "next") => {
-    const newMonth = new Date(currentMonth)
+    const newMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
     if (direction === "prev") {
       newMonth.setMonth(newMonth.getMonth() - 1)
     } else {
@@ -96,8 +102,8 @@ export default function CalendarModal({ visible, onClose, onDateSelect, selected
   const days = getDaysInMonth(currentMonth)
 
   return (
-    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
-      <BlurView intensity={20} style={styles.overlay}>
+    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose} onDismiss={onDismiss}>
+      <BlurView intensity={20} style={[styles.overlay,{paddingTop:insets.top+12,paddingBottom:insets.bottom+12}]}>
         <RNAnimated.View style={[styles.modalContainer]}>
           <LinearGradient
             colors={["rgba(255, 255, 255, 0.1)", "rgba(255, 255, 255, 0.05)"]}
@@ -140,11 +146,15 @@ export default function CalendarModal({ visible, onClose, onDateSelect, selected
                         style={[
                           styles.day,
                           !date && styles.emptyDay,
+                          date && maxDate && formatDate(date) > maxDate ? { opacity: 0.25 } : undefined,
                           date && isToday(date) && styles.today,
                           date && isSelected(date) && styles.selectedDay,
                         ]}
                         onPress={() => date && handleDatePress(date)}
-                        disabled={!date}
+                        accessibilityRole="button"
+                        accessibilityLabel={date ? formatDate(date) : undefined}
+                        accessibilityState={{ selected: !!date && isSelected(date), disabled: !date || !!maxDate && formatDate(date) > maxDate }}
+                        disabled={!date || !!maxDate && formatDate(date) > maxDate}
                       >
                         {date && (
                           <Text
@@ -168,7 +178,7 @@ export default function CalendarModal({ visible, onClose, onDateSelect, selected
                 <TouchableOpacity style={styles.todayButton} onPress={() => handleDatePress(new Date())}>
                   <Text style={styles.todayButtonText}>Today</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                <TouchableOpacity accessibilityRole="button" accessibilityLabel="Close" style={styles.closeButton} onPress={onClose}>
                   <Text style={styles.closeButtonText}>Close</Text>
                 </TouchableOpacity>
               </View>
@@ -188,7 +198,8 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContainer: {
-    width: width - 40,
+    width: "90%",
+    maxWidth: 520,
     borderRadius: 20,
     overflow: "hidden",
   },
@@ -197,7 +208,7 @@ const styles = StyleSheet.create({
     padding: 1,
   },
   modalContent: {
-    backgroundColor: "#1a1a1a",
+    backgroundColor: colors.surface,
     borderRadius: 19,
     padding: 20,
   },
@@ -213,10 +224,9 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.1)",
   },
   monthTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-  },
+    fontSize: 22,
+    fontWeight: "600",
+    color: "#F5F4F1", lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   dayNamesRow: {
     flexDirection: "row",
     marginBottom: 10,
@@ -247,10 +257,10 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   today: {
-    backgroundColor: "rgba(239, 179, 63, 0.3)",
+    backgroundColor: "rgba(215,184,119, 0.3)",
   },
   selectedDay: {
-    backgroundColor: "#EFB33F",
+    backgroundColor: "#D7B877",
   },
   dayText: {
     color: "#FFFFFF",
@@ -258,7 +268,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   todayText: {
-    color: "#EFB33F",
+    color: "#D7B877",
     fontWeight: "bold",
   },
   selectedDayText: {
@@ -271,21 +281,21 @@ const styles = StyleSheet.create({
   },
   todayButton: {
     flex: 1,
-    backgroundColor: "rgba(239, 179, 63, 0.2)",
+    backgroundColor: "rgba(215,184,119, 0.2)",
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#EFB33F",
+    borderColor: "#D7B877",
   },
   todayButtonText: {
-    color: "#EFB33F",
+    color: "#D7B877",
     fontSize: 16,
     fontWeight: "600",
   },
   closeButton: {
     flex: 1,
-    backgroundColor: "#2a2a2a",
+    backgroundColor: colors.surfaceRaised,
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",

@@ -1,15 +1,20 @@
+import WatchRuntime from "@/components/watch/WatchRuntime";
+import WakeRuntime from "@/components/wake/WakeRuntime";
+import DiscoveryProvider from "@/components/discovery/DiscoveryProvider";
+import { useProgressSync } from "@/hooks/useProgressSync";
 import SubscriptionScreen from "@/components/SubscriptionScreen";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useAuthStore } from "@/store/auth-store";
 import { useUserStore } from "@/store/user-store";
 import * as Linking from "expo-linking";
 import { router, SplashScreen, Stack } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Purchases from "react-native-purchases";
 import Toast from "react-native-toast-message";
 import { initRC } from "./services/revenuecat";
 
 export default function RootLayout() {
+  useProgressSync();
   const { error, clearError, isAuthenticated, getCurrentUser } = useAuthStore();
   const [initialURL, setInitialURL] = useState<string | null>(null);
   const [isNavigationReady, setIsNavigationReady] = useState(false);
@@ -17,6 +22,7 @@ export default function RootLayout() {
   const { showPackages, setShowPackages, savePushToken, purchasePlan } = useUserStore();
   const { pushToken } = useNotifications();
   const [hasSyncedSubscription, setHasSyncedSubscription] = useState(false);
+  const subscriptionSyncInFlight = useRef(false);
 
   useEffect(() => {
     initRC();
@@ -32,10 +38,11 @@ export default function RootLayout() {
   // ✅ Sync subscription status on app start
   useEffect(() => {
     async function syncSubscriptionStatus() {
-      if (!isAuthenticated || hasSyncedSubscription) {
+      if (!isAuthenticated || hasSyncedSubscription || subscriptionSyncInFlight.current) {
         return;
       }
 
+      subscriptionSyncInFlight.current = true;
       try {
         // Wait for RevenueCat to be configured
         if (await Purchases.isConfigured()) {
@@ -90,6 +97,8 @@ export default function RootLayout() {
           console.error("Error fetching user data:", userError);
         }
         setHasSyncedSubscription(true);
+      } finally {
+        subscriptionSyncInFlight.current = false;
       }
     }
 
@@ -149,10 +158,10 @@ export default function RootLayout() {
 
   // ✅ Force show subscription modal if expired
   useEffect(() => {
-    if (user && Number(user.daysLeft) === 0 && !user.plan) {
+    if (isAuthenticated && user && Number(user.daysLeft) === 0 && !user.plan && !showPackages) {
       setShowPackages(true);
     }
-  }, [user, setShowPackages]);
+  }, [isAuthenticated, user?.daysLeft, user?.plan, showPackages, setShowPackages]);
 
   // ✅ Save push token on app start when authenticated
   useEffect(() => {
@@ -163,7 +172,7 @@ export default function RootLayout() {
 
   // ✅ UI
   return (
-    <>
+    <DiscoveryProvider>
       {showPackages && (
         <SubscriptionScreen onClose={()=> setShowPackages(false)}/>
       )}
@@ -175,7 +184,10 @@ export default function RootLayout() {
           animation: "slide_from_right",
         }}
       />
-    </>
+
+      <WakeRuntime />
+      <WatchRuntime />
+    </DiscoveryProvider>
   );
 }
 

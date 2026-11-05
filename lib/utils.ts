@@ -2,10 +2,11 @@ import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
 export const errorHandler = (error: any) => {
-    error = JSON.parse(error.message);
-    if (error.errorCode === 401) {
-        localStorage.removeItem("auth-storage");
-        router.replace("/(auth)/login");
+    // Network and native errors are not necessarily JSON. Never crash while reporting one.
+    const status = error?.response?.status ?? error?.status ?? error?.errorCode;
+    if (status === 401) {
+        // Session refresh is handled by the auth store; avoid touching browser-only localStorage.
+        console.warn("Unauthorized request; authentication may need refreshing.");
     }
 }
 
@@ -33,4 +34,4 @@ export const generateRandomId = (length: number = 6): string => {
 export const calcPercentage = (done: number, total: number) =>
   total > 0 ? Math.round((done / total) * 100) : 0;
 
-export const countRead = (items) => items.filter(i => i.isRead).length;
+export const countRead = (items: {isRead?: boolean}[]) => items.filter(i => i.isRead).length;

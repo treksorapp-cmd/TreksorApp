@@ -1,33 +1,5 @@
-import Header from "@/components/ui/Header";
-import { router, Stack } from "expo-router";
-import React from "react";
+import { Stack } from "expo-router";
 
-const WorkoutLayout = () => {
-  return (
-    <Stack
-      screenOptions={{
-        contentStyle: {
-          backgroundColor: "#02050C",
-        },
-        headerShown: false,
-      }}
-    >
-      <Stack.Screen
-        name="workouts"
-        options={{
-          headerShown: true,
-          header: () => (
-            <Header
-              title="NUTRITIOn"
-              showBackButton={true}
-              onBackPress={() => router.back()}
-              showAvatar={false}
-            />
-          ),
-        }}
-      />
-    </Stack>
-  );
-};
-
-export default WorkoutLayout;
+export default function PillarStackLayout() {
+  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#02050C" } }} />;
+}

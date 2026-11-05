@@ -1,3 +1,5 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Workout from "@/components/Workout";
 import { useWorkoutStore } from "@/store/workout-store";
 import { router } from "expo-router";
@@ -8,6 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const WorkoutHome = () => {
   const { workouts } = useWorkoutStore();
+  const insets=useSafeAreaInsets();
 
   return (
     <SafeAreaView style={styles.container} edges={["bottom"]}>
@@ -16,20 +19,23 @@ const WorkoutHome = () => {
       <ScrollView
         style={styles.content}
         contentContainerStyle={{
-          flex: 1,
-          alignItems: "center",
+          flexGrow: 1,
+          alignItems: "stretch",
+          paddingTop:insets.top+12,
           paddingHorizontal: 20,
+          paddingBottom:28,
         }}
         showsVerticalScrollIndicator={false}
       >
+        <BodyPageHeading trail="BODY / WORKOUT / GYM" title="WORKOUTS" style={{paddingHorizontal:0,marginBottom:22}} />
         {workouts.map((workout) => (
           <Workout
             key={workout.id}
             onPress={() => router.push({ pathname: "/body/workout/exercises", params: { workoutId:workout.id }})}
-            icon={workout.icon}
+            icon=""
             title={workout.title}
             description={workout.description}
-            percentage={workout.percentage}
+            percentage={workout.exercises.length ? workout.exercises.filter(exercise=>exercise.completed).length/workout.exercises.length*100 : 0}
           />
         ))}
       </ScrollView>
@@ -41,10 +47,10 @@ export default WorkoutHome;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1,backgroundColor:"#02050C",
   },
   content: {
     flex: 1,
-    paddingTop:10
+    paddingTop:0
   },
 });

@@ -1,190 +1,34 @@
-import ArticleCard from "@/components/ArticleCard";
-import Button from "@/components/ui/Button";
-import { useArticleStore } from "@/store/article-store";
-import { useMediationStore } from "@/store/mediation-store";
-import { Article } from "@/types/article";
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState } from "react";
-import { Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-const SpiritualHome = () => {
-  const insets = useSafeAreaInsets();
-  const { fetchArticles, loading, articles } = useArticleStore();
-  const {fetchMediationLockedStatus} = useMediationStore();
-  const [currentThoughtIndex, setCurrentThoughtIndex] = useState(0);
-
-  useEffect(()=>{
-    fetchArticles(`category=Spiritual`);
-  },[])
-
-  const handleArticlePress = (article: Article) => {
-    router.push(`/spiritual/articles/${article._id}`);
-  };
-
-  const renderArticleCard = ({ item }: { item: Article }) => {
-    return <ArticleCard item={item} handleArticlePress={handleArticlePress} />;
-  };
-
-  const renderEmptyState = () => {
-    if (loading) return null;
-
-    return (
-      <View style={styles.emptyState}>
-        <Ionicons name="document-text-outline" size={64} color="#FFFFFF" />
-        <Text style={styles.emptyStateText}>No articles found</Text>
-      </View>
-    );
-  };
-
-  return (
-    <View style={styles.container}>
-      <StatusBar style="light" />
-        <View style={[styles.content, { paddingBottom: insets.bottom + 30 }]}>
-          <Text style={{fontSize: 22, fontWeight: 'bold', color: '#FFFFFF', marginVertical: 20}}>Mediation</Text>
-          <Button onPress={()=>router.push("/spiritual/mediation/beginner")} icon={require("@/assets/images/beginner.png")} iconImage iconImageIcon={"progress-one"} disabled={fetchMediationLockedStatus('beginner')} iconStyle={{width: 40, height: 13}} buttonStyle={{width: width - 20}}>Beginner</Button>
-          <Button onPress={()=>router.push("/spiritual/mediation/intermediate")} icon={require("@/assets/images/intermediate.png")} iconImage iconImageIcon={"progress-two"} disabled={fetchMediationLockedStatus('intermediate')} iconStyle={{width: 40, height: 13}} buttonStyle={{width: width - 20}}>Intermediate</Button>
-          <Button onPress={()=>router.push("/spiritual/mediation/advanced")} icon={require("@/assets/images/advanced.png")} iconImage iconImageIcon={"progress-full"} disabled={fetchMediationLockedStatus('advanced')} iconStyle={{width: 40, height: 13}} buttonStyle={{width: width - 20}}>Advanced</Button>
-
-          <Text style={{fontSize: 22, fontWeight: 'bold', color: '#FFFFFF', marginVertical: 20}}>Articles</Text>
-            <FlatList
-            data={articles["Spiritual"]?.slice(0, 3)}
-            renderItem={renderArticleCard}
-            keyExtractor={(item) => item._id}
-            contentContainerStyle={styles.listContainer}
-            showsHorizontalScrollIndicator={false}
-            ListEmptyComponent={renderEmptyState}
-            horizontal
-            pagingEnabled
-            onMomentumScrollEnd={(event) => {
-              const index = Math.round(
-                event.nativeEvent.contentOffset.x / width
-              );
-              setCurrentThoughtIndex(index);
-            }}
-          />
-          <View style={styles.paginationContainer}>
-            {articles["Spiritual"]?.slice(0, 3).map((_, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.paginationDot,
-                  index === currentThoughtIndex && styles.paginationDotActive,
-                ]}
-              />
-            ))}
-          </View>
-          <TouchableOpacity style={styles.viewAll} onPress={() => router.push("/spiritual/articles")}>
-            <Text style={styles.viewAllText}>See All Articles</Text>
-          </TouchableOpacity>
-        </View>
-    </View>
-  );
-};
-
-export default SpiritualHome;
-
-const { width, height } = Dimensions.get("window");
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  backgroundImage: {
-    width,
-    height,
-  },
-  imageStyle: {
-    opacity: 1,
-  },
-  scrollView: {
-    flex: 1,
-    justifyContent: "center",
-  },
-  content: {
-    // flex: 1,
-    paddingHorizontal: 10,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 10,
-  },
-  backButton: {
-    padding: 5,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#FFFFFF",
-    textShadowColor: "rgba(0, 0, 0, 0.5)",
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
-  headerSpacer: {
-    width: 34,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-  },
-  emptyStateText: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#FFFFFF",
-    marginTop: 16,
-  },
-  emptyStateSubtext: {
-    fontSize: 14,
-    color: "#AAAAAA",
-    marginTop: 8,
-  },
-  listContainer: {
-    // paddingHorizontal: 10,
-    flexGrow: 1,
-    justifyContent:'center',
-    paddingVertical: 5,
-    gap: 20
-  },
-  paginationContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 15,
-  },
-  paginationDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
-    marginHorizontal: 4,
-  },
-  paginationDotActive: {
-    backgroundColor: "#F39C12",
-  },
-  viewAll: {
-    height: 60,
-    width: width - 20,
-    backgroundColor: "#EFB33F",
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    alignSelf: "center",
-    marginTop: 50,
-  },
-  viewAllText: {
-    fontWeight: "600",
-    fontSize: 18,
-  },
-});
+import React,{useCallback,useState} from "react";
+import {ScrollView,Text,TouchableOpacity,View,StyleSheet,Modal,Alert} from "react-native";
+import {router,useFocusEffect} from "expo-router";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
+import {Ionicons} from "@expo/vector-icons";
+import {LinearGradient} from "expo-linear-gradient";
+import BodyPageHeading from "@/components/BodyPageHeading";
+import PillarUpdates from "@/components/PillarUpdates";
+import {colors,surface,type} from "@/theme/architect";
+import {useAuthStore} from "@/store/auth-store";
+import {BalanceData,practices,practiceStats,readBalance,updateBalance} from "@/lib/balance/practice";
+const tabs=["Today","Meditate","Breathe","Sleep","My practice"] as const;
+export default function Balance(){
+ const owner=useAuthStore(s=>s.user?.id),insets=useSafeAreaInsets();const [tab,setTab]=useState<typeof tabs[number]>("Today"),[data,setData]=useState<{owner:string;value:BalanceData}|null>(null),[settings,setSettings]=useState(false),[error,setError]=useState("");
+ const load=useCallback(async()=>{if(!owner)return;try{const value=await readBalance(owner);if(useAuthStore.getState().user?.id===owner)setData({owner,value})}catch{setError("Your practice history could not be loaded. Please reopen Balance.")}},[owner]);useFocusEffect(useCallback(()=>{void load()},[load]));
+ const own=data?.owner===owner?data.value:null,stats=own?practiceStats(own):null;
+ async function change(patch:Partial<BalanceData>){if(!owner||!own)return;try{const value=await updateBalance(owner,d=>({...d,...patch}));if(useAuthStore.getState().user?.id===owner)setData({owner,value})}catch{Alert.alert("Unable to save","Please try again.")}}
+ const recommended=practices.find(p=>p.goal===own?.goal)||practices[0];
+ const visible=tab==="Today"?[recommended,...practices.filter(p=>p.id!==recommended.id&&p.minutes<6).slice(0,2)]:tab==="My practice"?practices.filter(p=>own?.favorites.includes(p.id)):practices.filter(p=>p.kind===tab);
+ return <ScrollView style={s.screen} contentContainerStyle={{paddingTop:insets.top+12,paddingBottom:insets.bottom+35}}><BodyPageHeading title="Balance" trail="STILLNESS & PRESENCE" subtitle="A little space. A gentler rhythm."/>
+ <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{padding:22,gap:8}}>{tabs.map(t=><TouchableOpacity key={t} onPress={()=>setTab(t)} accessibilityRole="tab" accessibilityState={{selected:tab===t}} style={[s.tab,tab===t&&s.selected]}><Text style={{color:tab===t?colors.gold:colors.secondary,fontWeight:"600",fontSize:13}}>{t}</Text></TouchableOpacity>)}</ScrollView>
+ <View style={{paddingHorizontal:22,gap:16}}><PillarUpdates pillar="Balance"/>{!!error&&<Text style={{color:colors.danger}}>{error}</Text>}
+ {tab==="Today"&&<LinearGradient colors={["#293331","#111820"]} style={s.hero}><Text style={type.eyebrow}>YOUR NEXT QUIET MOMENT</Text><Text style={[type.page,{marginTop:12}]}>{recommended.title}</Text><Text style={[type.body,{marginTop:10}]}>{recommended.description}</Text><TouchableOpacity onPress={()=>router.push({pathname:"/spiritual/practice",params:{id:recommended.id}})} style={s.button}><Text style={s.buttonText}>BEGIN · {recommended.minutes} MIN</Text><Ionicons name="play" color="#17120B" size={18}/></TouchableOpacity><TouchableOpacity onPress={()=>setSettings(true)} style={s.textButton}><Text style={s.link}>Your intention: {own?.goal||"Begin"} · Edit routine</Text></TouchableOpacity></LinearGradient>}
+ {(tab==="Today"||tab==="My practice")&&<View style={s.card}><View style={s.between}><Text style={type.card}>Consistency, without pressure.</Text><TouchableOpacity accessibilityLabel="Edit your practice goal" onPress={()=>setSettings(true)} style={{padding:10}}><Ionicons name="options-outline" color={colors.gold} size={22}/></TouchableOpacity></View><View style={s.between}>{[[stats?.streak??0,"Day streak"],[`${stats?.weekDays??0}/${own?.weeklyDays??3}`,"Days · last 7"],[stats?.minutes??0,"Timed minutes"]].map(([v,label])=><View key={label} style={{flex:1}}><Text style={s.value}>{v}</Text><Text style={type.caption}>{label}</Text></View>)}</View><View style={{flexDirection:"row",gap:7,marginVertical:14}}>{stats?.week.map(d=><View key={d.date} accessibilityLabel={`${d.date}: ${d.done?"practice recorded":"no practice recorded"}`} style={{flex:1,height:7,borderRadius:5,backgroundColor:d.done?colors.gold:colors.border}}/>)}</View><Text style={type.caption}>{(stats?.weekDays??0)>=(own?.weeklyDays??3)?"Your weekly intention is met. Make room for rest, too.":"A missed day does not erase what you have built. A streak includes yesterday while today is still open."}</Text><Text style={type.caption}>Timed practices count on completion. Guided practices marked complete are self-reported; they do not add timed minutes.</Text></View>}
+ {tab==="Sleep"&&<View style={s.card}><Ionicons name="moon-outline" size={30} color={colors.gold}/><Text style={type.section}>Rest has a rhythm, too.</Text><Text style={type.body}>Unwind tonight. Notice how you feel tomorrow. Connect your smartwatch to explore measured sleep duration.</Text><TouchableOpacity onPress={()=>router.push("/spiritual/sleep")} style={s.button}><Text style={s.buttonText}>OPEN MY SLEEP JOURNAL</Text><Ionicons name="arrow-forward" color="#17120B" size={18}/></TouchableOpacity></View>}
+ {(tab==="Today"||tab==="Sleep")&&<TouchableOpacity accessibilityRole="button" onPress={()=>router.push("/spiritual/wake")} style={[s.card,{borderColor:"#5C563F"}]}><View style={s.between}><View style={{flex:1,gap:8}}><Text style={type.eyebrow}>YOUR NEXT MORNING</Text><Text style={type.section}>Wake gently.</Text><Text style={type.body}>15 softer tones. A slow pulse of light. A beginning that feels like yours.</Text></View><Ionicons name="sunny-outline" size={35} color={colors.gold}/></View><Text style={s.link}>Choose your wake-up sound & time</Text></TouchableOpacity>}
+ <View><Text style={type.section}>{tab==="My practice"?"Your saved practices":tab==="Sleep"?"Wind down tonight":tab==="Breathe"?"A gentle breathing break":tab==="Meditate"?"Find a moment of stillness":"Small practices. Real space."}</Text><Text style={[type.caption,{marginTop:6}]}>Treksor text-guided practices · no audio download needed</Text></View>
+ {visible.map(p=><View key={p.id} style={s.card}><View style={s.between}><View style={{flex:1}}><Text style={type.eyebrow}>{p.kind.toUpperCase()} · {p.minutes} MIN</Text><Text style={[type.card,{marginTop:7}]}>{p.title}</Text></View><TouchableOpacity accessibilityLabel={`${own?.favorites.includes(p.id)?"Remove":"Save"} ${p.title}`} onPress={()=>void change({favorites:own?.favorites.includes(p.id)?own.favorites.filter(id=>id!==p.id):[...(own?.favorites||[]),p.id]})} style={{padding:12}}><Ionicons name={own?.favorites.includes(p.id)?"bookmark":"bookmark-outline"} color={colors.gold} size={22}/></TouchableOpacity></View><Text style={type.body}>{p.description}</Text><TouchableOpacity accessibilityRole="button" onPress={()=>router.push({pathname:"/spiritual/practice",params:{id:p.id}})} style={s.textButton}><Text style={s.link}>Start practice</Text></TouchableOpacity></View>)}
+ {tab==="My practice"&&!visible.length&&<Text style={type.body}>Tap a bookmark on any practice to keep it here.</Text>}
+ {(tab==="Meditate"||tab==="Today")&&<View style={s.card}><Text style={type.section}>Your guided meditations</Text><Text style={type.caption}>Explore the existing audio practices by experience level.</Text>{["beginner","intermediate","advanced"].map(id=><TouchableOpacity key={id} onPress={()=>router.push(`/spiritual/mediation/${id}`)} style={s.textButton}><Text style={s.link}>{id.charAt(0).toUpperCase()+id.slice(1)} meditation</Text></TouchableOpacity>)}</View>}
+ {tab==="My practice"&&<View style={s.card}><Text style={type.section}>A path worth returning to.</Text>{[[1,"First quiet moment"],[7,"Seven practices"],[30,"Thirty moments of presence"]].map(([count,label])=><View key={label} style={s.between}><Text style={type.body}>{label}</Text><Text style={s.link}>{(stats?.sessions??0)>=Number(count)?"Reached":`${Math.min(stats?.sessions??0,Number(count))}/${count}`}</Text></View>)}<Text style={type.caption}>Milestones count saved sessions, not a promise about wellbeing.</Text></View>}
+ </View><Modal visible={settings} transparent animationType="slide" onRequestClose={()=>setSettings(false)}><View style={{flex:1,justifyContent:"flex-end",backgroundColor:"#0009",paddingTop:70}}><ScrollView style={{maxHeight:"90%",backgroundColor:colors.surface,borderTopLeftRadius:24,borderTopRightRadius:24}} contentContainerStyle={{padding:24,paddingBottom:insets.bottom+25,gap:17}}><View style={s.between}><Text style={type.section}>Make it your routine.</Text><TouchableOpacity onPress={()=>setSettings(false)} style={{padding:12}}><Ionicons name="close" color={colors.text} size={24}/></TouchableOpacity></View><Text style={type.body}>What would you like to make room for?</Text><View style={s.wrap}>{(["Begin","Unwind","Focus","Sleep"] as const).map(goal=><TouchableOpacity key={goal} onPress={()=>void change({goal})} style={[s.tab,own?.goal===goal&&s.selected]}><Text style={s.link}>{goal}</Text></TouchableOpacity>)}</View><Text style={type.body}>Practice days in a rolling week</Text><View style={s.wrap}>{[2,3,5,7].map(weeklyDays=><TouchableOpacity key={weeklyDays} onPress={()=>void change({weeklyDays})} style={[s.tab,own?.weeklyDays===weeklyDays&&s.selected]}><Text style={s.link}>{weeklyDays} days</Text></TouchableOpacity>)}</View><Text style={type.body}>Your preferred moment</Text><View style={s.wrap}>{["Morning","Afternoon","Evening"].map(preferredTime=><TouchableOpacity key={preferredTime} onPress={()=>void change({preferredTime})} style={[s.tab,own?.preferredTime===preferredTime&&s.selected]}><Text style={s.link}>{preferredTime}</Text></TouchableOpacity>)}</View><Text style={type.caption}>Saved on this device. No notifications are scheduled. Session totals sync with your private Progress page; morning ratings stay private on your phone.</Text><TouchableOpacity onPress={()=>setSettings(false)} style={s.button}><Text style={s.buttonText}>DONE</Text></TouchableOpacity></ScrollView></View></Modal></ScrollView>
+}
+const s=StyleSheet.create({screen:{flex:1,backgroundColor:colors.background},card:{...surface.card,gap:12},hero:{...surface.card,padding:24,borderColor:"#5C563F"},tab:{minHeight:44,padding:12,borderRadius:14,borderWidth:1,borderColor:colors.border,justifyContent:"center"},selected:{backgroundColor:colors.goldSoft,borderColor:colors.gold},button:{minHeight:50,padding:16,marginTop:15,borderRadius:14,backgroundColor:colors.gold,flexDirection:"row",justifyContent:"space-between",alignItems:"center"},buttonText:{fontWeight:"800",fontSize:12,color:"#17120B"},textButton:{minHeight:44,justifyContent:"center"},link:{color:colors.gold,fontSize:13,fontWeight:"600",lineHeight:20},between:{flexDirection:"row",justifyContent:"space-between",alignItems:"center",gap:12},wrap:{flexDirection:"row",flexWrap:"wrap",gap:8},value:{...type.section,fontSize:27,marginTop:12}});

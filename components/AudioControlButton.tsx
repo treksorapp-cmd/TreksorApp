@@ -57,7 +57,7 @@ export default function AudioControlButton({
             cx={30}
             cy={30}
             r={radius}
-            stroke="#EFB33F"
+            stroke="#D7B877"
             strokeWidth={3}
             fill="transparent"
             strokeDasharray={circumference}
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: -20,
     fontSize: 10,
-    color: "#EFB33F",
+    color: "#D7B877",
     fontWeight: "600",
     textAlign: "center",
   },

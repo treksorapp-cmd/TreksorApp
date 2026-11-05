@@ -1,22 +1,2 @@
-import Header from "@/components/ui/Header";
-import { Stack } from "expo-router";
-
-export default function TrackingLayout() {
-  return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        contentStyle: {
-          backgroundColor: "#02050C",
-        },
-      }}>
-      <Stack.Screen
-        name="index"
-        options={{
-          headerShown:true,
-          header:()=><Header title="TRACKING" showBackButton={false} showAvatar={false} />
-        }}
-      />
-    </Stack>
-  );
-}
+import {Stack} from "expo-router";
+export default function ProgressLayout(){return <Stack screenOptions={{headerShown:false,contentStyle:{backgroundColor:"#02050C"}}}/>;}

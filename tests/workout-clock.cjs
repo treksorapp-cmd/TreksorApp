@@ -1,0 +1,14 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),ts=require('typescript');
+let time=Date.parse('2026-10-29T01:00:00Z');class ClockDate extends Date{constructor(...args){super(...(args.length?args:[time]))}static now(){return time}}
+function load(file,mocks={}){const module={exports:{}};const code=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020,esModuleInterop:true}}).outputText;vm.runInNewContext(code,{module,exports:module.exports,require:id=>mocks[id]||require(id),Date:ClockDate,console,Math});return module.exports}
+const {workoutClock,clockText}=load('lib/workout-clock.ts');assert.equal(clockText(-8),'00:00');assert.equal(clockText(125),'02:05');
+const model={startedAt:new ClockDate(time-600000).toISOString(),restEndsAt:new ClockDate(time+90000).toISOString(),restDuration:90};
+assert.equal(workoutClock(model,time).elapsed,600);assert.equal(workoutClock(model,time).remaining,90);assert.equal(workoutClock(model,time+60000).remaining,30);assert.equal(workoutClock(model,time+60000).fraction,1/3);assert.equal(workoutClock(model,time+180000).resting,false);assert.equal(workoutClock(model,time+180000).elapsed,780,'Workout time continues through rest and background time');
+const store=load('store/workout-store.ts',{'@/mock/workouts':{WorkoutsData:[],workoutContent:{}},'@react-native-async-storage/async-storage':{getItem:async()=>null,setItem:async()=>{}},'zustand/middleware':{persist:fn=>fn,createJSONStorage:()=>({})}}).useWorkoutStore;
+store.getState().startGymWorkout(1,'Day one',['row']);const began=store.getState().activeGymWorkout.startedAt;
+store.getState().setGymRestEnd(new ClockDate(time+90000).toISOString());time+=30000;store.getState().extendGymRest(15);
+let active=store.getState().activeGymWorkout;assert.equal(workoutClock(active,time).remaining,75);assert.equal(active.restDuration,105);assert.equal(active.startedAt,began);
+const saved=JSON.parse(JSON.stringify(active));time+=50000;assert.equal(workoutClock(saved,time).remaining,25,'Rest survives a saved session and foreground resume');
+store.getState().setGymRestEnd(null);active=store.getState().activeGymWorkout;assert.equal(workoutClock(active,time).remaining,0);assert.equal(workoutClock(active,time).resting,false);assert.equal(active.startedAt,began);store.getState().extendGymRest(15);assert.equal(store.getState().activeGymWorkout.restEndsAt,null,'Start set cannot restart a stopped rest clock');
+store.getState().finishGymWorkout('week');store.getState().finishGymWorkout('week');assert.equal(store.getState().checkIns.week.length,1,'A finished session cannot be counted twice');
+console.log('PASS: wall-clock timing, rest expiry, separate workout time, extension, saved-session resume and stopped exercise state');

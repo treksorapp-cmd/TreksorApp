@@ -4,7 +4,7 @@ import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import {
   Animated,
-  Dimensions,
+  useWindowDimensions,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,7 +13,7 @@ import {
   type LayoutChangeEvent,
 } from "react-native"
 
-const { width } = Dimensions.get("window")
+
 
 interface CategoryFilterProps {
   categories: string[]
@@ -29,6 +29,7 @@ interface CategoryLayout {
 }
 
 const CategoryFilter: React.FC<CategoryFilterProps> = ({ categories, activeCategory, onCategoryChange }) => {
+  const { width } = useWindowDimensions()
   const scrollViewRef = useRef<ScrollView>(null)
   const [layouts, setLayouts] = useState<CategoryLayout>({})
   const indicatorAnim = useRef(new Animated.Value(0)).current
@@ -65,7 +66,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ categories, activeCateg
         animated: true,
       })
     }
-  }, [activeCategory, layouts])
+  }, [activeCategory, layouts, width])
 
   return (
     <View style={styles.container}>
@@ -78,6 +79,8 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ categories, activeCateg
         {categories.map((category) => (
           <TouchableOpacity
             key={category}
+            accessibilityRole="tab"
+            accessibilityState={{selected: activeCategory === category}}
             style={styles.categoryButton}
             onPress={() => onCategoryChange(category)}
             onLayout={(event) => onCategoryLayout(category, event)}
@@ -89,7 +92,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ categories, activeCateg
                 activeCategory === category ? styles.activeCategoryText : styles.inactiveCategoryText,
               ]}
             >
-              {category === "Mental" ? "Mind" : category}
+              {category === "Mental" ? "Mind" : category === "Spiritual" ? "Balance" : category}
             </Text>
           </TouchableOpacity>
         ))}
@@ -111,7 +114,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ categories, activeCateg
 
 const styles = StyleSheet.create({
   container: {
-    height: 50,
+    minHeight: 50,
     borderBottomWidth: 1,
     borderBottomColor: "#333333",
     // paddingHorizontal: 20,
@@ -121,16 +124,20 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 12,
     alignItems: "center",
-    height: "100%",
+    minHeight: 50,
+    paddingVertical: 8,
   },
   categoryButton: {
     paddingHorizontal: 16,
-    height: "100%",
+    minHeight: 50,
+    paddingVertical: 8,
     justifyContent: "center",
   },
   categoryText: {
     fontSize: 18,
-    fontWeight: "semibold",
+    fontWeight: "600",
+    lineHeight: 24,
+    includeFontPadding: false,
   },
   activeCategoryText: {
     color: "#FFFFFF",
@@ -142,7 +149,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     height: 3,
-    backgroundColor: "#F5B942",
+    backgroundColor: "#D7B877",
     borderRadius: 1.5,
   },
 })

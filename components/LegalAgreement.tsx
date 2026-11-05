@@ -121,9 +121,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#FFFFFF",
-    marginBottom: 8,
-  },
+    color: "#F5F4F1",
+    marginBottom: 8, lineHeight: 23, letterSpacing: -0.2, includeFontPadding: false, },
   subtitle: {
     fontSize: 14,
     color: "#AAAAAA",
@@ -147,8 +146,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   checkboxChecked: {
-    backgroundColor: "#EFB33F",
-    borderColor: "#EFB33F",
+    backgroundColor: "#D7B877",
+    borderColor: "#D7B877",
   },
   checkboxText: {
     flex: 1,
@@ -159,7 +158,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   linkText: {
-    color: "#EFB33F",
+    color: "#D7B877",
     textDecorationLine: "underline",
   },
   requiredText: {
