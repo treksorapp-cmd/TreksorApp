@@ -1,6 +1,6 @@
 import SwiftUI
 
-// Design components for a future watchOS target; no device connection is implied.
+// Shared watchOS presentation.
 // Palette source: theme/architect.ts and design/architect.tokens.json.
 enum TreksorBrand {
     private static func color(_ hex: UInt32) -> Color {
@@ -47,7 +47,7 @@ struct TreksorWatchRestCard: View {
                 .font(.caption).foregroundStyle(TreksorBrand.secondary)
             Text(time).font(.system(.largeTitle, design: .rounded).weight(.medium)).monospacedDigit()
                 .foregroundStyle(resting && !isLuminanceReduced ? TreksorBrand.gold : TreksorBrand.muted)
-                .minimumScaleFactor(0.7).lineLimit(1)
+                .lineLimit(1)
             Text(resting ? "Time to recover" : "Rest timer paused")
                 .font(.caption2).foregroundStyle(TreksorBrand.secondary)
         }

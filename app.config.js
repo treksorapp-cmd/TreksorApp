@@ -49,6 +49,7 @@ export default {
       favicon: "./assets/images/favicon.png",
     },
     plugins: [
+      ["@bacons/apple-targets", {root:"./watch", match:"Companion", appleTeamId:"ABUM4S9VHY"}],
       "expo-router",
       ["expo-notifications", {sounds: Array.from({length:15},(_,i)=>`./assets/audio/wake/wake_${String(i+1).padStart(2,"0")}.wav`)}],
       "expo-web-browser",

@@ -1,0 +1,36 @@
+name: Apple Watch build
+on:
+  push:
+    branches: [design/premium-showcase-2026]
+    paths: ['watch/**', 'modules/treksor-watch/**', 'lib/watch/**', 'components/watch/**', 'app.config.js', 'package*.json', '.github/workflows/watch-validation.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  simulator:
+    runs-on: macos-15
+    timeout-minutes: 35
+    env:
+      GOOGLE_SERVICES_INFOPLIST: ./GoogleService-Info.plist
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22, cache: npm}
+      - run: npm ci --no-audit --no-fund
+      - run: npm run typecheck && npm run test:watch
+      - run: npx expo prebuild --platform ios --no-install
+      - name: Compile companion and verify watch bundle
+        shell: bash
+        run: |
+          set -eu
+          project=$(find ios -maxdepth 1 -name '*.xcodeproj' -print -quit)
+          xcodebuild -project "$project" -target TreksorWatch -sdk watchsimulator -configuration Debug CODE_SIGNING_ALLOWED=NO CONFIGURATION_BUILD_DIR="$RUNNER_TEMP/watch" build
+          plutil -extract WKCompanionAppBundleIdentifier raw "$RUNNER_TEMP/watch/TreksorWatch.app/Info.plist" | grep -Fx com.treksor.prod
+          test -f "$RUNNER_TEMP/watch/TreksorWatch.app/Assets.car"
+      - name: Compile the iPhone bridge against ExpoModulesCore
+        shell: bash
+        run: |
+          set -eu
+          cd ios
+          pod install
+          xcodebuild -project Pods/Pods.xcodeproj -target TreksorWatch -sdk iphonesimulator -configuration Debug CODE_SIGNING_ALLOWED=NO build

@@ -1,3 +1,4 @@
+import WatchRuntime from "@/components/watch/WatchRuntime";
 import WakeRuntime from "@/components/wake/WakeRuntime";
 import DiscoveryProvider from "@/components/discovery/DiscoveryProvider";
 import { useProgressSync } from "@/hooks/useProgressSync";
@@ -185,6 +186,7 @@ export default function RootLayout() {
       />
 
       <WakeRuntime />
+      <WatchRuntime />
     </DiscoveryProvider>
   );
 }

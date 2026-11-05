@@ -1,13 +1,11 @@
-# Treksor watch identity
+# Treksor for Apple Watch
 
-Status: reusable design source, not a connected or installed watchOS app.
+The watchOS 10+ companion is embedded by Expo prebuild in both iPhone profiles. It shares the original app icon, Architect colors, Dynamic Type and system symbols. Install the companion from the iPhone Watch app. Open Treksor on iPhone, then **Progress → Your connected life → Enable watch sharing**. Open Treksor on the paired watch.
 
-The repository currently has an iPhone HealthKit reader, not a watchOS application target. These SwiftUI components and the original app logo establish the same Architect identity for that future target. Add the Swift source and asset catalog to the actual watchOS target when it exists.
+Body starts a saved routine day, records its next set in kilograms and reps or seconds, displays workout and rest clocks, and finishes the same iPhone session. Balance runs resumable practice timers, shows explicitly imported sleep nights and schedules one of the fifteen existing wake tones on the paired iPhone. Mind saves the three Progress check-in ratings. Purpose toggles scheduled personal tracker steps. Progress shows the last seven local calendar days of saved gym and practice activity.
 
-- Exact navy, ivory, champagne gold and status colors from `theme/architect.ts`.
-- Original app logo, copied byte-for-byte; no substituted symbol.
-- System type, SF Symbols and Dynamic Type. No emoji navigation.
-- Rest card: gold while resting, muted during exercise and reduced-luminance mode. The workout engine supplies phase and time; the design does not fabricate, run or sync a workout.
-- No health permissions, account pairing, WatchConnectivity or HealthKit sessions are implemented here.
+WatchConnectivity requires a reachable paired iPhone for record changes. Personal snapshots are held in memory and cleared when the watch app backgrounds or the connection drops. Only an invalidation signal is transferred in cached application context. Local practice timers store an ID and start time so that a wrist-down or app interruption does not lose the timer. Displayed statistics are saved Treksor records. There is no live heart-rate or GPS workout recording in this companion.
 
-Requires Xcode/watchOS compilation, device sizing/accessibility review and real workout-state integration before release. The Linux workspace cannot validate a native watch binary.
+The phone owns authentication, account-specific opt-in, workout history, Health permissions and sleep import. Garmin data follows the existing Apple Health import route. A Wear OS binary, direct Garmin cloud authorization and direct Strava authorization are separate products. Alarm tones and optional light effects run on iPhone. Delivery on the watch uses system settings.
+
+Release verification includes generating both bundle identifiers, compiling for the watch simulator, then testing on a real pair with a signed build. Test a routine started on each device, concurrent set logging, rest extension and expiry, interrupted connectivity, check-in, practice save, habit correction, sleep import, watch wake-up and account switch. The production app requires provisioning for the iPhone bundle and its `.watchkitapp` companion, matching build and marketing versions, real watch screenshots and App Store review.
