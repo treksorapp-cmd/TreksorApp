@@ -1,13 +1,27 @@
-import BodyPageHeading from "@/components/BodyPageHeading";
-import NutritionArtwork from "@/components/nutrition/NutritionArtwork";
-import {Nutritions} from "@/mock/nutrition";
-import {Ionicons} from "@expo/vector-icons";
-import {router} from "expo-router";
-import {ScrollView,StyleSheet,Text,TouchableOpacity,View} from "react-native";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {colors,type} from "@/theme/architect";
-export default function NutritionHome(){
- const insets=useSafeAreaInsets();
- return <ScrollView style={s.screen} contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:insets.bottom+40}}><BodyPageHeading title="Nutrition" trail="BODY / FUEL & RESTORE" subtitle="Small rituals. A stronger foundation." style={{paddingHorizontal:0}}/><View style={{marginTop:24,gap:17}}>{(["beverages","supplements"] as const).map(key=>{const category=Nutritions[key];return <TouchableOpacity key={key} accessibilityRole="button" onPress={()=>router.push(`/body/nutrition/${key}`)} activeOpacity={.86} style={s.card}><NutritionArtwork source={category.backgroundImage} label={category.headerTitle} height={195} cover/><View style={s.copy}><View style={{flex:1}}><Text style={s.eyebrow}>{category.data.length} EVERYDAY RITUALS</Text><Text style={s.title}>{category.headerTitle}</Text><Text style={s.note}>{key==="beverages"?"Prepare something that brings you back to yourself.":"Understand what you choose to add to your routine."}</Text></View><View style={s.arrow}><Ionicons name="arrow-forward" color={colors.gold} size={21}/></View></View></TouchableOpacity>})}<TouchableOpacity accessibilityRole="button" onPress={()=>router.push({pathname:"/(tabs)/chat",params:{intent:"meal"}})} style={[s.card,{padding:22,backgroundColor:colors.goldSoft}]}><View style={{flexDirection:"row",alignItems:"center",gap:12}}><Ionicons name="sparkles-outline" color={colors.gold} size={25}/><Text style={type.card}>One simple change to your meal</Text></View><Text style={[type.body,{marginTop:12}]}>Tell Mentor what is on your plate, your preferences and any allergies. Explore a practical idea together.</Text><Text style={[type.eyebrow,{marginTop:18}]}>ASK MENTOR</Text></TouchableOpacity></View></ScrollView>;
+import { router } from "expo-router";
+import { Text, TouchableOpacity } from "react-native";
+import NutritionScreen from "@/components/nutrition/NutritionScreen";
+import NutritionTile from "@/components/nutrition/NutritionTile";
+import { mealIdeas } from "@/lib/nutrition/meal-ideas";
+import { Nutritions } from "@/mock/nutrition";
+import { surface, type } from "@/theme/architect";
+
+export default function NutritionHome() {
+  return (
+    <NutritionScreen title="Nutrition" trail="BODY / NUTRITION" subtitle="Find something you would like to make.">
+      <NutritionTile title="Meal ideas" label="THE TREKSOR KITCHEN"
+        description="Simple recipes, familiar ingredients and a list you can take shopping."
+        source={mealIdeas[0].image} cover onPress={() => router.push("/body/nutrition/meal-ideas")} />
+      <Text style={type.section}>Explore</Text>
+      <NutritionTile title="Beverages" label="DRINKS" description="Recipes to prepare at home."
+        source={Nutritions.beverages.backgroundImage} compact cover onPress={() => router.push("/body/nutrition/beverages")} />
+      <NutritionTile title="Supplements" label="REFERENCE" description="Read about ingredients and considerations."
+        source={Nutritions.supplements.backgroundImage} compact cover onPress={() => router.push("/body/nutrition/supplements")} />
+      <TouchableOpacity accessibilityRole="button" style={surface.card}
+        onPress={() => router.push({ pathname: "/(tabs)/chat", params: { intent: "meal" } })}>
+        <Text style={type.card}>Explore an idea with Mentor</Text>
+        <Text style={type.caption}>Talk through a recipe using ingredients you already have.</Text>
+      </TouchableOpacity>
+    </NutritionScreen>
+  );
 }
-const s=StyleSheet.create({screen:{flex:1,backgroundColor:colors.background},card:{borderRadius:21,padding:10,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border},copy:{padding:11,flexDirection:"row",alignItems:"center",gap:14},eyebrow:{...type.eyebrow,fontSize:9,lineHeight:15},title:{...type.section,marginTop:5},note:{...type.caption,marginTop:6},arrow:{width:40,height:40,borderRadius:20,alignItems:"center",justifyContent:"center",backgroundColor:colors.goldSoft}});

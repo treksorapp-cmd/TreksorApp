@@ -1,3 +1,4 @@
+import JourneyFocus from "@/components/profile/JourneyFocus";
 import DiscoveryCard from "@/components/discovery/DiscoveryCard";
 import PillarUpdates from "@/components/PillarUpdates";
 import { useContentRefresh } from "@/hooks/useContentRefresh";
@@ -126,6 +127,7 @@ export default function HomeScreen() {
           ))}
         </Animated.View>
 
+        <JourneyFocus />
         <DiscoveryCard />
         <JourneyCard />
         <View style={styles.thoughtSection}>

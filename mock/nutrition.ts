@@ -8,11 +8,7 @@ export const Nutritions = {
         id: "elixir-noir",
         name: "ELIXIR NOIR",
         icon: require("@/assets/images/elixir-noir.png"),
-        description: `A nightly ritual for the man who seeks balance from within. 
-
-This blend supports inflammation reduction, calms the nervous system, improves digestion, and prepares the body for deep rest.
-
-Drink it at night, in silence, as a clear sign that you're choosing to focus on yourself.`,
+        description: `A warm lemon drink with turmeric, ginger, cinnamon, black pepper and bee pollen.`,
         backgroundImage: require("@/assets/images/elixir-noir-home.png"),
         quantity: "(1 cup)",
         ingredients: [
@@ -52,7 +48,7 @@ Drink it at night, in silence, as a clear sign that you're choosing to focus on 
             measurement: "(To fill the cup)",
           },
         ],
-        footNote: `Consult your Doctor before making any dietary changes.`,
+        footNote: "Contains bee pollen. Review ingredients and product labels for allergies.",
         source_1: "NIH – National Center for Complementary and Integrative Health (NCCIH)",
         url_1: "https://www.nccih.nih.gov/health/turmeric",
         source_2: "NIH – National Center for Complementary and Integrative Health (NCCIH)",
@@ -64,11 +60,7 @@ Drink it at night, in silence, as a clear sign that you're choosing to focus on 
         id: "electro-boost",
         name: "ELECTRO BOOST",
         icon: require("@/assets/images/electro-boost.png"),
-        description: `Sugary drinks are over.
-Electro Boost is here to replace Gatorade, Powerade, and everything that looks like energy but leaves you dr
-ained.
-This natural formula hydrates, restores minerals, and keeps your internal system balanced.
-Perfect after training or on high-demand days - physically or mentally.`,
+        description: `A blended watermelon drink with lemon, ginger and a little salt. Strawberries are optional.`,
         backgroundImage: require("@/assets/images/electro-boost-home.png"),
         quantity: "(500 ml - prepare in a blender)",
         ingredients: [
@@ -103,7 +95,7 @@ Perfect after training or on high-demand days - physically or mentally.`,
             measurement: "(½ lemon)",
           }
         ],
-        footNote: "Consult your Doctor before making any dietary changes.",
+        footNote: "Contains added salt. Review ingredients and adjust the recipe to your needs.",
         source_1: "Harvard Health – Using food to stay hydrated",
         url_1: "https://www.health.harvard.edu/staying-healthy/using-food-to-stay-hydrated",
         source_2: "NIH – National Center for Complementary and Integrative Health (NCCIH): Ginger",
@@ -115,10 +107,7 @@ Perfect after training or on high-demand days - physically or mentally.`,
         id: "green-tonic",
         name: "GREEN TONIC",
         icon: require("@/assets/images/green-tonic.png"),
-        description: `Start the day charged, clean, and sharp.
-Green Tonic is a morning ritual designed to activate digestion, alkalize your system, and wake up the mind w
-ithout stimulants.
-Best taken on an empty stomach, it sets the tone for a focused and grounded day.`,
+        description: `A fresh blend of celery, cucumber, green apple, lemon and ginger.`,
         backgroundImage: require("@/assets/images/green-tonic-home.png"),
         quantity: "(500 ml - prepare in a blender)",
         ingredients: [
@@ -153,7 +142,7 @@ Best taken on an empty stomach, it sets the tone for a focused and grounded day.
             measurement: "(250ml)",
           },
         ],
-        footNote: `Consult your Doctor before making any dietary changes.`,
+        footNote: "Contains celery. Review ingredients and product labels for allergies.",
         source_1: "Harvard Health – Using food to stay hydrated",
         url_1: "https://www.health.harvard.edu/staying-healthy/using-food-to-stay-hydrated",
         source_2: "NIH – Office of Dietary Supplements (ODS): Vitamin C (lemon juice)",
@@ -171,8 +160,8 @@ Best taken on an empty stomach, it sets the tone for a focused and grounded day.
         name: "Creatine",
         backgroundImage: require("@/assets/images/creatine-home.png"),
         description:
-          "Creatine is a natural compound that boosts energy in muscles, improving performance in short, intense activities like lifting and sprinting. It helps with strength, muscle growth, and recovery. Creatine is commonly used by athletes and is safe when taken properly.",
-        warning: "Note: Consult your Doctor before use Do Not Self-Diagnose",
+          "Creatine is a compound found in muscle and available as a supplement. The reference below covers its uses, evidence and precautions.",
+        warning: "For questions about whether a supplement fits your needs or medicines, speak with a qualified health professional.",
         source: "Source: Mayo Clinic – Creatine",
         url: "https://www.mayoclinic.org/drugs-supplements-creatine/art-20347591",
       },
@@ -181,9 +170,8 @@ Best taken on an empty stomach, it sets the tone for a focused and grounded day.
         name: "Omega-3",
         backgroundImage: require("@/assets/images/omega-home.png"),
         description:
-          "Omega-3 is a healthy fat essential for heart, brain, and joint health. It reduces inflammation, supports brain function, and helps lower the risk of heart disease. Common sources include fish (like salmon), flaxseeds, and walnuts.",
-        warning:
-          "Note: Consult your Doctor before use Do not self-diagnose or self-medicate",
+          "Omega-3 fatty acids are found in foods such as fish, flaxseed and walnuts. The forms and amounts vary by food and supplement.",
+        warning: "For questions about whether a supplement fits your needs or medicines, speak with a qualified health professional.",
         source:
           "Source: NIH Office of Dietary Supplements – Omega-3 Fatty Acids",
         url: "https://ods.od.nih.gov/factsheets/Omega3FattyAcids-Consumer/",
@@ -193,8 +181,8 @@ Best taken on an empty stomach, it sets the tone for a focused and grounded day.
         name: "B12",
         backgroundImage: require("@/assets/images/b12-home.png"),
         description:
-          "Vitamin B12 is a vital nutrient that helps keep your nerves, blood cells, and DNA healthy. It also supports energy production and brain function. Found mainly in animal products, B12 deficiency can lead to fatigue, weakness, and nerve problems.",
-        warning: "Note: Consult your Doctor before taking any supplement",
+          "Vitamin B12 helps keep nerve and blood cells healthy and is involved in making DNA. Sources include animal foods and some fortified foods.",
+        warning: "For questions about whether a supplement fits your needs or medicines, speak with a qualified health professional.",
         source: "Source: NIH Office of Dietary Supplements – Vitamin B12",
         url: "https://ods.od.nih.gov/factsheets/VitaminB12-Consumer/",
       },

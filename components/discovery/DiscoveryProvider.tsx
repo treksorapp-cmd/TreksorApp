@@ -37,11 +37,17 @@ import {
 } from "@/lib/guided-discovery";
 import { colors, surface, type } from "@/theme/architect";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import JourneyQuestions, { type ProfileSettingsPatch } from "@/components/profile/JourneyQuestions";
+import { nextProfilePrompt, profileKey, readJourneyProfile, type JourneyProfile, type ProfilePrompt } from "@/lib/journey-profile";
+
+type ProfilePanel = ProfilePrompt | "profile-settings";
 const Context = createContext<{
   open: () => void;
+  openProfile: () => void;
+  profile: JourneyProfile | null;
   count: number;
   ready: boolean;
-}>({ open: () => {}, count: 0, ready: false });
+}>({ open: () => {}, openProfile: () => {}, profile: null, count: 0, ready: false });
 export const useDiscovery = () => useContext(Context);
 export default function DiscoveryProvider({
   children,
@@ -62,12 +68,15 @@ export default function DiscoveryProvider({
       owner: string;
       value: DiscoveryState;
     } | null>(null),
-    [panel, setPanel] = useState<"guide" | Tip | null>(null),
+    [panel, setPanel] = useState<"guide" | Tip | ProfilePanel | null>(null),
     [error, setError] = useState(""),
     [keyboard, setKeyboard] = useState(false),
     [foreground, setForeground] = useState(AppState.currentState === "active"),
     [visit, setVisit] = useState(0),
     [retry, setRetry] = useState(0);
+  const [profileRecord, setProfileRecord] = useState<{ owner: string; value: JourneyProfile } | null>(null);
+  const profile = profileRecord?.owner === owner ? profileRecord?.value ?? null : null;
+  const profileQueue = useRef<Promise<unknown>>(Promise.resolve());
   const queue = useRef(Promise.resolve()),
     didShow = useRef(false),
     latest = useRef({
@@ -124,6 +133,33 @@ export default function DiscoveryProvider({
       valid = false;
     };
   }, [owner, retry]);
+  useEffect(() => {
+    let active = true;
+    setProfileRecord(null);
+    if (owner) {
+      AsyncStorage.getItem(profileKey(owner))
+        .then(readJourneyProfile)
+        .then((value) => { if (active) setProfileRecord({ owner, value }); })
+        .catch(() => {});
+    }
+    return () => { active = false; };
+  }, [owner, retry]);
+  const changeProfile = useCallback((change: (value: JourneyProfile) => JourneyProfile) => {
+    const stillOwn = () => {
+      const account = useAuthStore.getState();
+      return !!owner && account.isAuthenticated && account.isVerified && account.user?.id === owner;
+    };
+    const task = profileQueue.current.catch(() => {}).then(async () => {
+      if (!stillOwn()) throw Error("Account changed");
+      const value = change(readJourneyProfile(await AsyncStorage.getItem(profileKey(owner))));
+      if (!stillOwn()) throw Error("Account changed");
+      await AsyncStorage.setItem(profileKey(owner), JSON.stringify(value));
+      if (stillOwn()) setProfileRecord({ owner, value });
+      return value;
+    });
+    profileQueue.current = task;
+    return task;
+  }, [owner]);
   const update = useCallback(
     (change: (state: DiscoveryState) => DiscoveryState) => {
       const account = owner;
@@ -190,12 +226,25 @@ export default function DiscoveryProvider({
   }, [owner, path, !!own, update]);
   useEffect(() => {
     if (!own || error || panel || didShow.current || !canShow()) return;
-    const tip = nextDiscovery(own);
-    if (!tip) return;
+    const question = profile && nextProfilePrompt(profile);
+    const tip = question ? undefined : nextDiscovery(own);
+    if (!tip && !question) return;
     let valid = true;
     const timer = setTimeout(() => {
       if (!valid || !canShow() || didShow.current) return;
       didShow.current = true;
+      if (question) {
+        const askedAt = Date.now();
+        void changeProfile((value) => {
+          if (!valid || !canShow() || nextProfilePrompt(value, askedAt) !== question) return value;
+          return { ...value, lastAskedAt: askedAt, reviews: value.reviews + (question === "start" ? 0 : 1) };
+        }).then((value) => {
+          if (latest.current.owner === owner && canShow() && value.lastAskedAt === askedAt)
+            setPanel((current) => current ?? question);
+        }).catch(() => {});
+        return;
+      }
+      if (!tip) return;
       void update((state) => {
         if (!valid || !canShow() || nextDiscovery(state)?.id !== tip.id)
           return state;
@@ -233,6 +282,8 @@ export default function DiscoveryProvider({
     panel,
     error,
     update,
+    profile,
+    changeProfile,
   ]);
   useEffect(() => {
     if (loading || packages || workout || keyboard || waking) setPanel(null);
@@ -242,10 +293,16 @@ export default function DiscoveryProvider({
       close();
       router.push(tip.route as any);
     };
+  const profilePanel = typeof panel === "string" && panel !== "guide" ? panel : null;
+  function saveProfile({ goal, trainingDays, mealMinutes, reminders }: ProfileSettingsPatch) {
+    return changeProfile((value) => ({ ...value, goal, trainingDays, mealMinutes, reminders, lastAskedAt: Date.now() })).then(() => {});
+  }
   return (
     <Context.Provider
       value={{
         open: () => setPanel("guide"),
+        openProfile: () => setPanel("profile-settings"),
+        profile,
         count: own ? Object.keys(own.visited).length : 0,
         ready: !!own,
       }}
@@ -285,7 +342,7 @@ export default function DiscoveryProvider({
                 justifyContent: "space-between",
               }}
             >
-              <Text style={type.eyebrow}>YOUR TREKSOR GUIDE</Text>
+              <Text style={type.eyebrow}>{profilePanel ? "YOUR TREKSOR PROFILE" : "YOUR TREKSOR GUIDE"}</Text>
               <TouchableOpacity
                 accessibilityLabel="Close guide"
                 onPress={close}
@@ -294,7 +351,11 @@ export default function DiscoveryProvider({
                 <Ionicons name="close" size={24} color={colors.text} />
               </TouchableOpacity>
             </View>
-            {panel && panel !== "guide" ? (
+            {profilePanel ? (
+              profile ? <JourneyQuestions key={profilePanel} mode={profilePanel} value={profile} save={saveProfile} close={close} />
+                : <><Text style={type.body}>Your preferences could not be loaded.</Text>
+                  <TouchableOpacity onPress={() => setRetry((v) => v + 1)}><Text style={type.eyebrow}>TRY AGAIN</Text></TouchableOpacity></>
+            ) : panel && typeof panel !== "string" ? (
               <>
                 <Ionicons name={panel.icon} size={38} color={colors.gold} />
                 <Text style={type.page}>{panel.title}</Text>
@@ -358,7 +419,7 @@ export default function DiscoveryProvider({
                 ))}
               </>
             )}
-            <View
+            {!profilePanel && <View
               style={{ flexDirection: "row", alignItems: "center", gap: 16 }}
             >
               <View style={{ flex: 1 }}>
@@ -380,7 +441,7 @@ export default function DiscoveryProvider({
                   )
                 }
               />
-            </View>
+            </View>}
             {!!error && (
               <>
                 <Text style={{ color: colors.danger }}>{error}</Text>

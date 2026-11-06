@@ -50,3 +50,25 @@ for (const tip of m.discoveryTips) {
 console.log(
   "PASS discovery pacing, early exploration, opt-out, expiry, route boundaries, account keys and real destinations",
 );
+const profileBox = { exports: {} };
+vm.runInNewContext(
+  ts.transpileModule(fs.readFileSync("lib/journey-profile.ts", "utf8"), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
+  }).outputText,
+  { module: profileBox, exports: profileBox.exports, Date },
+);
+const profile = profileBox.exports;
+const blank = profile.readJourneyProfile(null);
+assert.equal(profile.nextProfilePrompt(blank, now), "start");
+const answered = { ...blank, goal: "muscle", lastAskedAt: now };
+assert.equal(profile.nextProfilePrompt(answered, now + profile.reviewInterval - 1), null);
+assert.equal(profile.nextProfilePrompt(answered, now + profile.reviewInterval), "schedule");
+assert.equal(profile.nextProfilePrompt({ ...answered, reviews: 1 }, now + profile.reviewInterval), "meals");
+assert.equal(profile.nextProfilePrompt({ ...answered, reviews: 2 }, now + profile.reviewInterval), "goal");
+assert.equal(profile.nextProfilePrompt({ ...answered, reminders: false }, now + profile.reviewInterval), null);
+assert.equal(profile.nextProfilePrompt({ ...blank, lastAskedAt: now }, now + 86400000), null, "Skipping also starts the cooldown");
+assert.throws(() => profile.readJourneyProfile(JSON.stringify({ ...answered, trainingDays: 8 })));
+assert.notEqual(profile.profileKey("a"), profile.profileKey("b"));
+assert.equal(profile.profileNextStep("muscle").route, "/body/workout/guide");
+assert.equal(profile.profileNextStep("weight").route, "/body/nutrition/meal-ideas");
+console.log("PASS optional profile setup, monthly review rotation, skipping, account keys and focus destinations");
