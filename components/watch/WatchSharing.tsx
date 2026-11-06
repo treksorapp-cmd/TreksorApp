@@ -12,5 +12,13 @@ export default function WatchSharing() {
   if(!watchBridge || !owner) return null;
   const enabled=loaded?.owner===owner && loaded.enabled;
   async function toggle(){if(!owner || busy)return;setBusy(true);try{await changeSharing(owner,!enabled);setLoaded({owner,enabled:!enabled});}catch{Alert.alert('Could not update sharing','Open your account and try again.')}finally{setBusy(false)}}
-  return <View style={{...surface.card,gap:12}}><Ionicons name="watch-outline" size={26} color={colors.gold}/><Text style={type.card}>Progress on Apple Watch</Text><Text style={type.body}>Show seven-day totals for gym sessions, saved sets and timed practices on your paired watch.</Text><Text style={type.caption}>Install Treksor from the Watch app on your iPhone, then open both apps. Turn sharing off here at any time.</Text><TouchableOpacity accessibilityRole="button" disabled={busy || (!failed && loaded?.owner!==owner)} onPress={failed?()=>setRetry(n=>n+1):toggle} style={{padding:12,minHeight:44,justifyContent:'center',backgroundColor:colors.goldSoft,borderRadius:12}}><Text style={{...type.body,color:colors.gold}}>{failed?'Retry connection settings':enabled?'Turn off watch progress':'Enable watch progress'}</Text></TouchableOpacity></View>;
+  return <>
+  <View style={{...surface.card,gap:12}}><Ionicons name="watch-outline" size={26} color={colors.gold}/><Text style={type.card}>Progress on Apple Watch</Text><Text style={type.body}>Show seven-day totals for gym sessions, saved sets and timed practices on your paired watch.</Text><Text style={type.caption}>Install Treksor from the Watch app on your iPhone, then open both apps. Turn sharing off here at any time.</Text><TouchableOpacity accessibilityRole="button" disabled={busy || (!failed && loaded?.owner!==owner)} onPress={failed?()=>setRetry(n=>n+1):toggle} style={{padding:12,minHeight:44,justifyContent:'center',backgroundColor:colors.goldSoft,borderRadius:12}}><Text style={{...type.body,color:colors.gold}}>{failed?'Retry connection settings':enabled?'Turn off watch progress':'Enable watch progress'}</Text></TouchableOpacity></View>
+    <View style={{ ...surface.card, gap: 8 }}>
+      <Ionicons name="walk-outline" size={24} color={colors.gold} />
+      <Text style={type.card}>Movement breaks on Apple Watch</Text>
+      <Text style={type.body}>Use Apple Watch’s Activity reminders for a nudge to stand or move during the day.</Text>
+      <Text style={type.caption}>On your watch, open Settings, then Activity, and enable Stand Reminders. Your watch manages when to send these reminders.</Text>
+    </View>
+  </>;
 }
