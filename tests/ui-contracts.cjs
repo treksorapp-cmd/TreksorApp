@@ -99,6 +99,14 @@ assert(html.indexOf(beverageName)<html.indexOf('data-media="true"'),'Drink headi
 for(const item of nutrition.beverages.data){params={id:item.id};const result=renderToStaticMarkup(React.createElement(load('app/body/nutrition/beverage-details.tsx').default));assert(result.indexOf(displayLabel(item.name))<result.indexOf('data-media="true"'));assert(result.includes('Ingredients'))}
 pathname='/body/nutrition/supplement-details';
 for(const item of nutrition.supplements.data){params={id:item.id};const result=renderToStaticMarkup(React.createElement(load('app/body/nutrition/supplement-details.tsx').default));assert(result.indexOf(displayLabel(item.name))<result.indexOf('data-media="true"'));assert(result.includes('Overview'))}
+pathname='/body/nutrition/meal-details';
+for(const meal of load('lib/nutrition/meal-ideas.ts').mealIdeas){
+ params={id:meal.id};
+ const result=renderToStaticMarkup(React.createElement(load('app/body/nutrition/meal-details.tsx').default));
+ assert(result.includes('Preparation')&&result.includes('Allergen notes'));
+ assert(result.indexOf('role="heading"')<result.indexOf('data-media="true"'));
+ assert(fs.statSync(`assets/images/meals/${meal.id}.jpg`).size>1000);
+}
 pathname='/spiritual/mediation/beginner';params={id:'beginner'};
 const Meditation=load('app/spiritual/mediation/[id].tsx').default;
 html=renderToStaticMarkup(React.createElement(Meditation));

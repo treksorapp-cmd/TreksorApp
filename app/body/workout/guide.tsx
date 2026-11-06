@@ -7,10 +7,12 @@ import {Alert,KeyboardAvoidingView,Platform,ScrollView,Text,TextInput,TouchableO
 import {Ionicons} from "@expo/vector-icons";
 import {router} from "expo-router";
 import {useWorkoutStore,TrainingPlan} from "@/store/workout-store";
+import { useDiscovery } from "@/components/discovery/DiscoveryProvider";
 const GOLD="#D7B877";
 const options=[{id:"strength",title:"Build Strength",description:"Progressively lift heavier"},{id:"muscle",title:"Build Muscle",description:"Increase muscle size"},{id:"definition",title:"Get Defined",description:"Train to preserve muscle and improve conditioning"}] as const;
 export default function WorkoutGuide(){
  const insets=useSafeAreaInsets();
+ const { profile } = useDiscovery();
  const plan=useWorkoutStore(s=>s.trainingPlan),save=useWorkoutStore(s=>s.saveTrainingPlan),reset=useWorkoutStore(s=>s.resetTrainingPlan);
  const [age,setAge]=useState(plan?.age?String(plan.age):""),[height,setHeight]=useState(plan?.heightCm?String(plan.heightCm):""),[weight,setWeight]=useState(plan?.weightKg?String(plan.weightKg):"");
  const [error,setError]=useState("");
@@ -22,6 +24,18 @@ export default function WorkoutGuide(){
  
  <BodyPageHeading trail="BODY / WORKOUT / GYM" title="BUILD MY PLAN" style={{paddingLeft:0,paddingRight:0}} />
  <Text style={{color:"#C9C4B9",lineHeight:21,marginTop:10}}>Three simple steps. Tell us about yourself, choose your goal, and get a routine you can customize.</Text>
+ {(profile?.trainingDays || profile?.goal === "muscle") && (
+   <View style={{ padding: 16, marginTop: 18, gap: 8, borderRadius: 14, backgroundColor: colors.surface }}>
+     <Text style={{ color: colors.text, fontSize: 16, fontWeight: "600" }}>Use your Treksor preferences</Text>
+     <Text style={{ color: colors.secondary, lineHeight: 21 }}>
+       {profile.goal === "muscle" ? "Build muscle. " : ""}{profile.trainingDays ? `${profile.trainingDays} training days per week. ` : ""}Review the fields below before saving.
+     </Text>
+     <Button iconName="options-outline" onPress={() => {
+       if (profile.trainingDays) setDays(profile.trainingDays);
+       if (profile.goal === "muscle") setGoal("muscle");
+     }}>Fill from my profile</Button>
+   </View>
+ )}
  <View style={{flexDirection:"row",gap:8,marginTop:20}}>{["01 · PROFILE","02 · GOAL","03 · ROUTINE"].map((step,i)=><View key={step} style={{flex:1,borderTopWidth:2,borderTopColor:i===0?GOLD:"#5A4B33",paddingTop:9}}><Text style={{color:i===0?GOLD:"#AAA397",fontSize:10,fontWeight:"800"}}>{step}</Text></View>)}</View>
  <View style={{backgroundColor:"rgba(67,72,72,0.30)",borderRadius:16,borderWidth:1,borderColor:"rgba(242,215,164,0.32)",padding:17,marginTop:26}}>
  <Text style={{color:GOLD,fontSize:10,fontWeight:"800",letterSpacing:1.4,marginBottom:8}}>STEP 01 · YOUR PROFILE</Text><Text style={{color:"white",fontSize:18,lineHeight:25,fontWeight:"600",marginBottom:17}}>Your training profile</Text>
