@@ -8,12 +8,13 @@ import { scheduleTodaysPowerThought } from "@/lib/daily-thought-notification";
 import { playCompletionFeedback } from "@/lib/completion-feedback";
 import { useAuthStore } from "@/store/auth-store";
 import { usePowerThoughtStore } from "@/store/thought-store";
+import { useWorkoutStore } from "@/store/workout-store";
 import { Ionicons } from "@expo/vector-icons";
 import { Image, ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, type Href } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, AppState, Easing, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Animated, AppState, Easing, ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const GOLD = "#D7B877";
@@ -46,6 +47,14 @@ const pillars: { name: string; subtitle: string; route: Href; image: number; ico
 
 export default function HomeScreen() {
   const user = useAuthStore(state => state.user);
+  const activeWorkout = useWorkoutStore(state => state.activeGymWorkout);
+  const trainingPlan = useWorkoutStore(state => state.trainingPlan);
+  const { width: screenWidth } = useWindowDimensions();
+  const cardWidth = Math.min(340, Math.max(220, screenWidth - 94));
+  const carouselStep = cardWidth + 14;
+  const carouselRef = useRef<ScrollView>(null);
+  const [activePillar, setActivePillar] = useState(0);
+  const jumpToPillar = (index: number) => { setActivePillar(index); carouselRef.current?.scrollTo({ x: index * carouselStep, animated: !reducedMotion }); };
   const powerThoughts = usePowerThoughtStore(state => state.powerThoughts);
   const fetchPowerThoughts = usePowerThoughtStore(state => state.fetchPowerThoughts);
   const markRead = usePowerThoughtStore(state => state.markPowerThoughtAsRead);
@@ -105,25 +114,81 @@ export default function HomeScreen() {
           <View>
             <Text style={styles.sectionEyebrow}>THE TREKSOR METHOD</Text>
             <Text style={styles.sectionTitle}>Four pillars. One direction.</Text>
-            <Text style={styles.sectionHint}>Choose a pillar to explore <Ionicons name="arrow-down" size={12} color="#C6AE84"/></Text>
+            <Text style={styles.sectionHint}>Swipe to explore, or choose a pillar below</Text>
           </View>
         </View>
 
-        <Animated.View style={[styles.grid,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[18,0]})}]}]}>
-          {pillars.map(pillar => (
-            <TouchableOpacity key={pillar.name} activeOpacity={0.72} style={styles.tile} onPress={() => router.push(pillar.route)} accessibilityRole="button" accessibilityLabel={pillar.name + ": " + pillar.subtitle}>
-              <ImageBackground source={pillar.image} contentFit="cover" contentPosition={pillar.name==="Mind"?{left:"50%",top:"18%"}:"center"} style={StyleSheet.absoluteFill} transition={180} cachePolicy="memory-disk" />
-              <LinearGradient colors={["rgba(0,0,0,0.20)", "rgba(0,0,0,0.22)", "rgba(0,0,0,0.95)"]} locations={[0, 0.34, 1]} style={StyleSheet.absoluteFill} />
-              <View style={styles.tileTop}>
-                <View style={styles.tileIcon}><Ionicons name={pillar.icon} color="#FFFFFF" size={18} /></View>
-              </View>
-              <View style={styles.tileBottom}>
-                <Text style={styles.tileTitle}>{pillar.name}</Text>
-                <Text style={styles.tileCaption}>{pillar.subtitle}</Text><PillarUpdates pillar={pillar.name} compact/>
-
-              </View>
+        <Animated.View style={{opacity:reveal}}>
+          <ScrollView
+            ref={carouselRef}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            decelerationRate="fast"
+            snapToInterval={carouselStep}
+            snapToAlignment="start"
+            disableIntervalMomentum
+            contentContainerStyle={{ paddingHorizontal: (screenWidth - cardWidth) / 2, gap: 14 }}
+            style={{ marginHorizontal: -20 }}
+            onMomentumScrollEnd={(event) => setActivePillar(Math.min(3, Math.max(0, Math.round(event.nativeEvent.contentOffset.x / carouselStep))))}
+            accessibilityLabel="Explore Treksor pillars"
+          >
+            {pillars.map(pillar => (
+              <TouchableOpacity
+                key={pillar.name}
+                activeOpacity={0.88}
+                style={[styles.carouselCard, { width: cardWidth }]}
+                onPress={() => router.push(pillar.route)}
+                accessibilityRole="button"
+                accessibilityLabel={`Open ${pillar.name}. ${pillar.subtitle}`}
+                accessibilityHint="Double tap to open this pillar"
+              >
+                <ImageBackground source={pillar.image} contentFit="cover" style={StyleSheet.absoluteFill} transition={180} cachePolicy="memory-disk" />
+                <LinearGradient colors={["rgba(7,11,17,0.06)", "rgba(7,11,17,0.15)", "rgba(7,11,17,0.92)"]} locations={[0, 0.38, 1]} style={StyleSheet.absoluteFill} />
+                <View style={styles.carouselTop}><Text style={styles.carouselIndex}>{pillar.index} / 04</Text></View>
+                <View style={styles.carouselBottom}>
+                  <Ionicons name={pillar.icon} size={27} color={GOLD} />
+                  <Text style={styles.carouselTitle}>{pillar.name}</Text>
+                  <Text style={styles.carouselSubtitle}>{pillar.subtitle}</Text>
+                  <View style={styles.carouselFooter}>
+                    <PillarUpdates pillar={pillar.name} compact />
+                    <Ionicons name="arrow-forward-circle-outline" size={29} color={GOLD} />
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+          <View style={styles.carouselControls}>
+            <TouchableOpacity style={styles.carouselArrow} disabled={activePillar===0} onPress={() => jumpToPillar(activePillar-1)} accessibilityRole="button" accessibilityLabel="Previous pillar" accessibilityState={{disabled:activePillar===0}}>
+              <Ionicons name="arrow-back" size={20} color={activePillar===0?"#676767":"#E9E2D6"} />
             </TouchableOpacity>
-          ))}
+            <View style={styles.carouselDots}>
+              {pillars.map((pillar,index) => <TouchableOpacity key={pillar.name} onPress={() => jumpToPillar(index)} accessibilityRole="button" accessibilityLabel={`Show ${pillar.name}`} accessibilityState={{selected:index===activePillar}} style={[styles.carouselDot,index===activePillar&&styles.carouselDotActive]} />)}
+            </View>
+            <TouchableOpacity style={styles.carouselArrow} disabled={activePillar===pillars.length-1} onPress={() => jumpToPillar(activePillar+1)} accessibilityRole="button" accessibilityLabel="Next pillar" accessibilityState={{disabled:activePillar===pillars.length-1}}>
+              <Ionicons name="arrow-forward" size={20} color={activePillar===pillars.length-1?"#676767":"#E9E2D6"} />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.quickAccess}>
+            {pillars.map(pillar => (
+              <TouchableOpacity key={pillar.name} style={[styles.quickPillar, activePillar===pillars.indexOf(pillar)&&styles.quickPillarActive]} onPress={() => router.push(pillar.route)} accessibilityRole="button" accessibilityLabel={`Open ${pillar.name}`}>
+                <Ionicons name={pillar.icon} size={17} color={GOLD} />
+                <Text style={styles.quickPillarText}>{pillar.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          <TouchableOpacity
+            style={styles.nextUp}
+            onPress={() => router.push(activeWorkout ? "/body/workout/session" : trainingPlan ? "/body/workout/my-plan" : "/body/workout/guide")}
+            accessibilityRole="button"
+            accessibilityLabel={activeWorkout ? `Resume ${activeWorkout.dayName} workout` : trainingPlan ? "Open my training plan" : "Build my training plan"}
+          >
+            <View style={styles.nextUpIcon}><Ionicons name="barbell-outline" size={25} color={GOLD}/></View>
+            <View style={{flex:1}}>
+              <Text style={styles.nextUpTitle}>{activeWorkout ? "Resume workout" : trainingPlan ? "Next up" : "Your next step"}</Text>
+              <Text style={styles.nextUpSubtitle} numberOfLines={1}>{activeWorkout ? activeWorkout.dayName : trainingPlan ? `My training plan · ${trainingPlan.days} days/week` : "Build your training plan"}</Text>
+            </View>
+            <View style={styles.nextUpAction}><Ionicons name={activeWorkout?"play":"arrow-forward"} size={19} color={GOLD}/></View>
+          </TouchableOpacity>
         </Animated.View>
 
         <DiscoveryCard />
@@ -175,7 +240,28 @@ const styles = StyleSheet.create({
   sectionHint:{color:"#AFA89C",fontSize:11,marginTop:8,letterSpacing:0.2},
   fourBadge: { width: 37, height: 37, borderRadius: 19, borderWidth: 1, borderColor: "#514332", alignItems: "center", justifyContent: "center" },
   fourBadgeText: { color: GOLD, fontSize: 12, fontWeight: "800" },
-  grid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", rowGap: 13 },
+  carouselCard: { height: 264, borderRadius: 23, overflow: "hidden", backgroundColor: "#171D22", borderWidth: 1, borderColor: "rgba(215,184,119,0.20)" },
+  carouselTop: { padding: 19, alignItems: "flex-end" },
+  carouselIndex: { color: "#E9E2D6", fontSize: 10, letterSpacing: 2, fontWeight: "600" },
+  carouselBottom: { flex: 1, justifyContent: "flex-end", padding: 22 },
+  carouselTitle: { color: "#F5F4F1", fontSize: 28, fontWeight: "600", letterSpacing: -1, marginTop: 13 },
+  carouselSubtitle: { color: "#E1D9CC", fontSize: 13, lineHeight: 19, marginTop: 5 },
+  carouselFooter: { marginTop: 15, flexDirection: "row", justifyContent: "space-between", alignItems: "center", minHeight: 30 },
+  carouselControls: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 12, marginTop: 10 },
+  carouselArrow: { height: 42, width: 42, borderRadius: 21, borderWidth: 1, borderColor: "rgba(220,225,230,0.30)", alignItems: "center", justifyContent: "center" },
+  carouselDots: { flexDirection: "row", alignItems: "center", gap: 12 },
+  carouselDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: "#3C454D" },
+  carouselDotActive: { backgroundColor: GOLD, width: 9, height: 9, borderRadius: 5 },
+  quickAccessLabel: { color: GOLD, fontSize: 10, letterSpacing: 1.8, fontWeight: "600", marginTop: 25, marginBottom: 11 },
+  quickAccess: { flexDirection: "row", gap: 0, marginTop: 12, padding: 3, borderRadius: 15, backgroundColor: "rgba(183,221,240,0.055)", borderWidth: 1, borderColor: "rgba(183,221,240,0.10)" },
+  quickPillar: { flex: 1, minWidth: 0, alignItems: "center", justifyContent: "center", gap: 5, paddingVertical: 10, borderRadius: 12, borderWidth: 1, borderColor: "transparent" },
+  quickPillarActive: { borderColor: GOLD, backgroundColor: "rgba(215,184,119,0.09)" },
+  quickPillarText: { color: "#F5F4F1", fontSize: 11, fontWeight: "600" },
+  nextUp: { marginTop: 13, paddingHorizontal: 17, paddingVertical: 16, borderRadius: 16, backgroundColor: "rgba(183,221,240,0.065)", borderWidth: 1, borderColor: "rgba(183,221,240,0.15)", flexDirection: "row", alignItems: "center", gap: 14 },
+  nextUpIcon: { width: 32, alignItems: "center" },
+  nextUpTitle: { color: "#F5F4F1", fontSize: 15, fontWeight: "600" },
+  nextUpSubtitle: { color: "#BEB9AF", fontSize: 12, marginTop: 4 },
+  nextUpAction: { width: 40, height: 40, borderRadius: 20, borderWidth: 1, borderColor: GOLD, alignItems: "center", justifyContent: "center" },
   tile: { width: "48.3%", minHeight: 230, borderRadius: 13, overflow: "hidden", backgroundColor: "rgba(183,221,240,0.075)" },
   tileTop: { flexDirection: "row", justifyContent: "flex-end", alignItems: "center", padding: 13 },
   tileIcon: { height: 34, width: 34, borderRadius: 11, backgroundColor: "rgba(183,221,240,0.13)", alignItems: "center", justifyContent: "center" },
