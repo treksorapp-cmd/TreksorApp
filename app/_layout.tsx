@@ -1,3 +1,4 @@
+import WaterReminderRuntime from "@/components/workout/WaterReminderRuntime";
 import WatchRuntime from "@/components/watch/WatchRuntime";
 import WakeRuntime from "@/components/wake/WakeRuntime";
 import DiscoveryProvider from "@/components/discovery/DiscoveryProvider";
@@ -187,6 +188,7 @@ export default function RootLayout() {
 
       <WakeRuntime />
       <WatchRuntime />
+      <WaterReminderRuntime />
     </DiscoveryProvider>
   );
 }
