@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { useAuthStore } from "@/store/auth-store";
+import { todayKey, todayRecordKey } from "@/lib/today-record";
 import { colors, surface, type } from "@/theme/architect";
 
 type DailyStep = "body" | "mind" | "mentor";
@@ -57,13 +58,6 @@ const STEPS: StepDefinition[] = [
 
 const emptyRecord = (): DailyRecord => ({ priority: "", reflection: "", done: [] });
 
-function localDateKey(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return year + "-" + month + "-" + day;
-}
-
 function normalizeRecord(raw: string | null): DailyRecord {
   if (!raw) return emptyRecord();
   try {
@@ -89,9 +83,9 @@ function normalizeRecord(raw: string | null): DailyRecord {
  * We do not infer completion from simply opening a pillar.
  * Cloud sync and cross-device continuity are a later integration.
  */
-export default function JourneyCard() {
+export default function JourneyCard({ onRecordChange }: { onRecordChange?: () => void }) {
   const userId = useAuthStore((state) => state.user?.id);
-  const [dateKey, setDateKey] = useState(() => localDateKey(new Date()));
+  const [dateKey, setDateKey] = useState(() => todayKey());
   const [record, setRecord] = useState<DailyRecord>(emptyRecord);
   const [priorityDraft, setPriorityDraft] = useState("");
   const [reflectionDraft, setReflectionDraft] = useState("");
@@ -100,12 +94,10 @@ export default function JourneyCard() {
   const recordRef = useRef<DailyRecord>(emptyRecord());
   const writeQueue = useRef<Promise<void>>(Promise.resolve());
 
-  const storageKey = userId
-    ? "treksor.today.v1." + String(userId).replace(/[^a-zA-Z0-9_-]/g, "_") + "." + dateKey
-    : null;
+  const storageKey = userId ? todayRecordKey(String(userId), dateKey) : null;
 
   useEffect(() => {
-    const refreshDay = () => setDateKey(localDateKey(new Date()));
+    const refreshDay = () => setDateKey(todayKey());
     const timer = setInterval(refreshDay, 60_000);
     const subscription = AppState.addEventListener("change", (state) => {
       if (state === "active") refreshDay();
@@ -163,10 +155,10 @@ export default function JourneyCard() {
         .catch(() => undefined)
         .then(() => SecureStore.setItemAsync(storageKey, JSON.stringify(next)));
       void writeQueue.current
-        .then(() => setSaveStatus("Saved securely on this device"))
+        .then(() => { setSaveStatus("Saved securely on this device"); onRecordChange?.(); })
         .catch(() => setSaveStatus("Could not save. Please try again."));
     },
-    [loaded, priorityDraft, reflectionDraft, storageKey]
+    [loaded, priorityDraft, reflectionDraft, storageKey, onRecordChange]
   );
 
   const toggleStep = (id: DailyStep) => {
@@ -228,7 +220,7 @@ export default function JourneyCard() {
 
         <View style={styles.actionsHeading}>
           <Text style={styles.fieldLabel}>THREE DAILY MOVES</Text>
-          <Text style={styles.hint}>Mark them when completed</Text>
+          <Text style={styles.hint}>Personal check-ins, not workout logs</Text>
         </View>
         {STEPS.map((step) => {
           const isDone = record.done.includes(step.id);

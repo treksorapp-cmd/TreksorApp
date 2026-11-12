@@ -3,6 +3,7 @@ import { useContentRefresh } from "@/hooks/useContentRefresh";
 import {colors} from "@/theme/architect";
 import {useReducedMotion} from "@/hooks/useReducedMotion";
 import JourneyCard from "@/components/JourneyCard";
+import ConnectedJourney from "@/components/ConnectedJourney";
 import { scheduleTodaysPowerThought } from "@/lib/daily-thought-notification";
 import { playCompletionFeedback } from "@/lib/completion-feedback";
 import { useAuthStore } from "@/store/auth-store";
@@ -45,6 +46,7 @@ const pillars: { name: string; subtitle: string; route: Href; image: number; ico
 
 export default function HomeScreen() {
   const user = useAuthStore(state => state.user);
+  const [journeyRevision, setJourneyRevision] = useState(0);
   const powerThoughts = usePowerThoughtStore(state => state.powerThoughts);
   const fetchPowerThoughts = usePowerThoughtStore(state => state.fetchPowerThoughts);
   const markRead = usePowerThoughtStore(state => state.markPowerThoughtAsRead);
@@ -97,7 +99,8 @@ export default function HomeScreen() {
             {user?.avatar?<Image source={{uri:user.avatar.startsWith("http")?user.avatar:`https://app.treksor.com/${user.avatar}`}} style={styles.profileImage} cachePolicy="memory-disk"/>:<Text style={styles.profileLetter}>{firstName.charAt(0).toUpperCase()}</Text>}
           </TouchableOpacity></View>
         </View>
-        <JourneyCard />
+        <JourneyCard onRecordChange={() => setJourneyRevision(value => value + 1)} />
+        <ConnectedJourney refreshKey={journeyRevision} />
 
         <Animated.View style={[styles.hero,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[12,0]})}]}]}>
           <ImageBackground source={atmosphereUrl ? {uri:atmosphereUrl} : DAILY_HERO_IMAGES[dailyIndex]} onError={() => { if (atmosphereUrl) { setAtmosphereUrl(null); setAtmosphereMessage(null); } }} contentFit="cover" contentPosition={{left:"50%",top:"58%"}} cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />

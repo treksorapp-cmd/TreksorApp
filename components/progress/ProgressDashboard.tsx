@@ -8,9 +8,10 @@ import type { TrackingCategory } from "@/types/tracking";
 import { colors, surface, type } from "@/theme/architect";
 
 type Overview = ReturnType<typeof buildProgressOverview>;
-type Detail = "activity" | "body" | "mind" | "balance" | "purpose" | "reading" | "sources";
+type Detail = "activity" | "body" | "mind" | "balance" | "purpose" | "mentor" | "reading" | "sources";
 interface Props {
   data: Overview; period: 7 | 30; onPeriod: (period: 7 | 30) => void;
+  mentorReplies?: number | null;
   trackers: TrackingCategory[]; today: string;
   journalLoading: boolean; visionLoading: boolean; journalError: boolean; visionError: boolean;
   onRetry: () => void; onRoute: (route: string) => void;
@@ -34,6 +35,7 @@ export default function ProgressDashboard(props: Props) {
     { id: "mind" as const, name: "Mind", icon: "book-outline" as const, value: props.journalLoading || props.journalError ? "—" : String(data.reflections + data.journalEntries), label: "entries saved", period: `Last ${period} days`, caption: props.journalLoading ? "Loading private entries…" : props.journalError ? "Journal unavailable · tap for details" : `${data.reflections} reflections · ${data.journalEntries} journal entries`, source: "My space + personal journal" },
     { id: "balance" as const, name: "Balance", icon: "shield-outline" as const, value: `${data.meditation.completed} / ${data.meditation.total}`, label: "practices completed", period: "All time", caption: "Meditation library", source: "Balance · marked complete", meter: data.meditation },
     { id: "purpose" as const, name: "Purpose", icon: "compass-outline" as const, value: props.visionLoading || !data.vision ? "—" : `${data.vision.completed} / 10`, label: "prompts answered", period: "All time", caption: props.visionLoading ? "Loading your vision…" : props.visionError ? "Vision unavailable · tap for details" : "Your saved vision board", source: "Vision & reflection", meter: props.visionLoading ? undefined : data.vision ?? undefined },
+    { id: "mentor" as const, name: "Mentor", icon: "chatbubble-ellipses-outline" as const, value: props.mentorReplies == null ? "—" : String(props.mentorReplies), label: "replies received", period: "Latest loaded chat", caption: "Conversation activity, not an impact score", source: "Mentor · loaded conversation" },
   ];
   const detailContent = {
     activity: { title: "What counts as an active day?", source: "Dated actions saved in Treksor", body: `A day counts once when you save a training session, gym set, reflection, personal journal entry or completed tracker item. The selected window is the last ${period} local calendar days, including today.`, note: "Meditations, articles and vision answers have no completion date in older records. They appear under all-time progress and do not create activity days. A day without a record is not a failed day.", action: "Got it", route: "" },
@@ -41,6 +43,7 @@ export default function ProgressDashboard(props: Props) {
     mind: { title: "Space for reflection", source: "Mind → My space · Profile → My journal", body: `Entries saved in the last ${period} days. My space and Purpose → Goals & reflections use the same notebook, so each reflection is counted once. Personal journal contributes one entry per saved date.`, note: "Your writing and moods stay private on this device. More entries do not mean better mental health. No mood score is included in Progress.", action: "Open personal journal", route: "/mind/journal" },
     balance: { title: "A practice, not a performance", source: "Balance → Meditations", body: `${data.meditation.completed} of ${data.meditation.total} distinct practices are marked complete. The bar is completed practices divided by the available meditation library.`, note: "Each practice counts once, even if you replay it. These records do not measure listening minutes, session frequency or wellbeing.", action: "Explore Balance", route: "/spiritual" },
     purpose: { title: "Clarity takes shape", source: "Purpose → Vision & reflection", body: "Each non-empty, saved answer counts toward the 10 prompts on your vision board. Draft answers count only after you save the board.", note: "This shows how much of your vision you have written, not how many life goals you have achieved. Your answers stay private on this device; only the completed-prompt count can sync.", action: "Open vision board", route: "/purpose/vision-board" },
+    mentor: { title: "A conversation, not a score", source: "Mentor → Latest loaded chat", body: props.mentorReplies == null ? "Open Mentor to load your latest conversation. This screen cannot measure conversations it has not loaded." : `You have received ${props.mentorReplies} reply/replies in your latest loaded conversation.`, note: "Messages are not counted as completed goals, and conversation length does not measure personal growth. Private journal text is not shared with Mentor automatically.", action: "Open Mentor", route: "/(tabs)/chat" },
     reading: { title: "Your learning library", source: "Articles → Mark as read", body: `${data.reading.completed} of ${data.reading.total} articles currently saved in the app are marked read. An article shown in multiple categories is counted once.`, note: "This is all-time library completion, not reading time. The total can change when new articles load. Reading does not inflate your training or meditation progress.", action: "Explore articles", route: "/article" },
     sources: { title: "Your numbers have a source", source: "Recorded in Treksor", body: "Training: sessions and sets you save. Mind: saved reflections and journal dates. Balance: practices you mark complete. Purpose: saved vision prompts. Personal trackers: checkmarks you enter for scheduled dates.", note: "App records update this screen. Supported progress summaries sync to your web profile. Journal text, moods and vision answers stay on this device. Smartwatch and Apple Health data are not connected yet.", action: "Got it", route: "" },
   };
@@ -66,7 +69,7 @@ export default function ProgressDashboard(props: Props) {
       {props.journalError && <Text accessibilityRole="alert" style={styles.error}>Journal could not be loaded. Activity totals may be incomplete.</Text>}
     </LinearGradient>
 
-    <View style={styles.sectionTop}><View style={styles.flex}><Text style={styles.sectionTitle}>Four pillars. Real progress.</Text><Text style={styles.caption}>Each measure tells its own story.</Text></View></View>
+    <View style={styles.sectionTop}><View style={styles.flex}><Text style={styles.sectionTitle}>Four pillars. One Mentor.</Text><Text style={styles.caption}>Each measure tells its own story.</Text></View></View>
     <View style={styles.pillarGrid}>{cards.map(card => <TouchableOpacity accessibilityRole="button" accessibilityLabel={`${card.name}: ${card.value} ${card.label}. ${card.period}. See source and calculation.`} key={card.id} onPress={() => setDetail(card.id)} style={[styles.pillarCard, compact ? styles.fullCard : styles.halfCard]}>
       <View style={styles.row}><View style={styles.pillarIcon}><Ionicons name={card.icon} size={22} color={colors.gold}/></View><Text style={styles.scope}>{card.period}</Text></View>
       <Text style={styles.pillarTitle}>{card.name}</Text><Text style={styles.pillarNumber}>{card.value}</Text><Text style={styles.metricLabel}>{card.label}</Text>
