@@ -16,7 +16,8 @@
     "test:audio": "node tests/audio-lifecycle.cjs",
     "test:dashboard": "node tests/progress-dashboard.cjs",
     "test:content": "node tests/content-sync.cjs",
-    "test:connected": "node tests/connected-journey.cjs"
+    "test:connected": "node tests/connected-journey.cjs",
+    "test:retention": "node tests/retention-experiments.cjs"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
