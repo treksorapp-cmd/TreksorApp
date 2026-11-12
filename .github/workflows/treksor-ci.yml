@@ -31,6 +31,8 @@ jobs:
         run: npm run typecheck
       - name: Goal evidence
         run: npm run test:goals
+      - name: Watch workout contract
+        run: npm run test:watch
       - name: Today and connected pillars
         run: npm run test:connected
       - name: Retention model
