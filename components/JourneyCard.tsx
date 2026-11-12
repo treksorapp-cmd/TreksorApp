@@ -220,7 +220,7 @@ export default function JourneyCard({ onRecordChange }: { onRecordChange?: () =>
 
         <View style={styles.actionsHeading}>
           <Text style={styles.fieldLabel}>THREE DAILY MOVES</Text>
-          <Text style={styles.hint}>Mark them when completed</Text>
+          <Text style={styles.hint}>Personal check-ins, not workout logs</Text>
         </View>
         {STEPS.map((step) => {
           const isDone = record.done.includes(step.id);
