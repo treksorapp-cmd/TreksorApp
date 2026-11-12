@@ -4,6 +4,8 @@ import {colors} from "@/theme/architect";
 import {useReducedMotion} from "@/hooks/useReducedMotion";
 import JourneyCard from "@/components/JourneyCard";
 import ConnectedJourney from "@/components/ConnectedJourney";
+import WeeklyReview from "@/components/WeeklyReview";
+import PremiumInterestCard from "@/components/PremiumInterestCard";
 import { scheduleTodaysPowerThought } from "@/lib/daily-thought-notification";
 import { playCompletionFeedback } from "@/lib/completion-feedback";
 import { useAuthStore } from "@/store/auth-store";
@@ -101,6 +103,7 @@ export default function HomeScreen() {
         </View>
         <JourneyCard onRecordChange={() => setJourneyRevision(value => value + 1)} />
         <ConnectedJourney refreshKey={journeyRevision} />
+        <WeeklyReview refreshKey={journeyRevision} />
 
         <Animated.View style={[styles.hero,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[12,0]})}]}]}>
           <ImageBackground source={atmosphereUrl ? {uri:atmosphereUrl} : DAILY_HERO_IMAGES[dailyIndex]} onError={() => { if (atmosphereUrl) { setAtmosphereUrl(null); setAtmosphereMessage(null); } }} contentFit="cover" contentPosition={{left:"50%",top:"58%"}} cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
@@ -145,6 +148,7 @@ export default function HomeScreen() {
             <View style={styles.thoughtFooter}><TouchableOpacity onPress={() => router.push("/mental/thoughts")}><Text style={styles.thoughtLink}>EXPLORE THOUGHTS →</Text></TouchableOpacity><TouchableOpacity disabled={!todayThought || !!todayThought.isRead} accessibilityRole="checkbox" accessibilityState={{checked:!!todayThought?.isRead}} onPress={completeThought} style={{flexDirection:"row",alignItems:"center",gap:8,backgroundColor:todayThought?.isRead?"rgba(183,221,240,0.17)":"rgba(183,221,240,0.085)",paddingHorizontal:13,paddingVertical:11,borderRadius:12}}><Ionicons name={todayThought?.isRead?"checkmark-circle":"checkmark-circle-outline"} size={19} color={todayThought?.isRead?"#BFE7F4":GOLD}/><Text style={{color:todayThought?.isRead?"#BFE7F4":GOLD,fontWeight:"800",fontSize:12}}>{todayThought?.isRead?(isCurrentThought?"READ TODAY":"READ"):"MARK AS READ"}</Text></TouchableOpacity></View>
           </View>
         </View>
+        <PremiumInterestCard />
         <Text style={styles.footer}>TREKSOR · BUILT WITH PURPOSE</Text>
       </ScrollView>
     </SafeAreaView>
