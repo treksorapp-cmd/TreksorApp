@@ -5,6 +5,7 @@ import {useReducedMotion} from "@/hooks/useReducedMotion";
 import JourneyCard from "@/components/JourneyCard";
 import ConnectedJourney from "@/components/ConnectedJourney";
 import WeeklyReview from "@/components/WeeklyReview";
+import GoalProgressCard from "@/components/GoalProgressCard";
 import PremiumInterestCard from "@/components/PremiumInterestCard";
 import { scheduleTodaysPowerThought } from "@/lib/daily-thought-notification";
 import { playCompletionFeedback } from "@/lib/completion-feedback";
@@ -103,6 +104,7 @@ export default function HomeScreen() {
         </View>
         <JourneyCard onRecordChange={() => setJourneyRevision(value => value + 1)} />
         <ConnectedJourney refreshKey={journeyRevision} />
+        <GoalProgressCard refreshKey={journeyRevision} />
         <WeeklyReview refreshKey={journeyRevision} />
 
         <Animated.View style={[styles.hero,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[12,0]})}]}]}>
