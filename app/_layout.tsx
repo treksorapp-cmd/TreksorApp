@@ -15,7 +15,6 @@ export default function RootLayout() {
   const { error, clearError, isAuthenticated, getCurrentUser } = useAuthStore();
   const [initialURL, setInitialURL] = useState<string | null>(null);
   const [isNavigationReady, setIsNavigationReady] = useState(false);
-  const { user } = useAuthStore();
   const { showPackages, setShowPackages, savePushToken, purchasePlan } = useUserStore();
   const { pushToken } = useNotifications();
   const [hasSyncedSubscription, setHasSyncedSubscription] = useState(false);
@@ -153,12 +152,9 @@ export default function RootLayout() {
     }
   }, [error, clearError]);
 
-  // ✅ Force show subscription modal if expired
-  useEffect(() => {
-    if (isAuthenticated && user && Number(user.daysLeft) === 0 && !user.plan && !showPackages) {
-      setShowPackages(true);
-    }
-  }, [isAuthenticated, user?.daysLeft, user?.plan, showPackages, setShowPackages]);
+  // During early validation, do not interrupt the user's core daily experience
+  // with an automatic expired-trial paywall. Existing paid-plan management stays available
+  // from Profile; actual billing configuration must be audited before a public launch.
 
   // ✅ Save push token on app start when authenticated
   useEffect(() => {
