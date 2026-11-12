@@ -5,6 +5,7 @@ import {useReducedMotion} from "@/hooks/useReducedMotion";
 import JourneyCard from "@/components/JourneyCard";
 import ConnectedJourney from "@/components/ConnectedJourney";
 import WeeklyReview from "@/components/WeeklyReview";
+import GoalProgressCard from "@/components/GoalProgressCard";
 import PremiumInterestCard from "@/components/PremiumInterestCard";
 import { scheduleTodaysPowerThought } from "@/lib/daily-thought-notification";
 import { playCompletionFeedback } from "@/lib/completion-feedback";
@@ -103,6 +104,7 @@ export default function HomeScreen() {
         </View>
         <JourneyCard onRecordChange={() => setJourneyRevision(value => value + 1)} />
         <ConnectedJourney refreshKey={journeyRevision} />
+        <GoalProgressCard refreshKey={journeyRevision} />
         <WeeklyReview refreshKey={journeyRevision} />
 
         <Animated.View style={[styles.hero,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[12,0]})}]}]}>
@@ -148,6 +150,21 @@ export default function HomeScreen() {
             <View style={styles.thoughtFooter}><TouchableOpacity onPress={() => router.push("/mental/thoughts")}><Text style={styles.thoughtLink}>EXPLORE THOUGHTS →</Text></TouchableOpacity><TouchableOpacity disabled={!todayThought || !!todayThought.isRead} accessibilityRole="checkbox" accessibilityState={{checked:!!todayThought?.isRead}} onPress={completeThought} style={{flexDirection:"row",alignItems:"center",gap:8,backgroundColor:todayThought?.isRead?"rgba(183,221,240,0.17)":"rgba(183,221,240,0.085)",paddingHorizontal:13,paddingVertical:11,borderRadius:12}}><Ionicons name={todayThought?.isRead?"checkmark-circle":"checkmark-circle-outline"} size={19} color={todayThought?.isRead?"#BFE7F4":GOLD}/><Text style={{color:todayThought?.isRead?"#BFE7F4":GOLD,fontWeight:"800",fontSize:12}}>{todayThought?.isRead?(isCurrentThought?"READ TODAY":"READ"):"MARK AS READ"}</Text></TouchableOpacity></View>
           </View>
         </View>
+        <TouchableOpacity
+          accessibilityRole="button" accessibilityLabel="Explore Treksor community events"
+          onPress={() => router.push("/community")}
+          style={{ backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1,
+            borderRadius: 18, marginTop: 24, padding: 20, gap: 9 }}>
+          <Text style={{ color: colors.gold, fontWeight: "700", fontSize: 10, letterSpacing: 1.7 }}>TREKSOR COMMUNITY</Text>
+          <Text style={{ color: colors.text, fontWeight: "600", fontSize: 20 }}>Real people. Shared experiences.</Text>
+          <Text style={{ color: colors.secondary, fontSize: 12, lineHeight: 19 }}>
+            Explore local gatherings, register for experiences and build relationships beyond the screen.
+          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 9 }}>
+            <Text style={{ color: colors.gold, fontWeight: "700", fontSize: 11 }}>EXPLORE COMMUNITY</Text>
+            <Ionicons name="arrow-forward" color={colors.gold} size={15}/>
+          </View>
+        </TouchableOpacity>
         <PremiumInterestCard />
         <Text style={styles.footer}>TREKSOR · BUILT WITH PURPOSE</Text>
       </ScrollView>
