@@ -97,6 +97,7 @@ export default function HomeScreen() {
             {user?.avatar?<Image source={{uri:user.avatar.startsWith("http")?user.avatar:`https://app.treksor.com/${user.avatar}`}} style={styles.profileImage} cachePolicy="memory-disk"/>:<Text style={styles.profileLetter}>{firstName.charAt(0).toUpperCase()}</Text>}
           </TouchableOpacity></View>
         </View>
+        <JourneyCard />
 
         <Animated.View style={[styles.hero,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[12,0]})}]}]}>
           <ImageBackground source={atmosphereUrl ? {uri:atmosphereUrl} : DAILY_HERO_IMAGES[dailyIndex]} onError={() => { if (atmosphereUrl) { setAtmosphereUrl(null); setAtmosphereMessage(null); } }} contentFit="cover" contentPosition={{left:"50%",top:"58%"}} cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
@@ -133,7 +134,6 @@ export default function HomeScreen() {
           ))}
         </Animated.View>
 
-        <JourneyCard />
         <View style={styles.thoughtSection}>
           <View style={styles.thoughtHeading}><Ionicons name="sunny-outline" color={GOLD} size={19} /><Text style={styles.thoughtLabel}>TODAY ON TREKSOR</Text></View>
           <View style={styles.thoughtCard}>

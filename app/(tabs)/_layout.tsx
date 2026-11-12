@@ -59,7 +59,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="home"
           options={{
-            title: "Home",
+            title: "Today",
             tabBarIcon: ({ color }) => (
               <View style={styles.iconContainer}><AntDesign name="home" size={24} color={color} /></View>
             ),
