@@ -45,7 +45,7 @@ const FIELDS = "id,title,description,category,city,starts_at,capacity,status,org
 export async function upcomingEvents(): Promise<CommunityEvent[]> {
   const now = new Date().toISOString();
   return request<CommunityEvent[]>(
-    "community_events?select=" + FIELDS + "&status=eq.published&starts_at=gt." +
+    "treksor_community_discovery_v1?select=" + FIELDS + "&status=eq.published&starts_at=gt." +
     encodeURIComponent(now) + "&order=starts_at.asc&limit=10",
     "GET", undefined, false
   );
@@ -60,7 +60,7 @@ export async function myPastEvents(): Promise<CommunityEvent[]> {
   // RLS exposes past events only to admins and their own registrants.
   const now = new Date().toISOString();
   return request<CommunityEvent[]>(
-    "community_events?select=" + FIELDS + "&starts_at=lt." +
+    "treksor_community_discovery_v1?select=" + FIELDS + "&starts_at=lt." +
     encodeURIComponent(now) + "&order=starts_at.desc&limit=30",
     "GET"
   );
