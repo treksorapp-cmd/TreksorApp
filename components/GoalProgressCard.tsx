@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useAuthStore } from "@/store/auth-store";
 import { useWorkoutStore } from "@/store/workout-store";
@@ -30,7 +30,6 @@ export default function GoalProgressCard({ refreshKey = 0 }: { refreshKey?: numb
   const [priorityDays, setPriorityDays] = useState<string[]>([]);
   const [knownCloudGoals, setKnownCloudGoals] = useState<CloudGoal[]>([]);
   const [cloudEvents, setCloudEvents] = useState<CloudEvent[]>([]);
-  const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
   const [feedback, setFeedback] = useState<boolean | null>(null);
@@ -51,13 +50,14 @@ export default function GoalProgressCard({ refreshKey = 0 }: { refreshKey?: numb
   const volume = useMemo(() => volumeSummary(gymSets || []), [gymSets]);
   const action = recommendGoalAction({ metric, target: cloudGoal?.target_count ?? target, observed });
   const completion = Math.min(100, Math.round((observed / Math.max(1, cloudGoal?.target_count ?? target)) * 100));
-  const [checkedAt, setCheckedAt] = useState(0);
+  const requestSerial = useRef(0);
 
   const reloadCloud = useCallback(async (currentUser: string, selectedMetric: GoalMetric) => {
+    const serial = ++requestSerial.current;
     const goals = await readCloudGoals(currentUser);
     const since = new Date(Date.now() - 8 * 86400000).toISOString();
     const events = await readCloudEvents(currentUser, selectedMetric, since);
-    if (useAuthStore.getState().user.id !== currentUser) return;
+    if (useAuthStore.getState().user.id !== currentUser || serial !== requestSerial.current) return;
     setKnownCloudGoals(goals);
     setCloudEvents(events);
     setOwner(currentUser);
@@ -83,11 +83,12 @@ export default function GoalProgressCard({ refreshKey = 0 }: { refreshKey?: numb
     if (isProgressAccountReady(userId)) void reloadCloud(userId, metric).catch(() => {
       if (alive) setNotice("Cloud goals unavailable. Your device data is unchanged.");
     });
-    return () => { alive = false; };
-  }, [userId, metric, refreshKey, syncStatus, reloadCloud, checkedAt]));
+    return () => { alive = false; requestSerial.current += 1; };
+  }, [userId, metric, refreshKey, syncStatus, reloadCloud]));
 
   const selectMetric = (next: GoalMetric) => {
     if (next === metric) return;
+    requestSerial.current += 1;
     setMetric(next);
     setFeedback(null);
     setCloudEvents([]);
