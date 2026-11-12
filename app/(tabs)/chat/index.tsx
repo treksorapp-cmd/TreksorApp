@@ -8,6 +8,7 @@ import { Ionicons } from "@expo/vector-icons"
 import { Image, ImageBackground } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
 import { StatusBar } from "expo-status-bar"
+import { useLocalSearchParams } from "expo-router"
 import { useEffect, useRef, useState } from "react"
 import {
   Dimensions,
@@ -38,6 +39,14 @@ export default function ChatScreen() {
   const loadHistory = useChatStore(state => state.loadHistory)
   const messages = currentUserId ? chats[currentUserId] || [] : [];
   const [inputText, setInputText] = useState("")
+  const { draft } = useLocalSearchParams<{ draft?: string }>()
+  const appliedDraft = useRef<string | null>(null)
+  useEffect(() => {
+    if (typeof draft !== "string" || !draft.trim() || appliedDraft.current === draft) return
+    appliedDraft.current = draft
+    // A navigation draft never sends automatically; it is fully editable.
+    setInputText(current => current.trim() ? current : draft.slice(0, 500))
+  }, [draft])
   const [campfireAvailable, setCampfireAvailable] = useState(true)
   const [keyboardHeight, setKeyboardHeight] = useState(0)
   useEffect(() => {
@@ -149,6 +158,7 @@ export default function ChatScreen() {
       )}
 
       {/* Input */}
+      {typeof draft === "string" && draft.length > 0 && <Text style={{ color: colors.secondary, fontSize: 11, paddingHorizontal: 22, marginBottom: 4 }}>Review this suggested message before sending. Nothing is shared automatically.</Text>}
       <View style={[styles.inputContainer, { paddingBottom: keyboardHeight > 0 ? 12 : insets.bottom + 82, marginBottom: keyboardHeight > 0 ? 12 : 0 }]}>
           <TextInput
             style={styles.textInput}
