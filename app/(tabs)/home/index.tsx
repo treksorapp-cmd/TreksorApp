@@ -108,6 +108,7 @@ export default function HomeScreen() {
             <Text style={styles.heroSub}>{dailyMessage[2]}</Text>
           </View>
         </Animated.View>
+        <JourneyCard />
         <View style={styles.sectionHeader}>
           <View>
             <Text style={styles.sectionEyebrow}>THE TREKSOR METHOD</Text>
@@ -133,7 +134,6 @@ export default function HomeScreen() {
           ))}
         </Animated.View>
 
-        <JourneyCard />
         <View style={styles.thoughtSection}>
           <View style={styles.thoughtHeading}><Ionicons name="sunny-outline" color={GOLD} size={19} /><Text style={styles.thoughtLabel}>TODAY ON TREKSOR</Text></View>
           <View style={styles.thoughtCard}>
