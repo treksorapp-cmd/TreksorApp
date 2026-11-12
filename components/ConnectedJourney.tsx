@@ -73,8 +73,8 @@ export default function ConnectedJourney({ refreshKey = 0 }: { refreshKey?: numb
       <View style={styles.grid}>
         {PILLARS.map(pillar => {
           const count = outcomes[pillar.id];
-          const value = ready || (pillar.id !== "mind" && pillar.id !== "purpose")
-            ? count === null ? "—" : String(count)
+          const value = ready && (pillar.id !== "mentor" || count !== null)
+            ? String(count)
             : "—";
           return (
             <TouchableOpacity
