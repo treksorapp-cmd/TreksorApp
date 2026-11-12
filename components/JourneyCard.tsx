@@ -200,7 +200,7 @@ export default function JourneyCard({ onRecordChange }: { onRecordChange?: () =>
           </View>
         </View>
         <View style={styles.progressTrack} accessibilityLabel={completed + " of 3 daily actions complete"}>
-          <View style={[styles.progressFill, { width: String((completed / 3) * 100) + "%" }]} />
+          <View style={[styles.progressFill, { width: `${(completed / 3) * 100}%` as const }]} />
         </View>
 
         <Text style={styles.fieldLabel}>YOUR ONE PRIORITY</Text>
