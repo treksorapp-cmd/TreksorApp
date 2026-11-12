@@ -13,7 +13,7 @@ function accountValid(id: string) {
   const s = useAuthStore.getState();
   return !!s.isAuthenticated && s.user.id === id && !!s.token;
 }
-async function request<T>(path: string, method: "GET"|"POST"|"DELETE", body?: unknown, requireLogin = true): Promise<T> {
+async function request<T>(path: string, method: "GET"|"POST"|"DELETE", body?: unknown, requireLogin = true, prefer = "return=minimal"): Promise<T> {
   const auth = useAuthStore.getState();
   const uid = auth.user?.id;
   if (requireLogin && (!uid || !accountValid(uid))) throw new Error("Sign in to take part.");
@@ -28,7 +28,7 @@ async function request<T>(path: string, method: "GET"|"POST"|"DELETE", body?: un
         apikey: KEY,
         ...(auth.token && auth.isAuthenticated ? { Authorization: "Bearer " + auth.token } : {}),
         "Content-Type": "application/json",
-        Prefer: method === "POST" ? "resolution=merge-duplicates,return=minimal" : "return=minimal",
+        Prefer: method === "POST" ? prefer : "return=minimal",
       },
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
     });
@@ -67,7 +67,7 @@ export async function myPastEvents(): Promise<CommunityEvent[]> {
 }
 export async function joinEvent(userId: string, eventId: string): Promise<void> {
   await request<null>("community_registrations",
-    "POST", { user_id: userId, event_id: eventId });
+    "POST", { user_id: userId, event_id: eventId }, true, "resolution=ignore-duplicates,return=minimal");
 }
 export async function leaveEvent(userId: string, eventId: string): Promise<void> {
   await request<null>("community_registrations?user_id=eq." + encodeURIComponent(userId) +
@@ -75,5 +75,5 @@ export async function leaveEvent(userId: string, eventId: string): Promise<void>
 }
 export async function submitExperience(userId: string, response: ExperienceFeedback): Promise<void> {
   await request<null>("treksor_event_experience_feedback?on_conflict=event_id,user_id","POST",
-    [{ user_id: userId, ...response }]);
+    [{ user_id: userId, ...response }], true, "resolution=merge-duplicates,return=minimal");
 }
