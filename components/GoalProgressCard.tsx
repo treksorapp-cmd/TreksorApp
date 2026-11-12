@@ -170,7 +170,7 @@ export default function GoalProgressCard({ refreshKey = 0 }: { refreshKey?: numb
         </View>
       </View>
       <View style={styles.track}>
-        <View style={[styles.fill,{width:completion+"%"}]}/>
+        <View style={[styles.fill,{width: `${completion}%` as const}]}/>
       </View>
       {metric === "workout_sessions_7d" && <Text style={styles.hint}>
         This device also contains {volume.sets} logged weighted set(s) and {volume.volumeKg} kg of recorded training volume in the last 7 days. Self-recorded entries are not independently verified.
