@@ -33,15 +33,15 @@ export default function ChatScreen() {
   const { user } = useAuthStore()
 
   useEffect(()=>{
-    setUserId(useAuthStore.getState().user.id)
-  },[setUserId])
+    setUserId(user?.id || null)
+  },[setUserId, user?.id])
 
   useEffect(() => {
     flatListRef.current?.scrollToEnd({ animated: true })
   }, [messages])
 
   const handleSendMessage = () => {
-    if (inputText.trim() && !loading) {
+    if (user?.id && inputText.trim() && !loading) {
       sendMessage(inputText.trim())
       setInputText("")
       setTimeout(() => {
@@ -113,6 +113,12 @@ export default function ChatScreen() {
         </TouchableOpacity>
       </View> */}
 
+      {!user?.id && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Sign in to use Mentor and keep your conversations private.</Text>
+        </View>
+      )}
+
       {/* Messages */}
       <FlatList
         ref={flatListRef}
@@ -161,7 +167,7 @@ export default function ChatScreen() {
           <TouchableOpacity
             style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
             onPress={handleSendMessage}
-            disabled={!inputText.trim() || loading}
+            disabled={!user?.id || !inputText.trim() || loading}
           >
             {loading ? (
               <View style={styles.loadingDot} />
