@@ -2,6 +2,7 @@ import DiscoveryCard from "@/components/discovery/DiscoveryCard";
 import PillarUpdates from "@/components/PillarUpdates";
 import { useContentRefresh } from "@/hooks/useContentRefresh";
 import {colors} from "@/theme/architect";
+import { pillars as pillarIdentity } from "@/lib/pillar-navigation";
 import {useReducedMotion} from "@/hooks/useReducedMotion";
 import JourneyCard from "@/components/JourneyCard";
 import { scheduleTodaysPowerThought } from "@/lib/daily-thought-notification";
@@ -38,10 +39,10 @@ const DAILY_HERO_IMAGES = [
   require("@/assets/images/purpose-background.png"),
 ];
 const pillars: { name: string; subtitle: string; route: Href; image: number; icon: keyof typeof Ionicons.glyphMap; index: string }[] = [
-  { name: "Body", subtitle: "Strength & movement", route: "/body", image: require("@/assets/images/Body_2.png"), icon: "barbell-outline", index: "01" },
-  { name: "Mind", subtitle: "Clarity & focus", route: "/mental", image: require("@/assets/images/mental-home-bg.jpeg"), icon: "book-outline", index: "02" },
-  { name: "Balance", subtitle: "Recovery & presence", route: "/spiritual", image: require("@/assets/images/spiritual-ritual.png"), icon: "shield-outline", index: "03" },
-  { name: "Purpose", subtitle: "Direction & intention", route: "/purpose", image: require("@/assets/images/purpose-background.png"), icon: "compass-outline", index: "04" },
+  { name: "Body", subtitle: "Strength & movement", route: "/body", image: require("@/assets/images/Body_2.png"), icon: pillarIdentity.body.icon, index: "01" },
+  { name: "Mind", subtitle: "Clarity & focus", route: "/mental", image: require("@/assets/images/mental-home-bg.jpeg"), icon: pillarIdentity.mind.icon, index: "02" },
+  { name: "Balance", subtitle: "Recovery & presence", route: "/spiritual", image: require("@/assets/images/spiritual-ritual.png"), icon: pillarIdentity.balance.icon, index: "03" },
+  { name: "Purpose", subtitle: "Direction & intention", route: "/purpose", image: require("@/assets/images/purpose-background.png"), icon: pillarIdentity.purpose.icon, index: "04" },
 ];
 
 export default function HomeScreen() {
