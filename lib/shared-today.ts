@@ -2,7 +2,7 @@ import { useAuthStore } from "@/store/auth-store";
 
 const ENDPOINT = "https://niakfwerfqmrmhuypkpd.supabase.co/rest/v1/app_progress";
 const KEY = "sb_publishable_WxFupUF8wM6SuEcTXYuqHw_dRoSpLs8";
-const validDate = (value: unknown): value is string => typeof value === "string" && /^\\d{4}-\\d{2}-\\d{2}$/.test(value);
+const validDate = (value: unknown): value is string => typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
 
 /** Read only completion dates from every device belonging to the current authenticated user.
  * Do not import mood/focus/energy or overwrite this device's private check-in records.
