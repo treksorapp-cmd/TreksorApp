@@ -26,7 +26,7 @@ const mocks={
  'react-native-safe-area-context':{SafeAreaView:wrap,useSafeAreaInsets:()=>({top:44,bottom:34,left:0,right:0})},
  'expo-image':{Image:media,ImageBackground:media},'expo-linear-gradient':{LinearGradient:wrap},'expo-blur':{BlurView:wrap},
  'expo-status-bar':{StatusBar:()=>null},
- '@expo/vector-icons':{Ionicons:({name})=>React.createElement('span',{'data-icon':name}),Entypo:()=>null},
+ '@expo/vector-icons':{Ionicons:({name})=>React.createElement('span',{'data-icon':name}),MaterialCommunityIcons:({name})=>React.createElement('span',{'data-icon':name}),Entypo:()=>null},
  'expo-av':{Audio:{}},'expo-file-system':{},
  '@/store/mediation-store':{useMediationStore:selector=>selector({...store,locked:isLocked?['beginner']:[]})},
  '@/store/myspace-store':{useMySpaceStore:()=>store},
