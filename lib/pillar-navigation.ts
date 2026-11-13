@@ -1,7 +1,7 @@
 export const pillars = {
     body: { name: "Body", route: "/body", icon: "barbell-outline" },
-    mind: { name: "Mind", route: "/mental", icon: "bulb-outline" },
-    balance: { name: "Balance", route: "/spiritual", icon: "sync-outline" },
+    mind: { name: "Mind", route: "/mental", icon: "brain" },
+    balance: { name: "Balance", route: "/spiritual", icon: "leaf-outline" },
     purpose: { name: "Purpose", route: "/purpose", icon: "compass-outline" },
 } as const;
 export type PillarKey = keyof typeof pillars;
