@@ -44,7 +44,8 @@ export function useProgressSync() {
         return request(method,path,body,false,endpoint,prefer);
       }
       if(!response.ok)throw new Error('Unable to sync. Your progress remains on this device.');
-      return response.status===204 ? [] : response.json();
+      const raw = await response.text();
+      return raw ? JSON.parse(raw) : [];
     }
     async function sync(force=false) {
       if(!ready||busy||!current()||AppState.currentState==='background')return;
