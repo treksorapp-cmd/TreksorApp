@@ -1,5 +1,6 @@
 import JourneyDashboard from "@/components/progress/JourneyDashboard";
 import {getJourneyCheckIns} from "@/lib/journey-checkins";
+import {getSharedTodayDates} from "@/lib/shared-today";
 import {getLifeMoments} from "@/lib/life-moments";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, AppState, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -57,7 +58,7 @@ export default function TrackingScreen() {
       catch { if (active) setExtras(s => ({ ...s, accountError: true })); return; }
       if (!active) return;
       setExtras(s => ({ ...s, ready: true }));
-    void getJourneyCheckIns(userId||"").then(rows=>{if(active)setExtras(s=>({...s,journeyDates:rows.map(row=>row.date)}))}).catch(()=>{});
+    void Promise.allSettled([getJourneyCheckIns(userId||""),getSharedTodayDates(userId||"")]).then(results=>{if(!active)return;const local=results[0].status==="fulfilled"?results[0].value.map(row=>row.date):[];const remote=results[1].status==="fulfilled"?results[1].value:[];setExtras(s=>({...s,journeyDates:[...new Set([...local,...remote])].sort()}))});
     void getLifeMoments(userId||"").then(rows=>{if(active)setExtras(s=>({...s,momentDates:rows.map(row=>row.date)}))}).catch(()=>{});
     void getEntries(userId || "").then(entries => {
       if (active) setExtras(s => ({ ...s, journalDates: entries.map(e => e.date), journalLoading: false }));
