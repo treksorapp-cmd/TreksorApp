@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.mobile.json",
     "test:ui": "node tests/ui-contracts.cjs",
     "test:integrity": "node tests/source-integrity.cjs",
-    "test:progress": "node tests/progress-sync.cjs",
+    "test:progress": "node tests/progress-sync.cjs && node tests/shared-today.cjs",
     "test:audio": "node tests/audio-lifecycle.cjs",
     "test:dashboard": "node tests/progress-dashboard.cjs",
     "test:content": "node tests/content-sync.cjs",
