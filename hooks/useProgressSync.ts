@@ -1,3 +1,4 @@
+import {getJourneyCheckIns} from '@/lib/journey-checkins';
 import {readBalance,balanceSyncPayload} from '@/lib/balance/practice';
 import { useEffect } from 'react';
 import { AppState, Platform } from 'react-native';
@@ -52,7 +53,9 @@ export function useProgressSync() {
         const thoughts=await AsyncStorage.getItem('treksor.thoughts.read.v1');
         const vision=await AsyncStorage.getItem('treksor.vision-board.v1');
         const balance=balanceSyncPayload(await readBalance(userId));
-        const payload=buildProgressPayload({balance,device:Platform.OS==='ios'?'iPhone / iPad':Platform.OS==='android'?'Android':'Treksor app',workout:useWorkoutStore.getState(),tracking:useTrackingStore.getState().trackingData,articles:useArticleStore.getState().articles,meditations:useMediationStore.getState().mediation,thoughtDates:thoughts?JSON.parse(thoughts):{},vision:vision?JSON.parse(vision):null});
+        // Sync dates only. Mood, energy and focus values remain private on-device.
+        const journeyDates=(await getJourneyCheckIns(userId)).map(row=>row.date);
+        const payload=buildProgressPayload({balance,journeyDates,device:Platform.OS==='ios'?'iPhone / iPad':Platform.OS==='android'?'Android':'Treksor app',workout:useWorkoutStore.getState(),tracking:useTrackingStore.getState().trackingData,articles:useArticleStore.getState().articles,meditations:useMediationStore.getState().mediation,thoughtDates:thoughts?JSON.parse(thoughts):{},vision:vision?JSON.parse(vision):null});
         const json=JSON.stringify(payload);
         if(!force&&json===lastPayload)return;
         status({status:'syncing',message:'Syncing with your web profile…'});
