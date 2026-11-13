@@ -9,7 +9,7 @@ import { scheduleTodaysPowerThought } from "@/lib/daily-thought-notification";
 import { playCompletionFeedback } from "@/lib/completion-feedback";
 import { useAuthStore } from "@/store/auth-store";
 import { usePowerThoughtStore } from "@/store/thought-store";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image, ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, type Href } from "expo-router";
@@ -38,7 +38,7 @@ const DAILY_HERO_IMAGES = [
   require("@/assets/images/spiritual-ritual.png"),
   require("@/assets/images/purpose-background.png"),
 ];
-const pillars: { name: string; subtitle: string; route: Href; image: number; icon: keyof typeof Ionicons.glyphMap; index: string }[] = [
+const pillars: { name: string; subtitle: string; route: Href; image: number; icon: string; index: string }[] = [
   { name: "Body", subtitle: "Strength & movement", route: "/body", image: require("@/assets/images/Body_2.png"), icon: pillarIdentity.body.icon, index: "01" },
   { name: "Mind", subtitle: "Clarity & focus", route: "/mental", image: require("@/assets/images/mental-home-bg.jpeg"), icon: pillarIdentity.mind.icon, index: "02" },
   { name: "Balance", subtitle: "Recovery & presence", route: "/spiritual", image: require("@/assets/images/spiritual-ritual.png"), icon: pillarIdentity.balance.icon, index: "03" },
@@ -116,7 +116,7 @@ export default function HomeScreen() {
               <ImageBackground source={pillar.image} contentFit="cover" contentPosition={pillar.name==="Mind"?{left:"50%",top:"18%"}:"center"} style={StyleSheet.absoluteFill} transition={180} cachePolicy="memory-disk" />
               <LinearGradient colors={["rgba(0,0,0,0.20)", "rgba(0,0,0,0.22)", "rgba(0,0,0,0.95)"]} locations={[0, 0.34, 1]} style={StyleSheet.absoluteFill} />
               <View style={styles.tileTop}>
-                <View style={styles.tileIcon}><Ionicons name={pillar.icon} color="#FFFFFF" size={18} /></View>
+                <View style={styles.tileIcon}>{pillar.name === "Mind" ? <MaterialCommunityIcons name="brain" color="#FFFFFF" size={18} /> : <Ionicons name={pillar.icon as keyof typeof Ionicons.glyphMap} color="#FFFFFF" size={18} />}</View>
               </View>
               <View style={styles.tileBottom}>
                 <Text style={styles.tileTitle}>{pillar.name}</Text>
