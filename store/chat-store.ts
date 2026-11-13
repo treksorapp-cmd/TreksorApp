@@ -11,7 +11,7 @@ interface ChatState {
   loading: boolean;
   error: string | null;
 
-  setUserId: (userId: string) => void;
+  setUserId: (userId: string | null) => void;
   sendMessage: (message: string) => Promise<void>;
   clearData: () => void;
   getMessages: () => Message[];
@@ -30,7 +30,7 @@ export const useChatStore = create<ChatState>()(
       loading: false,
       error: null,
 
-      setUserId: (userId: string) => {
+      setUserId: (userId: string | null) => {
         set({ currentUserId: userId });
       },
 
@@ -41,7 +41,10 @@ export const useChatStore = create<ChatState>()(
 
       sendMessage: async (message: string) => {
         const { currentUserId, chats } = get();
-        if (!currentUserId) return;
+        if (!currentUserId) {
+          set({ error: "Sign in to use Mentor.", loading: false });
+          return;
+        }
 
         const chatMessage: Message = {
           id: generateRandomId(),
@@ -85,7 +88,7 @@ export const useChatStore = create<ChatState>()(
 
           set({
             loading: false,
-            error: error.message,
+            error: error instanceof Error ? error.message : "Unable to reach Mentor. Please try again.",
             chats: {
               ...get().chats,
               [currentUserId]: [...get().chats[currentUserId], errorMessage],
@@ -99,6 +102,7 @@ export const useChatStore = create<ChatState>()(
       clearData: () => {
         set({
           chats: {},
+          currentUserId: null,
           loading: false,
           error: null,
         });
