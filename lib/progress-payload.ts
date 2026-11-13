@@ -7,6 +7,7 @@ export function buildProgressPayload(input: {
   articles: Record<string,{_id:string;title:string;category:string;isRead?:boolean}[]>;
   meditations: {id:string;isRead?:boolean}[];
   thoughtDates: Record<string,string>;
+  journeyDates?: string[];
   vision: unknown;
 }) {
   const unique = new Map<string, typeof input.articles[string][number]>();
@@ -25,6 +26,7 @@ export function buildProgressPayload(input: {
     trackers:input.tracking.map(t => ({id:t.id,title:t.title,percentage:t.percentage,custom:t.custom,items:t.items.map(i => ({id:i.id,label:i.label,value:i.value,record:i.record || {}}))})),
     articles:{completed:articles.filter(a => a.isRead).length,total:articles.length,read:articles.filter(a => a.isRead).map(a => ({id:a._id,title:a.title,category:a.category}))},
     meditations:{completed:input.meditations.filter(m => m.isRead).length,total:input.meditations.length},
+    today:{completedDays:[...new Set((input.journeyDates || []).filter(d => typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)))].sort()},
     thoughtDates:Object.values(input.thoughtDates).filter(d => typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)),
     vision:{completed:answers.filter(a => typeof a === 'string' && a.trim()).length,total:10},
   };
