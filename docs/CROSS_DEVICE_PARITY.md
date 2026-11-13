@@ -9,7 +9,7 @@ One Supabase Auth identity (auth.users.id) across mobile, web and watch-linked c
 - A new production table public.treksor_sync_events has been created with authenticated-only SELECT/INSERT, RLS owner checks, unique (user_id,kind,event_key), immutable client writes (no UPDATE grant), and a date-only privacy constraint for today_completed. It is additive: no existing user records were migrated or overwritten.
 - Mobile app code on this unmerged branch publishes date-only Today completion events idempotently using PostgREST ignore-duplicates. Website and watch clients still need to write to this same table; the new code is not deployed.
 - This is **partial bidirectional Today completion**, not a complete cross-device data model or end-to-end verified integration.
-- The watch companion currently supports only the read-only `progress` request. It explicitly rejects writes. No watch-originated activity input has been implemented; native watchOS UI and bridge changes are needed.
+- The watch iPhone bridge now accepts an explicit `today_complete` command, gated by a per-user sharing grant and Supabase session, and writes a date-only event with source=watch. The existing `progress` read remains supported. **The native watchOS user interface has not been updated**, so this is protocol readiness, not an end-to-end working watch input.
 - The public website source is not among the accessible GitHub repositories. No web write path or design parity can be verified yet.
 - App progress is stored per device; a full bidirectional workout edit requires stable record IDs, conflict resolution and a canonical per-user event model. Do not overwrite another device's payload with a local snapshot.
 - Admin Supabase-backed branch is `backend/supabase-foundation`; admin membership is role-specific. Do not give all users admin permissions.
@@ -36,4 +36,4 @@ One Supabase Auth identity (auth.users.id) across mobile, web and watch-linked c
 9. Run typecheck, regression tests, real-device watch tests, authenticated browser E2E and security advisors before deployment.
 
 ## Status
-NOT launch-ready. Supabase table exists and has verified RLS/grants. Today cross-device mobile read/write code is unmerged and untested on devices; website source and watch write capability are missing. A GitHub Actions check was added but no successful run is confirmed. Supabase advisor still warns that leaked password protection is disabled. Do not claim cross-platform bidirectional sync or full parity until acceptance tests pass.
+NOT launch-ready. Supabase table exists and has verified RLS/grants. Today cross-device mobile read/write code is unmerged and untested on devices; website source and native watchOS input UI are missing. A GitHub Actions check was added but no successful run is confirmed. Supabase advisor still warns that leaked password protection is disabled. Do not claim cross-platform bidirectional sync or full parity until acceptance tests pass.
