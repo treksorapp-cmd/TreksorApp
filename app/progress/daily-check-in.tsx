@@ -57,11 +57,11 @@ export default function DailyCheckIn(){
        style={({pressed})=>({
         flex:1,minHeight:50,borderRadius:11,justifyContent:"center",alignItems:"center",
         backgroundColor:selected?colors.gold:pressed?colors.surfaceRaised:colors.background,
-        borderWidth:selected?2:1,borderColor:selected?colors.gold:"rgba(215,184,119,0.30)",
+        borderWidth:selected?2:1,borderColor:selected?colors.gold:"rgba(245,244,241,0.12)",
         opacity:pressed&&!selected?0.82:1
        })}>
        <Text style={{color:selected?"#17130A":colors.text,fontSize:11,fontWeight:selected?"800":"600"}}>{label}</Text>
-       {selected?<Ionicons name="checkmark-circle" size={15} color="#17130A" style={{marginTop:4}}/>:null}
+       {selected?<Ionicons name="checkmark" size={14} color="#17130A" style={{marginTop:4}}/>:null}
       </Pressable>
      })}
     </View>
@@ -72,7 +72,7 @@ export default function DailyCheckIn(){
      multiline value={note} onChangeText={v=>{setNote(v);setSaved(false)}}
      placeholder="What's on your mind?" placeholderTextColor={colors.muted}
      selectionColor={colors.gold}
-     style={{minHeight:125,textAlignVertical:"top",color:colors.text,backgroundColor:colors.background,borderWidth:1,borderColor:"rgba(215,184,119,0.24)",borderRadius:12,padding:14,fontSize:15,lineHeight:22}}
+     style={{minHeight:125,textAlignVertical:"top",color:colors.text,backgroundColor:colors.background,borderWidth:1,borderColor:"rgba(245,244,241,0.12)",borderRadius:12,padding:14,fontSize:15,lineHeight:22}}
     />
    </View>
 
