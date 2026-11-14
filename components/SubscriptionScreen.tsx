@@ -19,7 +19,7 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
   const [planType, setPlanType] = useState<PlanType>("monthly");
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [activeSubscriptionType, setActiveSubscriptionType] = useState<PlanType | null>(null);
-  const { user, getCurrentUser, logout } = useAuthStore(); 
+  const { user, getCurrentUser } = useAuthStore(); 
   const {purchasePlan, cancelSubscription} = useUserStore();
   const appState = useRef(AppState.currentState);
   const [pendingCancel, setPendingCancel] = useState(false);
@@ -153,19 +153,18 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
   
   const currentPackage: any = planType === "monthly" ? monthlyPackage : yearlyPackage;
   
+  // Keep plan descriptions conservative until store entitlements and actual
+  // benefits have been verified. Never claim that future features are included.
   const monthlyFeatures = [
-    "Unlock the Body, Mind & Spiritual pillars",
-    "Daily Power Thoughts to keep you aligned",
-    "Unique Articles every two days",
-    "AI Companion to guide your journey",
-    "Activity Tracker for your habits and goals",
+    "Treksor tools for Body, Mind, Balance and Purpose",
+    "Daily perspectives, articles and progress tracking",
+    "Mentor functionality where available in your app version",
   ];
-  
+
   const yearlyFeatures = [
-    "Everything in the Monthly Plan",
-    "Plus, unlock the exclusive Purpose Pillar (coming soon in 2026)",
-    "One-time annual payment at a lower rate",
-    "Full access to the complete TREKSOR framework",
+    "The same current Treksor experience with annual billing",
+    "Review the store-displayed annual price before confirming",
+    "Future products and features are not guaranteed",
   ];
   
   const currentFeatures = planType === "monthly" ? monthlyFeatures : yearlyFeatures;
@@ -318,7 +317,7 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
   };
 
   return (
-    <Modal transparent visible animationType="fade" onRequestClose={()=>{if(Number(user?.daysLeft)>0||user?.plan)onClose();}}>
+    <Modal transparent visible animationType="fade" onRequestClose={onClose}>
     <View style={styles.modalOverlay}>
           <ImageBackground
             source={planType === "monthly" ? require("@/assets/images/monthly.jpeg") : require("@/assets/images/yearly.jpeg")}
@@ -326,46 +325,10 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
             style={styles.backgroundImage}
             imageStyle={styles.imageStyle}
           >
-            {(Number(user?.daysLeft) > 0 || user?.plan) ? (
-              <TouchableOpacity accessibilityRole="button" accessibilityLabel="Close plans" style={[styles.closeButton,{top:insets.top+12}]} onPress={onClose}>
-                <Ionicons
-                  name="close"
-                  size={24}
-                  color="#ffffff"
-                />
-              </TouchableOpacity>
-            ): (
-              <TouchableOpacity
-                accessibilityRole="button" accessibilityLabel="Log out" style={[styles.logoutButton,{top:insets.top+12}]}
-                onPress={() => {
-                  Alert.alert(
-                    "Logout",
-                    "Are you sure you want to logout?",
-                    [
-                      {
-                        text: "Cancel",
-                        style: "cancel",
-                      },
-                      {
-                        text: "Logout",
-                        style: "destructive",
-                        onPress: () => {
-                          logout();
-                          onClose();
-                        },
-                      },
-                    ]
-                  );
-                }}
-                activeOpacity={0.8}
-              >
-                <Ionicons
-                  name="log-out-outline"
-                  size={24}
-                  color="#ffffff"
-                />
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Close plans"
+              style={[styles.closeButton,{top:insets.top+12}]} onPress={onClose}>
+              <Ionicons name="close" size={24} color="#ffffff" />
+            </TouchableOpacity>
 
             <ScrollView style={{width:"100%"}} contentContainerStyle={[styles.overlay,{paddingTop:insets.top+76,paddingBottom:insets.bottom+24}]} showsVerticalScrollIndicator={false}>
               <View style={styles.modalContainer}>
@@ -414,8 +377,8 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
                         </Text>
                         <Text style={styles.planSubheading}>
                           {planType === "monthly" 
-                            ? "Includes the 7-day free trial, then automatically renews monthly."
-                            : "Includes a 14-day free trial, then renews yearly (save 40%)."}
+                            ? "Auto-renews monthly unless cancelled. Check your store confirmation for any eligible trial and exact billing terms."
+                            : "Auto-renews yearly unless cancelled. Check your store confirmation for any eligible trial and exact billing terms."}
                         </Text>
                       </>
                     )}

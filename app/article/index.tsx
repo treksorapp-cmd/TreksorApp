@@ -7,7 +7,7 @@ import CategoryFilter from "@/components/ui/CategoryFilter";
 import { useArticleStore } from "@/store/article-store";
 import { Article } from "@/types/article";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, type Href } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -100,7 +100,7 @@ export default function ArticlesScreen({ mode = "tab", category = "All Articles"
 
   const handleArticlePress = (article: Article) => {
     const path = mode === "stack" ? `/${category === "Body" ? "body" : category === "Spiritual" ? "spiritual" : "mental"}/articles/${article._id}?category=${activeCategory}` : `/(tabs)/articles/${article._id}?category=${activeCategory}`;
-    router.push(path);
+    router.push(path as Href);
   };
 
   const renderFooter = () => {

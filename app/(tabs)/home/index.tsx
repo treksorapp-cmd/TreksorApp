@@ -1,10 +1,7 @@
-import DiscoveryCard from "@/components/discovery/DiscoveryCard";
-import PillarUpdates from "@/components/PillarUpdates";
 import { useContentRefresh } from "@/hooks/useContentRefresh";
 import {colors} from "@/theme/architect";
 import { pillars as pillarIdentity } from "@/lib/pillar-navigation";
 import {useReducedMotion} from "@/hooks/useReducedMotion";
-import JourneyCard from "@/components/JourneyCard";
 import { scheduleTodaysPowerThought } from "@/lib/daily-thought-notification";
 import { playCompletionFeedback } from "@/lib/completion-feedback";
 import { useAuthStore } from "@/store/auth-store";
@@ -18,7 +15,7 @@ import { Animated, AppState, Easing, FlatList, ScrollView, StyleSheet, Text, Tou
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const GOLD = "#D7B877";
-const ATMOSPHERE_ENDPOINT = "https://niakfwerfqmrmhuypkpd.supabase.co/rest/v1/atmosphere_images?select=public_url&published_at=lte.&order=published_at.desc&limit=1";
+const ATMOSPHERE_ENDPOINT = "https://niakfwerfqmrmhuypkpd.supabase.co/rest/v1/atmosphere_images?select=*&published_at=lte.&order=published_at.desc&limit=1";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_WxFupUF8wM6SuEcTXYuqHw_dRoSpLs8";
 const DAILY_MESSAGES = [
 ["Move with","intention.","Strength. Clarity. Balance. Purpose."],
@@ -58,9 +55,10 @@ export default function HomeScreen() {
   const firstName = user?.name?.trim().split(" ")[0] || "Explorer";
   const [now,setNow]=useState(()=>new Date());
   const [atmosphereUrl,setAtmosphereUrl]=useState<string | null>(null);
+  const [atmosphereMessage,setAtmosphereMessage]=useState<readonly [string,string,string] | null>(null);
   const refreshAtmosphere=useCallback(async()=>{
     const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),8000);
-    try{const response=await fetch(ATMOSPHERE_ENDPOINT.replace("published_at=lte.","published_at=lte."+encodeURIComponent(new Date().toISOString())),{headers:{apikey:SUPABASE_PUBLISHABLE_KEY},signal:controller.signal});if(!response.ok)return;const rows=await response.json();const url=rows?.[0]?.public_url;if(typeof url==="string"&&url.startsWith("https://"))setAtmosphereUrl(url)}catch{}finally{clearTimeout(timeout)}
+    try{const response=await fetch(ATMOSPHERE_ENDPOINT.replace("published_at=lte.","published_at=lte."+encodeURIComponent(new Date().toISOString())),{headers:{apikey:SUPABASE_PUBLISHABLE_KEY},signal:controller.signal});if(!response.ok)return;const rows=await response.json();const url=rows?.[0]?.public_url;if(typeof url==="string"&&url.startsWith("https://")){setAtmosphereUrl(url);const row=rows[0];const heading=typeof row.headline==="string"?row.headline.trim():typeof row.title==="string"?row.title.trim():"";const subtitle=typeof row.subtitle==="string"?row.subtitle.trim():typeof row.caption==="string"?row.caption.trim():"";const lines=heading.split(/\n|\|/).map((part:string)=>part.trim()).filter(Boolean);setAtmosphereMessage(lines.length>=2?[lines[0],lines.slice(1).join(" "),subtitle]:null)}}catch{}finally{clearTimeout(timeout)}
   },[]);
   useContentRefresh(refreshAtmosphere);
   const reveal=useRef(new Animated.Value(0)).current;
@@ -71,7 +69,7 @@ export default function HomeScreen() {
   useEffect(()=>{const refresh=()=>setNow(new Date());const timer=setInterval(refresh,60000);const sub=AppState.addEventListener("change",v=>{if(v==="active")refresh()});return()=>{clearInterval(timer);sub.remove()}},[]);
   const hour = now.getHours();
   const dailyIndex=Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000)%DAILY_MESSAGES.length;
-  const dailyMessage=DAILY_MESSAGES[dailyIndex];
+  const dailyMessage=atmosphereUrl&&atmosphereMessage?atmosphereMessage:DAILY_MESSAGES[dailyIndex];
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const todayThought = powerThoughts?.find(item => item.isToday) || powerThoughts?.[0];
   const isCurrentThought = !!todayThought?.isToday;
@@ -96,7 +94,7 @@ export default function HomeScreen() {
         </View>
 
         <Animated.View style={[styles.hero,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[12,0]})}]}]}>
-          <ImageBackground source={atmosphereUrl ? {uri:atmosphereUrl} : DAILY_HERO_IMAGES[dailyIndex]} onError={() => { if (atmosphereUrl) setAtmosphereUrl(null); }} contentFit="cover" contentPosition={{left:"50%",top:"58%"}} cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
+          <ImageBackground source={atmosphereUrl ? {uri:atmosphereUrl} : DAILY_HERO_IMAGES[dailyIndex]} onError={() => { if (atmosphereUrl) {setAtmosphereUrl(null);setAtmosphereMessage(null)} }} contentFit="cover" contentPosition={{left:"50%",top:"58%"}} cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
           <LinearGradient colors={["rgba(8,9,11,0.08)", "rgba(8,9,11,0.45)", "#08090B"]} locations={[0, 0.4, 1]} style={StyleSheet.absoluteFill} />
           <View style={styles.heroGreetingWrap}><View style={styles.pulseShell}><Animated.View style={[styles.pulseHalo,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.06,0.24]}),transform:[{scale:pulse.interpolate({inputRange:[0,1],outputRange:[1,1.65]})}]}]}/><Animated.View style={[styles.greetingDot,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.70,1]})}]}/></View><Text style={styles.heroGreeting}>{greeting}</Text></View>
           <View style={styles.heroContent}>
@@ -144,8 +142,11 @@ export default function HomeScreen() {
           <Text style={styles.swipeHint}>Swipe to move through the four pillars</Text>
         </Animated.View>
 
-        <DiscoveryCard />
-        <JourneyCard />
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open Today daily practice" activeOpacity={0.82} onPress={()=>router.push("/(tabs)/today" as Href)} style={styles.todayShortcut}>
+          <View style={styles.todayShortcutIcon}><Ionicons name="today-outline" size={24} color={colors.gold}/></View>
+          <View style={{flex:1}}><Text style={styles.todayShortcutEyebrow}>YOUR DAILY PRACTICE</Text><Text style={styles.todayShortcutTitle}>Today</Text><Text style={styles.todayShortcutHint}>One priority. Three small actions.</Text></View>
+          <Ionicons name="arrow-forward" size={19} color={colors.gold}/>
+        </TouchableOpacity>
         <View style={styles.thoughtSection}>
           <View style={styles.thoughtHeading}><Ionicons name="sunny-outline" color={GOLD} size={19} /><Text style={styles.thoughtLabel}>TODAY ON TREKSOR</Text></View>
           <View style={styles.thoughtCard}>
@@ -217,7 +218,12 @@ const styles = StyleSheet.create({
   tileCaption: { color: "#E4DBCA", fontSize: 12, lineHeight: 17, marginTop: 6 },
   tileFooter: { marginTop: 14, paddingTop: 10, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.25)", flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   explore: { color: GOLD, fontSize: 9, fontWeight: "800", letterSpacing: 1.6 },
-  thoughtSection: { marginTop: 33 },
+  todayShortcut:{flexDirection:"row",alignItems:"center",gap:15,padding:18,marginTop:22,borderRadius:18,borderWidth:1,borderColor:colors.border,backgroundColor:colors.surface},
+  todayShortcutIcon:{height:46,width:46,borderRadius:14,alignItems:"center",justifyContent:"center",backgroundColor:colors.goldSoft},
+  todayShortcutEyebrow:{color:colors.gold,fontSize:10,fontWeight:"700",letterSpacing:1.4},
+  todayShortcutTitle:{color:colors.text,fontSize:21,fontWeight:"600",marginTop:4},
+  todayShortcutHint:{color:colors.muted,fontSize:12,marginTop:3},
+  thoughtSection: { marginTop: 25 },
   thoughtHeading: { flexDirection: "row", alignItems: "center", gap: 9, marginBottom: 14 },
   thoughtLabel: { color: GOLD, fontSize: 10, fontWeight: "800", letterSpacing: 1.8 },
   thoughtCard: { borderRadius: 19, backgroundColor: "rgba(183,221,240,0.075)", padding: 20 },
