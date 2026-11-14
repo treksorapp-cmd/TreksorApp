@@ -1,3 +1,4 @@
+import {getJourneyCheckIns} from '@/lib/journey-checkins';
 import {readBalance,balanceSyncPayload} from '@/lib/balance/practice';
 import { useEffect } from 'react';
 import { AppState, Platform } from 'react-native';
@@ -14,6 +15,7 @@ import { buildProgressPayload } from '@/lib/progress-payload';
 import { supabaseAuth } from '@/api/supabase-auth';
 
 const URL='https://niakfwerfqmrmhuypkpd.supabase.co/rest/v1/app_progress';
+const EVENTS='https://niakfwerfqmrmhuypkpd.supabase.co/rest/v1/treksor_sync_events';
 const KEY='sb_publishable_WxFupUF8wM6SuEcTXYuqHw_dRoSpLs8';
 
 export function useProgressSync() {
@@ -26,23 +28,24 @@ export function useProgressSync() {
     const current=()=>sameAccount() && isProgressAccountReady(userId);
     const status=(data:Partial<ReturnType<typeof useProgressSyncStore.getState>>)=>{if(sameAccount())useProgressSyncStore.setState(data)};
     if(!userId){useProgressSyncStore.setState({status:'idle',lastSynced:null,message:'Sign in to sync with your web profile.',requestSync:()=>{}});return;}
-    async function request(method:string,path:string,body?:unknown,retry=true):Promise<any> {
+    async function request(method:string,path:string,body?:unknown,retry=true,endpoint=URL,prefer='return=representation'):Promise<any> {
       if(!current())throw new Error('Account changed');
       const auth=useAuthStore.getState();
       const attempt=new AbortController();
       const abort=()=>attempt.abort();controller.signal.addEventListener("abort",abort,{once:true});
       const timeout=setTimeout(()=>attempt.abort(),20000);
       let response:Response;
-      try { response=await fetch(URL+path,{method,headers:{apikey:KEY,Authorization:'Bearer '+auth.token,'Content-Type':'application/json',Prefer:'return=representation'},body:body?JSON.stringify(body):undefined,signal:attempt.signal}); }
+      try { response=await fetch(endpoint+path,{method,headers:{apikey:KEY,Authorization:'Bearer '+auth.token,'Content-Type':'application/json',Prefer:prefer},body:body?JSON.stringify(body):undefined,signal:attempt.signal}); }
       finally { clearTimeout(timeout);controller.signal.removeEventListener("abort",abort); }
       if(response.status===401 && retry && auth.refreshToken){
         const refreshed=await supabaseAuth.refresh(auth.refreshToken);
         if(!current() || !refreshed.access_token)throw new Error('Please sign in again to sync.');
         useAuthStore.setState({token:refreshed.access_token,refreshToken:refreshed.refresh_token||auth.refreshToken});
-        return request(method,path,body,false);
+        return request(method,path,body,false,endpoint,prefer);
       }
       if(!response.ok)throw new Error('Unable to sync. Your progress remains on this device.');
-      return response.json();
+      const raw = await response.text();
+      return raw ? JSON.parse(raw) : [];
     }
     async function sync(force=false) {
       if(!ready||busy||!current()||AppState.currentState==='background')return;
@@ -52,7 +55,9 @@ export function useProgressSync() {
         const thoughts=await AsyncStorage.getItem('treksor.thoughts.read.v1');
         const vision=await AsyncStorage.getItem('treksor.vision-board.v1');
         const balance=balanceSyncPayload(await readBalance(userId));
-        const payload=buildProgressPayload({balance,device:Platform.OS==='ios'?'iPhone / iPad':Platform.OS==='android'?'Android':'Treksor app',workout:useWorkoutStore.getState(),tracking:useTrackingStore.getState().trackingData,articles:useArticleStore.getState().articles,meditations:useMediationStore.getState().mediation,thoughtDates:thoughts?JSON.parse(thoughts):{},vision:vision?JSON.parse(vision):null});
+        // Sync dates only. Mood, energy and focus values remain private on-device.
+        const journeyDates=(await getJourneyCheckIns(userId)).map(row=>row.date);
+        const payload=buildProgressPayload({balance,journeyDates,device:Platform.OS==='ios'?'iPhone / iPad':Platform.OS==='android'?'Android':'Treksor app',workout:useWorkoutStore.getState(),tracking:useTrackingStore.getState().trackingData,articles:useArticleStore.getState().articles,meditations:useMediationStore.getState().mediation,thoughtDates:thoughts?JSON.parse(thoughts):{},vision:vision?JSON.parse(vision):null});
         const json=JSON.stringify(payload);
         if(!force&&json===lastPayload)return;
         status({status:'syncing',message:'Syncing with your web profile…'});
@@ -60,6 +65,12 @@ export function useProgressSync() {
         // Update only payload: identity columns cannot be changed by a client.
         let rows=await request('PATCH',path,{payload});
         if(!rows.length)rows=await request('POST','',{user_id:userId,device_id:deviceId,payload});
+        if(!current())return;
+        // Append idempotent, account-scoped Today completion events for web/watch readers.
+        // No private mood, focus or energy values are uploaded.
+        if(journeyDates.length){
+          await request('POST','?on_conflict=user_id%2Ckind%2Cevent_key',journeyDates.map(date=>({user_id:userId,kind:'today_completed',event_key:date,pillar:null,source:Platform.OS==='ios'?'ios':Platform.OS==='android'?'android':'web',payload:{}})),true,EVENTS,'resolution=ignore-duplicates,return=minimal');
+        }
         if(!current())return;
         lastPayload=json;
         status({status:'synced',lastSynced:rows[0].updated_at,message:'Your progress is available on the Treksor website.'});

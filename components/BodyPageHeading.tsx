@@ -1,5 +1,5 @@
 import React from "react";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { router, useLocalSearchParams, usePathname, type Href } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View, type StyleProp, type ViewStyle } from "react-native";
 import { colors, surface, type } from "@/theme/architect";
@@ -29,7 +29,7 @@ export default function BodyPageHeading({ title, trail, subtitle, pillar, naviga
       {showNavigation && <View style={styles.actions}>
         {goBack && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go back" style={styles.icon} onPress={goBack}><Ionicons name="arrow-back" size={21} color={colors.text}/></TouchableOpacity>}
         <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go to Home" style={styles.icon} onPress={() => router.dismissTo("/(tabs)/home")}><Ionicons name="home-outline" size={21} color={colors.text}/></TouchableOpacity>
-        {destination && <TouchableOpacity accessibilityRole="button" accessibilityLabel={`Return to ${destination.name}`} style={styles.icon} onPress={() => router.dismissTo(destination.route as Href)}><Ionicons name={destination.icon} size={22} color={colors.gold}/></TouchableOpacity>}
+        {destination && <TouchableOpacity accessibilityRole="button" accessibilityLabel={`Return to ${destination.name}`} style={styles.icon} onPress={() => router.dismissTo(destination.route as Href)}>{key === "mind" ? <MaterialCommunityIcons name="brain" size={22} color={colors.gold}/> : <Ionicons name={destination.icon as "barbell-outline" | "leaf-outline" | "compass-outline"} size={22} color={colors.gold}/>}</TouchableOpacity>}
       </View>}
     </View>
     <Text accessibilityRole="header" style={styles.title}>{displayLabel(title)}</Text>

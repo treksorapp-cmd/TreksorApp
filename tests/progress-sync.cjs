@@ -5,6 +5,9 @@ const ts=require('typescript');
 function load(path,requireMock){const code=ts.transpileModule(fs.readFileSync(path,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;const exports={};vm.runInNewContext(code,{exports,require:requireMock,Promise,Set,JSON,console});return exports;}
 const {buildProgressPayload}=load('lib/progress-payload.ts',()=>{});
 const payload=buildProgressPayload({device:'test',workout:{trainingPlan:null,gymSets:[],checkIns:{},workouts:[],privateJournal:'SECRET'},tracking:[],articles:{one:[{_id:'1',title:'Read',category:'Body',isRead:true}],two:[{_id:'1',title:'Read',category:'Body',isRead:false}]},meditations:[{id:'beginner',isRead:true}],thoughtDates:{one:'2026-10-25',two:'secret'},vision:['PRIVATE VISION',''],journal:'SECRET JOURNAL'});
+const todayPayload=buildProgressPayload({device:'test',workout:{trainingPlan:null,gymSets:[],checkIns:{},workouts:[]},tracking:[],articles:{},meditations:[],thoughtDates:{},vision:null,journeyDates:['2026-11-13','2026-11-13','invalid']});
+assert.deepEqual(Array.from(todayPayload.today.completedDays),['2026-11-13']);
+assert(!JSON.stringify(todayPayload).includes('mood'));
 assert.equal(payload.articles.completed,1);assert.equal(payload.vision.completed,1);assert.equal(payload.meditations.completed,1);assert.equal(payload.thoughtDates.length,1);assert(!JSON.stringify(payload).includes('PRIVATE'));assert(!JSON.stringify(payload).includes('SECRET'));
 const storage=new Map();const AsyncStorage={getItem:async k=>storage.get(k)||null,setItem:async(k,v)=>storage.set(k,v),multiRemove:async keys=>keys.forEach(k=>storage.delete(k))};
 function store(initial){let state={...initial};const reset=()=>{state={...initial,clearData:reset,updateLockedStatus:()=>{}}};reset();return {getState:()=>state,setState:s=>state={...state,...s},persist:{hasHydrated:()=>true}}}

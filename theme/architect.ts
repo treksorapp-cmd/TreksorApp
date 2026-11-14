@@ -1,10 +1,10 @@
 import type { TextStyle, ViewStyle } from "react-native";
 // Shared brand tokens; status colors remain distinct from accents.
 export const colors = {
-    background: "#02050C", surface: "#111820", surfaceRaised: "#19222C",
+    background: "#05080D", surface: "#0B1017", surfaceRaised: "#121922",
     text: "#F5F4F1", secondary: "#C8C3BA", muted: "#A5AAAF",
     gold: "#D7B877", goldSoft: "rgba(215,184,119,0.12)",
-    border: "rgba(205,235,248,0.14)", glass: "rgba(183,221,240,0.075)",
+    border: "rgba(245,244,241,0.10)", glass: "rgba(245,244,241,0.045)",
     success: "#ACD6C0", danger: "#E7A3A0", dangerSoft: "rgba(231,163,160,0.10)",
 } as const;
 export const type = {
