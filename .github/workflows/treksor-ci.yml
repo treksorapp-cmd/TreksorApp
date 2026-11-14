@@ -1,0 +1,45 @@
+name: Treksor safety and product checks
+on:
+  pull_request:
+    paths:
+      - 'app/**'
+      - 'components/**'
+      - 'hooks/**'
+      - 'lib/**'
+      - 'store/**'
+      - 'tests/**'
+      - 'package*.json'
+      - 'tsconfig*.json'
+      - '.github/workflows/treksor-ci.yml'
+  workflow_dispatch:
+jobs:
+  validate-mobile:
+    name: Typecheck and contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install pinned dependencies
+        run: npm ci --no-audit --no-fund
+      - name: TypeScript
+        run: npm run typecheck
+      - name: Goal evidence
+        run: npm run test:goals
+      - name: Watch workout contract
+        run: npm run test:watch
+      - name: Today and connected pillars
+        run: npm run test:connected
+      - name: Retention model
+        run: npm run test:retention
+      - name: Progress contracts
+        run: npm run test:progress
+      - name: UI contracts
+        run: npm run test:ui
+      - name: Source integrity
+        run: npm run test:integrity
