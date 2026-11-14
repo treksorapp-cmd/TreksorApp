@@ -14,7 +14,7 @@ import { Image, ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, type Href } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, AppState, Easing, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Animated, AppState, Easing, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const GOLD = "#D7B877";
@@ -46,6 +46,9 @@ const pillars: { name: string; subtitle: string; route: Href; image: number; ico
 ];
 
 export default function HomeScreen() {
+  const {width}=useWindowDimensions();
+  const pillarCardWidth=Math.min(width-52,360);
+  const [activePillar,setActivePillar]=useState(0);
   const user = useAuthStore(state => state.user);
   const powerThoughts = usePowerThoughtStore(state => state.powerThoughts);
   const fetchPowerThoughts = usePowerThoughtStore(state => state.fetchPowerThoughts);
@@ -110,21 +113,35 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <Animated.View style={[styles.grid,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[18,0]})}]}]}>
-          {pillars.map(pillar => (
-            <TouchableOpacity key={pillar.name} activeOpacity={0.72} style={styles.tile} onPress={() => router.push(pillar.route)} accessibilityRole="button" accessibilityLabel={pillar.name + ": " + pillar.subtitle}>
-              <ImageBackground source={pillar.image} contentFit="cover" contentPosition={pillar.name==="Mind"?{left:"50%",top:"18%"}:"center"} style={StyleSheet.absoluteFill} transition={180} cachePolicy="memory-disk" />
-              <LinearGradient colors={["rgba(0,0,0,0.20)", "rgba(0,0,0,0.22)", "rgba(0,0,0,0.95)"]} locations={[0, 0.34, 1]} style={StyleSheet.absoluteFill} />
-              <View style={styles.tileTop}>
-                <View style={styles.tileIcon}>{pillar.name === "Mind" ? <MaterialCommunityIcons name="brain" color="#FFFFFF" size={18} /> : <Ionicons name={pillar.icon as keyof typeof Ionicons.glyphMap} color="#FFFFFF" size={18} />}</View>
-              </View>
-              <View style={styles.tileBottom}>
-                <Text style={styles.tileTitle}>{pillar.name}</Text>
-                <Text style={styles.tileCaption}>{pillar.subtitle}</Text><PillarUpdates pillar={pillar.name} compact/>
-
-              </View>
-            </TouchableOpacity>
-          ))}
+        <Animated.View style={{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[18,0]})}]}}>
+          <FlatList
+            horizontal
+            data={pillars}
+            keyExtractor={pillar=>pillar.name}
+            showsHorizontalScrollIndicator={false}
+            snapToInterval={pillarCardWidth+12}
+            snapToAlignment="start"
+            decelerationRate="fast"
+            contentContainerStyle={styles.pillarRail}
+            onMomentumScrollEnd={event=>setActivePillar(Math.round(event.nativeEvent.contentOffset.x/(pillarCardWidth+12)))}
+            renderItem={({item:pillar})=>(
+              <TouchableOpacity activeOpacity={0.88} style={[styles.pillarSlide,{width:pillarCardWidth}]} onPress={()=>router.push(pillar.route)} accessibilityRole="button" accessibilityLabel={pillar.name+": "+pillar.subtitle}>
+                <ImageBackground source={pillar.image} contentFit="cover" contentPosition={pillar.name==="Mind"?{left:"50%",top:"18%"}:"center"} style={StyleSheet.absoluteFill} transition={180} cachePolicy="memory-disk"/>
+                <LinearGradient colors={["rgba(5,8,13,0.08)","rgba(5,8,13,0.30)","rgba(5,8,13,0.96)"]} locations={[0,0.42,1]} style={StyleSheet.absoluteFill}/>
+                <View style={styles.slideTop}>
+                  <Text style={styles.slideNumber}>{pillar.index} / 04</Text>
+                  <View style={styles.pillarIcon}>{pillar.name==="Mind"?<MaterialCommunityIcons name="brain" color={colors.text} size={20}/>:<Ionicons name={pillar.icon as keyof typeof Ionicons.glyphMap} color={colors.text} size={20}/>}</View>
+                </View>
+                <View style={styles.slideBottom}>
+                  <Text style={styles.slideTitle}>{pillar.name}</Text>
+                  <Text style={styles.slideCaption}>{pillar.subtitle}</Text>
+                  <View style={styles.slideAction}><Text style={styles.slideActionText}>ENTER {pillar.name.toUpperCase()}</Text><Ionicons name="arrow-forward" size={15} color={GOLD}/></View>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+          <View style={styles.pillarDots}>{pillars.map((pillar,index)=><View key={pillar.name} style={[styles.pillarDot,index===activePillar&&styles.pillarDotActive]}/>)}</View>
+          <Text style={styles.swipeHint}>Swipe to move through the four pillars</Text>
         </Animated.View>
 
         <DiscoveryCard />
@@ -177,6 +194,20 @@ const styles = StyleSheet.create({
   fourBadge: { width: 37, height: 37, borderRadius: 19, borderWidth: 1, borderColor: "#514332", alignItems: "center", justifyContent: "center" },
   fourBadgeText: { color: GOLD, fontSize: 12, fontWeight: "800" },
   grid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", rowGap: 13 },
+  pillarRail:{paddingRight:20},
+  pillarSlide:{height:390,borderRadius:20,overflow:"hidden",marginRight:12,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border},
+  slideTop:{flexDirection:"row",alignItems:"center",justifyContent:"space-between",padding:18},
+  slideNumber:{color:"rgba(245,244,241,0.70)",fontSize:10,fontWeight:"700",letterSpacing:1.5},
+  pillarIcon:{width:42,height:42,borderRadius:13,alignItems:"center",justifyContent:"center",backgroundColor:"rgba(5,8,13,0.58)",borderWidth:1,borderColor:"rgba(245,244,241,0.12)"},
+  slideBottom:{flex:1,justifyContent:"flex-end",padding:22},
+  slideTitle:{color:colors.text,fontSize:32,lineHeight:38,fontWeight:"600",letterSpacing:-0.5},
+  slideCaption:{color:"#D2CDC4",fontSize:14,lineHeight:21,marginTop:6},
+  slideAction:{marginTop:20,paddingTop:16,borderTopWidth:1,borderTopColor:"rgba(245,244,241,0.12)",flexDirection:"row",alignItems:"center",justifyContent:"space-between"},
+  slideActionText:{color:GOLD,fontSize:10,fontWeight:"800",letterSpacing:1.7},
+  pillarDots:{flexDirection:"row",alignItems:"center",justifyContent:"center",gap:7,marginTop:14},
+  pillarDot:{width:6,height:6,borderRadius:3,backgroundColor:"rgba(245,244,241,0.20)"},
+  pillarDotActive:{width:22,backgroundColor:GOLD},
+  swipeHint:{color:colors.muted,fontSize:11,textAlign:"center",marginTop:9},
   tile: { width: "48.3%", minHeight: 230, borderRadius: 13, overflow: "hidden", backgroundColor: "rgba(183,221,240,0.075)" },
   tileTop: { flexDirection: "row", justifyContent: "flex-end", alignItems: "center", padding: 13 },
   tileIcon: { height: 34, width: 34, borderRadius: 11, backgroundColor: "rgba(183,221,240,0.13)", alignItems: "center", justifyContent: "center" },
