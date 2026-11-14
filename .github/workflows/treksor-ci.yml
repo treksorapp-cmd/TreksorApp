@@ -43,3 +43,5 @@ jobs:
         run: npm run test:ui
       - name: Source integrity
         run: npm run test:integrity
+      - name: Complete mobile release contracts
+        run: npm run release:check
