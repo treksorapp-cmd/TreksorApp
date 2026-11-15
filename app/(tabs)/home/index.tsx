@@ -11,9 +11,12 @@ import { Image, ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, type Href } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, AppState, Easing, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
+import { Animated, AppState, Easing, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions, type NativeScrollEvent, type NativeSyntheticEvent } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+const PILLAR_INSET = 20;
+const PILLAR_GAP = 12;
+const PILLAR_PEEK = 32;
 const GOLD = "#D7B877";
 const ATMOSPHERE_ENDPOINT = "https://niakfwerfqmrmhuypkpd.supabase.co/rest/v1/atmosphere_images?select=*&published_at=lte.&order=published_at.desc&limit=1";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_WxFupUF8wM6SuEcTXYuqHw_dRoSpLs8";
@@ -43,9 +46,28 @@ const pillars: { name: string; subtitle: string; route: Href; image: number; ico
 ];
 
 export default function HomeScreen() {
-  const {width}=useWindowDimensions();
-  const pillarCardWidth=Math.min(width-52,360);
+  const {width,fontScale}=useWindowDimensions();
+  const [pillarViewportWidth,setPillarViewportWidth]=useState(width);
+  // Measure the rail itself: Home padding must not hide the next card.
+  const pillarCardWidth=Math.max(1,Math.min(pillarViewportWidth-PILLAR_INSET-PILLAR_GAP-PILLAR_PEEK,360));
+  const pillarStep=pillarCardWidth+PILLAR_GAP;
+  const pillarList=useRef<FlatList<(typeof pillars)[number]>>(null);
+  const pillarScroll=useRef(new Animated.Value(0)).current;
+  const activePillarRef=useRef(0);
   const [activePillar,setActivePillar]=useState(0);
+  const updateActivePillar=useCallback((event:NativeSyntheticEvent<NativeScrollEvent>)=>{
+    const next=Math.max(0,Math.min(pillars.length-1,Math.round(event.nativeEvent.contentOffset.x/pillarStep)));
+    if(next!==activePillarRef.current){activePillarRef.current=next;setActivePillar(next);}
+  },[pillarStep]);
+  useEffect(()=>{
+    // Keep the selected pillar aligned after a window/container resize.
+    const frame=requestAnimationFrame(()=>{
+      const offset=activePillarRef.current*pillarStep;
+      pillarList.current?.scrollToOffset({offset,animated:false});
+      pillarScroll.setValue(offset);
+    });
+    return()=>cancelAnimationFrame(frame);
+  },[pillarStep,pillarViewportWidth,pillarScroll]);
   const user = useAuthStore(state => state.user);
   const powerThoughts = usePowerThoughtStore(state => state.powerThoughts);
   const fetchPowerThoughts = usePowerThoughtStore(state => state.fetchPowerThoughts);
@@ -63,6 +85,9 @@ export default function HomeScreen() {
   useContentRefresh(refreshAtmosphere);
   const reveal=useRef(new Animated.Value(0)).current;
   const reducedMotion=useReducedMotion();
+  const showPillar=(index:number)=>{
+    pillarList.current?.scrollToOffset({offset:index*pillarStep,animated:!reducedMotion});
+  };
   const pulse=useRef(new Animated.Value(0)).current;
   useEffect(()=>{if(reducedMotion){pulse.setValue(0);return;}const loop=Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true}),Animated.timing(pulse,{toValue:0,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true})]));loop.start();return()=>loop.stop()},[pulse,reducedMotion]);
   useEffect(()=>{Animated.timing(reveal,{toValue:1,duration:reducedMotion?0:480,easing:Easing.out(Easing.cubic),useNativeDriver:true}).start()},[reveal,reducedMotion]);
@@ -107,24 +132,40 @@ export default function HomeScreen() {
           <View>
             <Text style={styles.sectionEyebrow}>THE TREKSOR METHOD</Text>
             <Text style={styles.sectionTitle}>Four pillars. One direction.</Text>
-            <Text style={styles.sectionHint}>Choose a pillar to explore <Ionicons name="arrow-down" size={12} color="#C6AE84"/></Text>
+            <Text style={styles.sectionHint}>Choose a pillar to explore <Ionicons name="arrow-forward" size={12} color="#C6AE84"/></Text>
           </View>
         </View>
 
         <Animated.View style={{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[18,0]})}]}}>
-          <FlatList
+          <Animated.FlatList
+            ref={pillarList}
             horizontal
             data={pillars}
             keyExtractor={pillar=>pillar.name}
             showsHorizontalScrollIndicator={false}
-            snapToInterval={pillarCardWidth+12}
+            style={styles.pillarViewport}
+            onLayout={event=>setPillarViewportWidth(event.nativeEvent.layout.width)}
+            snapToInterval={pillarStep}
             snapToAlignment="start"
             decelerationRate="fast"
-            contentContainerStyle={styles.pillarRail}
-            onMomentumScrollEnd={event=>setActivePillar(Math.round(event.nativeEvent.contentOffset.x/(pillarCardWidth+12)))}
-            renderItem={({item:pillar})=>(
-              <TouchableOpacity activeOpacity={0.88} style={[styles.pillarSlide,{width:pillarCardWidth}]} onPress={()=>router.push(pillar.route)} accessibilityRole="button" accessibilityLabel={pillar.name+": "+pillar.subtitle}>
-                <ImageBackground source={pillar.image} contentFit="cover" contentPosition={pillar.name==="Mind"?{left:"50%",top:"18%"}:"center"} style={StyleSheet.absoluteFill} transition={180} cachePolicy="memory-disk"/>
+            disableIntervalMomentum
+            directionalLockEnabled
+            bounces={false}
+            overScrollMode="never"
+            initialNumToRender={pillars.length}
+            removeClippedSubviews={false}
+            scrollEventThrottle={16}
+            contentContainerStyle={[styles.pillarRail,{paddingRight:Math.max(PILLAR_INSET,pillarViewportWidth-PILLAR_INSET-pillarCardWidth)}]}
+            ItemSeparatorComponent={()=><View style={{width:PILLAR_GAP}}/>}
+            onScroll={Animated.event([{nativeEvent:{contentOffset:{x:pillarScroll}}}],{useNativeDriver:true,listener:updateActivePillar})}
+            onMomentumScrollEnd={updateActivePillar}
+            renderItem={({item:pillar,index})=>(
+              <Animated.View style={{width:pillarCardWidth,...(!reducedMotion&&{
+                opacity:pillarScroll.interpolate({inputRange:[(index-1)*pillarStep,index*pillarStep,(index+1)*pillarStep],outputRange:[0.84,1,0.84],extrapolate:"clamp"}),
+                transform:[{scale:pillarScroll.interpolate({inputRange:[(index-1)*pillarStep,index*pillarStep,(index+1)*pillarStep],outputRange:[0.97,1,0.97],extrapolate:"clamp"})}],
+              })}}>
+              <TouchableOpacity activeOpacity={0.88} style={[styles.pillarSlide,{minHeight:Math.max(390,260*fontScale)}]} onPress={()=>router.push(pillar.route)} onFocus={()=>showPillar(index)} accessibilityRole="button" accessibilityLabel={`${pillar.name}, ${index+1} of ${pillars.length}: ${pillar.subtitle}`} accessibilityHint={`Open ${pillar.name}`}>
+                <ImageBackground source={pillar.image} contentFit="cover" contentPosition={pillar.name==="Mind"?{left:"50%",top:"18%"}:"center"} style={StyleSheet.absoluteFill} transition={reducedMotion?0:180} cachePolicy="memory-disk"/>
                 <LinearGradient colors={["rgba(5,8,13,0.08)","rgba(5,8,13,0.30)","rgba(5,8,13,0.96)"]} locations={[0,0.42,1]} style={StyleSheet.absoluteFill}/>
                 <View style={styles.slideTop}>
                   <Text style={styles.slideNumber}>{pillar.index} / 04</Text>
@@ -136,10 +177,18 @@ export default function HomeScreen() {
                   <View style={styles.slideAction}><Text style={styles.slideActionText}>ENTER {pillar.name.toUpperCase()}</Text><Ionicons name="arrow-forward" size={15} color={GOLD}/></View>
                 </View>
               </TouchableOpacity>
+              </Animated.View>
             )}
           />
-          <View style={styles.pillarDots}>{pillars.map((pillar,index)=><View key={pillar.name} style={[styles.pillarDot,index===activePillar&&styles.pillarDotActive]}/>)}</View>
-          <Text style={styles.swipeHint}>Swipe to move through the four pillars</Text>
+          <View style={styles.pillarDots}>{pillars.map((pillar,index)=>
+            <TouchableOpacity key={pillar.name} style={styles.pillarDotButton} activeOpacity={0.8} onPress={()=>showPillar(index)} accessibilityRole="button" accessibilityLabel={`Show ${pillar.name}, pillar ${index+1} of ${pillars.length}`} accessibilityState={{selected:index===activePillar}}>
+              <Animated.View style={[styles.pillarDot,reducedMotion?{opacity:index===activePillar?1:0.3,transform:[{scaleX:index===activePillar?1.3:0.35}]}:{
+                opacity:pillarScroll.interpolate({inputRange:[(index-1)*pillarStep,index*pillarStep,(index+1)*pillarStep],outputRange:[0.3,1,0.3],extrapolate:"clamp"}),
+                transform:[{scaleX:pillarScroll.interpolate({inputRange:[(index-1)*pillarStep,index*pillarStep,(index+1)*pillarStep],outputRange:[0.35,1.3,0.35],extrapolate:"clamp"})}],
+              }]}/>
+            </TouchableOpacity>
+          )}</View>
+          <Text style={styles.swipeHint}>Swipe to explore · Tap a card to enter</Text>
         </Animated.View>
 
         <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open Quick Notes" onPress={()=>router.push("/notes" as Href)} activeOpacity={0.82} style={[styles.todayShortcut,{marginTop:12}]}>
@@ -200,8 +249,9 @@ const styles = StyleSheet.create({
   fourBadge: { width: 37, height: 37, borderRadius: 19, borderWidth: 1, borderColor: "#514332", alignItems: "center", justifyContent: "center" },
   fourBadgeText: { color: GOLD, fontSize: 12, fontWeight: "800" },
   grid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", rowGap: 13 },
-  pillarRail:{paddingRight:20},
-  pillarSlide:{height:390,borderRadius:20,overflow:"hidden",marginRight:12,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border},
+  pillarViewport:{marginHorizontal:-PILLAR_INSET},
+  pillarRail:{paddingLeft:PILLAR_INSET},
+  pillarSlide:{flex:1,borderRadius:20,overflow:"hidden",backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border},
   slideTop:{flexDirection:"row",alignItems:"center",justifyContent:"space-between",padding:18},
   slideNumber:{color:"rgba(245,244,241,0.70)",fontSize:10,fontWeight:"700",letterSpacing:1.5},
   pillarIcon:{width:42,height:42,borderRadius:13,alignItems:"center",justifyContent:"center",backgroundColor:"rgba(5,8,13,0.58)",borderWidth:1,borderColor:"rgba(245,244,241,0.12)"},
@@ -210,10 +260,10 @@ const styles = StyleSheet.create({
   slideCaption:{color:"#D2CDC4",fontSize:14,lineHeight:21,marginTop:6},
   slideAction:{marginTop:20,paddingTop:16,borderTopWidth:1,borderTopColor:"rgba(245,244,241,0.12)",flexDirection:"row",alignItems:"center",justifyContent:"space-between"},
   slideActionText:{color:GOLD,fontSize:10,fontWeight:"800",letterSpacing:1.7},
-  pillarDots:{flexDirection:"row",alignItems:"center",justifyContent:"center",gap:7,marginTop:14},
-  pillarDot:{width:6,height:6,borderRadius:3,backgroundColor:"rgba(245,244,241,0.20)"},
-  pillarDotActive:{width:22,backgroundColor:GOLD},
-  swipeHint:{color:colors.muted,fontSize:11,textAlign:"center",marginTop:9},
+  pillarDots:{flexDirection:"row",alignItems:"center",justifyContent:"center",marginTop:4},
+  pillarDotButton:{width:44,height:44,alignItems:"center",justifyContent:"center"},
+  pillarDot:{width:18,height:4,borderRadius:2,backgroundColor:GOLD},
+  swipeHint:{color:colors.muted,fontSize:11,textAlign:"center",marginTop:0},
   tile: { width: "48.3%", minHeight: 230, borderRadius: 13, overflow: "hidden", backgroundColor: "rgba(183,221,240,0.075)" },
   tileTop: { flexDirection: "row", justifyContent: "flex-end", alignItems: "center", padding: 13 },
   tileIcon: { height: 34, width: 34, borderRadius: 11, backgroundColor: "rgba(183,221,240,0.13)", alignItems: "center", justifyContent: "center" },
