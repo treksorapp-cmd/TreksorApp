@@ -29,6 +29,18 @@ Cuando haya tensión entre ambas capas: **la visión, reglas y organización del
 - Próximo paso: obtener `git status --short --branch`, último commit y hash de Home desde `~/TreksorApp`, y trasladar únicamente el parche del carrusel, con respaldo local previo. No reemplazar Home entero por el de auditoría ni integrar las otras ramas para esta tarea.
 - No se modificaron dependencias, Expo/EAS ni servicios; no hubo merge, despliegue, compilación o reinstalación. Esta rama documental no incorpora el código del PR #16. Recuperación: revertir únicamente el commit del carrusel; para Windows, conservar y recuperar la copia previa del archivo.
 
+### 0.2 Adaptación a la copia Windows verificada — 15/11/2026
+
+La captura aportada por el responsable muestra `~/TreksorApp` en `feature/unified-journey-progress-2026`, HEAD `d1ddafc`, sin MERGING y con `package.json`/`package-lock.json` modificados, además de archivos de diagnóstico sin seguimiento. La salida informa 2 commits por delante y 4 por detrás de su referencia remota local; no interpretar esto como permiso para hacer pull o merge.
+
+**Home realmente usado en Windows:** blob `22933d71dfa58a67a2735bd6d7c00114e27916da`, recuperado íntegramente por ese hash. Esta versión tiene una cuadrícula de pilares, `PillarUpdates` compacto dentro de cada tarjeta y `DiscoveryCard`/`JourneyCard` debajo. **No coincide con el Home avanzado ni con el blob usado en el primer ensayo de portabilidad de 0.1.** No aplicar el diff original del PR #16 directamente a esta copia.
+
+Se preparó `patches/home-pillar-slider-windows-20261115.patch` en el commit `859902abefdf6110daac1ae648aa715b3bd5527e` de la misma rama del PR #16. Modifica exclusivamente Home: incorpora el carrusel probado y conserva Discovery, Journey, novedades por pilar y el resto del contenido local. Resultado esperado del archivo: blob `c8c2ad77c0bfe4e19b5855a8cf592a315ad40969`. El Home avanzado del PR sigue intacto; este archivo .patch es una vía de aplicación específica, no una reversión de la rama avanzada.
+
+Validación: aplicación y comprobación del parche con LF y con CRLF/`core.autocrlf=true`; reversión comprobada; TypeScript del Home compatible contra los tipos existentes; prueba React de cinco anchos, indicadores, rutas, límites, cambio de ancho y Reducir movimiento. Se comprobó además que siguen montados DiscoveryCard, JourneyCard y los cuatro PillarUpdates compactos. La versión avanzada `b9b36b8` ya había pasado también GitHub Actions.
+
+**Pendiente:** ejecutar en Windows el bloque con comprobación del hash de origen, fetch de la rama sin merge, `git apply --check`, copia de respaldo externa al repositorio, `git apply` y verificación del hash final; después recargar Expo y validar en el iPhone. No se afirma que esté aplicado ni visualmente probado hasta recibir el resultado. Preservar las modificaciones locales de dependencias. No usar checkout del Home avanzado ni reemplazar toda la app. El respaldo local del archivo permitirá recuperar exactamente la versión anterior.
+
 ## 1. Snapshot de GitHub verificado — 15 de noviembre de 2026
 
 **Repositorio principal móvil/web:** https://github.com/treksorapp-cmd/TreksorApp
