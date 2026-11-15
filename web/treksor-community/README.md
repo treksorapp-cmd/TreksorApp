@@ -13,7 +13,9 @@ English, public website with account-protected profile, progress and Community. 
 - `#/community/mentors`: approved mentors and applications.
 - `#/space`: invitations, connections, groups and visibility preferences.
 - `#/profile`: shared app account name/photo/email and community preferences.
-- `#/progress`: private app snapshots, pillar scores, training, learning, custom trackers and vision completion.
+- `#/progress`: private per-device app snapshots, pillar scores, training, learning, custom trackers and vision completion (read-only).
+- `#/today`: private, date-only shared Today completion events (PR #15, not yet published).
+- `#/groceries`: shared owner-only Nutrition shopping list (PR #15, not yet published).
 - `#/group/:id`, `#/connection/:id`, `#/admin`: group discussions, private conversations and admin review.
 
 Previous Spanish hash routes remain aliases. Spanish database enum values remain unchanged and have English display labels.
@@ -55,6 +57,6 @@ Conversations refresh manually; no email/push delivery is triggered. Mentorship 
 - `test-app-progress.sql` contains rollback-only adversarial checks. Live execution was blocked by a connector `Invalid or expired requestState` error; do not treat this test as passed.
 - No real user's credentials or phone were available for an end-to-end authenticated sync test. The first real device sync remains to be verified after installing the updated app code.
 
-The GitHub mirror lives at `web/treksor-community/` on `design/premium-showcase-2026`. Run `python fetch-assets.py` there to restore the photograph (the hosted Site already contains it). No Sites hosting identity is copied into the mobile repository.
+The GitHub source lives at `web/treksor-community/` in `TreksorApp`. Website parity updates are staged in the draft `audit/mobile-web-parity-20261115` branch (PR #15). No verified publishing integration to the existing chatgpt.site URL is available. Run `python fetch-assets.py` there to restore the photograph (the hosted Site already contains it). No Sites hosting identity is copied into the mobile repository.
 
 Forest photograph: Jeffrey Eisen, Unsplash, https://unsplash.com/es/fotos/gente-caminando-junto-a-las-colinas-1YAAaJIqzPg . Atmospheric imagery, not a Treksor event. Manrope is served through Google Fonts with a local sans-serif fallback. Supabase licence: `dist/assets/SUPABASE-LICENSE.txt`.
