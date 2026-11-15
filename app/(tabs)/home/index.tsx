@@ -142,6 +142,11 @@ export default function HomeScreen() {
           <Text style={styles.swipeHint}>Swipe to move through the four pillars</Text>
         </Animated.View>
 
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open Quick Notes" onPress={()=>router.push("/notes" as Href)} activeOpacity={0.82} style={[styles.todayShortcut,{marginTop:12}]}>
+          <View style={styles.todayShortcutIcon}><Ionicons name="create-outline" size={24} color={colors.gold}/></View>
+          <View style={{flex:1}}><Text style={styles.todayShortcutEyebrow}>CAPTURE IT QUICKLY</Text><Text style={styles.todayShortcutTitle}>Quick Notes</Text><Text style={styles.todayShortcutHint}>Tasks, reminders & ideas</Text></View>
+          <Ionicons name="arrow-forward" size={19} color={colors.gold}/>
+        </TouchableOpacity>
         <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open Today daily practice" activeOpacity={0.82} onPress={()=>router.push("/(tabs)/today" as Href)} style={styles.todayShortcut}>
           <View style={styles.todayShortcutIcon}><Ionicons name="today-outline" size={24} color={colors.gold}/></View>
           <View style={{flex:1}}><Text style={styles.todayShortcutEyebrow}>YOUR DAILY PRACTICE</Text><Text style={styles.todayShortcutTitle}>Today</Text><Text style={styles.todayShortcutHint}>One priority. Three small actions.</Text></View>
