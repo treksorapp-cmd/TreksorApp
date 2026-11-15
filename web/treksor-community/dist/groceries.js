@@ -29,7 +29,8 @@ async function addGroceryWeb(name){
  const owner=state.user?.id,clean=String(name||'').trim().slice(0,100);
  if(!owner)fail('Sign in first.');
  if(!clean)fail('Enter an item.');
- await query(db.from('nutrition_groceries').insert({user_id:owner,name:clean,checked:false}).select('id'));
+ if(!window.crypto?.randomUUID)fail('This browser cannot create secure list items. Use a current HTTPS browser.');
+ await query(db.from('nutrition_groceries').insert({id:window.crypto.randomUUID(),user_id:owner,name:clean,checked:false}).select('id'));
  if(state.user?.id!==owner)fail('Your account changed.');
  await render();
 }
