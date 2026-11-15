@@ -10,7 +10,7 @@ One Supabase Auth identity (auth.users.id) across mobile, web and watch-linked c
 - Mobile app code on this unmerged branch publishes date-only Today completion events idempotently using PostgREST ignore-duplicates. Website and watch clients still need to write to this same table; the new code is not deployed.
 - This is **partial bidirectional Today completion**, not a complete cross-device data model or end-to-end verified integration.
 - The watch iPhone bridge now accepts an explicit `today_complete` command, gated by a per-user sharing grant and Supabase session, and writes a date-only event with source=watch. The existing `progress` read remains supported. **The native watchOS user interface has not been updated**, so this is protocol readiness, not an end-to-end working watch input.
-- The public website source is not among the accessible GitHub repositories. No web write path or design parity can be verified yet.
+- The public website source was subsequently located at `web/treksor-community/dist/` in `TreksorApp`. PR #15 stages the first two shared web write paths (date-only Today and Nutrition groceries); deployed site version and authenticated E2E remain unverified.
 - App progress is stored per device; a full bidirectional workout edit requires stable record IDs, conflict resolution and a canonical per-user event model. Do not overwrite another device's payload with a local snapshot.
 - Admin Supabase-backed branch is `backend/supabase-foundation`; admin membership is role-specific. Do not give all users admin permissions.
 
@@ -37,3 +37,6 @@ One Supabase Auth identity (auth.users.id) across mobile, web and watch-linked c
 
 ## Status
 NOT launch-ready. Supabase table exists and has verified RLS/grants. Today cross-device mobile read/write code is unmerged and untested on devices; website source and native watchOS input UI are missing. A GitHub Actions check was added but no successful run is confirmed. Supabase advisor still warns that leaked password protection is disabled. Do not claim cross-platform bidirectional sync or full parity until acceptance tests pass.
+
+
+> 2026-11-15 update: see [WEB_MOBILE_SYNC_AUDIT_2026-11-15.md](WEB_MOBILE_SYNC_AUDIT_2026-11-15.md) for the verified feature matrix, draft two-way code paths, database checks and remaining release gates. The historical status notes above predate PR #15.

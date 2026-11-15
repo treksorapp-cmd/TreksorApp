@@ -4,6 +4,8 @@ on:
     paths:
       - 'app/**'
       - 'components/**'
+      - 'web/treksor-community/**'
+      - 'api/**'
       - 'hooks/**'
       - 'lib/**'
       - 'store/**'
@@ -43,5 +45,5 @@ jobs:
         run: npm run test:ui
       - name: Source integrity
         run: npm run test:integrity
-      - name: Complete mobile release contracts
+      - name: Complete mobile and website parity contracts
         run: npm run release:check
