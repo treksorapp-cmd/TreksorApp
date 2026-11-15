@@ -1,0 +1,42 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {Ionicons} from "@expo/vector-icons";
+import {useAuthStore} from "@/store/auth-store";
+import {colors} from "@/theme/architect";
+import {Habit,HabitPlan,STARTERS,localDay,parsePlan,weeklyCount,isDoneToday,toggleEntry} from "@/lib/weekly-habits";
+import React,{useCallback,useEffect,useRef,useState} from "react";
+import {Alert,AppState,Pressable,ScrollView,Text,TextInput,View} from "react-native";
+const EMPTY:HabitPlan={version:1,habits:[],entries:[]};
+const durations=[15,30,60];
+const targets=[1,2,3,4,5,6,7];
+export default function WeeklyHabits(){
+ const userId=useAuthStore(s=>s.user?.id);
+ const key=userId?"treksor.weekly-habits.v1."+userId:null;
+ const [plan,setPlan]=useState<HabitPlan>(EMPTY),[loaded,setLoaded]=useState(false),[error,setError]=useState(""),[adding,setAdding]=useState(false),[title,setTitle]=useState(""),[minutes,setMinutes]=useState(15),[weeklyTarget,setWeeklyTarget]=useState(3),[day,setDay]=useState(localDay());
+ const current=useRef(EMPTY),queue=useRef<Promise<void>>(Promise.resolve());
+ useEffect(()=>{const refresh=()=>setDay(localDay());const sub=AppState.addEventListener("change",state=>{if(state==="active")refresh()});const timer=setInterval(refresh,60000);return()=>{sub.remove();clearInterval(timer)}},[]);
+ useEffect(()=>{let active=true;setLoaded(false);setError("");current.current=EMPTY;setPlan(EMPTY);queue.current=Promise.resolve();if(!key)return()=>{active=false};AsyncStorage.getItem(key).then(raw=>{if(!active)return;const p=parsePlan(raw);current.current=p;setPlan(p)}).catch(()=>{if(active)setError("Could not load your habits.")}).finally(()=>{if(active)setLoaded(true)});return()=>{active=false}},[key]);
+ const save=useCallback((change:(p:HabitPlan)=>HabitPlan)=>{if(!loaded||!key)return;const next=change(current.current);current.current=next;setPlan(next);setError("");queue.current=queue.current.catch(()=>undefined).then(()=>AsyncStorage.setItem(key,JSON.stringify(next)));void queue.current.catch(()=>setError("Could not save. Try again."))},[key,loaded]);
+ const add=(name:string,pillar:Habit["pillar"],duration:number,frequency:number)=>{const clean=name.trim().slice(0,55);if(!clean)return;save(p=>({...p,habits:[...p.habits,{id:"habit-"+Date.now()+"-"+Math.random().toString(36).slice(2,8),title:clean,pillar,minutes:duration,weeklyTarget:frequency,createdAt:new Date().toISOString()}]}));setAdding(false);setTitle("")};
+ const active=plan.habits.filter(h=>!h.archived);
+ return <View style={{marginTop:25,gap:12}}>
+  <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between"}}><View><Text style={{color:colors.gold,fontSize:10,fontWeight:"700",letterSpacing:1.5}}>YOUR WEEKLY PRACTICE</Text><Text style={{color:colors.text,fontSize:22,fontWeight:"600",marginTop:5}}>What you're building</Text></View><Pressable accessibilityRole="button" accessibilityLabel="Add a weekly habit" onPress={()=>setAdding(v=>!v)} style={{padding:11,borderRadius:12,backgroundColor:colors.surfaceRaised,borderWidth:1,borderColor:colors.border}}><Ionicons name={adding?"close":"add"} color={colors.gold} size={22}/></Pressable></View>
+  <Text style={{color:colors.muted,fontSize:13,lineHeight:19}}>Choose your own rhythm. Any days count, as long as you reach your weekly goal.</Text>
+  {active.map(h=>{const count=weeklyCount(plan.entries,h.id,day),done=isDoneToday(plan.entries,h.id,day),complete=count>=h.weeklyTarget;return <View key={h.id} style={{backgroundColor:colors.surface,borderRadius:15,padding:15,borderWidth:1,borderColor:colors.border,gap:11}}>
+    <View style={{flexDirection:"row",alignItems:"center",gap:10}}><View style={{flex:1}}><Text style={{color:colors.text,fontWeight:"700",fontSize:15}}>{h.title}</Text><Text style={{color:colors.muted,fontSize:12,marginTop:4}}>{h.minutes} min · {h.weeklyTarget} days/week · {h.pillar.toUpperCase()}</Text></View><Text style={{color:complete?colors.gold:colors.secondary,fontWeight:"700",fontSize:15}}>{count}/{h.weeklyTarget}</Text></View>
+    <View style={{height:5,backgroundColor:colors.surfaceRaised,borderRadius:5,overflow:"hidden"}}><View style={{height:5,width:(Math.min(100,count/h.weeklyTarget*100)+"%") as `${number}%`,backgroundColor:colors.gold,borderRadius:5}}/></View>
+    <View style={{flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}><Text style={{color:complete?colors.gold:colors.muted,fontSize:11}}>{complete?"Weekly goal achieved":h.weeklyTarget-count+" more this week"}</Text><Pressable accessibilityRole="checkbox" accessibilityState={{checked:done,disabled:!loaded}} disabled={!loaded} onPress={()=>save(p=>({...p,entries:toggleEntry(p.entries,h,day)}))} style={{paddingVertical:10,paddingHorizontal:14,borderRadius:10,backgroundColor:done?colors.gold:colors.surfaceRaised,borderWidth:1,borderColor:done?colors.gold:colors.border,flexDirection:"row",alignItems:"center",gap:6}}><Ionicons name={done?"checkmark":"add"} color={done?colors.background:colors.text} size={16}/><Text style={{color:done?colors.background:colors.text,fontWeight:"700",fontSize:12}}>{done?"Done today":"Mark today"}</Text></Pressable></View>
+    <Pressable accessibilityRole="button" accessibilityLabel={"Archive "+h.title} onPress={()=>Alert.alert("Remove habit?","Past completed days stay in your history.",[{text:"Cancel",style:"cancel"},{text:"Archive",onPress:()=>save(p=>({...p,habits:p.habits.map(x=>x.id===h.id?{...x,archived:true}:x)}))}])}><Text style={{color:colors.muted,fontSize:11,textAlign:"right"}}>Remove from my plan</Text></Pressable>
+   </View>})}
+  {!active.length&&!adding&&<View style={{backgroundColor:colors.surface,padding:18,borderRadius:15,borderWidth:1,borderColor:colors.border}}><Text style={{color:colors.text,fontSize:15,fontWeight:"600"}}>Build your first weekly habit</Text><Text style={{color:colors.muted,marginTop:7,fontSize:13}}>Reading, training, reflection or something of your own.</Text></View>}
+  {adding&&<View style={{backgroundColor:colors.surface,padding:16,borderRadius:16,borderWidth:1,borderColor:colors.border,gap:12}}>
+    <Text style={{color:colors.text,fontSize:16,fontWeight:"700"}}>Choose a practice</Text>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap:8}}>{STARTERS.filter(s=>!active.some(h=>h.title===s.title)).map(s=><Pressable key={s.title} accessibilityRole="button" onPress={()=>{setTitle(s.title);setMinutes(s.minutes);setWeeklyTarget(s.weeklyTarget)}} style={{borderRadius:10,borderWidth:1,borderColor:title===s.title?colors.gold:colors.border,backgroundColor:colors.surfaceRaised,padding:12}}><Text style={{color:colors.text,fontSize:12}}>{s.title}</Text></Pressable>)}</ScrollView>
+    <TextInput accessibilityLabel="Habit name" placeholder="Or name your own habit" placeholderTextColor={colors.muted} value={title} onChangeText={setTitle} maxLength={55} style={{color:colors.text,borderColor:colors.border,borderWidth:1,borderRadius:10,padding:12}}/>
+    <Text style={{color:colors.secondary,fontSize:12}}>Minutes per session</Text><View style={{flexDirection:"row",gap:8}}>{durations.map(n=><Pressable key={n} onPress={()=>setMinutes(n)} style={{padding:12,flex:1,alignItems:"center",backgroundColor:minutes===n?colors.gold:colors.surfaceRaised,borderRadius:9}}><Text style={{color:minutes===n?colors.background:colors.text}}>{n} min</Text></Pressable>)}</View>
+    <Text style={{color:colors.secondary,fontSize:12}}>Sessions per week</Text><View style={{flexDirection:"row",gap:5}}>{targets.map(n=><Pressable key={n} onPress={()=>setWeeklyTarget(n)} style={{paddingVertical:12,flex:1,alignItems:"center",backgroundColor:weeklyTarget===n?colors.gold:colors.surfaceRaised,borderRadius:9}}><Text style={{color:weeklyTarget===n?colors.background:colors.text}}>{n}</Text></Pressable>)}</View>
+    <Pressable disabled={!title.trim()||!loaded} accessibilityRole="button" onPress={()=>{const starter=STARTERS.find(s=>s.title===title);add(title,starter?.pillar??"purpose",minutes,weeklyTarget)}} style={{backgroundColor:colors.gold,borderRadius:11,padding:15,alignItems:"center",opacity:title.trim()?1:0.45}}><Text style={{color:colors.background,fontWeight:"800"}}>ADD TO MY WEEK</Text></Pressable>
+   </View>}
+  {!!error&&<Text accessibilityRole="alert" style={{color:colors.danger,fontSize:12}}>{error}</Text>}
+  <Text style={{color:colors.muted,fontSize:11}}>Private on this device · Week starts Monday · Check-ins are self-reported.</Text>
+ </View>
+}

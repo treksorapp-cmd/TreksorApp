@@ -6,7 +6,7 @@ import Button from "@/components/ui/Button"
 import { useMySpaceStore } from "@/store/myspace-store"
 import { Ionicons } from "@expo/vector-icons"
 import { Image } from "expo-image"
-import { router } from "expo-router"
+import { router, type Href } from "expo-router"
 import { StatusBar } from "expo-status-bar"
 import { useState } from "react"
 import {
@@ -48,7 +48,7 @@ export default function NewEntryScreen() {
     setSaving(true)
     try {
       await addMySpace({mood,text:entryText.trim()})
-      router.replace(home);
+      router.replace(home as Href);
     } catch (error) {
       Alert.alert('Unable to save entry', 'Please try again.');
     } finally {setSaving(false)}

@@ -32,7 +32,7 @@ const CAMPFIRE_URL = "https://niakfwerfqmrmhuypkpd.supabase.co/storage/v1/object
 
 export default function ChatScreen() {
   const insets = useSafeAreaInsets()
-  const params=useLocalSearchParams<{intent?:string}>()
+  const params=useLocalSearchParams<{intent?:string;draft?:string}>()
   const user = useAuthStore(state => state.user)
   const chats = useChatStore(state => state.chats)
   const currentUserId = useChatStore(state => state.currentUserId)
@@ -46,7 +46,15 @@ export default function ChatScreen() {
   const [mode,setMode] = useState<MentorMode>("conversation")
   const clearConversation=useChatStore(s=>s.clearConversation)
   const inputRef=useRef<TextInput>(null)
-  useEffect(()=>{setInputText("");setMode("conversation")},[user?.id])
+  const appliedDraft=useRef<string|null>(null)
+  useEffect(()=>{setInputText("");setMode("conversation");appliedDraft.current=null},[user?.id])
+  useEffect(()=>{
+    const draft=params.draft;
+    if(typeof draft!=="string"||!draft.trim()||appliedDraft.current===draft)return;
+    appliedDraft.current=draft;
+    // Messages prepared by Today or the connected journey are never sent automatically.
+    setInputText(current=>current.trim()?current:draft.slice(0,500));
+  },[params.draft])
   const [campfireAvailable, setCampfireAvailable] = useState(true)
   const [keyboardHeight, setKeyboardHeight] = useState(0)
   useEffect(() => {
@@ -162,6 +170,7 @@ export default function ChatScreen() {
 
       {messages.length>0&&<TouchableOpacity disabled={loading} accessibilityRole="button" onPress={()=>Alert.alert("Delete this conversation?","This removes the conversation and any shared summaries from your Treksor account. Your context notes are managed separately.",[{text:"Cancel",style:"cancel"},{text:"Delete",style:"destructive",onPress:()=>void clearConversation()}])} style={{paddingHorizontal:24,paddingVertical:10}}><Text style={{color:colors.muted,fontSize:12}}>Delete conversation</Text></TouchableOpacity>}
       {/* Input */}
+      {typeof params.draft==="string"&&params.draft.length>0&&<Text style={{color:colors.secondary,fontSize:11,paddingHorizontal:22,marginBottom:4}}>Review before sending. Nothing is shared automatically.</Text>}
       <View style={[styles.inputContainer, { paddingBottom: keyboardHeight > 0 ? 12 : 16, marginBottom: keyboardHeight > 0 ? 12 : 0 }]}>
           <TextInput
             ref={inputRef}

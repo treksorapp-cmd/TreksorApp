@@ -1,0 +1,16 @@
+const assert=require("node:assert/strict"),fs=require("node:fs"),vm=require("node:vm"),ts=require("typescript");
+const file="lib/retention-experiments.ts";
+const out=ts.transpileModule(fs.readFileSync(file,"utf8"),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}}).outputText;
+const mod={exports:{}};
+const dayKey=d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
+const recentDays=(count,now)=>Array.from({length:count},(_,i)=>{const d=new Date(now.getFullYear(),now.getMonth(),now.getDate(),12);d.setDate(d.getDate()-count+i+1);return dayKey(d)});
+vm.runInNewContext(out,{module:mod,exports:mod.exports,Date,Set,Object,Error,require:p=>{if(p==="@/lib/progress-metrics")return {dayKey,recentDays};throw Error(p)}},{filename:file});
+const {weeklyRhythm,validateInterest,interestShareText}=mod.exports;
+const now=new Date(2026,10,12,12),prev=new Date(2026,10,11,12).toISOString();
+const report=weeklyRhythm({priorities:["2026-11-11","2026-11-11","2026-10-01"],journalDays:["2026-11-10","2026-11-12"],workoutTimestamps:[prev,"invalid"]},now);
+assert.equal(report.count,3);assert.deepEqual(Array.from(report.activeDays),["2026-11-10","2026-11-11","2026-11-12"]);
+assert.equal(weeklyRhythm({priorities:[],journalDays:[],workoutTimestamps:[]},now).count,0);
+const answer={interest:"maybe",price:"5_to_10",feature:"mentor",updatedAt:"2026-11-12T00:00:00Z"};
+assert(validateInterest(answer));assert.equal(validateInterest({...answer,price:"invalid"}),null);
+const share=interestShareText(answer);assert(share.includes("not a purchase"));assert(!share.includes("2026-11-12"));
+console.log("PASS: weekly activity dedup and opt-in premium feedback");

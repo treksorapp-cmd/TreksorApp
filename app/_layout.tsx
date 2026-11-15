@@ -2,6 +2,7 @@ import WatchRuntime from "@/components/watch/WatchRuntime";
 import WakeRuntime from "@/components/wake/WakeRuntime";
 import DiscoveryProvider from "@/components/discovery/DiscoveryProvider";
 import { useProgressSync } from "@/hooks/useProgressSync";
+import { colors } from "@/theme/architect";
 import SubscriptionScreen from "@/components/SubscriptionScreen";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useAuthStore } from "@/store/auth-store";
@@ -18,7 +19,6 @@ export default function RootLayout() {
   const { error, clearError, isAuthenticated, getCurrentUser } = useAuthStore();
   const [initialURL, setInitialURL] = useState<string | null>(null);
   const [isNavigationReady, setIsNavigationReady] = useState(false);
-  const { user } = useAuthStore();
   const { showPackages, setShowPackages, savePushToken, purchasePlan } = useUserStore();
   const { pushToken } = useNotifications();
   const [hasSyncedSubscription, setHasSyncedSubscription] = useState(false);
@@ -156,12 +156,8 @@ export default function RootLayout() {
     }
   }, [error, clearError]);
 
-  // ✅ Force show subscription modal if expired
-  useEffect(() => {
-    if (isAuthenticated && user && Number(user.daysLeft) === 0 && !user.plan && !showPackages) {
-      setShowPackages(true);
-    }
-  }, [isAuthenticated, user?.daysLeft, user?.plan, showPackages, setShowPackages]);
+  // During early validation, core features stay available without an automatic paywall.
+  // Subscription management remains an explicit user action.
 
   // ✅ Save push token on app start when authenticated
   useEffect(() => {
@@ -180,7 +176,7 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: "#02050C" },
+          contentStyle: { backgroundColor: colors.background },
           animation: "slide_from_right",
         }}
       />

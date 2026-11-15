@@ -17,7 +17,7 @@
     "test:dashboard": "node tests/progress-dashboard.cjs",
     "test:content": "node tests/content-sync.cjs",
     "test:journey": "node tests/journey-growth.cjs",
-    "release:check": "npm run typecheck && npm run test:integrity && npm run test:progress && npm run test:dashboard && npm run test:journey && npm run test:audio && npm run test:content && npm run test:video && npm run test:clock && npm run test:ecosystem && npm run test:balance && npm run test:mentor && npm run test:discovery && npm run test:training && npm run test:wake && npm run test:watch && npm run test:ui",
+    "release:check": "npm run typecheck && npm run test:integrity && npm run test:progress && npm run test:dashboard && npm run test:journey && npm run test:audio && npm run test:content && npm run test:video && npm run test:clock && npm run test:ecosystem && npm run test:balance && npm run test:mentor && npm run test:discovery && npm run test:training && npm run test:wake && npm run test:watch && npm run test:ui && npm run test:connected && npm run test:retention && npm run test:goals",
     "release:ios": "npm run release:check && npx --yes eas-cli@26.0.0 build --platform ios --profile production --auto-submit",
     "test:video": "node tests/exercise-video-lifecycle.cjs",
     "test:clock": "node tests/workout-clock.cjs",
@@ -28,7 +28,10 @@
     "test:discovery": "node tests/guided-discovery.cjs",
     "test:training": "node tests/training-program.cjs",
     "test:wake": "node tests/wake-service.cjs && node tests/wake-lifecycle.cjs",
-    "test:watch": "node tests/watch-companion.cjs"
+    "test:watch": "node tests/watch-companion.cjs && node tests/watch-workout.cjs",
+    "test:connected": "node tests/connected-journey.cjs",
+    "test:retention": "node tests/retention-experiments.cjs",
+    "test:goals": "node tests/goal-evidence.cjs"
   },
   "dependencies": {
     "@bacons/apple-targets": "3.0.7",

@@ -15,6 +15,7 @@ import ActivityLogModal from "@/components/ActivityLogModal";
 import AddTrackerModal from "@/components/AddTrackerModal";
 import CalendarModal from "@/components/ui/CalendarModal";
 import { useAuthStore } from "@/store/auth-store";
+import { useChatStore } from "@/store/chat-store";
 import { useTrackingStore } from "@/store/tracking-store";
 import { useWorkoutStore } from "@/store/workout-store";
 import { useMySpaceStore } from "@/store/myspace-store";
@@ -27,6 +28,9 @@ import { colors } from "@/theme/architect";
 
 export default function TrackingScreen() {
   const userId = useAuthStore(s => s.user?.id);
+  const mentorOwner = useChatStore(s => s.currentUserId);
+  const mentorConversation = useChatStore(s => userId ? s.chats[userId] : undefined);
+  const mentorReplies = userId && mentorOwner === userId && mentorConversation ? mentorConversation.filter(message=>message.role==="assistant").length : null;
   const trackingData = useTrackingStore(s => s.trackingData);
   const { checkIns, gymSets } = useWorkoutStore();
   const reflections = useMySpaceStore(s => s.myspaces);
@@ -85,7 +89,8 @@ export default function TrackingScreen() {
     <StatusBar style="light"/>
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <BodyPageHeading trail="YOUR JOURNEY" title="Progress" subtitle="Your days, your growth, your next step." style={styles.heading}/>
-      {!ownExtras || !extras.ready ? <View style={styles.loading}>{extras.accountError ? <><Text style={styles.loadingText}>Unable to load your saved progress.</Text><TouchableOpacity accessibilityRole="button" onPress={() => setReload(v => v + 1)} style={styles.retry}><Text style={styles.retryText}>Try again</Text></TouchableOpacity></> : <><ActivityIndicator color={colors.gold}/><Text style={styles.loadingText}>Loading your saved progress…</Text></>}</View> : <><JourneyDashboard data={data} period={period} onPeriod={setPeriod} detailsOpen={detailsOpen} onDetails={()=>setDetailsOpen(value=>!value)} onCheckInSaved={date=>setExtras(s=>({...s,journeyDates:Array.from(new Set([...s.journeyDates,date]))}))}/>{detailsOpen&&<ProgressDashboard compactOverview data={data} period={period} onPeriod={setPeriod} trackers={trackingData} today={dayKey(now)} journalLoading={!ownExtras || extras.journalLoading} visionLoading={!ownExtras || extras.visionLoading} journalError={ownExtras && extras.journalError} visionError={ownExtras && extras.visionError} onRetry={() => setReload(v => v + 1)} onRoute={route => router.push(route as any)} onLog={openLog} onCreate={() => setShowAddTracker(true)} onCalendar={() => setShowCalendar(true)}/>}</>}
+      <TouchableOpacity accessibilityRole="button" onPress={()=>router.push("/progress/journey" as any)} style={{paddingVertical:15,flexDirection:"row",alignItems:"center",justifyContent:"space-between",borderBottomColor:colors.border,borderBottomWidth:1}}><Text style={{color:colors.gold,fontSize:14,fontWeight:"600"}}>Goals & weekly review</Text><Text style={{color:colors.gold,fontSize:18}}>›</Text></TouchableOpacity>
+      {!ownExtras || !extras.ready ? <View style={styles.loading}>{extras.accountError ? <><Text style={styles.loadingText}>Unable to load your saved progress.</Text><TouchableOpacity accessibilityRole="button" onPress={() => setReload(v => v + 1)} style={styles.retry}><Text style={styles.retryText}>Try again</Text></TouchableOpacity></> : <><ActivityIndicator color={colors.gold}/><Text style={styles.loadingText}>Loading your saved progress…</Text></>}</View> : <><JourneyDashboard data={data} period={period} onPeriod={setPeriod} detailsOpen={detailsOpen} onDetails={()=>setDetailsOpen(value=>!value)} onCheckInSaved={date=>setExtras(s=>({...s,journeyDates:Array.from(new Set([...s.journeyDates,date]))}))}/>{detailsOpen&&<ProgressDashboard compactOverview mentorReplies={mentorReplies} data={data} period={period} onPeriod={setPeriod} trackers={trackingData} today={dayKey(now)} journalLoading={!ownExtras || extras.journalLoading} visionLoading={!ownExtras || extras.visionLoading} journalError={ownExtras && extras.journalError} visionError={ownExtras && extras.visionError} onRetry={() => setReload(v => v + 1)} onRoute={route => router.push(route as any)} onLog={openLog} onCreate={() => setShowAddTracker(true)} onCalendar={() => setShowCalendar(true)}/>}</>}
       <ProgressSyncStatus/>
     </ScrollView>
     <AddTrackerModal visible={showAddTracker} onClose={() => setShowAddTracker(false)}/>

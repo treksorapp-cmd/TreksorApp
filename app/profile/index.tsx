@@ -219,6 +219,8 @@ export default function ProfileScreen() {
             <Ionicons name="chevron-forward" size={20} color="#AAAAAA" />
           </TouchableOpacity>
 
+          <TouchableOpacity style={styles.menuItem} onPress={()=>router.push("/profile/premium-research" as any)}><Ionicons name="clipboard-outline" size={22} color={colors.text} style={styles.menuIcon}/><Text style={styles.menuText}>Share product feedback (optional)</Text><Ionicons name="chevron-forward" size={20} color={colors.muted}/></TouchableOpacity>
+
           <TouchableOpacity style={styles.menuItem} onPress={openNotificationSettings}>
             <Ionicons name="notifications-outline" size={22} color="#FFFFFF" style={styles.menuIcon} />
               <Text style={styles.menuText}>Notification Settings</Text>

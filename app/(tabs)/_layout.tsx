@@ -2,13 +2,8 @@ import {colors} from "@/theme/architect";
 "use client";
 
 import { useAuthStore } from "@/store/auth-store";
-import {
-  AntDesign,
-  MaterialIcons,
-  Octicons,
-  SimpleLineIcons,
-} from "@expo/vector-icons";
-import { Redirect, Tabs, usePathname } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { Redirect, Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import {
@@ -62,17 +57,19 @@ export default function TabLayout() {
           options={{
             title: "Home",
             tabBarIcon: ({ color }) => (
-              <View style={styles.iconContainer}><AntDesign name="home" size={24} color={color} /></View>
+              <View style={styles.iconContainer}><Ionicons name="home-outline" size={23} color={color} /></View>
             ),
           }}
         />
+
+        <Tabs.Screen name="today" options={{title:"Today",tabBarIcon:({color})=><View style={styles.iconContainer}><Ionicons name="today-outline" size={23} color={color}/></View>}} />
 
         <Tabs.Screen
           name="chat"
           options={{
             title: "Mentor",
             tabBarIcon: ({ color }) => (
-              <View style={styles.iconContainer}><Octicons name="dependabot" size={24} color={color} /></View>
+              <View style={styles.iconContainer}><Ionicons name="chatbubble-ellipses-outline" size={23} color={color} /></View>
             ),
           }}
         />
@@ -82,14 +79,14 @@ export default function TabLayout() {
           options={{
             title: "Progress",
             tabBarIcon: ({ color }) => (
-              <View style={styles.iconContainer}><SimpleLineIcons name="graph" size={24} color={color} /></View>
+              <View style={styles.iconContainer}><Ionicons name="analytics-outline" size={23} color={color} /></View>
             ),
           }}
         />
 
         <Tabs.Screen name="articles" options={{href:null}} />
 
-        <Tabs.Screen name="community" options={{title:"Community",tabBarIcon:({color})=><View style={styles.iconContainer}><MaterialIcons name="groups" size={24} color={color} /></View>}} />
+        <Tabs.Screen name="community" options={{title:"Community",tabBarIcon:({color})=><View style={styles.iconContainer}><Ionicons name="people-outline" size={23} color={color} /></View>}} />
         <Tabs.Screen name="index" options={{ href: null }} />
       </Tabs>
     </View>
