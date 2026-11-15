@@ -11,6 +11,9 @@ export default function TodayScreen() {
   return <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: colors.background }}>
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 18, paddingBottom: 38 }}>
       <JourneyCard />
+      <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open Quick Notes and tasks" onPress={()=>router.push("/notes" as any)} style={{flexDirection:"row",alignItems:"center",gap:12,padding:15,borderRadius:14,borderColor:colors.border,borderWidth:1,backgroundColor:colors.surface,marginTop:15}}>
+        <Ionicons name="create-outline" size={22} color={colors.gold}/><View style={{flex:1}}><Text style={{color:colors.text,fontWeight:"600",fontSize:15}}>Quick Notes</Text><Text style={{color:colors.muted,fontSize:12,marginTop:4}}>Write it down. Get it done.</Text></View><Ionicons name="chevron-forward" size={19} color={colors.gold}/>
+      </TouchableOpacity>
       <WeeklyHabits />
       <TouchableOpacity accessibilityRole="button" accessibilityLabel="Explore goals and weekly review" activeOpacity={0.82}
         onPress={() => router.push("/progress/journey" as any)}
