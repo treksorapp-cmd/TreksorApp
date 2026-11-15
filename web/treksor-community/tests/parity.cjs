@@ -21,7 +21,7 @@ const db={from(table){
  };
  return query;
 }};
-const context=vm.createContext({console,Date,Intl,Map,Set,Promise,setTimeout,clearTimeout,location:{hash:"#/today"},document:{querySelector:getNode,querySelectorAll:()=>[]},window:{TREKSOR_CONFIG:{url:"https://example.invalid",key:"test"},supabase:{createClient:()=>db}}});
+const context=vm.createContext({console,Date,Intl,Map,Set,Promise,setTimeout,clearTimeout,location:{hash:"#/today"},document:{querySelector:getNode,querySelectorAll:()=>[]},window:{crypto:{randomUUID:()=>"11111111-1111-4111-8111-111111111111"},TREKSOR_CONFIG:{url:"https://example.invalid",key:"test"},supabase:{createClient:()=>db}}});
 for(const filename of ["app.js","community.js","portal.js","today.js","groceries.js"]){vm.runInContext(fs.readFileSync("dist/"+filename,"utf8"),context,{filename})}
 const run=s=>vm.runInContext(s,context);
 (async()=>{
@@ -38,7 +38,7 @@ const run=s=>vm.runInContext(s,context);
  assert.equal(stateData.writes[0].table,"treksor_sync_events");
  assert.equal(stateData.writes[0].payload.user_id,"account-a");
  assert.equal(stateData.writes[0].payload.kind,"today_completed");
- assert.deepEqual(stateData.writes[0].payload.payload,{});
+ assert.equal(JSON.stringify(stateData.writes[0].payload.payload),'{}');
  assert.equal(stateData.writes[0].payload.source,"web");
  stateData.groceries=[{id:"item-1",user_id:"account-a",name:"Oats",checked:false,created_at:"2026-11-15"},{id:"item-2",user_id:"other-account",name:"secret other user's goods",checked:false,created_at:"2026-11-15"}];
  await run("renderGroceries(0)");
