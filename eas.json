@@ -30,7 +30,8 @@
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
-        "simulator": false
+        "simulator": false,
+        "image": "macos-sequoia-15.6-xcode-26.2"
       },
       "env": {
         "TREKSOR_IPHONE_DEV": "1",
