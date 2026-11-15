@@ -16,6 +16,19 @@ Cuando haya tensión entre ambas capas: **la visión, reglas y organización del
 
 **Para retomar en cualquier otro chat:** primero leer este archivo entero en la rama de documentación, verificar los SHA actuales y el estado de PR, comprobar por separado el estado del Git Bash local, la instalación de Treksor Dev y los despliegues; luego esperar una solicitud concreta antes de cambiar nada. Un handoff no concede permiso implícito para reparar, refactorizar, fusionar o publicar.
 
+## 0.1 Actualización confirmada — Home, 15/11/2026, 18:33 Australia/Brisbane
+
+**Código preparado y comprobado; pendiente de aplicar y probar en el iPhone.**
+
+- Solicitud del responsable: cuatro pilares en Home como tarjetas deslizables horizontalmente, con una transición armoniosa y moderna.
+- Rama: `design/home-pillar-slider-20261115`, creada desde `audit/mobile-web-parity-20261115` en `9e5f726df293bffbfd789a79ef8eb06783b36c05`.
+- Commit: `b9b36b872e90d0ffda22151b8b27f63d6016c3a7`. [PR #16](https://github.com/treksorapp-cmd/TreksorApp/pull/16), abierto como borrador, sin fusionar.
+- Único archivo de aplicación modificado: `app/(tabs)/home/index.tsx`. Carrusel con siguiente tarjeta visible, ajuste por tarjeta, animación nativa de escala/opacidad, cuatro indicadores pulsables de 44 puntos, conservación de selección al cambiar el ancho, espacio final correcto para Purpose, respeto de Reducir movimiento y más altura con texto ampliado. Se conservan imágenes, identidad The Architect, orden, iconos, rutas y los demás accesos de Home.
+- Pruebas: `npm run release:check` completo, TypeScript y `git diff --check` correctos. Prueba adicional del componente real con estado React y host nativo simulado: 320/375/390/430/768 puntos, selección, rutas, arrastres lentos, límites, cambio de ancho y Reducir movimiento. La captura con navegador local no pudo realizarse por restricciones del entorno; **no hay validación visual/gestual en iPhone**.
+- El parche con `git diff --unified=1` pasó `git apply --check` contra el Home remoto de `feature/unified-journey-progress-2026` en `a9febfee`. Esto **no verifica** el archivo actual de Windows.
+- Próximo paso: obtener `git status --short --branch`, último commit y hash de Home desde `~/TreksorApp`, y trasladar únicamente el parche del carrusel, con respaldo local previo. No reemplazar Home entero por el de auditoría ni integrar las otras ramas para esta tarea.
+- No se modificaron dependencias, Expo/EAS ni servicios; no hubo merge, despliegue, compilación o reinstalación. Esta rama documental no incorpora el código del PR #16. Recuperación: revertir únicamente el commit del carrusel; para Windows, conservar y recuperar la copia previa del archivo.
+
 ## 1. Snapshot de GitHub verificado — 15 de noviembre de 2026
 
 **Repositorio principal móvil/web:** https://github.com/treksorapp-cmd/TreksorApp
