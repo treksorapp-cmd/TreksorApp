@@ -1,4 +1,5 @@
 import JourneyCard from "@/components/JourneyCard";
+import WeeklyHabits from "@/components/WeeklyHabits";
 import { colors } from "@/theme/architect";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -10,6 +11,7 @@ export default function TodayScreen() {
   return <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: colors.background }}>
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 18, paddingBottom: 38 }}>
       <JourneyCard />
+      <WeeklyHabits />
       <TouchableOpacity accessibilityRole="button" accessibilityLabel="Explore goals and weekly review" activeOpacity={0.82}
         onPress={() => router.push("/progress/journey" as any)}
         style={{ minHeight: 60, flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: colors.surface, borderRadius: 16, borderWidth: 1, borderColor: colors.border, paddingHorizontal: 16, marginTop: 22 }}>
