@@ -6,7 +6,7 @@ import ArticleCard from "@/components/ArticleCard";
 import CategoryFilter from "@/components/ui/CategoryFilter";
 import { useArticleStore } from "@/store/article-store";
 import { Article } from "@/types/article";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import { router, type Href } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";

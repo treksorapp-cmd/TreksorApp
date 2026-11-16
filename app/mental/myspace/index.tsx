@@ -8,7 +8,7 @@ import Button from "@/components/ui/Button"
 import EntryOptionsModal from "@/components/EntryOptionsModal"
 import { useMySpaceStore } from "@/store/myspace-store"
 import type { MySpace } from "@/types/myspace"
-import { Ionicons } from "@expo/vector-icons"
+import Ionicons from '@/components/ui/BrandIcon';
 import { LinearGradient } from "expo-linear-gradient"
 import { router } from "expo-router"
 import { StatusBar } from "expo-status-bar"

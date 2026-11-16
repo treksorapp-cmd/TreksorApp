@@ -2,7 +2,7 @@ import {usePillarUpdates,PillarUpdate} from "@/store/pillar-updates-store";
 import {useAuthStore} from "@/store/auth-store";
 import {useContentRefresh} from "@/hooks/useContentRefresh";
 import {router} from "expo-router";
-import {Ionicons} from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import {Image} from "expo-image";
 import {LinearGradient} from "expo-linear-gradient";
 import {useEffect,useRef,useState} from "react";

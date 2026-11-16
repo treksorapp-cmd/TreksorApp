@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {Ionicons} from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import {useAuthStore} from "@/store/auth-store";
 import {colors} from "@/theme/architect";
 import {Habit,HabitPlan,STARTERS,localDay,parsePlan,weeklyCount,isDoneToday,toggleEntry} from "@/lib/weekly-habits";

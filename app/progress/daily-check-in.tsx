@@ -4,7 +4,7 @@ import {useSafeAreaInsets} from "react-native-safe-area-context";
 import React,{useEffect,useState} from "react";
 import {Alert,KeyboardAvoidingView,Platform,Pressable,ScrollView,Text,TextInput,TouchableOpacity,View} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {Ionicons} from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import {router} from "expo-router";
 import {useAuthStore} from "@/store/auth-store";
 

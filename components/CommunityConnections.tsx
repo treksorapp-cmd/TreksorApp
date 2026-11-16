@@ -1,11 +1,10 @@
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { openTreksorWeb } from "@/lib/treksor-links";
 import { colors, surface, type } from "@/theme/architect";
 const connections = [
     { title: "Find your people", description: "Explore groups and shared activities.", icon: "people-outline", route: "community/groups" },
     { title: "Start one to one", description: "A quieter way to make a connection.", icon: "chatbubbles-outline", route: "community/one-to-one" },
-    { title: "Connect with a mentor", description: "Find guidance for your next step.", icon: "compass-outline", route: "community/mentors" },
 ] as const;
 export default function CommunityConnections({city = ""}: {city?: string}) {
     return <View style={styles.section}>

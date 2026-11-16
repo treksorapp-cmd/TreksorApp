@@ -9,7 +9,8 @@ import { useCallback } from "react"
 import PDFViewer from "@/components/ui/PDFViewer"
 import { useAuthStore } from "@/store/auth-store"
 import { useUserStore } from "@/store/user-store"
-import { AntDesign, Ionicons } from "@expo/vector-icons"
+import Ionicons from '@/components/ui/BrandIcon';
+import { AntDesign } from '@expo/vector-icons';
 import * as Application from 'expo-application'
 import { Image } from "expo-image"
 import { router } from "expo-router"

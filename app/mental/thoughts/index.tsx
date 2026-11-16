@@ -4,7 +4,7 @@ import BodyPageHeading from "@/components/BodyPageHeading";
 
 import { usePowerThoughtStore } from "@/store/thought-store";
 import { PowerThought } from "@/types/powerThought";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";

@@ -5,7 +5,7 @@ import Button from "@/components/ui/Button";
 import { GymExercise } from "@/lib/gym-library";
 import { useWorkoutStore } from "@/store/workout-store";
 import { colors } from "@/theme/architect";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React, { useEffect, useMemo, useState } from "react";

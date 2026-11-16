@@ -1,5 +1,6 @@
 import {displayLabel} from "@/lib/pillar-navigation";
-import { Entypo, Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
+import { Entypo } from '@expo/vector-icons';
 import { Image } from "expo-image";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";

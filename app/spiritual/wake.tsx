@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import BodyPageHeading from "@/components/BodyPageHeading";
 import WakePlayer from "@/components/wake/WakePlayer";
 import { wakeSounds } from "@/lib/wake/sounds";

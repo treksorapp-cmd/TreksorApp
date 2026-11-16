@@ -3,7 +3,7 @@
 import type React from "react"
 
 import PDFViewer from "@/components/ui/PDFViewer"
-import { Ionicons } from "@expo/vector-icons"
+import Ionicons from '@/components/ui/BrandIcon';
 import { useState } from "react"
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 

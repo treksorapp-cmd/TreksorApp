@@ -4,7 +4,7 @@ import GoalProgressCard from "@/components/GoalProgressCard";
 import WeeklyReview from "@/components/WeeklyReview";
 import { colors } from "@/theme/architect";
 import { router } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import React from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

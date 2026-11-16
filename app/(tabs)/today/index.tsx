@@ -4,7 +4,7 @@ import {getSharedTodayDates} from "@/lib/shared-today";
 import {localDay} from "@/lib/weekly-habits";
 import {useAuthStore} from "@/store/auth-store";
 import { colors } from "@/theme/architect";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import { router, useFocusEffect } from "expo-router";
 import React, {useCallback,useState} from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";

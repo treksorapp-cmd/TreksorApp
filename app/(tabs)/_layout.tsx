@@ -2,7 +2,7 @@ import {colors} from "@/theme/architect";
 "use client";
 
 import { useAuthStore } from "@/store/auth-store";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import { Redirect, Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
@@ -67,7 +67,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="chat"
           options={{
-            title: "Mentor",
+            title: "Guide",
             tabBarIcon: ({ color }) => (
               <View style={styles.iconContainer}><Ionicons name="chatbubble-ellipses-outline" size={23} color={color} /></View>
             ),

@@ -1,5 +1,5 @@
 import ConnectedMovement from "@/components/ecosystem/ConnectedMovement";
-import {Ionicons} from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import {LinearGradient} from "expo-linear-gradient";
 import {useCallback,useEffect,useState} from "react";
 import {useFocusEffect,router} from "expo-router";

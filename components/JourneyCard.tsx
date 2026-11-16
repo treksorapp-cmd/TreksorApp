@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import * as SecureStore from "expo-secure-store";
 import { router, type Href } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -50,7 +50,7 @@ const STEPS: StepDefinition[] = [
     id: "mentor",
     title: "Find your next step",
     description: "Ask one useful question or reflect",
-    destination: "MENTOR",
+    destination: "GUIDE",
     route: "/chat",
     icon: "chatbubble-ellipses-outline",
   },

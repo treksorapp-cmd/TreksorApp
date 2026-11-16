@@ -3,7 +3,7 @@ import BodyPageHeading from "@/components/BodyPageHeading";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React,{useMemo} from "react";
 import {ScrollView,Text,TouchableOpacity,View} from "react-native";
-import {Ionicons} from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import {router} from "expo-router";
 import {useWorkoutStore} from "@/store/workout-store";
 const GOLD="#D7B877";

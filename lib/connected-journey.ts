@@ -50,7 +50,7 @@ export function nextMove(outcomes: Outcomes, todayHasPriority: boolean): {
     id: "balance", title: "Practice a moment of stillness", detail: "Explore your first Balance practice.",
   };
   if (outcomes.mentor === 0 || outcomes.mentor === null) return {
-    id: "mentor", title: "Ask Mentor for perspective", detail: "Turn your progress into one manageable next step.",
+    id: "mentor", title: "Ask Guide for perspective", detail: "Turn your progress into one manageable next step.",
   };
   return {
     id: "purpose", title: "Keep building your direction", detail: "Review your priorities and choose the next action.",

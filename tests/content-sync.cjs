@@ -38,7 +38,7 @@ const mocks={
  const screen=load('app/mental/thoughts/index.tsx',{
   '@/hooks/useContentRefresh':{useContentRefresh:()=>{}},'@/components/BodyPageHeading':()=>null,
   '@/store/thought-store':{usePowerThoughtStore:()=>thoughts.getState()},'react-native':RN,
-  '@expo/vector-icons':{Ionicons:()=>null},'expo-linear-gradient':{LinearGradient:({children})=>React.createElement('div',null,children)},
+  '@/components/ui/BrandIcon':{__esModule:true,default:'span'},'@expo/vector-icons':{Ionicons:()=>null},'expo-linear-gradient':{LinearGradient:({children})=>React.createElement('div',null,children)},
   'react-native-safe-area-context':{useSafeAreaInsets:()=>({top:0})},'expo-router':{router:{}},'expo-status-bar':{StatusBar:()=>null}
  }).default;
  assert(renderToStaticMarkup(React.createElement(screen)).includes('Newly published'));

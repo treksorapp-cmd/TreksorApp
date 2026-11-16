@@ -1,4 +1,4 @@
-import {Ionicons} from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import {router,useFocusEffect} from "expo-router";
 import {useAuthStore} from "@/store/auth-store";
 import {addGrocery,checkGrocery,listGroceries,removeGrocery,type Grocery} from "@/api/groceries";

@@ -3,7 +3,7 @@ import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {colors} from "@/theme/architect";
 "use client"
 
-import { Ionicons } from "@expo/vector-icons"
+import Ionicons from '@/components/ui/BrandIcon';
 import { BlurView } from "expo-blur"
 import { LinearGradient } from "expo-linear-gradient"
 import { useState } from "react"

@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useProgressSyncStore } from "@/store/progress-sync-store";
 import { openTreksorWeb } from "@/lib/treksor-links";

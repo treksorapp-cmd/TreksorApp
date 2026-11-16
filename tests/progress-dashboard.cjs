@@ -9,6 +9,7 @@ const glyphs=require('@expo/vector-icons/build/vendor/react-native-vector-icons/
 const wrap=({children,...props})=>React.createElement(RN.View,props,children);
 const mocks={
  'react-native':{...RN,Modal:({visible,children})=>visible?React.createElement(RN.View,null,children):null,useWindowDimensions:()=>({width,height:844,scale:1,fontScale}),Alert:{alert:noop}},
+ '@/components/ui/BrandIcon':({name,size,color})=>React.createElement('span',{'data-icon':name,style:{fontSize:size,color}}),
  '@expo/vector-icons':{Ionicons:({name,size,color})=>React.createElement('span',{'aria-hidden':true,style:{fontFamily:'Ionicons',fontSize:size,color}},String.fromCodePoint(glyphs[name]||glyphs['ellipse-outline']))},
  'expo-linear-gradient':{LinearGradient:({colors,start,end,...props})=>React.createElement(RN.View,{...props,style:[props.style,{backgroundImage:`linear-gradient(135deg,${colors.join(',')})`}]})},
  'react-native-safe-area-context':{useSafeAreaInsets:()=>({top:44,bottom:34,left:0,right:0})},
