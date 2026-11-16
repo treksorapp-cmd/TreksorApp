@@ -1,7 +1,7 @@
 import BrandIcon from "@/components/ui/BrandIcon";
 import { routeBarContext } from "@/lib/route-bar-context";
 import { colors } from "@/theme/architect";
-import { router, useLocalSearchParams, usePathname, type Href } from "expo-router";
+import { router, useGlobalSearchParams, usePathname, type Href } from "expo-router";
 import { useMemo } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
  */
 export default function PersistentRouteBar() {
   const pathname = usePathname();
-  const params = useLocalSearchParams<{ origin?: string }>();
+  const params = useGlobalSearchParams<{ origin?: string }>();
   const route = useMemo(
     () => routeBarContext(pathname, typeof params.origin === "string" ? params.origin : undefined),
     [pathname, params.origin]
