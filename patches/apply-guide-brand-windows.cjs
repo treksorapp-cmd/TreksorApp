@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const cp = require('node:child_process');
 const crypto = require('node:crypto');
-const SOURCE = '939cd281fa5fb24dd9f515aecc3628030b930994';
+const SOURCE = '2bf591950bbecdb8ad7bc8685ad27186addc4b66';
 const UPDATE = '56bee4edb1f1a01fb7f76d83df56a1ec8faaba3f';
 const root = process.cwd();
 const git = args => cp.execFileSync('git', args, {cwd:root, encoding:'utf8', maxBuffer:16*1024*1024});
