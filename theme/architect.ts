@@ -1,10 +1,19 @@
 import type { TextStyle, ViewStyle } from "react-native";
-// Shared brand tokens; status colors remain distinct from accents.
+// Navy trial: one palette for the entire mobile app. Keep the previous palette reversible.
+export const appearance: 'navy' | 'midnight' = 'navy';
+const palettes = {
+    navy: { background: '#0B1930', surface: '#132640', surfaceRaised: '#1B3352' },
+    midnight: { background: '#05080D', surface: '#0B1017', surfaceRaised: '#121922' },
+};
+export const navyOverlay = (opacity: number) => {
+    const hex=palettes[appearance].background.slice(1);
+    return `rgba(${parseInt(hex.slice(0,2),16)},${parseInt(hex.slice(2,4),16)},${parseInt(hex.slice(4,6),16)},${opacity})`;
+};
 export const colors = {
-    background: "#05080D", surface: "#0B1017", surfaceRaised: "#121922",
+    ...palettes[appearance],
     text: "#F5F4F1", secondary: "#C8C3BA", muted: "#A5AAAF",
     gold: "#D7B877", goldSoft: "rgba(215,184,119,0.12)",
-    border: "rgba(245,244,241,0.10)", glass: "rgba(245,244,241,0.045)",
+    border: "rgba(175,201,235,0.18)", glass: "rgba(175,201,235,0.06)",
     success: "#ACD6C0", danger: "#E7A3A0", dangerSoft: "rgba(231,163,160,0.10)",
 } as const;
 export const type = {

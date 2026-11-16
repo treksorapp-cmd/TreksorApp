@@ -1,3 +1,4 @@
+import { colors } from "@/theme/architect";
 import Ionicons from '@/components/ui/BrandIcon';
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -34,14 +35,14 @@ const Workout = ({
     >
       {/* Outer LinearGradient for the border */}
       <LinearGradient
-        colors={["rgba(255, 255, 255, 0.3)", "rgba(255, 255, 255, 0.4)"]}
+        colors={[colors.border, colors.border]}
         start={{ x: 0.2, y: 0 }}
         end={{ x: 0.8, y: 1 }}
         style={styles.borderGradient}
       >
         {/* Inner LinearGradient for the button background */}
         <LinearGradient
-          colors={["#262626", "#0a0a0a"]}
+          colors={[colors.surfaceRaised, colors.surface]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.innerGradient}

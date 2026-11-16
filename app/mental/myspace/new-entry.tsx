@@ -1,3 +1,4 @@
+import { colors } from "@/theme/architect";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import {useReflectionContext} from "@/hooks/useReflectionContext";
 "use client"
@@ -148,7 +149,7 @@ export default function NewEntryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#02050C",
+    backgroundColor: colors.background,
   },
   keyboardAvoid: {
     flex: 1,
@@ -189,7 +190,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 15,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.25)",
+    borderColor: colors.border,
   },
   dropdownButtonText: {
     fontSize: 16,
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 5,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.25)",
+    borderColor: colors.border,
     maxHeight: 200,
   },
   dropdownItem: {
@@ -227,7 +228,7 @@ const styles = StyleSheet.create({
     minHeight: 150,
     textAlignVertical: "top",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.25)",
+    borderColor: colors.border,
   },
   addButton: {
     backgroundColor: "#D7B877",

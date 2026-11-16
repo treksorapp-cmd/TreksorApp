@@ -1,3 +1,4 @@
+import { colors, navyOverlay } from "@/theme/architect";
 "use client"
 
 import Ionicons from '@/components/ui/BrandIcon';
@@ -119,7 +120,7 @@ export default function EntryOptionsModal({
             style={styles.borderGradient}
           >
             <LinearGradient
-              colors={["#262626", "#0a0a0a"]}
+              colors={[colors.surfaceRaised, colors.surface]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.innerGradient}
@@ -160,7 +161,7 @@ export default function EntryOptionsModal({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: navyOverlay(0.7),
     justifyContent: "center",
     alignItems: "center",
   },
@@ -198,7 +199,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.1)",
+    borderBottomColor: colors.border,
   },
   optionText: {
     fontSize: 16,

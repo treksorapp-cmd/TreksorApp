@@ -1,5 +1,5 @@
 import DiscoveryCard from "@/components/discovery/DiscoveryCard";
-import {colors} from "@/theme/architect";
+import { colors, navyOverlay } from "@/theme/architect";
 "use client"
 
 import Button from "@/components/ui/Button"
@@ -176,7 +176,7 @@ export default function ProfileScreen() {
         </View>
 
         <TouchableOpacity onPress={()=>router.push("/mind/moments")} style={{marginHorizontal:20,padding:18,borderRadius:16,backgroundColor:"rgba(215,184,119,.08)",marginTop:18}}><Text style={{color:"#D7B877",fontWeight:"700",fontSize:17}}>Life moments & photo calendar</Text><Text style={{color:"#AAA",marginTop:7}}>Private memories, with selected moments shared by choice.</Text></TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("/mind/journal")} style={{marginHorizontal:20,marginVertical:16,padding:18,borderRadius:16,backgroundColor:"rgba(67,72,78,0.30)",borderWidth:1,borderColor:"rgba(242,215,164,0.42)"}}><Text style={{color:"#D7B877",fontSize:12,letterSpacing:2}}>MIND · PRIVATE</Text><Text style={{color:"#fff",fontSize:21,fontWeight:"700",marginTop:7}}>My Journal & Mood Tracking</Text><Text style={{color:"#aaa",marginTop:7}}>{moodSummary.days > 0 ? `Last 30 days · ${moodSummary.average?.toFixed(1)} / 5 · ${moodSummary.days} check-ins` : "Record how you feel and review your progress."}</Text></TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("/mind/journal")} style={{marginHorizontal:20,marginVertical:16,padding:18,borderRadius:16,backgroundColor:navyOverlay(0.3),borderWidth:1,borderColor:"rgba(242,215,164,0.42)"}}><Text style={{color:"#D7B877",fontSize:12,letterSpacing:2}}>MIND · PRIVATE</Text><Text style={{color:"#fff",fontSize:21,fontWeight:"700",marginTop:7}}>My Journal & Mood Tracking</Text><Text style={{color:"#aaa",marginTop:7}}>{moodSummary.days > 0 ? `Last 30 days · ${moodSummary.average?.toFixed(1)} / 5 · ${moodSummary.days} check-ins` : "Record how you feel and review your progress."}</Text></TouchableOpacity>
 
         {/* Subscription Plan Section */}
         {user?.plan && (
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.1)",
+    borderBottomColor: colors.border,
   },
   avatarSection: {
     marginBottom: 15,
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
   section: {
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.1)",
+    borderBottomColor: colors.border,
   },
   sectionTitle: {
     fontSize: 18,
@@ -362,7 +362,7 @@ const styles = StyleSheet.create({
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(67,72,72,0.30)",
+    backgroundColor: navyOverlay(0.3),
     padding: 15,
     borderRadius: 12,
     marginBottom: 10,
@@ -389,10 +389,10 @@ const styles = StyleSheet.create({
   subscriptionSection: {
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.1)",
+    borderBottomColor: colors.border,
   },
   subscriptionCard: {
-    backgroundColor: "rgba(67,72,72,0.30)",
+    backgroundColor: navyOverlay(0.3),
     borderRadius: 12,
     padding: 20,
     borderWidth: 1,

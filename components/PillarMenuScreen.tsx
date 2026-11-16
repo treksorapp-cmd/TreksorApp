@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import BodyPageHeading from "@/components/BodyPageHeading";
-import { colors, type } from "@/theme/architect";
+import { colors, type, navyOverlay } from "@/theme/architect";
 type Props = {
     title: string;
     trail: string;
@@ -18,7 +18,7 @@ export default function PillarMenuScreen({ title, trail, image, headline, subtit
     const { height } = useWindowDimensions();
     return <View style={styles.screen}>
     <ImageBackground source={image} style={StyleSheet.absoluteFill} contentFit="cover"/>
-    <LinearGradient colors={["rgba(2,5,12,0.76)", "rgba(2,5,12,0.38)", colors.background]} locations={[0, 0.3, 0.82]} style={StyleSheet.absoluteFill}/>
+    <LinearGradient colors={[navyOverlay(0.76), navyOverlay(0.38), colors.background]} locations={[0, 0.3, 0.82]} style={StyleSheet.absoluteFill}/>
     <SafeAreaView style={styles.safe} edges={["top", "bottom"]}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
         <BodyPageHeading title={title} trail={trail} style={{ paddingHorizontal: 0 }}/>

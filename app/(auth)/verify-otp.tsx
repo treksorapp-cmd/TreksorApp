@@ -1,3 +1,4 @@
+import { colors, navyOverlay } from "@/theme/architect";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 "use client"
 
@@ -195,7 +196,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // adjust opacity as needed
+    backgroundColor: navyOverlay(0.5), // adjust opacity as needed
     zIndex: -1,
   },
   content: {

@@ -1,4 +1,4 @@
-import {colors} from "@/theme/architect";
+import { colors } from "@/theme/architect";
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import BodyPageHeading from "@/components/BodyPageHeading"
 import { useAuthStore } from "@/store/auth-store"
@@ -38,7 +38,7 @@ export default function MindJournalScreen(){
    {entries.some(e=>e.date===selectedDate)&&<TouchableOpacity onPress={()=>void remove()} style={{padding:14,alignItems:"center"}}><Text style={{color:"#C99A9A"}}>Delete this entry</Text></TouchableOpacity>}
   </View>
   <View style={styles.card}><Text style={styles.section}>Emotional wellbeing</Text><View style={styles.moods}>{(["week","month","year"] as const).map(p=><TouchableOpacity key={p} onPress={()=>setPeriod(p)} style={[styles.period,period===p&&styles.active]}><Text style={[styles.moodText,period===p&&styles.activeText]}>{p==="week"?"7 days":p==="month"?"30 days":"365 days"}</Text></TouchableOpacity>)}</View>
-  <View accessible accessibilityLabel="Mood history chart" style={{flexDirection:"row",height:85,alignItems:"flex-end",gap:2,marginTop:16}}>{grouped.map((item,i)=><View key={item.date+"-"+i} style={{flex:1,height:item.mood>0?Math.max(5,item.mood/5*80):3,backgroundColor:item.mood>0?"#D7B877":"#454545",borderRadius:2}} />)}</View>
+  <View accessible accessibilityLabel="Mood history chart" style={{flexDirection:"row",height:85,alignItems:"flex-end",gap:2,marginTop:16}}>{grouped.map((item,i)=><View key={item.date+"-"+i} style={{flex:1,height:item.mood>0?Math.max(5,item.mood/5*80):3,backgroundColor:item.mood>0?"#D7B877":colors.surfaceRaised,borderRadius:2}} />)}</View>
   <Text style={styles.average}>{stats.average===null?"—":stats.average.toFixed(1)} <Text style={styles.outOf}>/ 5</Text></Text><Text style={styles.subtitle}>{stats.days} recorded {stats.days===1?"day":"days"} · Missing days are not scored</Text></View>
   <Text style={[styles.section,{marginTop:24}]}>Past entries</Text>
   {entries.length===0?<Text style={styles.subtitle}>Your entries will appear here.</Text>:entries.map(entry=><TouchableOpacity key={entry.date} style={styles.history} onPress={()=>setSelectedDate(entry.date)}><View style={{flex:1,marginRight:12}}><Text style={styles.date}>{entry.date} · {labels[entry.mood-1]}</Text><Text numberOfLines={2} style={styles.subtitle}>{entry.note||"No written reflection"}</Text></View><Text style={styles.arrow}>›</Text></TouchableOpacity>)}
@@ -52,7 +52,7 @@ const styles=StyleSheet.create({
  section:{color:"#F5F4F1",fontSize:18,lineHeight:25,fontWeight:"600",marginBottom:10},date:{color:"#D7B877",fontSize:13,marginBottom:12},
  moods:{flexDirection:"row",flexWrap:"wrap",gap:7,marginVertical:12},mood:{paddingHorizontal:10,paddingVertical:10,borderRadius:10,backgroundColor: colors.surfaceRaised,borderWidth:1,borderColor:"#414141"},
  active:{backgroundColor:"#D7B877",borderColor:"#D7B877"},moodText:{color:"#E5E5E5",fontSize:12},activeText:{color:"#101010",fontWeight:"700"},
- input:{minHeight:130,backgroundColor:"#0D1015",borderRadius:12,color:"#fff",padding:14,fontSize:15},
+ input:{minHeight:130,backgroundColor:colors.surface,borderRadius:12,color:"#fff",padding:14,fontSize:15},
  privacy:{color:"#929292",fontSize:11,marginTop:12},button:{backgroundColor:"#D7B877",padding:15,borderRadius:12,alignItems:"center",marginTop:18},buttonText:{color:"#101010",fontWeight:"800"},
  period:{paddingHorizontal:12,paddingVertical:10,borderRadius:10,backgroundColor: colors.surfaceRaised},average:{fontSize:40,color:"#D7B877",fontWeight:"700",marginTop:8},outOf:{fontSize:18,color:"#aaa"},
  history:{backgroundColor: colors.surface,padding:16,borderRadius:12,marginBottom:9,flexDirection:"row",justifyContent:"space-between"},arrow:{color:"#D7B877",fontSize:24},return:{color:"#D7B877",marginTop:20}

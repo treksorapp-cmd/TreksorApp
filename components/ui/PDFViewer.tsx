@@ -1,3 +1,4 @@
+import { colors } from "@/theme/architect";
 "use client"
 
 import type React from "react"
@@ -104,7 +105,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ title, pdfUrl, onClose }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#121212",
+    backgroundColor: colors.surface,
   },
   header: {
     flexDirection: "row",
@@ -113,8 +114,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.1)",
-    backgroundColor: "#121212",
+    borderBottomColor: colors.border,
+    backgroundColor: colors.surface,
   },
   closeButton: {
     padding: 5,

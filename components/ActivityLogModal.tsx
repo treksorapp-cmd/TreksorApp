@@ -5,7 +5,7 @@ import Ionicons from '@/components/ui/BrandIcon';
 import { useTrackingStore } from "@/store/tracking-store";
 import { applyTrackerDay, dayKey, displayDay, isScheduled, trackerCompletion } from "@/lib/progress-metrics";
 import type { TrackingCategory } from "@/types/tracking";
-import { colors, surface, type } from "@/theme/architect";
+import { colors, surface, type, navyOverlay } from "@/theme/architect";
 interface Props { visible: boolean; onClose: () => void; selectedDate: string; selectedCategory?: string; onCreate?: () => void; onDismiss?: () => void }
 export default function ActivityLogModal({ visible, onClose, selectedDate, selectedCategory, onCreate, onDismiss }: Props) {
   const insets = useSafeAreaInsets();
@@ -57,7 +57,7 @@ export default function ActivityLogModal({ visible, onClose, selectedDate, selec
   </Modal>;
 }
 const styles = StyleSheet.create({
-  overlay: { flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.72)" }, sheet: { backgroundColor: colors.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: "95%", borderWidth: 1, borderColor: colors.border },
+  overlay: { flex: 1, justifyContent: "flex-end", backgroundColor: navyOverlay(0.72) }, sheet: { backgroundColor: colors.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: "95%", borderWidth: 1, borderColor: colors.border },
   flex: { flex: 1 }, header: { padding: 20, flexDirection: "row", alignItems: "center", gap: 12 }, eyebrow: { ...type.eyebrow, fontSize: 10 }, title: { ...type.section, marginTop: 6 }, close: { width: 44, height: 44, alignItems: "center", justifyContent: "center" }, content: { paddingHorizontal: 20, paddingBottom: 16, gap: 14 }, date: { ...type.card, color: colors.gold }, copy: type.body,
   card: { ...surface.card, backgroundColor: colors.surfaceRaised, padding: 16, gap: 12 }, cardTitle: type.card, item: { minHeight: 56, flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 10 }, checkbox: { width: 26, height: 26, borderRadius: 7, borderWidth: 1, borderColor: colors.gold, alignItems: "center", justifyContent: "center" }, checked: { backgroundColor: colors.gold }, itemText: { ...type.body, color: colors.text, flex: 1 }, state: type.caption,
   actions: { flexDirection: "row", gap: 12, paddingHorizontal: 20, paddingTop: 12 }, cancel: { flex: 1, minHeight: 48, borderRadius: 12, backgroundColor: colors.surfaceRaised, padding: 14, alignItems: "center", justifyContent: "center" }, cancelText: { color: colors.text, fontWeight: "600", fontSize: 14 }, save: { flex: 1, minHeight: 48, borderRadius: 12, backgroundColor: colors.gold, padding: 14, alignItems: "center", justifyContent: "center" }, saveText: { color: colors.background, fontWeight: "700", fontSize: 14 }, disabled: { opacity: 0.4 }, create: { paddingVertical: 12, minHeight: 44 }, gold: { color: colors.gold, fontWeight: "600" }, delete: { alignSelf: "flex-start", minHeight: 44, justifyContent: "center" }, deleteText: { color: colors.danger, fontSize: 13 },

@@ -1,3 +1,4 @@
+import { colors } from "@/theme/architect";
 import Button from "@/components/ui/Button";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import {useReflectionContext} from "@/hooks/useReflectionContext";
@@ -128,7 +129,7 @@ export default function ViewEntryScreen() {
             style={styles.borderGradient}
           >
             <LinearGradient
-              colors={["#262626", "#0a0a0a"]}
+              colors={[colors.surfaceRaised, colors.surface]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.innerGradient}
@@ -168,7 +169,7 @@ export default function ViewEntryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#02050C",
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: "row",
@@ -177,7 +178,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.05)",
+    borderBottomColor: colors.border,
   },
   headerButton: {
     padding: 5,
@@ -222,7 +223,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.2)",
+    borderColor: colors.border,
     backgroundColor: "rgba(215,184,119, 0.2)",
   },
   moodText: {

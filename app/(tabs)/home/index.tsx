@@ -1,5 +1,5 @@
 import { useContentRefresh } from "@/hooks/useContentRefresh";
-import {colors} from "@/theme/architect";
+import { colors, navyOverlay } from "@/theme/architect";
 import { pillars as pillarIdentity } from "@/lib/pillar-navigation";
 import {useReducedMotion} from "@/hooks/useReducedMotion";
 import { scheduleTodaysPowerThought } from "@/lib/daily-thought-notification";
@@ -120,7 +120,7 @@ export default function HomeScreen() {
 
         <Animated.View style={[styles.hero,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[12,0]})}]}]}>
           <ImageBackground source={atmosphereUrl ? {uri:atmosphereUrl} : DAILY_HERO_IMAGES[dailyIndex]} onError={() => { if (atmosphereUrl) {setAtmosphereUrl(null);setAtmosphereMessage(null)} }} contentFit="cover" contentPosition={{left:"50%",top:"58%"}} cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
-          <LinearGradient colors={["rgba(8,9,11,0.08)", "rgba(8,9,11,0.45)", "#08090B"]} locations={[0, 0.4, 1]} style={StyleSheet.absoluteFill} />
+          <LinearGradient colors={[navyOverlay(0.08), navyOverlay(0.45), colors.background]} locations={[0, 0.4, 1]} style={StyleSheet.absoluteFill} />
           <View style={styles.heroGreetingWrap}><View style={styles.pulseShell}><Animated.View style={[styles.pulseHalo,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.06,0.24]}),transform:[{scale:pulse.interpolate({inputRange:[0,1],outputRange:[1,1.65]})}]}]}/><Animated.View style={[styles.greetingDot,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.70,1]})}]}/></View><Text style={styles.heroGreeting}>{greeting}</Text></View>
           <View style={styles.heroContent}>
             <Text style={styles.eyebrow}>YOUR DAILY DIRECTION</Text>
@@ -166,7 +166,7 @@ export default function HomeScreen() {
               })}}>
               <TouchableOpacity activeOpacity={0.88} style={[styles.pillarSlide,{minHeight:Math.max(390,260*fontScale)}]} onPress={()=>router.push(pillar.route)} onFocus={()=>showPillar(index)} accessibilityRole="button" accessibilityLabel={`${pillar.name}, ${index+1} of ${pillars.length}: ${pillar.subtitle}`} accessibilityHint={`Open ${pillar.name}`}>
                 <ImageBackground source={pillar.image} contentFit="cover" contentPosition={pillar.name==="Mind"?{left:"50%",top:"18%"}:"center"} style={StyleSheet.absoluteFill} transition={reducedMotion?0:180} cachePolicy="memory-disk"/>
-                <LinearGradient colors={["rgba(5,8,13,0.08)","rgba(5,8,13,0.30)","rgba(5,8,13,0.96)"]} locations={[0,0.42,1]} style={StyleSheet.absoluteFill}/>
+                <LinearGradient colors={[navyOverlay(0.08),navyOverlay(0.3),navyOverlay(0.96)]} locations={[0,0.42,1]} style={StyleSheet.absoluteFill}/>
                 <View style={styles.slideTop}>
                   <Text style={styles.slideNumber}>{pillar.index} / 04</Text>
                   <View style={styles.pillarIcon}>{pillar.name==="Mind"?<Ionicons name="brain" color={colors.text} size={20}/>:<Ionicons name={pillar.icon as keyof typeof Ionicons.glyphMap} color={colors.text} size={20}/>}</View>
@@ -218,7 +218,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
   content: { paddingHorizontal: 20, paddingTop: 13, paddingBottom: 28 },
-  hero: { minHeight: 276, marginHorizontal: -20, marginTop: -8, marginBottom: 26, overflow: "hidden", backgroundColor: "#151715" },
+  hero: { minHeight: 276, marginHorizontal: -20, marginTop: -8, marginBottom: 26, overflow: "hidden", backgroundColor: colors.surface },
   heroContent: { flex: 1, paddingTop: 88, justifyContent: "flex-end", paddingHorizontal: 24, paddingBottom: 28 },
   heroTitle: { color: "#F7F5F0", fontSize: 34, lineHeight: 42, fontWeight: "600", letterSpacing: -0.6, includeFontPadding: false, },
   heroSub: { color: "#D0C8B9", fontSize: 12, letterSpacing: 0.7, marginTop: 13 },
@@ -254,11 +254,11 @@ const styles = StyleSheet.create({
   pillarSlide:{flex:1,borderRadius:20,overflow:"hidden",backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border},
   slideTop:{flexDirection:"row",alignItems:"center",justifyContent:"space-between",padding:18},
   slideNumber:{color:"rgba(245,244,241,0.70)",fontSize:10,fontWeight:"700",letterSpacing:1.5},
-  pillarIcon:{width:42,height:42,borderRadius:13,alignItems:"center",justifyContent:"center",backgroundColor:"rgba(5,8,13,0.58)",borderWidth:1,borderColor:"rgba(245,244,241,0.12)"},
+  pillarIcon:{width:42,height:42,borderRadius:13,alignItems:"center",justifyContent:"center",backgroundColor:navyOverlay(0.58),borderWidth:1,borderColor:colors.border},
   slideBottom:{flex:1,justifyContent:"flex-end",padding:22},
   slideTitle:{color:colors.text,fontSize:32,lineHeight:38,fontWeight:"600",letterSpacing:-0.5},
   slideCaption:{color:"#D2CDC4",fontSize:14,lineHeight:21,marginTop:6},
-  slideAction:{marginTop:20,paddingTop:16,borderTopWidth:1,borderTopColor:"rgba(245,244,241,0.12)",flexDirection:"row",alignItems:"center",justifyContent:"space-between"},
+  slideAction:{marginTop:20,paddingTop:16,borderTopWidth:1,borderTopColor:colors.border,flexDirection:"row",alignItems:"center",justifyContent:"space-between"},
   slideActionText:{color:GOLD,fontSize:10,fontWeight:"800",letterSpacing:1.7},
   pillarDots:{flexDirection:"row",alignItems:"center",justifyContent:"center",marginTop:4},
   pillarDotButton:{width:44,height:44,alignItems:"center",justifyContent:"center"},
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
   tileBottom: { flex: 1, justifyContent: "flex-end", padding: 13 },
   tileTitle: { color: "#F5F4F1", fontSize: 22, fontWeight: "600", letterSpacing: -0.2, lineHeight: 29, includeFontPadding: false, },
   tileCaption: { color: "#E4DBCA", fontSize: 12, lineHeight: 17, marginTop: 6 },
-  tileFooter: { marginTop: 14, paddingTop: 10, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.25)", flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  tileFooter: { marginTop: 14, paddingTop: 10, borderTopWidth: 1, borderTopColor: colors.border, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   explore: { color: GOLD, fontSize: 9, fontWeight: "800", letterSpacing: 1.6 },
   todayShortcut:{flexDirection:"row",alignItems:"center",gap:15,padding:18,marginTop:22,borderRadius:18,borderWidth:1,borderColor:colors.border,backgroundColor:colors.surface},
   todayShortcutIcon:{height:46,width:46,borderRadius:14,alignItems:"center",justifyContent:"center",backgroundColor:colors.goldSoft},
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
   thoughtCard: { borderRadius: 19, backgroundColor: "rgba(183,221,240,0.075)", padding: 20 },
   quoteMark: { color: GOLD, fontSize: 42, fontWeight: "700", height: 38 },
   thoughtText: { color: "#F4EEE5", fontSize: 19, lineHeight: 29, fontWeight: "500", marginTop: 0 },
-  thoughtFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 15, marginTop: 22, paddingTop: 16, borderTopWidth: 1, borderTopColor: "rgba(205,235,248,0.10)" },
+  thoughtFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 15, marginTop: 22, paddingTop: 16, borderTopWidth: 1, borderTopColor: colors.border },
   thoughtLink: { color: GOLD, fontSize: 9, fontWeight: "800", letterSpacing: 1.6 },
   footer: { color: "#A99D88", textAlign: "center", marginTop: 29, fontSize: 9, fontWeight: "700", letterSpacing: 2.2 },
 });

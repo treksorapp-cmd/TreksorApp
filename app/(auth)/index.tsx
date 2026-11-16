@@ -1,4 +1,4 @@
-import {colors} from "@/theme/architect";
+import { colors, navyOverlay } from "@/theme/architect";
 import { Image, ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -8,7 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Index() {
   return <SafeAreaView style={styles.screen}>
     <ImageBackground source={require("@/assets/images/onboarding.png")} contentFit="cover" style={StyleSheet.absoluteFill} />
-    <LinearGradient colors={["rgba(0,0,0,0.78)", "rgba(0,0,0,0.14)", "rgba(0,0,0,0.88)"]} style={StyleSheet.absoluteFill} />
+    <LinearGradient colors={[navyOverlay(0.78), navyOverlay(0.14), navyOverlay(0.88)]} style={StyleSheet.absoluteFill} />
     <ScrollView contentContainerStyle={{flexGrow:1,justifyContent:"space-between",paddingVertical:24}}>
     <View style={styles.brand}><Image source={require("@/assets/images/appicon-treksor.png")} style={styles.logo} contentFit="contain" /><Text style={styles.heading}>Treksor</Text><Text style={styles.subHeading}>A STRONGER YOU{"\n"}A BRIGHTER TOMORROW</Text></View>
     <View style={styles.bottom}><Text style={styles.mantra}>More than an app.{"\n"}A life companion.</Text><TouchableOpacity accessibilityRole="button" style={styles.button} onPress={() => router.push("/login")}><Text style={styles.buttonText}>GET STARTED </Text></TouchableOpacity></View>

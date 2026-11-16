@@ -1,3 +1,4 @@
+import { colors } from "@/theme/architect";
 import NutritionArtwork from "@/components/nutrition/NutritionArtwork";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import { Nutritions } from "@/mock/nutrition";
@@ -71,7 +72,7 @@ export default function BeverageDetails() {
 }
 
 const styles=StyleSheet.create({
-  screen:{flex:1,backgroundColor:"#02050C"},
+  screen:{flex:1,backgroundColor:colors.background},
   empty:{color:"#FFFFFF",textAlign:"center",marginTop:120},
   hero:{height:280,justifyContent:"space-between",overflow:"hidden"},
   topBar:{paddingHorizontal:20,flexDirection:"row",alignItems:"center",justifyContent:"space-between"},
@@ -91,7 +92,7 @@ const styles=StyleSheet.create({
   quantity:{maxWidth:"47%",flexDirection:"row",alignItems:"center",gap:7,backgroundColor:GLASS,borderWidth:1,borderColor:BORDER,paddingHorizontal:11,paddingVertical:9,borderRadius:14},
   quantityText:{color:"#E1E8EC",fontSize:11,flexShrink:1},
   ingredients:{backgroundColor:GLASS,borderWidth:1,borderColor:BORDER,borderRadius:20,paddingHorizontal:16,paddingVertical:3},
-  ingredientRow:{minHeight:66,flexDirection:"row",alignItems:"center",gap:12,borderBottomWidth:1,borderBottomColor:"rgba(220,237,248,0.1)",paddingVertical:10},
+  ingredientRow:{minHeight:66,flexDirection:"row",alignItems:"center",gap:12,borderBottomWidth:1,borderBottomColor:colors.border,paddingVertical:10},
   numberCircle:{height:32,width:32,borderRadius:11,backgroundColor:"rgba(193,227,244,0.085)",alignItems:"center",justifyContent:"center"},
   number:{fontSize:11,fontWeight:"700",color:"#D6E8F2"},
   ingredientName:{flex:1,color:"#FFFFFF",fontSize:14,fontWeight:"600",lineHeight:19},
@@ -99,8 +100,8 @@ const styles=StyleSheet.create({
   references:{marginTop:27,backgroundColor:"rgba(183,221,240,0.045)",borderRadius:18,padding:16},
   safetyRow:{flexDirection:"row",alignItems:"flex-start",gap:10},
   safetyText:{color:"#B8BEC2",fontSize:12,lineHeight:18,flex:1},
-  sourcesToggle:{flexDirection:"row",alignItems:"center",gap:10,marginTop:17,paddingTop:14,borderTopWidth:1,borderTopColor:"rgba(255,255,255,0.1)"},
+  sourcesToggle:{flexDirection:"row",alignItems:"center",gap:10,marginTop:17,paddingTop:14,borderTopWidth:1,borderTopColor:colors.border},
   sourcesLabel:{color:"#E5E9EB",fontSize:11,fontWeight:"700",letterSpacing:0.8,flex:1},
-  sourceLink:{flexDirection:"row",alignItems:"center",gap:12,paddingVertical:12,borderBottomWidth:1,borderBottomColor:"rgba(255,255,255,0.07)"},
+  sourceLink:{flexDirection:"row",alignItems:"center",gap:12,paddingVertical:12,borderBottomWidth:1,borderBottomColor:colors.border},
   sourceText:{flex:1,color:"#C8CDD1",fontSize:12,lineHeight:18},
 });

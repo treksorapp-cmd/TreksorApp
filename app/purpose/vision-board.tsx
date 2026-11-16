@@ -1,4 +1,4 @@
-import {colors} from "@/theme/architect";
+import { colors } from "@/theme/architect";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import Button from "@/components/ui/Button";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
@@ -32,7 +32,7 @@ export default function VisionBoard(){
  <BodyPageHeading trail="PURPOSE" title="Vision board" style={{marginHorizontal:-22,paddingRight:22}} />
  <Text style={{color:"#D8D3CA",lineHeight:23,fontSize:15,marginTop:13,marginBottom:26}}>Clarity comes before direction. Put your future into words. Visualise it, make it tangible and begin creating it through small, deliberate actions.</Text>
  <View style={{backgroundColor: colors.surface,borderRadius:14,padding:17,borderWidth:1,borderColor:"#695432",marginBottom:25}}><Text style={{color:GOLD,fontWeight:"700"}}>YOUR VISION BOARD</Text><Text style={{color:"#E4DED4",marginTop:8,lineHeight:21}}>Describe what you want to see, feel and experience. You can add visual references to a future board; start here with your words.</Text></View>
- {questions.map((q,i)=><View key={i} style={{marginBottom:22}}><Text style={{color:GOLD,fontWeight:"800",fontSize:11,letterSpacing:1.3}}>QUESTION {i+1} / 10</Text><Text style={{color:"#F7F3EB",fontSize:16,fontWeight:"600",lineHeight:23,marginTop:7,marginBottom:11}}>{q}</Text><TextInput multiline placeholder="Write your vision..." placeholderTextColor="#8E8B85" value={answers[i]} onChangeText={v=>setAnswers(a=>a.map((x,j)=>i===j?v:x))} style={{minHeight:90,textAlignVertical:"top",backgroundColor:"#1D1D1B",borderColor:"#554A38",borderWidth:1,borderRadius:12,color:"white",padding:14,fontSize:15}}/></View>)}
+ {questions.map((q,i)=><View key={i} style={{marginBottom:22}}><Text style={{color:GOLD,fontWeight:"800",fontSize:11,letterSpacing:1.3}}>QUESTION {i+1} / 10</Text><Text style={{color:"#F7F3EB",fontSize:16,fontWeight:"600",lineHeight:23,marginTop:7,marginBottom:11}}>{q}</Text><TextInput multiline placeholder="Write your vision..." placeholderTextColor="#8E8B85" value={answers[i]} onChangeText={v=>setAnswers(a=>a.map((x,j)=>i===j?v:x))} style={{minHeight:90,textAlignVertical:"top",backgroundColor:colors.surface,borderColor:"#554A38",borderWidth:1,borderRadius:12,color:"white",padding:14,fontSize:15}}/></View>)}
  <Button disabled={!loaded} onPress={save} iconName="checkmark-outline">Save my vision</Button>
  </ScrollView>
 }

@@ -1,3 +1,4 @@
+import { colors } from "@/theme/architect";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Workout from "@/components/Workout";
@@ -47,7 +48,7 @@ export default WorkoutHome;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,backgroundColor:"#02050C",
+    flex: 1,backgroundColor:colors.background,
   },
   content: {
     flex: 1,

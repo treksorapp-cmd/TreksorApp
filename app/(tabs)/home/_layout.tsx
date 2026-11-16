@@ -1,3 +1,4 @@
+import { colors } from "@/theme/architect";
 import Header from "@/components/ui/Header";
 import { Stack } from "expo-router";
 
@@ -7,7 +8,7 @@ export default function HomeLayout() {
       screenOptions={{
         headerShown: false,
         contentStyle: {
-          backgroundColor: "#02050C",
+          backgroundColor: colors.background,
         },
       }}>
       <Stack.Screen

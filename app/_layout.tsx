@@ -1,3 +1,4 @@
+import AppFrame from "@/components/AppFrame";
 import WatchRuntime from "@/components/watch/WatchRuntime";
 import WakeRuntime from "@/components/wake/WakeRuntime";
 import DiscoveryProvider from "@/components/discovery/DiscoveryProvider";
@@ -173,13 +174,13 @@ export default function RootLayout() {
         <SubscriptionScreen onClose={()=> setShowPackages(false)}/>
       )}
 
-      <Stack
+      <AppFrame enabled={isAuthenticated}><Stack
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: colors.background },
           animation: "slide_from_right",
         }}
-      />
+      /></AppFrame>
 
       <WakeRuntime />
       <WatchRuntime />

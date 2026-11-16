@@ -1,4 +1,5 @@
 import React from "react";
+import { useFixedRouteHeader } from '@/lib/navigation-frame-context';
 import Ionicons from '@/components/ui/BrandIcon';
 import { router, useLocalSearchParams, usePathname, type Href } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View, type StyleProp, type ViewStyle } from "react-native";
@@ -15,6 +16,7 @@ type Props = {
 };
 // Controls occupy a separate row; long titles always retain the full text width.
 export default function BodyPageHeading({ title, trail, subtitle, pillar, navigation, onBack, style }: Props) {
+    const fixed = useFixedRouteHeader();
     const pathname = usePathname();
     const params = useLocalSearchParams<{
         pillar?: string;
@@ -24,14 +26,14 @@ export default function BodyPageHeading({ title, trail, subtitle, pillar, naviga
     const goBack = onBack ?? (typeof router.canGoBack === "function" && router.canGoBack() && !["/body","/mental","/spiritual","/purpose"].includes(pathname) ? () => router.back() : undefined);
     const showNavigation = navigation ?? Boolean(destination);
     return <View style={[styles.container, style]}>
-    <View style={styles.topRow}>
+    {!fixed && <View style={styles.topRow}>
       <Text style={styles.trail}>{trail.toUpperCase()}</Text>
       {showNavigation && <View style={styles.actions}>
         {goBack && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go back" style={styles.icon} onPress={goBack}><Ionicons name="arrow-back" size={21} color={colors.text}/></TouchableOpacity>}
         <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go to Home" style={styles.icon} onPress={() => router.dismissTo("/(tabs)/home")}><Ionicons name="home-outline" size={21} color={colors.text}/></TouchableOpacity>
         {destination && <TouchableOpacity accessibilityRole="button" accessibilityLabel={`Return to ${destination.name}`} style={styles.icon} onPress={() => router.dismissTo(destination.route as Href)}>{key === "mind" ? <Ionicons name="brain" size={22} color={colors.gold}/> : <Ionicons name={destination.icon as "barbell-outline" | "leaf-outline" | "compass-outline"} size={22} color={colors.gold}/>}</TouchableOpacity>}
       </View>}
-    </View>
+    </View>}
     <Text accessibilityRole="header" style={styles.title}>{displayLabel(title)}</Text>
     {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
   </View>;

@@ -51,10 +51,11 @@ export function applyTrackerDay(items: TrackingItem[], date: string, checked: Re
 }
 
 export type ProgressEvent = {
-  id: string; date: string; kind: "session" | "set" | "reflection" | "journal" | "habit" | "checkin" | "moment";
+  id: string; date: string; kind: "session" | "set" | "reflection" | "journal" | "habit" | "checkin" | "moment" | "walk";
   title: string; source: string; route?: string; trackerId?: string;
 };
 export interface ProgressInput {
+  walks?: {id:string;date:string;minutes:number|null}[];
   checkIns: Record<string, string[]>;
   gymSets: { id: string; exerciseName: string; kg: number; reps: number; recordedAt: string; metric?:string }[];
   reflections: { id: string; date: string }[];
@@ -80,6 +81,7 @@ export function buildProgressOverview(input: ProgressInput, period: 7 | 30, now 
   [...new Set(input.dailyCheckInDates||[])].forEach(date=>add({id:`checkin:${date}`,kind:"checkin",title:"Daily check-in saved",source:"Progress · Private self-report",route:"/(tabs)/tracking"},date));
   [...new Set(input.momentDates||[])].forEach(date=>add({id:`moment:${date}`,kind:"moment",title:"Life moment captured",source:"Mind · Personal calendar",route:"/mind/moments"},date));
   input.trackers.filter(t => t.custom).forEach(t => t.items.forEach(item => Object.entries(item.record ?? {}).filter(([, value]) => value === true).forEach(([date]) => add({ id: `habit:${t.id}:${item.id}:${date}`, kind: "habit", title: item.label, source: `Personal tracker · ${t.title}`, trackerId: t.id }, date))));
+  [...new Map((input.walks||[]).map(row=>[row.id,row])).values()].forEach(row=>add({id:`walk:${row.id}`,kind:"walk",title:"Walk completed",source:row.minutes===null?"Body · Manually recorded walk":`Body · Walk · ${row.minutes} minutes`,route:"/body/walks"},row.date));
   events.sort((a, b) => b.date.localeCompare(a.date) || a.id.localeCompare(b.id));
   const active = new Set(events.map(e => e.date));
   const count = (kind: ProgressEvent["kind"]) => events.filter(e => e.kind === kind).length;
