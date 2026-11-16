@@ -45,5 +45,7 @@ jobs:
         run: npm run test:ui
       - name: Source integrity
         run: npm run test:integrity
+      - name: Global route bar
+        run: npm run test:navigation
       - name: Complete mobile and website parity contracts
         run: npm run release:check
