@@ -1,6 +1,7 @@
 import WatchRuntime from "@/components/watch/WatchRuntime";
 import WakeRuntime from "@/components/wake/WakeRuntime";
 import DiscoveryProvider from "@/components/discovery/DiscoveryProvider";
+import PersistentRouteBar from "@/components/navigation/PersistentRouteBar";
 import { useProgressSync } from "@/hooks/useProgressSync";
 import { colors } from "@/theme/architect";
 import SubscriptionScreen from "@/components/SubscriptionScreen";
@@ -8,7 +9,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { useAuthStore } from "@/store/auth-store";
 import { useUserStore } from "@/store/user-store";
 import * as Linking from "expo-linking";
-import { router, SplashScreen, Stack } from "expo-router";
+import { router, SplashScreen, Stack, useSegments } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import Purchases from "react-native-purchases";
 import Toast from "react-native-toast-message";
@@ -16,7 +17,9 @@ import { initRC } from "./services/revenuecat";
 
 export default function RootLayout() {
   useProgressSync();
-  const { error, clearError, isAuthenticated, getCurrentUser } = useAuthStore();
+  const { error, clearError, isAuthenticated, isVerified, getCurrentUser } = useAuthStore();
+  const routeSegments = useSegments();
+  const isAuthRoute = routeSegments.some(segment => segment === "(auth)");
   const [initialURL, setInitialURL] = useState<string | null>(null);
   const [isNavigationReady, setIsNavigationReady] = useState(false);
   const { showPackages, setShowPackages, savePushToken, purchasePlan } = useUserStore();
@@ -175,7 +178,8 @@ export default function RootLayout() {
 
       <Stack
         screenOptions={{
-          headerShown: false,
+          headerShown: isAuthenticated && isVerified && !isAuthRoute,
+          header: () => <PersistentRouteBar />,
           contentStyle: { backgroundColor: colors.background },
           animation: "slide_from_right",
         }}
