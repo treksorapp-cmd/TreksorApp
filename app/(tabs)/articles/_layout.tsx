@@ -1,4 +1,3 @@
-import Header from "@/components/ui/Header";
 import { Stack } from "expo-router";
 
 export default function ArticlesLayout() {
@@ -14,16 +13,14 @@ export default function ArticlesLayout() {
       <Stack.Screen
         name="index"
         options={{
-          headerShown:true,
-          header:()=><Header title="ARTICLES" showBackButton={false} showAvatar={false} />
+          headerShown:false
         }}
       />
 
       <Stack.Screen
         name="[id]"
         options={{
-          headerShown:false,
-          header:()=><Header title="ARTICLES" showBackButton={true} showAvatar={false} />
+          headerShown:false
         }}
       />
     </Stack>
