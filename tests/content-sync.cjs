@@ -36,6 +36,7 @@ const mocks={
  // Render after asynchronous arrival: no mount-time animation array may hide cards.
  const React=require('react'),RN=require('react-native-web');const {renderToStaticMarkup}=require('react-dom/server');
  const screen=load('app/mental/thoughts/index.tsx',{
+  '@/theme/architect':load('theme/architect.ts',{}),
   '@/hooks/useContentRefresh':{useContentRefresh:()=>{}},'@/components/BodyPageHeading':()=>null,
   '@/store/thought-store':{usePowerThoughtStore:()=>thoughts.getState()},'react-native':RN,
   '@/components/ui/BrandIcon':{__esModule:true,default:'span'},'@expo/vector-icons':{Ionicons:()=>null},'expo-linear-gradient':{LinearGradient:({children})=>React.createElement('div',null,children)},

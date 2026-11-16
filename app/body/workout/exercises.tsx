@@ -1,3 +1,4 @@
+import { colors } from "@/theme/architect";
 import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
 
@@ -190,7 +191,7 @@ const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,

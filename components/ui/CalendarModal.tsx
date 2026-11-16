@@ -1,6 +1,6 @@
 import { dayKey } from "@/lib/progress-metrics";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {colors} from "@/theme/architect";
+import { colors, navyOverlay } from "@/theme/architect";
 "use client"
 
 import Ionicons from '@/components/ui/BrandIcon';
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: navyOverlay(0.5),
   },
   modalContainer: {
     width: "90%",

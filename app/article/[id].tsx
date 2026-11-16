@@ -1,3 +1,4 @@
+import { colors, navyOverlay } from "@/theme/architect";
 import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
 
@@ -216,7 +217,7 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#02050C",
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
@@ -284,7 +285,7 @@ const styles = StyleSheet.create({
   bottomSection: {
     left: 0,
     right: 0,
-    backgroundColor: "rgba(10, 10, 10, 0.95)",
+    backgroundColor: navyOverlay(0.95),
     paddingHorizontal: 20,
     paddingVertical: 20,
     paddingBottom: 40,
@@ -292,7 +293,7 @@ const styles = StyleSheet.create({
   markAsReadButton: {
     borderRadius: 16,
     borderWidth:1,
-    borderColor:"rgba(205,235,248,0.20)",
+    borderColor:colors.border,
     overflow: "hidden",
   },
   markAsReadButtonRead: {

@@ -1,4 +1,4 @@
-import {colors} from "@/theme/architect";
+import { colors, navyOverlay } from "@/theme/architect";
 "use client"
 
 import Ionicons from '@/components/ui/BrandIcon';
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: "#3B2C15",
+    backgroundColor: colors.surfaceRaised,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: navyOverlay(0.5),
     justifyContent: "center",
     alignItems: "center",
   },
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 3,
-    borderColor: "#121212",
+    borderColor: colors.surface,
   },
   changePhotoText: {
     color: "#D7B877",
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   changePasswordButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#1A1A1A",
+    backgroundColor: colors.surface,
     padding: 15,
     borderRadius: 12,
   },
@@ -322,10 +322,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "rgba(18, 18, 18, 0.9)",
+    backgroundColor: navyOverlay(0.9),
     paddingHorizontal: 20,
     paddingVertical: 15,
     borderTopWidth: 1,
-    borderTopColor: "rgba(255, 255, 255, 0.1)",
+    borderTopColor: colors.border,
   },
 })

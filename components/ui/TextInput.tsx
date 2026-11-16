@@ -1,3 +1,4 @@
+import { colors } from "@/theme/architect";
 import Ionicons from '@/components/ui/BrandIcon';
 import { LinearGradient } from "expo-linear-gradient"
 import { useState } from "react"
@@ -40,8 +41,8 @@ const TextInput = (props: EnhancedTextInputProps) => {
       {/* Outer Gradient Border */}
       <LinearGradient
         colors={[
-          error ? "rgba(255, 100, 100, 0.5)" : "rgba(255, 255, 255, 0.3)",
-          error ? "rgba(255, 50, 50, 0.6)" : "rgba(255, 255, 255, 0.4)",
+          error ? colors.danger : colors.border,
+          error ? colors.danger : colors.border,
         ]}
         start={{ x: 0.2, y: 0 }}
         end={{ x: 0.8, y: 1 }}
@@ -49,7 +50,7 @@ const TextInput = (props: EnhancedTextInputProps) => {
       >
         {/* Inner Background Gradient */}
         <LinearGradient
-          colors={["#262626", "#0a0a0a"]}
+          colors={[colors.surfaceRaised, colors.surface]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.innerGradient}

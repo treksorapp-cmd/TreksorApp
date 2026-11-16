@@ -1,7 +1,7 @@
 import {useFocusEffect,useLocalSearchParams} from "expo-router";
 import MentorCompanion from "@/components/mentor/MentorCompanion";
 import type {MentorMode} from "@/supabase/functions/_shared/mentor";
-import {colors} from "@/theme/architect";
+import { colors, navyOverlay } from "@/theme/architect";
 "use client"
 
 import { useAuthStore } from "@/store/auth-store"
@@ -124,8 +124,8 @@ export default function ChatScreen() {
       <StatusBar style="light" />
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         <ImageBackground source={campfireAvailable ? { uri: CAMPFIRE_URL } : require("@/assets/images/mental-home-bg.jpeg")} onError={() => setCampfireAvailable(false)} contentFit="cover" style={StyleSheet.absoluteFill} />
-        <LinearGradient colors={["rgba(4,5,5,0.93)","rgba(4,5,5,0.82)","rgba(4,5,5,0.95)"]} style={StyleSheet.absoluteFill} />
-        <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(7,11,12,0.14)" }]} />
+        <LinearGradient colors={[navyOverlay(0.93),navyOverlay(0.82),navyOverlay(0.95)]} style={StyleSheet.absoluteFill} />
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: navyOverlay(0.14) }]} />
       </View>
 
 
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   premiumHeaderCenter: { flexDirection: "row", alignItems: "center", gap: 8 },
   premiumHeaderTitle: { fontSize: 34, fontWeight: "600", color: "#F5F1E8", letterSpacing: -0.6, lineHeight: 42, includeFontPadding: false, },
   beta: { color: "#161008", fontSize: 10, fontWeight: "800", backgroundColor: "#D7B877", paddingHorizontal: 9, paddingVertical: 4, borderRadius: 9 },
-  welcomeAI: { backgroundColor: "rgba(19,21,21,0.72)", marginHorizontal: 20, marginTop: 24, padding: 22, borderRadius: 18, borderWidth: 1, borderColor: "rgba(255,238,197,0.24)" },
+  welcomeAI: { backgroundColor: navyOverlay(0.72), marginHorizontal: 20, marginTop: 24, padding: 22, borderRadius: 18, borderWidth: 1, borderColor: colors.border },
   welcomeEyebrow: { color: "#D7B877", fontSize: 10, fontWeight: "700", letterSpacing: 2.4, marginBottom: 12 },
   welcomeTitle: { color: "#F5F1E8", fontSize: 22, fontWeight: "600", marginBottom: 12, lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
   welcomeNote: { color: "#A9A397", fontSize: 11, lineHeight: 16, marginTop: 18 },
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.1)",
+    borderBottomColor: colors.border,
   },
   backButton: {
     width: 40,
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   aiBubble: {
-    backgroundColor: "rgba(26,28,28,0.88)",
+    backgroundColor: navyOverlay(0.88),
     borderBottomLeftRadius: 4,
   },
   userBubble: {
@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    backgroundColor: "rgba(32,34,34,0.86)",
+    backgroundColor: navyOverlay(0.86),
     borderRadius: 22,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     maxHeight: 100,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderColor: colors.border,
   },
   sendButton: {
     width: 40,

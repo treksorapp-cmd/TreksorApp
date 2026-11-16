@@ -1,3 +1,4 @@
+import { colors, navyOverlay } from "@/theme/architect";
 import {useReducedMotion} from "@/hooks/useReducedMotion";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import Button from "@/components/ui/Button";
@@ -46,7 +47,7 @@ export default function GymScreen() {
       <ScrollView contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 18) + 44 }} showsVerticalScrollIndicator={false}>
         <View style={styles.hero}>
           <ImageBackground source={require("@/assets/images/Gym_2.png")} contentFit="cover" style={StyleSheet.absoluteFill} />
-          <LinearGradient colors={["rgba(2,5,12,0.22)", "rgba(2,5,12,0.68)", "#02050C"]} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
+          <LinearGradient colors={[navyOverlay(0.22), navyOverlay(0.68), colors.background]} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
           <View style={[styles.heroContent, { paddingTop: insets.top + 12 }]}>
             <BodyPageHeading title="Gym" trail="BODY / WORKOUT" subtitle="Train with intention. Progress with purpose." style={{paddingHorizontal:0}} />
           </View>
@@ -107,7 +108,7 @@ export default function GymScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen:{flex:1,backgroundColor:"#02050C"},
+  screen:{flex:1,backgroundColor:colors.background},
   hero:{minHeight:240,justifyContent:"flex-end",overflow:"hidden"},
   heroContent:{paddingLeft:22,paddingRight:22,paddingBottom:32,justifyContent:"flex-start"},
   eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:2},
@@ -141,7 +142,7 @@ const styles = StyleSheet.create({
   intro:{color:"#B9B9B9",fontSize:14,lineHeight:21,marginTop:10,marginBottom:16},
   sectionHeadingSecondary:{flexDirection:"row",alignItems:"baseline",justifyContent:"space-between",marginTop:23,marginBottom:7},
   sectionNote:{color:"#A9A39A",fontSize:10,letterSpacing:1.1},
-  management:{marginTop:27,borderTopWidth:1,borderTopColor:"rgba(255,255,255,0.12)",paddingTop:21},
+  management:{marginTop:27,borderTopWidth:1,borderTopColor:colors.border,paddingTop:21},
   managementTitle:{color:"#AAA8A5",fontSize:11,fontWeight:"700",letterSpacing:1.5,marginBottom:8},
   resetRow:{flexDirection:"row",alignItems:"center",gap:12,paddingVertical:14,paddingHorizontal:12,borderRadius:15,backgroundColor:"rgba(255,255,255,0.035)"},
   resetTitle:{color:"#E5E3E0",fontSize:13,fontWeight:"700",letterSpacing:0.8},

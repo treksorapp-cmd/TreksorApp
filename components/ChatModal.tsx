@@ -1,4 +1,4 @@
-import {colors} from "@/theme/architect";
+import { colors, navyOverlay } from "@/theme/architect";
 "use client"
 
 import { useAuthStore } from "@/store/auth-store"
@@ -234,7 +234,7 @@ export default function ChatModal({ visible, onClose }: ChatModalProps) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    backgroundColor: navyOverlay(0.3),
   },
   blurView: {
     flex: 1,
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.1)",
+    borderBottomColor: colors.border,
   },
   headerLeft: {
     flexDirection: "row",
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
     borderTopWidth: 1,
-    borderTopColor: "rgba(255, 255, 255, 0.1)",
+    borderTopColor: colors.border,
     gap: 12,
   },
   textInput: {

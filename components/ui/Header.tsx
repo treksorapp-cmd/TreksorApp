@@ -1,4 +1,5 @@
 import React from "react";
+import { useFixedRouteHeader } from "@/lib/navigation-frame-context";
 import Ionicons from '@/components/ui/BrandIcon';
 import { Image } from "expo-image";
 import { router } from "expo-router";
@@ -16,15 +17,16 @@ interface Props {
     showTitle?: boolean;
 }
 export default function Header({ title, showAvatar = true, showBackButton = false, headerRightButton, onBackPress, showTitle = true }: Props) {
+    const fixed = useFixedRouteHeader();
     const insets = useSafeAreaInsets();
     const user = useAuthStore(s => s.user);
     const name = user?.name?.trim().split(" ")[0] || "there";
     const avatar = user?.avatar ? (user.avatar.startsWith("http") ? user.avatar : `https://app.treksor.com/${user.avatar.replace(/^\//, "")}`) : undefined;
     return <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
     <View style={styles.topRow}>
-      <Text style={styles.eyebrow}>TREKSOR / {title ? displayLabel(title).toUpperCase() : "YOUR JOURNEY"}</Text>
+      {!fixed && <Text style={styles.eyebrow}>TREKSOR / {title ? displayLabel(title).toUpperCase() : "YOUR JOURNEY"}</Text>}
       <View style={styles.actions}>
-        {showBackButton && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go back" style={styles.icon} onPress={() => onBackPress ? onBackPress() : router.canGoBack() ? router.back() : router.replace("/(tabs)/home")}><Ionicons name="arrow-back" size={22} color={colors.text}/></TouchableOpacity>}
+        {showBackButton && !fixed && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go back" style={styles.icon} onPress={() => onBackPress ? onBackPress() : router.canGoBack() ? router.back() : router.replace("/(tabs)/home")}><Ionicons name="arrow-back" size={22} color={colors.text}/></TouchableOpacity>}
         {headerRightButton}
         {showAvatar && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open profile" style={styles.icon} onPress={() => router.push("/profile")}>{avatar ? <Image source={{ uri: avatar }} style={styles.avatar}/> : <Ionicons name="person-outline" size={22} color={colors.gold}/>}</TouchableOpacity>}
       </View>

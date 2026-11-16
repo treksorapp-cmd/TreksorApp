@@ -1,3 +1,4 @@
+import { colors, navyOverlay } from "@/theme/architect";
 "use client"
 
 import Ionicons from '@/components/ui/BrandIcon';
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
     top: "50%",
     left: "50%",
     transform: [{ translateX: -30 }, { translateY: -30 }],
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    backgroundColor: navyOverlay(0.6),
     borderRadius: 30,
     width: 60,
     height: 60,

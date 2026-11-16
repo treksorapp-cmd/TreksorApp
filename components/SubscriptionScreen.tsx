@@ -1,3 +1,4 @@
+import { colors, navyOverlay } from "@/theme/architect";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import { getOfferings } from "@/app/services/revenuecat";
 import { useAuthStore } from "@/store/auth-store";
@@ -464,7 +465,7 @@ const styles = StyleSheet.create({
     },
     imageStyle: { opacity: 1 },
     overlay: {
-      backgroundColor: "rgba(0, 0, 0, 0.45)",
+      backgroundColor: navyOverlay(0.45),
       width: "100%",
       flexGrow: 1,
       justifyContent: "center",
@@ -481,7 +482,7 @@ const styles = StyleSheet.create({
     modalContainer: {
       width: "100%",
       maxWidth: 520,
-      backgroundColor: "rgba(0,0,0,0.65)",
+      backgroundColor: navyOverlay(0.65),
       borderRadius: 20,
       padding: 25,
       alignItems: "center",

@@ -1,4 +1,4 @@
-import {colors} from "@/theme/architect";
+import { colors, navyOverlay } from "@/theme/architect";
 "use client";
 
 import { useAuthStore } from "@/store/auth-store";
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     width: "85%",
-    backgroundColor: "rgba(0,0,0,0.6)",
+    backgroundColor: navyOverlay(0.6),
     borderRadius: 20,
     padding: 25,
     alignItems: "center",

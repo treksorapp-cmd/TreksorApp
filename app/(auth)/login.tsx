@@ -1,3 +1,4 @@
+import { colors, navyOverlay } from "@/theme/architect";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
@@ -285,7 +286,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // adjust opacity as needed
+    backgroundColor: navyOverlay(0.5), // adjust opacity as needed
     zIndex: -1,
   },
   backButton: { alignSelf:"flex-start", minWidth:44, minHeight:44, justifyContent:"center", marginBottom:20 },

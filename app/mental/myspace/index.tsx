@@ -1,3 +1,4 @@
+import { colors } from "@/theme/architect";
 import { recordedDay } from "@/lib/progress-metrics";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
@@ -115,7 +116,7 @@ export default function MySpaceScreen() {
         >
           {/* Inner LinearGradient for the button background */}
           <LinearGradient
-            colors={["#262626", "#0a0a0a"]}
+            colors={[colors.surfaceRaised, colors.surface]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.innerGradient}
@@ -154,7 +155,7 @@ export default function MySpaceScreen() {
       <BodyPageHeading trail={trail} title={origin === "purpose" ? "Goals & reflections" : "My space"} subtitle={origin === "purpose" ? "Put your intentions into words. Return to them as you grow." : "A place to pause, reflect and understand yourself."} />
       <StatusBar style="light" />
 
-      <View style={{marginHorizontal:20,marginTop:16,padding:18,borderRadius:18,backgroundColor:"rgba(255,255,255,0.08)",borderWidth:1,borderColor:"rgba(255,255,255,0.22)"}}>
+      <View style={{marginHorizontal:20,marginTop:16,padding:18,borderRadius:18,backgroundColor:"rgba(255,255,255,0.08)",borderWidth:1,borderColor:colors.border}}>
         <Text style={{color:"#FFFFFF",fontWeight:"700",fontSize:15}}>Mood over time</Text>
         <Text style={{color:"#CCC6BC",marginTop:6}}>{moodTrend.length<2?"Record moods on different days to see your trend":moodTrend[moodTrend.length-1].score>moodTrend[0].score?"Mood improving":moodTrend[moodTrend.length-1].score<moodTrend[0].score?"Mood declining":"Mood stable"}</Text>
         <Text style={{color:"#D7B877",marginTop:12,fontSize:12}}>1 Low · 2 Difficult · 3 Neutral · 4 Settled · 5 Positive</Text>
@@ -169,7 +170,7 @@ export default function MySpaceScreen() {
       <View style={{paddingHorizontal:20}}><Button iconName="images-outline" onPress={()=>router.push("/mind/moments")}>MY MOMENTS & PHOTO CALENDAR</Button></View>
       {/* Thoughts List */}
       <View style={{paddingHorizontal:20,gap:16,paddingVertical:10}}>
-        {myspaces.length === 0 && <View style={{padding:22,borderRadius:18,backgroundColor:"#111820",gap:8}}><Text style={{color:"#F5F4F1",fontSize:18,lineHeight:25,fontWeight:"600"}}>Start with one thought</Text><Text style={{color:"#C8C3BA",fontSize:15,lineHeight:23}}>Your saved reflections will appear here. There is no right way to begin.</Text></View>}
+        {myspaces.length === 0 && <View style={{padding:22,borderRadius:18,backgroundColor:colors.surface,gap:8}}><Text style={{color:"#F5F4F1",fontSize:18,lineHeight:25,fontWeight:"600"}}>Start with one thought</Text><Text style={{color:"#C8C3BA",fontSize:15,lineHeight:23}}>Your saved reflections will appear here. There is no right way to begin.</Text></View>}
         {myspaces.map((mySpace, index) => renderMySpaces(mySpace, index))}
       </View>
       </ScrollView>
@@ -193,7 +194,7 @@ export default function MySpaceScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#02050C",
+    backgroundColor: colors.background,
   },
   content: {
     flex: 1,
@@ -257,7 +258,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 100,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.2)",
+    borderColor: colors.border,
     backgroundColor: "rgba(215,184,119, 0.2)",
     minWidth: 60,
     alignItems: "center",

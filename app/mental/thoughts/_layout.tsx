@@ -1,5 +1,6 @@
+import { colors } from "@/theme/architect";
 import { Stack } from "expo-router";
 
 export default function PillarStackLayout() {
-  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#02050C" } }} />;
+  return <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }} />;
 }

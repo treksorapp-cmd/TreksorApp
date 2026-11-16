@@ -1,3 +1,4 @@
+import { colors } from "@/theme/architect";
 import { useContentRefresh } from "@/hooks/useContentRefresh";
 import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
@@ -208,7 +209,7 @@ const styles = StyleSheet.create({
   pageTitle: {color: "#F5F4F1",fontSize: 34,fontWeight: "600",letterSpacing: -0.6,marginTop:7, lineHeight: 42, includeFontPadding: false, },
   container: {
     flex: 1,
-    backgroundColor: "#02050C",
+    backgroundColor: colors.background,
   },
   tabContainer: {
     paddingHorizontal: 10,
@@ -219,7 +220,7 @@ const styles = StyleSheet.create({
     gap: 12,
     backgroundColor: "rgba(183,221,240,0.075)",
     borderWidth:1,
-    borderColor:"rgba(205,235,248,0.20)",
+    borderColor:colors.border,
     height: 56,
     borderRadius: 12,
   },

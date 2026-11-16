@@ -1,3 +1,4 @@
+import { colors } from "@/theme/architect";
 import Header from "@/components/ui/Header";
 import { Stack } from "expo-router";
 
@@ -8,7 +9,7 @@ export default function ArticlesLayout() {
         headerShown: false,
         animation:"ios_from_right",
         contentStyle: {
-          backgroundColor: "#02050C",
+          backgroundColor: colors.background,
         },
       }}>
       <Stack.Screen

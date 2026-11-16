@@ -1,3 +1,4 @@
+import { colors } from "@/theme/architect";
 "use client"
 
 import type React from "react"
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingTop: 15,
     borderTopWidth: 1,
-    borderTopColor: "rgba(255, 255, 255, 0.1)",
+    borderTopColor: colors.border,
   },
   requiredNote: {
     fontSize: 12,
