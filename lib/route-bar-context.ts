@@ -63,9 +63,9 @@ export function routeBarContext(pathname: string, origin?: string): RouteBarCont
   }
 
   const pillar: PillarKey | undefined = resolvePillar("/" + parts.join("/"), origin);
-  const base = pillar ? pillars[pillar] : topSections[parts[0]];
-  const title = base?.name ?? base?.label ?? cleanPart(parts[0]);
-  const sectionRoute = base?.route ?? "/(tabs)/home";
+  const section = topSections[parts[0]];
+  const title = pillar ? pillars[pillar].name : (section?.label ?? cleanPart(parts[0]));
+  const sectionRoute = pillar ? pillars[pillar].route : (section?.route ?? "/(tabs)/home");
   const trail = pillar
     ? [title, ...parts.slice(1).map(cleanPart)]
     : parts[0] === "notes"
@@ -81,7 +81,7 @@ export function routeBarContext(pathname: string, origin?: string): RouteBarCont
 
   return {
     breadcrumb: trail.join(" / "),
-    icon: (base?.icon ?? "grid-outline") as RouteBarIcon,
+    icon: (pillar ? pillars[pillar].icon : section?.icon ?? "grid-outline") as RouteBarIcon,
     sectionRoute,
     parentRoute,
     isHome: false,
