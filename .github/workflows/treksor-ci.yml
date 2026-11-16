@@ -31,6 +31,8 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: TypeScript
         run: npm run typecheck
+      - name: Brand icon compatibility
+        run: node tests/brand-identity.cjs
       - name: Goal evidence
         run: npm run test:goals
       - name: Watch workout contract

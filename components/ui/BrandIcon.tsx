@@ -1,6 +1,6 @@
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import nodes from '@/design/brand/icons.json';
 
@@ -19,7 +19,10 @@ type Props = Omit<React.ComponentProps<typeof Ionicons>, 'name'> & {name: React.
 function BrandIcon({name, size=24, color, style, ...props}: Props) {
   const key = name && names[name];
   if (!key) return <Ionicons {...props} name={name as React.ComponentProps<typeof Ionicons>['name']} size={size} color={color} style={style}/>;
-  return <View style={[{width:size,height:size},style]} accessibilityLabel={props.accessibilityLabel} accessible={!!props.accessibilityLabel} testID={props.testID} pointerEvents="none">
+  // Ionicons accepts TextStyle, whose web cursor can be broader than ViewStyle.
+  // SVG icons are decorative; retain layout styles without forwarding a text cursor.
+  const {cursor: _textCursor, ...containerStyle} = StyleSheet.flatten(style) || {};
+  return <View style={[{width:size,height:size},containerStyle]} accessibilityLabel={props.accessibilityLabel} accessible={!!props.accessibilityLabel} testID={props.testID} pointerEvents="none">
     <SvgXml xml={markup[key]} width={size} height={size} color={color} />
   </View>;
 }
