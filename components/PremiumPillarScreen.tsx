@@ -1,5 +1,5 @@
 import PillarUpdates from "@/components/PillarUpdates";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import Button from "@/components/ui/Button";
 import PillarMenuScreen from "@/components/PillarMenuScreen";
 import { router, type Href } from "expo-router";
@@ -32,8 +32,8 @@ export default function PremiumPillarScreen({ title, headline, subtitle, image, 
         <TouchableOpacity accessibilityRole="button" accessibilityLabel="Return to Today" onPress={() => router.push("/(tabs)/home")} style={styles.link}>
           <Text style={styles.linkText}>TODAY</Text><Ionicons name="arrow-forward" size={15} color={colors.gold}/>
         </TouchableOpacity>
-        <TouchableOpacity accessibilityRole="button" accessibilityLabel={"Discuss " + title + " with Mentor"} onPress={() => router.push({ pathname: "/(tabs)/chat", params: { draft: "Help me turn my " + title + " practice into one realistic next action. Ask me a question before making assumptions about my progress." } })} style={styles.link}>
-          <Text style={styles.linkText}>MENTOR</Text><Ionicons name="arrow-forward" size={15} color={colors.gold}/>
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel={"Discuss " + title + " with Guide"} onPress={() => router.push({ pathname: "/(tabs)/chat", params: { draft: "Help me turn my " + title + " practice into one realistic next action. Ask me a question before making assumptions about my progress." } })} style={styles.link}>
+          <Text style={styles.linkText}>GUIDE</Text><Ionicons name="arrow-forward" size={15} color={colors.gold}/>
         </TouchableOpacity>
       </View>
     </View>

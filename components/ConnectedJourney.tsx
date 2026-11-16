@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import { router, useFocusEffect, type Href } from "expo-router";
 import { useCallback, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -21,10 +21,10 @@ const DESTINATIONS: Record<OutcomeId, Href> = {
 };
 const PILLARS: {id: OutcomeId; label: string; icon: keyof typeof Ionicons.glyphMap; time: string; unit: string}[] = [
   { id: "body", label: "Body", icon: "barbell-outline", time: "LAST 7 DAYS", unit: "workout sessions" },
-  { id: "mind", label: "Mind", icon: "book-outline", time: "LAST 7 DAYS", unit: "journal days" },
+  { id: "mind", label: "Mind", icon: "brain", time: "LAST 7 DAYS", unit: "journal days" },
   { id: "balance", label: "Balance", icon: "leaf-outline", time: "ALL TIME", unit: "practices marked complete" },
   { id: "purpose", label: "Purpose", icon: "compass-outline", time: "LAST 7 DAYS", unit: "days with a priority" },
-  { id: "mentor", label: "Mentor", icon: "chatbubble-ellipses-outline", time: "LOADED CHAT", unit: "replies received" },
+  { id: "mentor", label: "Guide", icon: "chatbubble-ellipses-outline", time: "LOADED CHAT", unit: "replies received" },
 ];
 
 type PrivateSummary = { owner: string | undefined; journalDays: string[]; priorityDays: string[]; error: boolean; ready: boolean };
@@ -117,7 +117,7 @@ export default function ConnectedJourney({ refreshKey = 0 }: { refreshKey?: numb
         >
           <Ionicons name="chatbubble-outline" size={17} color={colors.gold}/>
           <View style={styles.mentorCopy}>
-            <Text style={styles.mentorTitle}>Discuss your progress with Mentor</Text>
+            <Text style={styles.mentorTitle}>Discuss your progress with Guide</Text>
             <Text style={styles.mentorCaption}>Review an editable summary before you send. Your private writing stays private.</Text>
           </View>
           <Ionicons name="chevron-forward" size={17} color={colors.gold}/>

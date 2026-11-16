@@ -1,7 +1,7 @@
 import React, {useCallback,useEffect,useRef,useState} from "react";
 import {ActivityIndicator,AppState,StyleSheet,Text,TouchableOpacity,View} from "react-native";
 import {useIsFocused} from "@react-navigation/native";
-import {Ionicons} from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import {useVideoPlayer,VideoView} from "expo-video";
 import {cachedExerciseVideo,resolveExerciseVideo} from "@/lib/exercise-video";
 

@@ -9,7 +9,7 @@ import {router,useFocusEffect} from "expo-router";
 import {useCallback,useEffect,useState} from "react";
 import {Alert,Keyboard,ScrollView,Text,TextInput,TouchableOpacity,View} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {Ionicons} from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 const GOLD="#D7B877",CARD="rgba(183,221,240,.07)";
 export default function LifeMoments(){
  const owner=useAuthStore(s=>s.user?.id),insets=useSafeAreaInsets();const [items,setItems]=useState<LifeMoment[]>([]),[date,setDate]=useState(dayKey()),[month,setMonth]=useState(()=>new Date(new Date().getFullYear(),new Date().getMonth(),1)),[photo,setPhoto]=useState<{uri:string;base64:string}|null>(null),[caption,setCaption]=useState(""),[busy,setBusy]=useState(false),[error,setError]=useState("");

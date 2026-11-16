@@ -9,7 +9,7 @@ import ExerciseVideo from "@/components/workout/ExerciseVideo";
 import { playCompletionFeedback } from "@/lib/completion-feedback";
 import { exercisesForMuscles, GymExercise, mergeGymExercises } from "@/lib/gym-library";
 import { useWorkoutStore } from "@/store/workout-store";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import { router } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Alert, AppState, ScrollView, useWindowDimensions, Text, TextInput, TouchableOpacity, View } from "react-native";

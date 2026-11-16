@@ -1,4 +1,4 @@
-import {Ionicons} from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import {LinearGradient} from "expo-linear-gradient";
 import {StyleSheet,Text,TouchableOpacity,View} from "react-native";
 import {clockText,workoutClock} from "@/lib/workout-clock";

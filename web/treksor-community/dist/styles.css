@@ -11,3 +11,6 @@
 @media(max-width:720px){.profile-layout,.progress-layout{grid-template-columns:1fr}.progress-pillars{gap:10px}.progress-pillar{padding:18px}.progress-pillar p{font-size:10px}.metric{padding:15px}.metrics{gap:10px}.sync-bar{align-items:flex-start;flex-direction:column}.sync-bar p{overflow-wrap:anywhere}.space-tabs{gap:20px}.space-tabs .tab{font-size:12px}.progress-layout .detail-panel{padding:20px}.hero h1{font-size:clamp(40px,9vw,58px)}.profile-layout .profile-panel{position:static}.sync-bar label,#device-select{width:100%;max-width:100%}}
 
 .connected-system{display:flex;align-items:center;flex-wrap:wrap;gap:13px;margin-top:24px;font-size:13px;color:var(--ink)}.connected-system>span{padding:8px 12px;border:1px solid var(--line);border-radius:7px;background:rgba(7,11,17,.6)}.connected-system i{font-style:normal;color:var(--gold)}.connected-system small{display:block;color:var(--gold);font-size:9px;letter-spacing:.6px}.hero .connected-system+ .hero-actions{margin-top:24px}@media(max-width:720px){.connected-system{gap:8px;font-size:11px}.connected-system>span{padding:7px 9px}}
+
+/* Canonical dashboard mark: preserve aspect ratio in every lockup. */
+.brand img{width:32px;height:32px;object-fit:contain;flex-shrink:0}

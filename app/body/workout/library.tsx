@@ -2,7 +2,7 @@ import {cachedGymCatalogue,getGymCatalogue} from "@/lib/gym-catalogue";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import {GymExercise,mergeGymExercises} from "@/lib/gym-library";
 import {useContentRefresh} from "@/hooks/useContentRefresh";
-import {Ionicons} from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import {router} from "expo-router";
 import {useCallback,useState} from "react";
 import {ScrollView,Text,TextInput,TouchableOpacity,View,RefreshControl} from "react-native";

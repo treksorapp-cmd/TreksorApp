@@ -1,6 +1,6 @@
 "use client"
 
-import { Ionicons } from "@expo/vector-icons"
+import Ionicons from '@/components/ui/BrandIcon';
 import { useEffect, useState } from "react"
 import { StyleSheet, Text, TouchableOpacity } from "react-native"
 import Svg, { Circle } from "react-native-svg"

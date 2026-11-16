@@ -1,7 +1,7 @@
 import {colors} from "@/theme/architect";
 "use client"
 
-import { Ionicons } from "@expo/vector-icons"
+import Ionicons from '@/components/ui/BrandIcon';
 import * as ImagePicker from "expo-image-picker"
 import { LinearGradient } from "expo-linear-gradient"
 import { router } from "expo-router"

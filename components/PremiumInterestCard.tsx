@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
 import { Share, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -18,7 +18,7 @@ const PRICE: { value: PriceRange; label: string }[] = [
 const REASONS: { value: PremiumReason; label: string }[] = [
   { value: "personal_plans", label: "Connected personal plans" },
   { value: "deeper_progress", label: "Deeper progress insights" },
-  { value: "mentor", label: "Advanced Mentor tools" },
+  { value: "mentor", label: "Advanced Guide tools" },
   { value: "watch", label: "Watch continuity" },
   { value: "none", label: "None of these" },
 ];

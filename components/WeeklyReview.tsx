@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import * as SecureStore from "expo-secure-store";
 import { router, useFocusEffect, type Href } from "expo-router";
 import { useCallback, useState } from "react";
@@ -13,7 +13,7 @@ const FOCUS: {
   id: Focus; title: string; prompt: string; route: Href; icon: keyof typeof Ionicons.glyphMap;
 }[] = [
   { id: "body", title: "Body", prompt: "Make room for 10 minutes of movement.", route: "/body", icon: "barbell-outline" },
-  { id: "mind", title: "Mind", prompt: "Write down one thought worth keeping.", route: "/mental", icon: "book-outline" },
+  { id: "mind", title: "Mind", prompt: "Write down one thought worth keeping.", route: "/mental", icon: "brain" },
   { id: "balance", title: "Balance", prompt: "Spend a few minutes in stillness.", route: "/spiritual", icon: "leaf-outline" },
   { id: "purpose", title: "Purpose", prompt: "Choose one meaningful priority.", route: "/purpose", icon: "compass-outline" },
 ];

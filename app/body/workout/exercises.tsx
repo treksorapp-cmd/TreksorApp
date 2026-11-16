@@ -3,7 +3,7 @@ import BodyPageHeading from "@/components/BodyPageHeading";
 
 import { useWorkoutStore } from "@/store/workout-store";
 import { Exercise } from "@/types/workout";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import { ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import {

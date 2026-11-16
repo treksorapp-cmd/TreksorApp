@@ -2,7 +2,7 @@ import React,{useCallback,useState} from "react";
 import {ScrollView,Text,TouchableOpacity,View,StyleSheet,Modal,Alert} from "react-native";
 import {router,useFocusEffect} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import {Ionicons} from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import {LinearGradient} from "expo-linear-gradient";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import PillarUpdates from "@/components/PillarUpdates";

@@ -4,7 +4,7 @@ import {useReflectionContext} from "@/hooks/useReflectionContext";
 "use client"
 
 import { useMySpaceStore } from "@/store/myspace-store"
-import { Ionicons } from "@expo/vector-icons"
+import Ionicons from '@/components/ui/BrandIcon';
 import { Image } from "expo-image"
 import { router, useLocalSearchParams } from "expo-router"
 import { StatusBar } from "expo-status-bar"

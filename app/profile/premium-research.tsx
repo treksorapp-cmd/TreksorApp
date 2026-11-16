@@ -1,7 +1,7 @@
 import PremiumInterestCard from "@/components/PremiumInterestCard";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import { colors } from "@/theme/architect";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import { router } from "expo-router";
 import React from "react";
 import { ScrollView, Text, TouchableOpacity } from "react-native";

@@ -1,5 +1,5 @@
 import { Text, TouchableOpacity, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import { useDiscovery } from "./DiscoveryProvider";
 import { colors, surface, type } from "@/theme/architect";
 export default function DiscoveryCard() {

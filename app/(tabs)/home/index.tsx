@@ -6,7 +6,7 @@ import { scheduleTodaysPowerThought } from "@/lib/daily-thought-notification";
 import { playCompletionFeedback } from "@/lib/completion-feedback";
 import { useAuthStore } from "@/store/auth-store";
 import { usePowerThoughtStore } from "@/store/thought-store";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import { Image, ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, type Href } from "expo-router";
@@ -169,7 +169,7 @@ export default function HomeScreen() {
                 <LinearGradient colors={["rgba(5,8,13,0.08)","rgba(5,8,13,0.30)","rgba(5,8,13,0.96)"]} locations={[0,0.42,1]} style={StyleSheet.absoluteFill}/>
                 <View style={styles.slideTop}>
                   <Text style={styles.slideNumber}>{pillar.index} / 04</Text>
-                  <View style={styles.pillarIcon}>{pillar.name==="Mind"?<MaterialCommunityIcons name="brain" color={colors.text} size={20}/>:<Ionicons name={pillar.icon as keyof typeof Ionicons.glyphMap} color={colors.text} size={20}/>}</View>
+                  <View style={styles.pillarIcon}>{pillar.name==="Mind"?<Ionicons name="brain" color={colors.text} size={20}/>:<Ionicons name={pillar.icon as keyof typeof Ionicons.glyphMap} color={colors.text} size={20}/>}</View>
                 </View>
                 <View style={styles.slideBottom}>
                   <Text style={styles.slideTitle}>{pillar.name}</Text>

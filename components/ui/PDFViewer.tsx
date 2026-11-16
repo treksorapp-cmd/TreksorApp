@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { Ionicons } from "@expo/vector-icons"
+import Ionicons from '@/components/ui/BrandIcon';
 import { useState } from "react"
 import { ActivityIndicator, Alert, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"

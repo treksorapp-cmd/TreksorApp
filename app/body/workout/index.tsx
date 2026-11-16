@@ -3,7 +3,7 @@ import BodyPageHeading from "@/components/BodyPageHeading";
 import Button from "@/components/ui/Button";
 import { playCompletionFeedback } from "@/lib/completion-feedback";
 import { useWorkoutStore } from "@/store/workout-store";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import { ImageBackground } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";

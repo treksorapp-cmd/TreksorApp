@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Alert, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import { useTrackingStore } from "@/store/tracking-store";
 import { applyTrackerDay, dayKey, displayDay, isScheduled, trackerCompletion } from "@/lib/progress-metrics";
 import type { TrackingCategory } from "@/types/tracking";

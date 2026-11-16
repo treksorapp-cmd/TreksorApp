@@ -36,7 +36,7 @@ export const discoveryTips = [
   },
   {
     id: "mentor",
-    title: "Think it through with Mentor.",
+    title: "Think it through with Guide.",
     body: "Explore ideas, reflect on your day and find a manageable next step with your AI companion.",
     route: "/(tabs)/chat",
     icon: "chatbubble-ellipses-outline",

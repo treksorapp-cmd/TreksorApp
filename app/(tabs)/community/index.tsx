@@ -1,10 +1,11 @@
 import React,{useEffect,useMemo,useRef,useState} from 'react';
 import {ActivityIndicator,Alert,Keyboard,Linking,ScrollView,StyleSheet,Text,TextInput,TouchableOpacity,View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {Ionicons} from '@expo/vector-icons';
+import Ionicons from '@/components/ui/BrandIcon';
 import * as Location from 'expo-location';
 import {router} from 'expo-router';
 import BodyPageHeading from '@/components/BodyPageHeading';
+import CommunityMentors from '@/components/CommunityMentors';
 import CommunityConnections from '@/components/CommunityConnections';
 import {colors,surface,type} from '@/theme/architect';
 import {CommunityEvent,loadCommunityEvents} from '@/api/community';
@@ -25,6 +26,7 @@ export default function Community(){
  return <SafeAreaView edges={['top']} style={s.screen}><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={s.content}>
  <BodyPageHeading trail="CONNECT & EXPLORE" title="Community" style={{marginHorizontal:-20,marginTop:12}}/>
  <Text style={[type.body,{marginTop:16,marginBottom:24}]}>Find a shared activity, meet one person or connect with a mentor. Start where you are. Go at your pace.</Text>
+ <CommunityMentors/>
  <TouchableOpacity accessibilityRole="button" accessibilityLabel="Explore Treksor events and registrations" onPress={()=>router.push("/community/events" as any)} style={{backgroundColor:colors.surface,borderColor:colors.border,borderWidth:1,borderRadius:16,padding:17,flexDirection:"row",alignItems:"center",gap:12,marginBottom:20}}><Ionicons name="calendar-outline" size={25} color={colors.gold}/><View style={{flex:1}}><Text style={{color:colors.text,fontSize:16,fontWeight:"600"}}>Treksor experiences</Text><Text style={{color:colors.muted,fontSize:12,marginTop:4}}>Events · registration · your feedback</Text></View><Ionicons name="chevron-forward" size={20} color={colors.gold}/></TouchableOpacity>
  <View style={s.searchCard}><Text style={type.eyebrow}>WHERE WOULD YOU LIKE TO CONNECT?</Text><Text style={[type.card,{marginVertical:8}]}>Your city. Or your next destination.</Text>
  <View style={s.row}><TextInput accessibilityLabel="City and country" placeholder="City, country" placeholderTextColor={colors.muted} value={city} maxLength={100} onChangeText={value=>{++request.current;setLocating(false);setCity(value)}} onSubmitEditing={search} returnKeyType="search" style={s.input}/><TouchableOpacity accessibilityRole="button" accessibilityLabel="Search activities in this city" onPress={search} style={s.searchButton}><Ionicons name="search-outline" size={22} color={colors.background}/><Text style={s.buttonText}>Search</Text></TouchableOpacity></View>

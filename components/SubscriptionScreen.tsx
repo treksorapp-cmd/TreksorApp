@@ -2,7 +2,7 @@ import {useSafeAreaInsets} from "react-native-safe-area-context";
 import { getOfferings } from "@/app/services/revenuecat";
 import { useAuthStore } from "@/store/auth-store";
 import { useUserStore } from "@/store/user-store";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Alert, AppState, Modal, ScrollView, ImageBackground, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Purchases from "react-native-purchases";
@@ -158,7 +158,7 @@ export default function SubscriptionScreen({onClose}: {onClose: () => void}) {
   const monthlyFeatures = [
     "Treksor tools for Body, Mind, Balance and Purpose",
     "Daily perspectives, articles and progress tracking",
-    "Mentor functionality where available in your app version",
+    "Guide functionality where available in your app version",
   ];
 
   const yearlyFeatures = [

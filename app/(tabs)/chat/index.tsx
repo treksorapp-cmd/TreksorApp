@@ -7,7 +7,7 @@ import {colors} from "@/theme/architect";
 import { useAuthStore } from "@/store/auth-store"
 import { useChatStore } from "@/store/chat-store"
 import { Message } from "@/types/message"
-import { Ionicons } from "@expo/vector-icons"
+import Ionicons from '@/components/ui/BrandIcon';
 import { Image, ImageBackground } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
 import { StatusBar } from "expo-status-bar"
@@ -97,7 +97,7 @@ export default function ChatScreen() {
     >
       {!(item.role === "user") && (
         <View style={styles.aiAvatar}>
-          <Image source={require("@/assets/images/bot.png")} style={{ width: 30, height: 30 }} />
+          <Ionicons name="sparkles-outline" size={24} color={colors.gold} accessibilityLabel="Guide AI" />
         </View>
       )}
 
@@ -153,7 +153,7 @@ export default function ChatScreen() {
       {loading && messages.length > 0 && (
         <View style={styles.typingContainer}>
           <View style={styles.aiAvatar}>
-            <Image source={require("@/assets/images/bot.png")} style={{ width: 30, height: 30 }} />
+            <Ionicons name="sparkles-outline" size={24} color={colors.gold} accessibilityLabel="Guide AI" />
           </View>
           <View style={styles.typingBubble}>
             <Text style={styles.typingText}>Typing...</Text>
@@ -176,7 +176,7 @@ export default function ChatScreen() {
             ref={inputRef}
             style={styles.textInput}
             accessibilityLabel="Message Treksor"
-            placeholder="Ask Mentor…"
+            placeholder="Ask Guide…"
             placeholderTextColor="#666"
             value={inputText}
             onChangeText={setInputText}

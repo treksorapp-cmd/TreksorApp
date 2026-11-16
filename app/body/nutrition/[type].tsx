@@ -2,7 +2,7 @@ import BodyPageHeading from "@/components/BodyPageHeading";
 import NutritionArtwork from "@/components/nutrition/NutritionArtwork";
 import {Nutritions} from "@/mock/nutrition";
 import {router,useLocalSearchParams,type Href} from "expo-router";
-import {Ionicons} from "@expo/vector-icons";
+import Ionicons from '@/components/ui/BrandIcon';
 import {ScrollView,StyleSheet,Text,TouchableOpacity,View} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {colors,type as typography} from "@/theme/architect";

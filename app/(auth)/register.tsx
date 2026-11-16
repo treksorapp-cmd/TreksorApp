@@ -1,5 +1,5 @@
 import {useSafeAreaInsets} from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons"
+import Ionicons from '@/components/ui/BrandIcon';
 import { router } from "expo-router"
 import { StatusBar } from "expo-status-bar"
 import React, { useState } from "react"
