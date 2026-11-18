@@ -36,10 +36,10 @@ export default function AppFrame({children,enabled}:{children:ReactNode;enabled:
 }
 const s=StyleSheet.create({
   root:{flex:1,backgroundColor:colors.background},content:{flex:1,minHeight:0},
-  chrome:{backgroundColor:colors.background,borderBottomWidth:1,borderBottomColor:colors.border},
-  bar:{paddingHorizontal:16,paddingVertical:10,flexDirection:'row',alignItems:'center',gap:10},
+  chrome:{backgroundColor:colors.background,borderBottomWidth:1,borderBottomColor:colors.border,zIndex:10,elevation:10},
+  bar:{paddingHorizontal:16,paddingVertical:6,flexDirection:'row',alignItems:'center',gap:10},
   trail:{...type.caption,color:colors.gold,flex:1,fontWeight:'600',flexShrink:1},
   actions:{flexDirection:'row',gap:6},icon:{...surface.icon},
-  picker:{flexDirection:'row',paddingHorizontal:16,paddingBottom:12,gap:8},
+  picker:{position:'absolute',top:'100%',left:12,right:12,zIndex:20,flexDirection:'row',padding:10,gap:8,backgroundColor:colors.background,borderWidth:1,borderColor:colors.border,borderRadius:14,elevation:12},
   choice:{flex:1,minHeight:66,alignItems:'center',justifyContent:'center',gap:7,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:13},
 });
