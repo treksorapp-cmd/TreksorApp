@@ -11,7 +11,7 @@
     "lint": "expo lint",
     "typecheck": "tsc --noEmit -p tsconfig.mobile.json",
     "test:ui": "node tests/ui-contracts.cjs",
-    "test:integrity": "node tests/source-integrity.cjs && node tests/architect-recovery.cjs && node tests/fixed-header-layout.cjs && node tests/home-landscape-cards.cjs && node tests/guide-home-style.cjs && node tests/daily-work.cjs && node tests/daily-work-installer.cjs",
+    "test:integrity": "node tests/source-integrity.cjs && node tests/architect-recovery.cjs && node tests/fixed-header-layout.cjs && node tests/home-landscape-cards.cjs && node tests/guide-home-style.cjs && node tests/daily-work.cjs && node tests/daily-work-installer.cjs && node tests/community-weekly-question.cjs",
     "test:progress": "node tests/progress-sync.cjs && node tests/shared-today.cjs",
     "test:audio": "node tests/audio-lifecycle.cjs",
     "test:dashboard": "node tests/progress-dashboard.cjs",
@@ -33,7 +33,8 @@
     "test:retention": "node tests/retention-experiments.cjs",
     "test:goals": "node tests/goal-evidence.cjs",
     "test:web-parity": "cd web/treksor-community && node --check dist/app.js && node --check dist/portal.js && node --check dist/today.js && node --check dist/groceries.js && node --check dist/events.js && node tests/portal.cjs && node tests/parity.cjs",
-    "test:daily-work": "node tests/daily-work.cjs"
+    "test:daily-work": "node tests/daily-work.cjs",
+    "test:community-weekly": "node tests/community-weekly-question.cjs"
   },
   "dependencies": {
     "@bacons/apple-targets": "3.0.7",
