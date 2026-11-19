@@ -4,7 +4,7 @@ import BodyPageHeading from "@/components/BodyPageHeading";
 import Button from "@/components/ui/Button";
 import { GymExercise } from "@/lib/gym-library";
 import { useWorkoutStore } from "@/store/workout-store";
-import { colors, navyOverlay } from "@/theme/architect";
+import { colors, navyOverlay, layout } from "@/theme/architect";
 import Ionicons from '@/components/ui/BrandIcon';
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -37,7 +37,7 @@ export default function MyPlan(){
     }
     start(day+1,name,items.map(x=>x.id),Object.fromEntries(items.map(e=>[e.id,{sets:e.sets,reps:e.reps,rest_seconds:e.rest_seconds}])));router.push("/body/workout/session");
   }
-  return <ScrollView style={{flex:1,backgroundColor:colors.background}} contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:insets.bottom+100}}>
+  return <ScrollView style={{flex:1,backgroundColor:colors.background}} contentContainerStyle={{padding:22,paddingTop:insets.top + layout.pageTop,paddingBottom:insets.bottom+100}}>
     <BodyPageHeading trail="BODY / GYM" title="My plan" style={{marginHorizontal:-22}} />
     {!plan?<View style={{paddingTop:24}}><Text style={{color:"#D5D1C9",lineHeight:23}}>Build a routine around your schedule, goal and experience.</Text><Button borderless iconName="options-outline" onPress={()=>router.push("/body/workout/guide")}>BUILD MY PLAN</Button></View>:<>
       <Text style={{color:"#C9C5BC",marginTop:10}}>{plan.days} training days per week · {plan.location}{plan.goal?` · ${plan.goal}`:""}</Text>
