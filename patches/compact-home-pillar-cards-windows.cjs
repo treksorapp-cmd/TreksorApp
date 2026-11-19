@@ -13,7 +13,9 @@ let source=raw.replace(/\r\n/g,'\n');
 const updates=[
   [
     '  const pillarStep=pillarCardWidth+PILLAR_GAP;',
-    '  // Compact panoramic cards, with extra height for accessibility text sizes.\n'+
+    '  // Panoramic editorial cards: keep the entire pillar identity visible without\n'+
+    '  // making visitors scroll through a tall portrait card.\n'+
+    '  // Additional height preserves readability at larger accessibility text sizes.\n'+
     '  const pillarCardHeight=Math.max(204,Math.round(pillarCardWidth*0.60))+Math.max(0,Math.ceil((fontScale-1)*88));\n'+
     '  const pillarStep=pillarCardWidth+PILLAR_GAP;'
   ],
