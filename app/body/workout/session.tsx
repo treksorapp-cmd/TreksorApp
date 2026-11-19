@@ -1,4 +1,4 @@
-import { colors, navyOverlay } from "@/theme/architect";
+import { colors, navyOverlay, layout } from "@/theme/architect";
 import WorkoutClock from "@/components/workout/WorkoutClock";
 import {workoutClock} from "@/lib/workout-clock";
 import * as Haptics from "expo-haptics";
@@ -51,7 +51,7 @@ export default function WorkoutSession(){
   const notifiedRest=useRef<string|null>(null);
   useEffect(()=>{const deadline=active?.restEndsAt;if(deadline&&rest===0&&Date.parse(deadline)<=now&&notifiedRest.current!==deadline&&AppState.currentState==="active"){notifiedRest.current=deadline;void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(()=>{})}},[rest,active?.restEndsAt,now]);
   if(summary)return <View style={{flex:1,backgroundColor:colors.background,padding:24,paddingTop:insets.top+30}}><BodyPageHeading trail="BODY / GYM" title="Workout saved" subtitle="Another step forward."/><Text style={{color:GOLD,fontSize:34,marginTop:28,fontWeight:"700"}}>{summary.sets} sets completed</Text><Text style={{color:"white",fontSize:18,marginTop:20}}>{Math.round(summary.volume).toLocaleString()} kg total volume · {Math.floor(summary.seconds/60)} minutes</Text><Text style={{color:"#BEB8AD",marginTop:20}}>Your session has been added to your weekly progress.</Text><Button onPress={()=>router.dismissTo("/body/workout")}>BACK TO GYM</Button><Button onPress={()=>router.replace("/body/workout/progress")}>VIEW PROGRESS</Button></View>;
-  if(!active)return <View style={{flex:1,backgroundColor:colors.background,padding:22,paddingTop:insets.top+12}}><BodyPageHeading trail="BODY / GYM" title="No active session" subtitle="Choose a routine day to begin training."/><Button onPress={()=>router.replace("/body/workout/my-plan")}>OPEN MY PLAN</Button></View>;
+  if(!active)return <View style={{flex:1,backgroundColor:colors.background,padding:22,paddingTop:insets.top + layout.pageTop}}><BodyPageHeading trail="BODY / GYM" title="No active session" subtitle="Choose a routine day to begin training."/><Button onPress={()=>router.replace("/body/workout/my-plan")}>OPEN MY PLAN</Button></View>;
   const activeId=active?.id??"", activeDay=active?.day??0;
   const completedCount=logged.length;
   const plannedCount=exercises.reduce((sum,exercise)=>sum+exercise.sets,0);
