@@ -42,7 +42,7 @@ function workoutSnapshot() {
       targetReps:text(prescription?.reps||exercise?.reps||'8-12',16),
       restSeconds:Math.min(900,Math.max(0,Number(prescription?.rest_seconds??exercise?.rest_seconds??90))),
       previousKg:previous?.kg ?? null,previousReps:previous?.reps ?? null,completed,
-      hasVideo:!!(exercise?.video_path||exercise?.videoUrl||exercise?.serverId),
+      hasVideo:!!(exercise?.video_path||exercise?.videoUrl),
     };
   });
   return {workout:{id:active.id,dayName:text(active.dayName,70),startedAt:active.startedAt,
