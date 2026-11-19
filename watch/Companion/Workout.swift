@@ -83,14 +83,22 @@ struct WatchWorkoutView: View {
                         Text(exercise.name).font(.headline).foregroundStyle(TreksorBrand.text)
                             .fixedSize(horizontal:false,vertical:true)
                         movieArea(workout:workout,exercise:exercise)
-                        HStack {
-                            Text(nextSet.map { "SET \($0) / \(exercise.targetSets)" } ?? "SETS COMPLETE")
-                                .font(.caption2.weight(.semibold)).tracking(0.8).foregroundStyle(TreksorBrand.gold)
-                            Spacer()
-                            Text(exercise.targetReps + " " + exercise.metric)
-                                .font(.caption2).foregroundStyle(TreksorBrand.secondary)
-                        }
-                        HStack(spacing:8) {
+                        Text("TARGET  /  " + exercise.targetReps.uppercased() + " " + exercise.metric.uppercased())
+                            .font(.system(size:10,weight:.medium)).tracking(0.9)
+                            .foregroundStyle(TreksorBrand.muted)
+                        HStack(alignment:.top,spacing:6) {
+                            VStack(spacing:5) {
+                                Text("SETS").font(.system(size:9,weight:.semibold))
+                                    .tracking(0.6).foregroundStyle(TreksorBrand.gold)
+                                Text(String(format:"%02d",exercise.targetSets))
+                                    .font(.system(.title3,design:.rounded).weight(.semibold))
+                                    .monospacedDigit().foregroundStyle(TreksorBrand.text)
+                                Text("\(exercise.completed.count) DONE")
+                                    .font(.system(size:9,weight:.medium))
+                                    .foregroundStyle(TreksorBrand.secondary)
+                            }
+                            .frame(maxWidth:.infinity,minHeight:75,alignment:.center)
+                            .background(TreksorBrand.surface,in:RoundedRectangle(cornerRadius:11))
                             numberEditor("KG",value:kilograms.formatted(.number.precision(.fractionLength(0...1))),
                                          canSubtract:kilograms>0,minus:{kilograms=max(0,kilograms-2.5)},plus:{kilograms=min(1500,kilograms+2.5)})
                             numberEditor(exercise.metric == "seconds" ? "SEC" : "REPS",value:"\(repetitions)",
@@ -111,6 +119,7 @@ struct WatchWorkoutView: View {
                         }
                         .buttonStyle(.borderedProminent).tint(TreksorBrand.gold)
                         .foregroundStyle(TreksorBrand.background)
+                        .controlSize(.large)
                         .disabled(nextSet == nil || link.workoutSaving || (!isBodyweight && kilograms <= 0))
                         if !notice.isEmpty { Text(notice).font(.caption2).foregroundStyle(TreksorBrand.secondary) }
                         stopwatch
@@ -152,7 +161,7 @@ struct WatchWorkoutView: View {
     @ViewBuilder private func movieArea(workout:WatchWorkout,exercise:WatchExercise) -> some View {
         if let movie {
             VideoPlayer(player:movie)
-                .frame(height:105).clipShape(RoundedRectangle(cornerRadius:11))
+                .frame(height:96).clipShape(RoundedRectangle(cornerRadius:12))
                 .accessibilityLabel("Exercise video demonstration")
             Button("Close video") {stopMovie()}.font(.caption2)
         } else if exercise.hasVideo {
@@ -171,13 +180,14 @@ struct WatchWorkoutView: View {
             } label: {
                 VStack(spacing:5) {
                     if videoLoading {ProgressView().tint(TreksorBrand.gold)}
-                    else {Image(systemName:"play.circle.fill").font(.title2).foregroundStyle(TreksorBrand.gold)}
+                    else {Image(systemName:"play.circle.fill").font(.system(size:34)).foregroundStyle(TreksorBrand.gold)}
                     Text(videoLoading ? "LOADING VIDEO" : "WATCH TECHNIQUE")
-                        .font(.caption2.weight(.semibold)).tracking(0.5)
-                }.frame(maxWidth:.infinity).frame(height:86)
+                        .font(.system(size:10,weight:.semibold)).tracking(0.7)
+                        .foregroundStyle(TreksorBrand.secondary)
+                }.frame(maxWidth:.infinity).frame(height:92)
             }
             .buttonStyle(.plain)
-            .background(TreksorBrand.surface,in:RoundedRectangle(cornerRadius:11))
+            .background(TreksorBrand.surface,in:RoundedRectangle(cornerRadius:12))
             .disabled(videoLoading)
         } else {
             Text("No video for this exercise").font(.caption2)
@@ -186,18 +196,20 @@ struct WatchWorkoutView: View {
     }
     private func numberEditor(_ caption:String,value:String,canSubtract:Bool,
                               minus:@escaping ()->Void,plus:@escaping ()->Void) -> some View {
-        VStack(spacing:4) {
-            Text(caption).font(.caption2.weight(.semibold)).foregroundStyle(TreksorBrand.gold)
-            Text(value).font(.title3.weight(.semibold)).monospacedDigit().foregroundStyle(TreksorBrand.text)
+        VStack(spacing:5) {
+            Text(caption).font(.system(size:9,weight:.semibold))
+                .tracking(0.6).foregroundStyle(TreksorBrand.gold)
+            Text(value).font(.system(.title3,design:.rounded).weight(.semibold))
+                .monospacedDigit().foregroundStyle(TreksorBrand.text)
                 .minimumScaleFactor(0.75).lineLimit(1)
-            HStack(spacing:13) {
+            HStack(spacing:7) {
                 Button(action:minus) {Image(systemName:"minus.circle.fill")}
                     .disabled(!canSubtract).accessibilityLabel("Decrease \(caption)")
                 Button(action:plus) {Image(systemName:"plus.circle.fill")}
                     .accessibilityLabel("Increase \(caption)")
-            }.buttonStyle(.plain).font(.title3).foregroundStyle(TreksorBrand.gold)
+            }.buttonStyle(.plain).font(.system(size:17)).foregroundStyle(TreksorBrand.gold)
         }
-        .frame(maxWidth:.infinity).padding(.vertical,7)
+        .frame(maxWidth:.infinity,minHeight:75).padding(.vertical,5)
         .background(TreksorBrand.surface,in:RoundedRectangle(cornerRadius:11))
     }
     private var stopwatch: some View {
@@ -208,10 +220,10 @@ struct WatchWorkoutView: View {
                     let elapsed=timerElapsed + (timerStarted.map { max(0,timeline.date.timeIntervalSince($0)) } ?? 0)
                     let seconds=Int(elapsed)
                     Text(String(format:"%02d:%02d",seconds/60,seconds%60))
-                        .font(.title3.weight(.semibold)).monospacedDigit()
+                        .font(.system(.title3,design:.rounded).weight(.semibold)).monospacedDigit()
                         .foregroundStyle(TreksorBrand.text)
                 }
-            }.accessibilityLabel("Stopwatch")
+            }.frame(maxWidth:.infinity).accessibilityLabel("Stopwatch")
             HStack(spacing:8) {
                 Button(timerStarted == nil ? "Start" : "Pause") {
                     if let started=timerStarted {
@@ -220,9 +232,9 @@ struct WatchWorkoutView: View {
                 }
                 Button("Reset") {timerStarted=nil;timerElapsed=0}
             }.font(.caption2)
-        }.padding(9)
+        }.padding(10)
         .frame(maxWidth:.infinity)
-        .background(TreksorBrand.surface,in:RoundedRectangle(cornerRadius:11))
+        .background(TreksorBrand.surface,in:RoundedRectangle(cornerRadius:12))
     }
     private func stopMovie() {
         movie?.pause()
