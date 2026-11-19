@@ -1,4 +1,4 @@
-import { colors, layout } from "@/theme/architect";
+import { colors, layout, type } from "@/theme/architect";
 import { useContentRefresh } from "@/hooks/useContentRefresh";
 import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
@@ -206,7 +206,7 @@ export default function ArticlesScreen({ mode = "tab", category = "All Articles"
 const styles = StyleSheet.create({
   pageHeading:{paddingHorizontal:22,paddingBottom:14},
   eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.6},
-  pageTitle: {color: "#F5F4F1",fontSize: 34,fontWeight: "600",letterSpacing: -0.6,marginTop:7, lineHeight: 42, includeFontPadding: false, },
+  pageTitle: { ...type.page, marginTop: 7 },
   container: {
     flex: 1,
     backgroundColor: colors.background,
