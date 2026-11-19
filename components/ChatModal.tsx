@@ -183,7 +183,7 @@ export default function ChatModal({ visible, onClose }: ChatModalProps) {
                     <Ionicons name={GUIDE_ICON} size={22} color={colors.gold} accessibilityLabel="Guide" />
                   </View>
                   <View style={styles.typingBubble}>
-                    <Text style={styles.typingText}>Typing...</Text>
+                    <Text style={styles.typingText}>Reflecting…</Text>
                   </View>
                   </View>
                 )}
