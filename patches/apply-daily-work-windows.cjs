@@ -7,7 +7,8 @@ const abort=msg=>{throw Error(msg+' No se modifico ningun archivo.')};
 const git=args=>cp.execFileSync('git',args,{cwd:root,encoding:'utf8',maxBuffer:8*1024*1024}).trimEnd();
 if(path.resolve(git(['rev-parse','--show-toplevel']))!==path.resolve(root))abort('Ejecuta desde TreksorApp.');
 if(cp.spawnSync('git',['rev-parse','-q','--verify','MERGE_HEAD'],{cwd:root,stdio:'ignore'}).status===0)abort('Hay un merge en curso.');
-const remote=file=>git(['show','FETCH_HEAD:'+file])+'\n';
+const ref='refs/remotes/origin/feature/v12-daily-work-activities-progress-20261119';
+const remote=file=>git(['show',ref+':'+file])+'\n';
 const newFiles=['lib/daily-activities.ts','hooks/useDailyActivities.ts','components/DailyWork.tsx'];
 const editedFiles=['app/(tabs)/today/index.tsx','app/(tabs)/tracking/index.tsx','lib/progress-metrics.ts','components/progress/ProgressDashboard.tsx'];
 // The catalog marker verifies the fetched branch is the expected feature.
