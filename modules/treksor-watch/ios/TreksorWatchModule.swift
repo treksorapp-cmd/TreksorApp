@@ -26,7 +26,10 @@ private final class PhoneSession: NSObject, WCSessionDelegate {
       let id = UUID().uuidString
       self.waiting[id] = replyHandler
       notify(id, json)
-      DispatchQueue.main.asyncAfter(deadline: .now() + 8) { self.reply(id, "{\"error\":\"Open Treksor on your iPhone, then refresh.\"}") }
+      // Signed video URLs can require a network request; keep short progress requests fast.
+      let payload = (try? JSONSerialization.jsonObject(with: Data(json.utf8))) as? [String: Any]
+      let timeout: Double = payload?["kind"] as? String == "workout_video" ? 16 : 8
+      DispatchQueue.main.asyncAfter(deadline: .now() + timeout) { self.reply(id, "{\"error\":\"Open Treksor on your iPhone, then refresh.\"}") }
     }
   }
   func session(_ session: WCSession, activationDidCompleteWith state: WCSessionActivationState, error: Error?) { if state == .activated { invalidateView() } }
