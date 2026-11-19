@@ -1,4 +1,4 @@
-import { colors } from "@/theme/architect";
+import { colors, layout } from "@/theme/architect";
 import NutritionArtwork from "@/components/nutrition/NutritionArtwork";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import { Nutritions } from "@/mock/nutrition";
@@ -22,7 +22,7 @@ export default function BeverageDetails() {
   const insets = useSafeAreaInsets();
   const [showReferences, setShowReferences] = useState(false);
   const beverage = Nutritions.beverages.data.find(item => item.id === id) as Beverage | undefined;
-  if (!beverage) return <View style={styles.screen}><BodyPageHeading title="Beverage unavailable" trail="BODY / NUTRITION" subtitle="Return to Nutrition to choose a drink." style={{paddingTop:insets.top+12}} /></View>;
+  if (!beverage) return <View style={styles.screen}><BodyPageHeading title="Beverage unavailable" trail="BODY / NUTRITION" subtitle="Return to Nutrition to choose a drink." style={{paddingTop:insets.top + layout.pageTop}} /></View>;
 
   const sources = [
     {title:beverage.source_1,url:beverage.url_1},
@@ -35,7 +35,7 @@ export default function BeverageDetails() {
   return <View style={styles.screen}>
     <StatusBar style="light"/>
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:insets.bottom+48}}>
-      <BodyPageHeading trail="BODY / BEVERAGES" title={beverage.name} style={{paddingTop:insets.top+12,paddingBottom:24}} />
+      <BodyPageHeading trail="BODY / BEVERAGES" title={beverage.name} style={{paddingTop:insets.top + layout.pageTop,paddingBottom:24}} />
       <View style={{paddingHorizontal:22,marginBottom:22}}><NutritionArtwork source={beverage.backgroundImage} label={beverage.name}/></View>
       <View style={styles.content}>
         <View style={styles.descriptionCard}>
