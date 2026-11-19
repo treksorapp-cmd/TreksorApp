@@ -47,14 +47,18 @@ try{
      next=normalize(git(['show',remote+':'+file]));
    }catch(e){errors.push(file+' — no se pudo leer la revision original');continue;}
    if(local===next)continue;
-   // Clean 3-way file merge. Unrelated edits stay untouched. Conflicts never get written.
-   const ours=writeTemp('local-'+i,local),ancestor=writeTemp('base-'+i,previous),theirs=writeTemp('target-'+i,next);
-   const merge=cp.spawnSync('git',['merge-file','-p','-L','LOCAL','-L','BASE','-L','TREKSOR',ours,ancestor,theirs],
-      {cwd:root,encoding:'utf8',maxBuffer:16*1024*1024});
-   if(merge.status!==0||!merge.stdout||merge.stdout.includes('<<<<<<< LOCAL')){
-     errors.push(file+' — cambios locales y nuevos se superponen; revisar antes de aplicar');continue;
+   // Fast path for a clean file. Otherwise use a conservative 3-way merge.
+   // Unrelated local edits stay untouched; conflicts never reach the real file.
+   let result=next;
+   if(local!==previous){
+     const ours=writeTemp('local-'+i,local),ancestor=writeTemp('base-'+i,previous),theirs=writeTemp('target-'+i,next);
+     const merge=cp.spawnSync('git',['merge-file','-p','-L','LOCAL','-L','BASE','-L','TREKSOR',ours,ancestor,theirs],
+       {cwd:root,encoding:'utf8',maxBuffer:16*1024*1024});
+     if(merge.status!==0||!merge.stdout||merge.stdout.includes('<<<<<<< LOCAL')){
+       errors.push(file+' — cambios locales y nuevos se superponen; revisar antes de aplicar');continue;
+     }
+     result=merge.stdout;
    }
-   const result=merge.stdout;
    if(result===local)continue;
    const oldAst=ts.createSourceFile(file,local,ts.ScriptTarget.Latest,true,
      file.endsWith('.tsx')?ts.ScriptKind.TSX:ts.ScriptKind.TS);
@@ -74,8 +78,9 @@ try{
  console.log('THE ARCHITECT — '+screenPaths.length+' pantallas/componentes revisados.');
  console.log('Archivos con cambios pendientes: '+prepared.size);
  for(const file of prepared.keys())console.log('  '+file);
- if(process.argv.includes('--check')){console.log('COMPATIBLE. Sin escribir archivos.');process.exit(0);}
- if(!prepared.size){console.log('THE ARCHITECT YA ACTUALIZADO.');process.exit(0);}
+ if(process.argv.includes('--check'))console.log('COMPATIBLE. Sin escribir archivos.');
+ else if(!prepared.size)console.log('THE ARCHITECT YA ACTUALIZADO.');
+ else {
  const backup=fs.mkdtempSync(path.join(path.dirname(root),'Treksor-architect-backup-'));
  for(const file of prepared.keys()){
    const dest=path.join(backup,file);
@@ -94,4 +99,5 @@ try{
  }
  console.log('THE ARCHITECT GLOBAL APLICADO. Respaldo: '+backup);
  console.log('Sin reemplazar tu rama, datos, rutinas, videos, smartwatch, website ni dependencias.');
+ }
 }finally{fs.rmSync(scratch,{recursive:true,force:true});}
