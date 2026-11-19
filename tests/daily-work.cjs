@@ -6,7 +6,7 @@ function load(file){
  const mod={exports:{}};cache.set(file,mod.exports);
  const source=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
  const req=id=>id==='@react-native-async-storage/async-storage'
-  ?{getItem:async k=>storage.get(k)||null,setItem:async(k,v)=>{if(failWrite)throw Error('storage full');storage.set(k,v);}}
+  ?(()=>{const adapter={getItem:async k=>storage.get(k)||null,setItem:async(k,v)=>{if(failWrite)throw Error('storage full');storage.set(k,v);}};return {default:adapter,...adapter};})()
   :load(path.resolve(path.dirname(file),id+'.ts'));
  vm.runInNewContext(source,{module:mod,exports:mod.exports,require:req,Date,Map,Set,Promise,JSON,Number,encodeURIComponent,console}, {filename:file});
  return mod.exports;
