@@ -92,6 +92,8 @@ stage(files[5],s=>{
 });
 for(const i of [6,7]){
  stage(files[i],s=>{
+  // Some page headers have no Home control at all; leave those untouched.
+  if(!s.includes('name="home-outline"') && !s.includes('name={HOME_ICON}'))return s;
   s=replaceOne(s,"import Ionicons from '@/components/ui/BrandIcon';",
    "import Ionicons, { HOME_ICON } from '@/components/ui/BrandIcon';",files[i]);
   s=replaceOne(s,'name="home-outline"','name={HOME_ICON}',files[i]);
