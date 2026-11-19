@@ -103,7 +103,7 @@ export function buildProgressOverview(input: ProgressInput, period: 7 | 30, now 
     sessions: count("session"), sets: count("set"), reflections: count("reflection"), journalEntries: count("journal"), habits: count("habit"),
     dailyWorkCount: count("walk") + count("activity"),
     dailyWorkDays: new Set(events.filter(event=>event.kind==="walk"||event.kind==="activity").map(event=>event.date)).size,
-    dailyWorkMinutes: [...new Map([...(input.walks||[]).map(row=>['walk:'+row.id,row]),...(input.dailyActivities||[]).map(row=>['daily:'+row.id,row])]).entries()]
+    dailyWorkMinutes: [...new Map<string,{id:string;date:string;minutes:number|null}>([...(input.walks||[]).map(row=>['walk:'+row.id,row] as const),...(input.dailyActivities||[]).map(row=>['daily:'+row.id,row] as const)]).entries()]
       .filter(([id,row])=>events.some(event=>event.id===id)&&Number.isInteger(row.minutes)&&row.minutes!==null&&row.minutes>=1&&row.minutes<=1440)
       .reduce((sum,[,row])=>sum+(row.minutes||0),0),
     meditation: { completed: [...meditations.values()].filter(Boolean).length, total: meditations.size },
