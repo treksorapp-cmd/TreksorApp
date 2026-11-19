@@ -28,7 +28,7 @@
     "test:discovery": "node tests/guided-discovery.cjs",
     "test:training": "node tests/training-program.cjs",
     "test:wake": "node tests/wake-service.cjs && node tests/wake-lifecycle.cjs",
-    "test:watch": "node tests/watch-companion.cjs && node tests/watch-workout.cjs",
+    "test:watch": "node tests/watch-companion.cjs && node tests/watch-workout.cjs && node tests/watch-gym.cjs",
     "test:connected": "node tests/connected-journey.cjs",
     "test:retention": "node tests/retention-experiments.cjs",
     "test:goals": "node tests/goal-evidence.cjs",
