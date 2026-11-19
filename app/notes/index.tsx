@@ -3,7 +3,8 @@ import Ionicons from '@/components/ui/BrandIcon';
 import {router} from "expo-router";
 import * as Notifications from "expo-notifications";
 import {useAuthStore} from "@/store/auth-store";
-import {colors} from "@/theme/architect";
+import {colors,type,layout} from "@/theme/architect";
+import {useFixedRouteHeader} from "@/lib/navigation-frame-context";
 import React,{useCallback,useEffect,useRef,useState} from "react";
 import {Alert,AppState,Pressable,ScrollView,Text,TextInput,View} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
@@ -15,6 +16,7 @@ const timeInput=(d:Date)=>String(d.getHours()).padStart(2,"0")+":"+String(d.getM
 const cancelReminder=async(n:Note)=>{if(n.notificationId)try{await Notifications.cancelScheduledNotificationAsync(n.notificationId)}catch{}};
 const parse=(raw:string|null):Note[]=>{try{const data=JSON.parse(raw||"[]");return Array.isArray(data)?data.filter(x=>x&&typeof x.id==="string"&&typeof x.body==="string"&&["task","note"].includes(x.kind)).slice(0,300):[]}catch{return []}};
 export default function QuickNotes(){
+  const hasFixedHeader=useFixedRouteHeader();
  const insets=useSafeAreaInsets(),userId=useAuthStore(s=>s.user?.id),key=userId?"treksor.quick-notes.v1."+userId:null;
  const [items,setItems]=useState<Note[]>([]),[draft,setDraft]=useState(""),[kind,setKind]=useState<"task"|"note">("task"),[loaded,setLoaded]=useState(false),[error,setError]=useState(""),[filter,setFilter]=useState<"open"|"all">("open"),[remind,setRemind]=useState(false),[reminderDate,setReminderDate]=useState(()=>dateInput(new Date(Date.now()+86400000))),[reminderTime,setReminderTime]=useState("09:00");
  const ref=useRef<Note[]>([]),queue=useRef<Promise<void>>(Promise.resolve());
@@ -29,9 +31,9 @@ export default function QuickNotes(){
  };
  const visible=items.filter(n=>filter==="all"||n.kind==="note"||!n.done);
  return <View style={{flex:1,backgroundColor:colors.background}}>
- <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{paddingTop:insets.top+10,paddingBottom:insets.bottom+45,paddingHorizontal:20,gap:15}}>
-  <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={()=>router.back()} style={{width:44,height:44,justifyContent:"center"}}><Ionicons name="arrow-back" size={24} color={colors.text}/></Pressable>
-  <Text style={{color:colors.gold,fontSize:11,letterSpacing:2,fontWeight:"700"}}>YOUR SPACE</Text><Text style={{color:colors.text,fontSize:31,fontWeight:"600"}}>Quick Notes</Text>
+ <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{paddingTop:insets.top+layout.pageTop,paddingBottom:insets.bottom+45,paddingHorizontal:20,gap:15}}>
+  {!hasFixedHeader&&<Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={()=>router.back()} style={{width:44,height:44,justifyContent:"center"}}><Ionicons name="arrow-back" size={24} color={colors.text}/></Pressable>}
+  <Text style={type.eyebrow}>YOUR SPACE</Text><Text accessibilityRole="header" style={type.page}>Quick Notes</Text>
   <Text style={{color:colors.muted,fontSize:13,lineHeight:20}}>Get it out of your head. Keep your day clear.</Text>
   <View style={{borderWidth:1,borderColor:colors.border,backgroundColor:colors.surface,borderRadius:17,padding:15,gap:12}}>
    <View style={{flexDirection:"row",gap:8}}>{(["task","note"] as const).map(v=><Pressable key={v} onPress={()=>setKind(v)} style={{paddingHorizontal:15,paddingVertical:10,borderRadius:9,backgroundColor:kind===v?colors.gold:colors.surfaceRaised}}><Text style={{color:kind===v?colors.background:colors.text,fontWeight:"700",fontSize:12}}>{v==="task"?"To-do":"Note"}</Text></Pressable>)}</View>
