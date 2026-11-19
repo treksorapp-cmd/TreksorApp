@@ -23,3 +23,13 @@ export async function changeSharing(owner: string, enable: boolean) {
   else await AsyncStorage.removeItem(key(owner));
   watchBridge.changed();
 }
+
+const workoutKey = (owner: string) => `treksor.watch.workout-grant.v1.${encodeURIComponent(owner)}`;
+export const readWorkoutGrant = (owner: string) => AsyncStorage.getItem(workoutKey(owner));
+/** Workout sharing is independently opt-in; it does not imply progress or HealthKit consent. */
+export async function changeWorkoutSharing(owner: string, enable: boolean) {
+  if (!watchBridge || ownerNow() !== owner) throw Error('Open your signed-in Treksor account first.');
+  if (enable) await AsyncStorage.setItem(workoutKey(owner), randomUUID());
+  else await AsyncStorage.removeItem(workoutKey(owner));
+  watchBridge.changed();
+}
