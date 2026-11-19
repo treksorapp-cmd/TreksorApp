@@ -17,7 +17,7 @@ export type DailyActivity = {
   minutes: number | null; createdAt: string;
 };
 export type DailyActivities = { entries: DailyActivity[]; customTitles: string[] };
-const allowed = new Set<string>(DAILY_ACTIVITY_OPTIONS.map(item => item.id).filter(id => id !== 'walk').concat('custom'));
+const allowed = new Set<string>([...DAILY_ACTIVITY_OPTIONS.map(item => item.id).filter(id => id !== 'walk'), 'custom']);
 const labelFor = new Map<string,string>(DAILY_ACTIVITY_OPTIONS.map(item => [item.id,item.label]));
 const cleanTitle = (value: string) => value.trim().replace(/\s+/g, ' ');
 export const validTitle = (value: unknown): value is string =>
