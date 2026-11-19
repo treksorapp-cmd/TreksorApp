@@ -1,4 +1,4 @@
-import { colors } from "@/theme/architect";
+import { colors, layout } from "@/theme/architect";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import React,{useEffect,useState} from "react";
@@ -34,7 +34,7 @@ export default function DailyCheckIn(){
  };
 
  return <KeyboardAvoidingView style={{flex:1,backgroundColor:colors.background}} behavior={Platform.OS==="ios"?"padding":undefined}>
-  <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:insets.bottom+40}}>
+  <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{padding:22,paddingTop:insets.top + layout.pageTop,paddingBottom:insets.bottom+40}}>
    <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go back" onPress={()=>router.back()} style={{width:44,height:44,justifyContent:"center",marginBottom:12}}>
     <Ionicons name="arrow-back" size={24} color={colors.text}/>
    </TouchableOpacity>
