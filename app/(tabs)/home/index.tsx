@@ -13,6 +13,7 @@ import { router, type Href } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, AppState, Easing, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions, type NativeScrollEvent, type NativeSyntheticEvent } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useFixedRouteHeader } from "@/lib/navigation-frame-context";
 
 const PILLAR_INSET = 20;
 const PILLAR_GAP = 12;
@@ -46,6 +47,9 @@ const pillars: { name: string; subtitle: string; route: Href; image: number; ico
 ];
 
 export default function HomeScreen() {
+  // AppFrame already owns the top safe area when the fixed route is visible.
+  // Counting it again here produced the large empty band above the brand.
+  const hasFixedHeader=useFixedRouteHeader();
   const {width,fontScale}=useWindowDimensions();
   const [pillarViewportWidth,setPillarViewportWidth]=useState(width);
   // Measure the rail itself: Home padding must not hide the next card.
@@ -103,7 +107,7 @@ export default function HomeScreen() {
   const thought = todayThought?.thought || "Your daily perspective will appear here when published.";
 
   return (
-    <SafeAreaView style={styles.screen} edges={["top"]}>
+    <SafeAreaView style={styles.screen} edges={hasFixedHeader ? [] : ["top"]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.top}>
           <View style={styles.brand}>
