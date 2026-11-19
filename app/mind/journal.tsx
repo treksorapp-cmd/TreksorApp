@@ -1,4 +1,4 @@
-import { colors } from "@/theme/architect";
+import { colors, layout } from "@/theme/architect";
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import BodyPageHeading from "@/components/BodyPageHeading"
 import { useAuthStore } from "@/store/auth-store"
@@ -25,7 +25,7 @@ export default function MindJournalScreen(){
  const days=period==="week"?7:period==="month"?30:365
  const chart=Array.from({length:days},(_,i)=>{const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-(days-i-1));const date=localDate(d);return {date,mood:entries.find(e=>e.date===date)?.mood||0}})
  const grouped=period==="year"?Array.from({length:53},(_,i)=>chart.slice(i*7,i*7+7)).filter(group=>group.length>0).map(group=>({date:group[0].date,mood:group.filter(e=>e.mood>0).reduce((sum,e)=>sum+e.mood,0)/Math.max(1,group.filter(e=>e.mood>0).length)})):chart
- return <ScrollView style={styles.screen} contentContainerStyle={[styles.content,{paddingTop:insets.top+12,paddingBottom:insets.bottom+40}]} keyboardShouldPersistTaps="handled">
+ return <ScrollView style={styles.screen} contentContainerStyle={[styles.content,{paddingTop:insets.top + layout.pageTop,paddingBottom:insets.bottom+40}]} keyboardShouldPersistTaps="handled">
   <BodyPageHeading trail="MIND" title="Personal journal" style={{marginHorizontal:-22}} />
   <Text style={styles.subtitle}>Your personal space. Your reflections stay on this device.</Text>
   <View style={styles.card}>
