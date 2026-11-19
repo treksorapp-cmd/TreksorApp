@@ -58,7 +58,7 @@ for(const f of [
  'app/mental/thoughts/index.tsx',
  'app/mind/moments.tsx',
 ]){
- assert(!/rgba\\((?:183|184|188|205),\\s*(?:220|221|223|235),\\s*(?:239|240|248),?[^)]*\\)/i.test(read(f)),
+ assert(!/rgba\((?:183|184|188|205),\s*(?:220|221|223|235),\s*(?:239|240|248),?[^)]*\)/i.test(read(f)),
   'Legacy blue tinted card/overlay detected in '+f);
 }
 console.log('PASS: audited '+screens.length+' routes and enforced premium midnight palette, fixed header, title scale, no duplicated 12px safe-area spacing, and consistent Profile / Progress / Community / Today hierarchy.');
