@@ -51,11 +51,12 @@ export function applyTrackerDay(items: TrackingItem[], date: string, checked: Re
 }
 
 export type ProgressEvent = {
-  id: string; date: string; kind: "session" | "set" | "reflection" | "journal" | "habit" | "checkin" | "moment" | "walk";
+  id: string; date: string; kind: "session" | "set" | "reflection" | "journal" | "habit" | "checkin" | "moment" | "walk" | "activity";
   title: string; source: string; route?: string; trackerId?: string;
 };
 export interface ProgressInput {
   walks?: {id:string;date:string;minutes:number|null}[];
+  dailyActivities?: {id:string;date:string;kind:string;title:string;minutes:number|null}[];
   checkIns: Record<string, string[]>;
   gymSets: { id: string; exerciseName: string; kg: number; reps: number; recordedAt: string; metric?:string }[];
   reflections: { id: string; date: string }[];
@@ -82,6 +83,13 @@ export function buildProgressOverview(input: ProgressInput, period: 7 | 30, now 
   [...new Set(input.momentDates||[])].forEach(date=>add({id:`moment:${date}`,kind:"moment",title:"Life moment captured",source:"Mind · Personal calendar",route:"/mind/moments"},date));
   input.trackers.filter(t => t.custom).forEach(t => t.items.forEach(item => Object.entries(item.record ?? {}).filter(([, value]) => value === true).forEach(([date]) => add({ id: `habit:${t.id}:${item.id}:${date}`, kind: "habit", title: item.label, source: `Personal tracker · ${t.title}`, trackerId: t.id }, date))));
   [...new Map((input.walks||[]).map(row=>[row.id,row])).values()].forEach(row=>add({id:`walk:${row.id}`,kind:"walk",title:"Walk completed",source:row.minutes===null?"Body · Manually recorded walk":`Body · Walk · ${row.minutes} minutes`,route:"/body/walks"},row.date));
+  // Daily Work and Body Walks feed one dated timeline. Walk is stored only in
+  // the existing walks collection so it cannot be counted twice here.
+  [...new Map((input.dailyActivities||[]).map(row=>[row.id,row])).values()]
+    .filter(row=>typeof row.title==='string'&&row.title.trim().length>0&&row.title.length<=55)
+    .forEach(row=>add({id:`daily:${row.id}`,kind:"activity",title:row.title,
+      source:row.minutes===null?"Daily Work · Manually logged":`Daily Work · ${row.minutes} min`,
+      route:"/(tabs)/today"},row.date));
   events.sort((a, b) => b.date.localeCompare(a.date) || a.id.localeCompare(b.id));
   const active = new Set(events.map(e => e.date));
   const count = (kind: ProgressEvent["kind"]) => events.filter(e => e.kind === kind).length;
@@ -93,6 +101,11 @@ export function buildProgressOverview(input: ProgressInput, period: 7 | 30, now 
     days: days.map(date => ({ date, active: active.has(date), count: events.filter(e => e.date === date).length })),
     activeDays: active.size, events,
     sessions: count("session"), sets: count("set"), reflections: count("reflection"), journalEntries: count("journal"), habits: count("habit"),
+    dailyWorkCount: count("walk") + count("activity"),
+    dailyWorkDays: new Set(events.filter(event=>event.kind==="walk"||event.kind==="activity").map(event=>event.date)).size,
+    dailyWorkMinutes: [...new Map([...(input.walks||[]).map(row=>['walk:'+row.id,row]),...(input.dailyActivities||[]).map(row=>['daily:'+row.id,row])]).entries()]
+      .filter(([id,row])=>events.some(event=>event.id===id)&&Number.isInteger(row.minutes)&&row.minutes!==null&&row.minutes>=1&&row.minutes<=1440)
+      .reduce((sum,[,row])=>sum+(row.minutes||0),0),
     meditation: { completed: [...meditations.values()].filter(Boolean).length, total: meditations.size },
     reading: { completed: [...articles.values()].filter(Boolean).length, total: articles.size },
     vision: input.visionAnswers === null ? null : { completed: input.visionAnswers.slice(0, 10).filter(v => typeof v === "string" && v.trim()).length, total: 10 },
