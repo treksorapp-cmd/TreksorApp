@@ -1,4 +1,4 @@
-import { colors } from "@/theme/architect";
+import { colors, layout } from "@/theme/architect";
 import { useContentRefresh } from "@/hooks/useContentRefresh";
 import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
@@ -98,7 +98,7 @@ export default function PowerThoughtsScreen() {
         <View style={styles.headerSpacer} />
       </View> */}
 
-      <BodyPageHeading trail="MIND" title="Power thoughts" style={{paddingTop:insets.top+12,paddingBottom:20}} />
+      <BodyPageHeading trail="MIND" title="Power thoughts" style={{paddingTop:insets.top + layout.pageTop,paddingBottom:20}} />
       {/* Thoughts List */}
       <ScrollView
         refreshControl={<RefreshControl refreshing={loading} onRefresh={fetchPowerThoughts} tintColor="#D7B877" />}
