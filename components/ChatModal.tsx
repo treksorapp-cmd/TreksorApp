@@ -4,7 +4,7 @@ import { colors, navyOverlay } from "@/theme/architect";
 import { useAuthStore } from "@/store/auth-store"
 import { useChatStore } from "@/store/chat-store"
 import { Message } from "@/types/message"
-import Ionicons from '@/components/ui/BrandIcon';
+import Ionicons, { GUIDE_ICON } from '@/components/ui/BrandIcon';
 import { BlurView } from "expo-blur"
 import { Image } from "expo-image"
 import { LinearGradient } from "expo-linear-gradient"
@@ -100,7 +100,7 @@ export default function ChatModal({ visible, onClose }: ChatModalProps) {
     <View style={[styles.messageContainer, item.role === 'user' ? styles.userMessageContainer : styles.aiMessageContainer]}>
       {!(item.role === 'user') && (
         <View style={styles.aiAvatar}>
-          <Ionicons name="sparkles-outline" size={24} color={colors.gold} accessibilityLabel="Guide AI" />
+          <Ionicons name={GUIDE_ICON} size={22} color={colors.gold} accessibilityLabel="Guide" />
         </View>
       )}
 
@@ -150,7 +150,7 @@ export default function ChatModal({ visible, onClose }: ChatModalProps) {
                 <View style={styles.header}>
                   <View style={styles.headerLeft}>
                     <View style={styles.aiHeaderAvatar}>
-                      <Ionicons name="sparkles-outline" size={24} color={colors.gold} accessibilityLabel="Guide AI" />
+                      <Ionicons name={GUIDE_ICON} size={22} color={colors.gold} accessibilityLabel="Guide" />
                     </View>
                     <View>
                       <Text style={styles.headerTitle}>Guide · AI</Text>
@@ -180,7 +180,7 @@ export default function ChatModal({ visible, onClose }: ChatModalProps) {
                 {loading && messages.length > 0 && (
                   <View style={[styles.typingContainer, { alignSelf: messages[messages.length - 1].role === 'user' ? 'flex-start' : 'flex-end' }]}>
                   <View style={styles.aiAvatar}>
-                    <Ionicons name="sparkles-outline" size={24} color={colors.gold} accessibilityLabel="Guide AI" />
+                    <Ionicons name={GUIDE_ICON} size={22} color={colors.gold} accessibilityLabel="Guide" />
                   </View>
                   <View style={styles.typingBubble}>
                     <Text style={styles.typingText}>Typing...</Text>
@@ -330,7 +330,9 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#D7B877",
+    backgroundColor: colors.surfaceRaised,
+    borderWidth: 1,
+    borderColor: colors.border,
     alignItems: "center",
     justifyContent: "center",
   },
