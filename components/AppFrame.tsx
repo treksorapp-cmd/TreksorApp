@@ -47,9 +47,9 @@ export default function AppFrame({children,enabled}:{children:ReactNode;enabled:
 const s=StyleSheet.create({
   root:{flex:1,backgroundColor:colors.background},content:{flex:1,minHeight:0},
   chrome:{backgroundColor:colors.background,borderBottomWidth:1,borderBottomColor:colors.border,zIndex:40,elevation:40},
-  bar:{paddingHorizontal:16,paddingVertical:6,flexDirection:'row',alignItems:'center',gap:10},
+  bar:{paddingHorizontal:16,paddingVertical:4,flexDirection:'row',alignItems:'center',gap:10},
   trail:{...type.caption,color:colors.gold,flex:1,fontWeight:'600',flexShrink:1},
-  actions:{flexDirection:'row',gap:6},icon:{...surface.icon},
+  actions:{flexDirection:'row',gap:6},icon:{...surface.icon,width:42,height:42},
   pickerOverlay:{position:'absolute',left:0,right:0,zIndex:30,elevation:30,paddingHorizontal:12},
   picker:{flexDirection:'row',padding:10,gap:8,backgroundColor:colors.background,borderWidth:1,borderColor:colors.border,borderRadius:14},
   choice:{flex:1,minHeight:66,alignItems:'center',justifyContent:'center',gap:7,backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:13},
