@@ -24,6 +24,13 @@ struct TodayView: View {
                 ThoughtCard(text:thought.thought,date:thought.formattedDate)
                 if feed.offline { Text("Saved on this watch").font(.caption2).foregroundStyle(TreksorBrand.secondary) }
             } else {Text(feed.message).font(.body).foregroundStyle(TreksorBrand.secondary)}
+            NavigationLink { WatchWorkoutView(link:link) } label: {
+                HStack(spacing:8) {
+                    Image(systemName:"dumbbell").foregroundStyle(TreksorBrand.gold)
+                    Text("Gym workout").font(.headline)
+                    Spacer()
+                }
+            }.accessibilityLabel("Open gym workout, sets and exercise videos")
             NavigationLink { ProgressView(link:link) } label: {
                 HStack(spacing:8) { Image(systemName:"chart.bar").foregroundStyle(TreksorBrand.gold);Text("My progress").font(.headline);Spacer() }
             }.accessibilityLabel("My progress, last seven days")
