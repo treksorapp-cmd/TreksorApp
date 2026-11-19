@@ -1,4 +1,4 @@
-import { colors } from "@/theme/architect";
+import { colors, layout } from "@/theme/architect";
 import { recordedDay } from "@/lib/progress-metrics";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
@@ -150,7 +150,7 @@ export default function MySpaceScreen() {
   }
 
   return (
-    <View style={[styles.container,{paddingTop:insets.top+12}]}>
+    <View style={[styles.container,{paddingTop:insets.top + layout.pageTop}]}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:insets.bottom+32}}>
       <BodyPageHeading trail={trail} title={origin === "purpose" ? "Goals & reflections" : "My space"} subtitle={origin === "purpose" ? "Put your intentions into words. Return to them as you grow." : "A place to pause, reflect and understand yourself."} />
       <StatusBar style="light" />
