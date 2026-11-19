@@ -2,10 +2,10 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os'),cp=require('node:child_process'),vm=require('node:vm'),ts=require('typescript');
 const helperPath='lib/community-weekly-question.ts',page='app/(tabs)/community/index.tsx';
 const patch=path.resolve('patches/community-weekly-question-windows.cjs');
-const module={exports:{}};
+const vmModule={exports:{}};
 vm.runInNewContext(ts.transpileModule(fs.readFileSync(helperPath,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,
- {module,exports:module.exports,Date,Number,Math,console});
-const {COMMUNITY_WEEKLY_QUESTIONS:questions,communityQuestionForWeek:question}=module.exports;
+ {module:vmModule,exports:vmModule.exports,Date,Number,Math,console});
+const {COMMUNITY_WEEKLY_QUESTIONS:questions,communityQuestionForWeek:question}=vmModule.exports;
 assert.equal(questions.length,2,'Exactly two questions, never more');
 assert.equal(questions[0],'What would you like to explore today?');
 assert.equal(questions[1],'What activity would you like to do?');
