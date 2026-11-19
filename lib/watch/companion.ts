@@ -54,7 +54,7 @@ export async function handleWatchRequest(command: WatchCommand) {
     const access = await workoutAccess();
     if (!access) return {locked:true};
     const {owner,grant} = access;
-    if (command.kind === 'workout') return stillAllowed(owner,grant) ? workoutSnapshot() : {locked:true};
+    if (command.kind === 'workout') return await stillAllowed(owner,grant) ? workoutSnapshot() : {locked:true};
     const active = activeSession();
     if (!active || typeof command.sessionId !== 'string' || command.sessionId !== active.id ||
         typeof command.exerciseId !== 'string' || !active.exerciseIds.includes(command.exerciseId))
