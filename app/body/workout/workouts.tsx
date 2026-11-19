@@ -1,4 +1,4 @@
-import { colors } from "@/theme/architect";
+import { colors, layout } from "@/theme/architect";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Workout from "@/components/Workout";
@@ -22,7 +22,7 @@ const WorkoutHome = () => {
         contentContainerStyle={{
           flexGrow: 1,
           alignItems: "stretch",
-          paddingTop:insets.top+12,
+          paddingTop:insets.top + layout.pageTop,
           paddingHorizontal: 20,
           paddingBottom:28,
         }}
