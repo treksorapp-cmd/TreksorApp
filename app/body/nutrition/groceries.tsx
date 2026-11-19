@@ -2,21 +2,23 @@ import Ionicons from '@/components/ui/BrandIcon';
 import {router,useFocusEffect} from "expo-router";
 import {useAuthStore} from "@/store/auth-store";
 import {addGrocery,checkGrocery,listGroceries,removeGrocery,type Grocery} from "@/api/groceries";
-import {colors} from "@/theme/architect";
+import {colors,type,layout} from "@/theme/architect";
+import {useFixedRouteHeader} from "@/lib/navigation-frame-context";
 import React,{useCallback,useState} from "react";
 import {ActivityIndicator,Alert,Pressable,ScrollView,Text,TextInput,View} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 export default function GroceryList(){
+  const hasFixedHeader=useFixedRouteHeader();
  const insets=useSafeAreaInsets(),owner=useAuthStore(s=>s.isAuthenticated?s.user?.id:undefined);
  const [items,setItems]=useState<Grocery[]>([]),[draft,setDraft]=useState(""),[loading,setLoading]=useState(true),[working,setWorking]=useState<string|null>(null),[error,setError]=useState("");
  const reload=useCallback(async()=>{if(!owner){setItems([]);setLoading(false);return}setLoading(true);setError("");try{setItems(await listGroceries(owner))}catch(e){setError(e instanceof Error?e.message:"Unable to load groceries")}finally{setLoading(false)}},[owner]);
  useFocusEffect(useCallback(()=>{void reload()},[reload]));
  const change=async(task:string,fn:()=>Promise<unknown>)=>{if(!owner||working)return;setWorking(task);setError("");try{await fn();await reload()}catch(e){setError(e instanceof Error?e.message:"Unable to save. Try again.")}finally{setWorking(null)}};
  const unchecked=items.filter(x=>!x.checked),checked=items.filter(x=>x.checked);
- return <ScrollView keyboardShouldPersistTaps="handled" style={{flex:1,backgroundColor:colors.background}} contentContainerStyle={{paddingHorizontal:20,paddingTop:insets.top+12,paddingBottom:insets.bottom+48,gap:14}}>
-  <Pressable accessibilityRole="button" accessibilityLabel="Go back" onPress={()=>router.back()} style={{height:44,width:44,justifyContent:"center"}}><Ionicons name="arrow-back" size={23} color={colors.text}/></Pressable>
-  <Text style={{color:colors.gold,letterSpacing:1.7,fontSize:11,fontWeight:"700"}}>BODY / NUTRITION</Text><Text style={{color:colors.text,fontSize:31,fontWeight:"600"}}>Shopping list</Text>
+ return <ScrollView keyboardShouldPersistTaps="handled" style={{flex:1,backgroundColor:colors.background}} contentContainerStyle={{paddingHorizontal:20,paddingTop:insets.top+layout.pageTop,paddingBottom:insets.bottom+48,gap:14}}>
+  {!hasFixedHeader&&<Pressable accessibilityRole="button" accessibilityLabel="Go back" onPress={()=>router.back()} style={{height:44,width:44,justifyContent:"center"}}><Ionicons name="arrow-back" size={23} color={colors.text}/></Pressable>}
+  <Text style={type.eyebrow}>BODY / NUTRITION</Text><Text accessibilityRole="header" style={type.page}>Shopping list</Text>
   <Text style={{color:colors.muted,fontSize:13,lineHeight:19}}>One list for your Treksor account. Open it from the app or website.</Text>
   <View style={{flexDirection:"row",gap:8,alignItems:"center",backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,padding:10,borderRadius:15}}>
    <TextInput accessibilityLabel="Add a grocery item" value={draft} onChangeText={setDraft} maxLength={100} placeholder="What do you need?" placeholderTextColor={colors.muted} returnKeyType="done" onSubmitEditing={()=>{if(owner&&draft.trim())void change("add",()=>addGrocery(owner,draft).then(()=>setDraft("")))}} style={{flex:1,color:colors.text,padding:8,fontSize:15}}/>

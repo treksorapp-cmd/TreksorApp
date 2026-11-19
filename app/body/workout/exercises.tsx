@@ -1,4 +1,4 @@
-import { colors } from "@/theme/architect";
+import { colors, layout } from "@/theme/architect";
 import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
 
@@ -141,7 +141,7 @@ export default function WorkoutDetailScreen() {
           imageStyle={styles.imageStyle}
         >
           <StatusBar style="light" />
-          <BodyPageHeading trail="BODY / WORKOUT / GYM / EXERCISE LIBRARY" title={String(Array.isArray(workoutId)?workoutId[0]:workoutId || "EXERCISES")} style={{paddingTop:insets.top+12,paddingBottom:18}} />
+          <BodyPageHeading trail="BODY / WORKOUT / GYM / EXERCISE LIBRARY" title={String(Array.isArray(workoutId)?workoutId[0]:workoutId || "EXERCISES")} style={{paddingTop:insets.top + layout.pageTop,paddingBottom:18}} />
           <View style={styles.loadingContainer}>
             <Text style={styles.loadingText}>Choose a workout from the exercise library.</Text>
           </View>
@@ -162,7 +162,7 @@ export default function WorkoutDetailScreen() {
         imageStyle={styles.imageStyle}
       >
         <StatusBar style="light" />
-        <BodyPageHeading trail="BODY / WORKOUT / GYM / EXERCISE LIBRARY" title={String(Array.isArray(workoutId)?workoutId[0]:workoutId || "EXERCISES")} style={{paddingTop:insets.top+12,paddingBottom:18}} />
+        <BodyPageHeading trail="BODY / WORKOUT / GYM / EXERCISE LIBRARY" title={String(Array.isArray(workoutId)?workoutId[0]:workoutId || "EXERCISES")} style={{paddingTop:insets.top + layout.pageTop,paddingBottom:18}} />
         <ScrollView
           style={styles.content}
           contentContainerStyle={styles.scrollContent}

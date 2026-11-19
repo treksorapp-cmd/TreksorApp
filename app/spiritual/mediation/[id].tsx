@@ -11,7 +11,7 @@ import Ionicons from '@/components/ui/BrandIcon';
 import { useMediationStore } from "@/store/mediation-store";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import Button from "@/components/ui/Button";
-import { colors, surface, type } from "@/theme/architect";
+import { colors, surface, type, layout } from "@/theme/architect";
 export default function MeditationDetailScreen() {
     const { id } = useLocalSearchParams<{
         id: string;
@@ -145,9 +145,9 @@ export default function MeditationDetailScreen() {
     }
     const time = (ms: number) => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, "0")}`;
     if (!meditation)
-        return <ScrollView style={styles.screen} contentContainerStyle={{ paddingTop: insets.top + 12 }}><BodyPageHeading title="Meditation unavailable" trail="BALANCE" subtitle="Return to Balance to choose another practice."/></ScrollView>;
+        return <ScrollView style={styles.screen} contentContainerStyle={{ paddingTop: insets.top + layout.pageTop }}><BodyPageHeading title="Meditation unavailable" trail="BALANCE" subtitle="Return to Balance to choose another practice."/></ScrollView>;
     const image = meditation.id === "beginner" ? require("@/assets/images/meditation-beginner.png") : meditation.id === "intermediate" ? require("@/assets/images/meditation-intermediate.png") : require("@/assets/images/meditation-advanced.png");
-    return <ScrollView style={styles.screen} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: insets.bottom + 32 }}>
+    return <ScrollView style={styles.screen} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + layout.pageTop, paddingBottom: insets.bottom + 32 }}>
     <BodyPageHeading title={meditation.title} trail="BALANCE / MEDITATION"/>
     <View style={styles.content}>
       <Text style={styles.description}>{meditation.content.description.replace(/<[^>]*>/g, "")}</Text>

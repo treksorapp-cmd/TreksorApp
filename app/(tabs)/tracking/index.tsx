@@ -28,7 +28,7 @@ import { useArticleStore } from "@/store/article-store";
 import { getEntries } from "@/lib/mood-journal";
 import { buildProgressOverview, dayKey } from "@/lib/progress-metrics";
 import { isProgressAccountReady, prepareProgressAccount } from "@/lib/local-progress";
-import { colors } from "@/theme/architect";
+import { colors, layout } from "@/theme/architect";
 
 export default function TrackingScreen() {
   const walks = useWalks();
@@ -123,4 +123,4 @@ export default function TrackingScreen() {
     <CalendarModal visible={showCalendar} onClose={() => setShowCalendar(false)} onDismiss={afterDismiss} onDateSelect={date => afterClose(() => setShowCalendar(false), () => openLog(date))} selectedDate={log?.date ?? dayKey(now)} maxDate={dayKey(now)}/>
   </SafeAreaView>;
 }
-const styles = StyleSheet.create({ loading: { paddingVertical: 40, alignItems: "center", gap: 16 }, loadingText: { color: colors.secondary, fontSize: 15 }, retry: { padding: 14, minHeight: 44 }, retryText: { color: colors.gold, fontWeight: "600" }, screen: { flex: 1, backgroundColor: colors.background }, content: { paddingHorizontal: 20, paddingBottom: 28 }, heading: { paddingHorizontal: 0, paddingTop: 12, paddingBottom: 0 } });
+const styles = StyleSheet.create({ loading: { paddingVertical: 40, alignItems: "center", gap: 16 }, loadingText: { color: colors.secondary, fontSize: 15 }, retry: { padding: 14, minHeight: 44 }, retryText: { color: colors.gold, fontWeight: "600" }, screen: { flex: 1, backgroundColor: colors.background }, content: { paddingHorizontal: 20, paddingBottom: 28 }, heading: { paddingHorizontal: 0, paddingTop: layout.compactTop, paddingBottom: 0 } });

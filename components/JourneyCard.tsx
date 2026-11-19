@@ -299,7 +299,7 @@ export default function JourneyCard({ onRecordChange }: { onRecordChange?: () =>
 }
 
 const styles = StyleSheet.create({
-  section: { marginTop: 26, gap: 12 },
+  section: { marginTop: 8, gap: 12 },
   headingRow: { flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between" },
   eyebrow: type.eyebrow,
   sectionTitle: type.section,

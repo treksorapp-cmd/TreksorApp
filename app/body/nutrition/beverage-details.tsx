@@ -1,4 +1,4 @@
-import { colors } from "@/theme/architect";
+import { colors, layout, type } from "@/theme/architect";
 import NutritionArtwork from "@/components/nutrition/NutritionArtwork";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import { Nutritions } from "@/mock/nutrition";
@@ -12,8 +12,8 @@ import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "r
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const GOLD = "#D7B877";
-const GLASS = "rgba(183,221,240,0.075)";
-const BORDER = "rgba(205,235,248,0.20)";
+const GLASS = colors.glass;
+const BORDER = colors.border;
 type Beverage = (typeof Nutritions.beverages.data)[number];
 
 export default function BeverageDetails() {
@@ -22,7 +22,7 @@ export default function BeverageDetails() {
   const insets = useSafeAreaInsets();
   const [showReferences, setShowReferences] = useState(false);
   const beverage = Nutritions.beverages.data.find(item => item.id === id) as Beverage | undefined;
-  if (!beverage) return <View style={styles.screen}><BodyPageHeading title="Beverage unavailable" trail="BODY / NUTRITION" subtitle="Return to Nutrition to choose a drink." style={{paddingTop:insets.top+12}} /></View>;
+  if (!beverage) return <View style={styles.screen}><BodyPageHeading title="Beverage unavailable" trail="BODY / NUTRITION" subtitle="Return to Nutrition to choose a drink." style={{paddingTop:insets.top + layout.pageTop}} /></View>;
 
   const sources = [
     {title:beverage.source_1,url:beverage.url_1},
@@ -35,7 +35,7 @@ export default function BeverageDetails() {
   return <View style={styles.screen}>
     <StatusBar style="light"/>
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:insets.bottom+48}}>
-      <BodyPageHeading trail="BODY / BEVERAGES" title={beverage.name} style={{paddingTop:insets.top+12,paddingBottom:24}} />
+      <BodyPageHeading trail="BODY / BEVERAGES" title={beverage.name} style={{paddingTop:insets.top + layout.pageTop,paddingBottom:24}} />
       <View style={{paddingHorizontal:22,marginBottom:22}}><NutritionArtwork source={beverage.backgroundImage} label={beverage.name}/></View>
       <View style={styles.content}>
         <View style={styles.descriptionCard}>
@@ -76,11 +76,11 @@ const styles=StyleSheet.create({
   empty:{color:"#FFFFFF",textAlign:"center",marginTop:120},
   hero:{height:280,justifyContent:"space-between",overflow:"hidden"},
   topBar:{paddingHorizontal:20,flexDirection:"row",alignItems:"center",justifyContent:"space-between"},
-  back:{height:42,width:42,borderRadius:14,backgroundColor:"rgba(183,221,240,0.12)",alignItems:"center",justifyContent:"center"},
+  back:{height:42,width:42,borderRadius:14,backgroundColor:colors.glass,alignItems:"center",justifyContent:"center"},
   topLabel:{color:"#F5F1E8",fontSize:13,fontWeight:"700",letterSpacing:2},
   heroCopy:{paddingHorizontal:22,paddingBottom:28},
   eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.7},
-  heroTitle: {color: "#F5F4F1",fontSize: 34,fontWeight: "600",letterSpacing: -0.6,marginTop:9, lineHeight: 42, includeFontPadding: false, },
+  heroTitle: { ...type.page, marginTop: 9 },
   heroCaption:{color:"#D8D6D2",fontSize:11,letterSpacing:1.7,marginTop:9,fontWeight:"600"},
   content:{paddingHorizontal:20},
   descriptionCard:{borderRadius:20,backgroundColor:GLASS,borderWidth:1,borderColor:BORDER,padding:20,marginBottom:28},
@@ -88,7 +88,7 @@ const styles=StyleSheet.create({
   description:{fontSize:14,color:"#C8CCD0",lineHeight:22,marginTop:10},
   lead:{fontSize:16,color:"#FFFFFF",fontWeight:"600",lineHeight:24},
   sectionHeader:{flexDirection:"row",alignItems:"center",justifyContent:"space-between",gap:12,marginBottom:15},
-  sectionTitle: {color: "#F5F4F1",fontSize: 22,fontWeight: "600",letterSpacing: -0.2,marginTop:6, lineHeight: 29, includeFontPadding: false, },
+  sectionTitle: { ...type.section, marginTop: 6 },
   quantity:{maxWidth:"47%",flexDirection:"row",alignItems:"center",gap:7,backgroundColor:GLASS,borderWidth:1,borderColor:BORDER,paddingHorizontal:11,paddingVertical:9,borderRadius:14},
   quantityText:{color:"#E1E8EC",fontSize:11,flexShrink:1},
   ingredients:{backgroundColor:GLASS,borderWidth:1,borderColor:BORDER,borderRadius:20,paddingHorizontal:16,paddingVertical:3},
@@ -97,7 +97,7 @@ const styles=StyleSheet.create({
   number:{fontSize:11,fontWeight:"700",color:"#D6E8F2"},
   ingredientName:{flex:1,color:"#FFFFFF",fontSize:14,fontWeight:"600",lineHeight:19},
   amount:{color:"#D5C29B",fontSize:12,fontWeight:"600",textAlign:"right",maxWidth:"37%",lineHeight:17},
-  references:{marginTop:27,backgroundColor:"rgba(183,221,240,0.045)",borderRadius:18,padding:16},
+  references:{marginTop:27,backgroundColor:colors.surface,borderRadius:18,padding:16},
   safetyRow:{flexDirection:"row",alignItems:"flex-start",gap:10},
   safetyText:{color:"#B8BEC2",fontSize:12,lineHeight:18,flex:1},
   sourcesToggle:{flexDirection:"row",alignItems:"center",gap:10,marginTop:17,paddingTop:14,borderTopWidth:1,borderTopColor:colors.border},

@@ -40,8 +40,8 @@ export default function BodyPageHeading({ title, trail, subtitle, pillar, naviga
 }
 const styles = StyleSheet.create({
     container: { paddingHorizontal: 22 },
-    topRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 10 },
+    topRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 8 },
     trail: { ...type.eyebrow, flex: 1, minWidth: 0 },
     actions: { flexDirection: "row", gap: 8, flexShrink: 0 },
-    icon: surface.icon, title: type.page, subtitle: { ...type.body, marginTop: 8 },
+    icon: surface.icon, title: type.page, subtitle: { ...type.body, marginTop: 6 },
 });

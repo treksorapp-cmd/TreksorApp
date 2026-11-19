@@ -6,7 +6,7 @@ import Ionicons from '@/components/ui/BrandIcon';
 import {LinearGradient} from "expo-linear-gradient";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import PillarUpdates from "@/components/PillarUpdates";
-import { colors, surface, type, navyOverlay } from "@/theme/architect";
+import { colors, surface, type, navyOverlay, layout } from "@/theme/architect";
 import {useAuthStore} from "@/store/auth-store";
 import {BalanceData,practices,practiceStats,readBalance,updateBalance} from "@/lib/balance/practice";
 const tabs=["Today","Meditate","Breathe","Sleep","My practice"] as const;
@@ -17,7 +17,7 @@ export default function Balance(){
  async function change(patch:Partial<BalanceData>){if(!owner||!own)return;try{const value=await updateBalance(owner,d=>({...d,...patch}));if(useAuthStore.getState().user?.id===owner)setData({owner,value})}catch{Alert.alert("Unable to save","Please try again.")}}
  const recommended=practices.find(p=>p.goal===own?.goal)||practices[0];
  const visible=tab==="Today"?[recommended,...practices.filter(p=>p.id!==recommended.id&&p.minutes<6).slice(0,2)]:tab==="My practice"?practices.filter(p=>own?.favorites.includes(p.id)):practices.filter(p=>p.kind===tab);
- return <ScrollView style={s.screen} contentContainerStyle={{paddingTop:insets.top+12,paddingBottom:insets.bottom+35}}><BodyPageHeading title="Balance" trail="STILLNESS & PRESENCE" subtitle="A little space. A gentler rhythm."/>
+ return <ScrollView style={s.screen} contentContainerStyle={{paddingTop:insets.top + layout.pageTop,paddingBottom:insets.bottom+35}}><BodyPageHeading title="Balance" trail="STILLNESS & PRESENCE" subtitle="A little space. A gentler rhythm."/>
  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{padding:22,gap:8}}>{tabs.map(t=><TouchableOpacity key={t} onPress={()=>setTab(t)} accessibilityRole="tab" accessibilityState={{selected:tab===t}} style={[s.tab,tab===t&&s.selected]}><Text style={{color:tab===t?colors.gold:colors.secondary,fontWeight:"600",fontSize:13}}>{t}</Text></TouchableOpacity>)}</ScrollView>
  <View style={{paddingHorizontal:22,gap:16}}><PillarUpdates pillar="Balance"/>{!!error&&<Text style={{color:colors.danger}}>{error}</Text>}
  {tab==="Today"&&<LinearGradient colors={[colors.surfaceRaised,colors.surface]} style={s.hero}><Text style={type.eyebrow}>YOUR NEXT QUIET MOMENT</Text><Text style={[type.page,{marginTop:12}]}>{recommended.title}</Text><Text style={[type.body,{marginTop:10}]}>{recommended.description}</Text><TouchableOpacity onPress={()=>router.push({pathname:"/spiritual/practice",params:{id:recommended.id}})} style={s.button}><Text style={s.buttonText}>BEGIN · {recommended.minutes} MIN</Text><Ionicons name="play" color="#17120B" size={18}/></TouchableOpacity><TouchableOpacity onPress={()=>setSettings(true)} style={s.textButton}><Text style={s.link}>Your intention: {own?.goal||"Begin"} · Edit routine</Text></TouchableOpacity></LinearGradient>}

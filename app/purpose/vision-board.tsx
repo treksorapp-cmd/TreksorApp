@@ -1,4 +1,4 @@
-import { colors } from "@/theme/architect";
+import { colors, layout } from "@/theme/architect";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import Button from "@/components/ui/Button";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
@@ -27,7 +27,7 @@ export default function VisionBoard(){
  const [loaded,setLoaded]=useState(false);
  useEffect(()=>{AsyncStorage.getItem(KEY).then(v=>{if(v){const data=JSON.parse(v);if(Array.isArray(data))setAnswers(questions.map((_,i)=>String(data[i]||"")))}}).catch(()=>{}).finally(()=>setLoaded(true))},[]);
  const save=async()=>{try{await AsyncStorage.setItem(KEY,JSON.stringify(answers));Alert.alert("Your vision is saved","Your answers are stored on this device. Keep revisiting them as your vision evolves.")}catch{Alert.alert("Unable to save","Please try again.")}};
- return <ScrollView style={{flex:1,backgroundColor: colors.background}} keyboardShouldPersistTaps="handled" contentContainerStyle={{padding:22,paddingTop:insets.top+12,paddingBottom:insets.bottom+40}}>
+ return <ScrollView style={{flex:1,backgroundColor: colors.background}} keyboardShouldPersistTaps="handled" contentContainerStyle={{padding:22,paddingTop:insets.top + layout.pageTop,paddingBottom:insets.bottom+40}}>
  <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go back" onPress={()=>router.back()} style={{width:44,height:44,justifyContent:"center",marginBottom:12}}><Ionicons name="arrow-back" size={24} color="#F5F4F1"/></TouchableOpacity>
  <BodyPageHeading trail="PURPOSE" title="Vision board" style={{marginHorizontal:-22,paddingRight:22}} />
  <Text style={{color:"#D8D3CA",lineHeight:23,fontSize:15,marginTop:13,marginBottom:26}}>Clarity comes before direction. Put your future into words. Visualise it, make it tangible and begin creating it through small, deliberate actions.</Text>

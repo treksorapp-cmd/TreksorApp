@@ -5,7 +5,7 @@ import {useFocusEffect} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import Ionicons from '@/components/ui/BrandIcon';
 import BodyPageHeading from "@/components/BodyPageHeading";
-import {colors,type,surface} from "@/theme/architect";
+import {colors,type,surface, layout } from "@/theme/architect";
 import {useAuthStore} from "@/store/auth-store";
 import {healthAvailability,previewHealthWorkouts} from "@/lib/ecosystem/health-native";
 import {activityOverview,HealthWorkout,normalizeWorkouts,sourceLabel} from "@/lib/ecosystem/activity";
@@ -23,7 +23,7 @@ export default function Connections(){
  async function read(){if(!owner){Alert.alert("Sign in first","Use your Treksor account to review and sync workouts.");return}await perform(async()=>{const result=normalizeWorkouts(await previewHealthWorkouts());if(useAuthStore.getState().user?.id===owner)setPreview({owner,rows:result})})}
  function save(){if(!draft||!owner)return;Alert.alert("Save to your private ecosystem?","Your last 30 days of Apple/Garmin workouts, dates, durations, distances and source labels will be stored in your Treksor account for the app and website. They are not shared with Community or Guide. This replaces your previous import.",[{text:"Cancel",style:"cancel"},{text:"Save privately",onPress:()=>void perform(async()=>{await saveHealthSnapshot(owner,draft.rows);if(useAuthStore.getState().user?.id===owner){setPreview(null);await load()}})}])}
  function remove(){if(!owner)return;Alert.alert("Delete imported records?","This removes the saved import from your Treksor account and website. Apple Health originals and Treksor gym records stay intact. To revoke reading, use iPhone Settings Health Data Access & Devices Treksor.",[{text:"Cancel",style:"cancel"},{text:"Delete import",style:"destructive",onPress:()=>void perform(async()=>{await deleteHealthSnapshot(owner);if(useAuthStore.getState().user?.id===owner){setPreview(null);setSaved(null)}})}])}
- return <ScrollView style={{flex:1,backgroundColor:colors.background}} contentContainerStyle={{paddingTop:insets.top+14,paddingBottom:insets.bottom+32}}>
+ return <ScrollView style={{flex:1,backgroundColor:colors.background}} contentContainerStyle={{paddingTop:insets.top + layout.pageTop,paddingBottom:insets.bottom+32}}>
  <BodyPageHeading navigation title="Your connected life" trail="PROGRESS / CONNECTIONS" subtitle="Your movement. Its source. One clear view."/>
  <View style={{padding:22,gap:16}}>
  <WatchSharing/>

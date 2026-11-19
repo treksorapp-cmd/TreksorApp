@@ -31,7 +31,7 @@ import {
   saveWakeSettings,
   wakeCapability,
 } from "@/lib/wake/service";
-import { colors, type, surface } from "@/theme/architect";
+import { colors, type, surface, layout } from "@/theme/architect";
 export default function WakeScreen() {
   const insets = useSafeAreaInsets(),
     [settings, setSettings] = useState<WakeSettings>(defaultWake),
@@ -116,7 +116,7 @@ export default function WakeScreen() {
       <ScrollView
         style={s.screen}
         contentContainerStyle={{
-          paddingTop: insets.top + 12,
+          paddingTop: insets.top + layout.pageTop,
           paddingBottom: insets.bottom + 36,
         }}
       >

@@ -4,7 +4,8 @@ import { useCallback, useState } from "react";
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuthStore } from "@/store/auth-store";
-import { colors, surface, type } from "@/theme/architect";
+import { colors, surface, type, layout } from "@/theme/architect";
+import { useFixedRouteHeader } from "@/lib/navigation-frame-context";
 import { upcomingEvents, myRegistrations, myPastEvents, joinEvent, leaveEvent, submitExperience,
   type CommunityEvent } from "@/lib/community-api";
 
@@ -15,6 +16,7 @@ function eventTime(value: string) {
     : "Date to be confirmed";
 }
 export default function CommunityScreen() {
+  const hasFixedHeader = useFixedRouteHeader();
   const userId = useAuthStore(s => s.isAuthenticated ? s.user.id : undefined);
   const [events, setEvents] = useState<CommunityEvent[]>([]);
   const [history, setHistory] = useState<CommunityEvent[]>([]);
@@ -94,11 +96,11 @@ export default function CommunityScreen() {
 
   return <SafeAreaView style={styles.screen}>
     <ScrollView contentContainerStyle={styles.page} showsVerticalScrollIndicator={false}>
-      <TouchableOpacity accessibilityRole="button" accessibilityLabel="Return to Community"
+      {!hasFixedHeader && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Return to Community"
         onPress={()=>router.back()} style={styles.back}>
         <Ionicons name="arrow-back" size={22} color={colors.gold}/>
         <Text style={styles.backLabel}>COMMUNITY</Text>
-      </TouchableOpacity>
+      </TouchableOpacity>}
       <Text style={styles.eyebrow}>TREKSOR COMMUNITY</Text>
       <Text style={styles.title}>Experience it together.</Text>
       <Text style={styles.subtitle}>Small-group experiences. Shared effort. Connections that last beyond the screen.</Text>
@@ -157,11 +159,11 @@ export default function CommunityScreen() {
 }
 const styles=StyleSheet.create({
   screen:{flex:1,backgroundColor:colors.background},
-  page:{paddingHorizontal:22,paddingVertical:16,paddingBottom:100,gap:13},
+  page:{paddingHorizontal:22,paddingTop:layout.pageTop,paddingBottom:100,gap:13},
   back:{flexDirection:"row",alignItems:"center",gap:9,paddingVertical:8,alignSelf:"flex-start"},
   backLabel:{color:colors.gold,fontSize:11,fontWeight:"700",letterSpacing:1.3},
   eyebrow:type.eyebrow,
-  title:{...type.page,fontSize:32},
+  title:type.page,
   subtitle:{...type.body,fontSize:13,lineHeight:20},
   sectionHead:{marginTop:12,flexDirection:"row",justifyContent:"space-between",alignItems:"center"},
   sectionTitle:type.section,

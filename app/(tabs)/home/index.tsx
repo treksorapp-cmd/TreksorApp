@@ -1,5 +1,5 @@
 import { useContentRefresh } from "@/hooks/useContentRefresh";
-import { colors, navyOverlay } from "@/theme/architect";
+import { colors, navyOverlay, type } from "@/theme/architect";
 import { pillars as pillarIdentity } from "@/lib/pillar-navigation";
 import {useReducedMotion} from "@/hooks/useReducedMotion";
 import { scheduleTodaysPowerThought } from "@/lib/daily-thought-notification";
@@ -214,7 +214,7 @@ export default function HomeScreen() {
           <View style={styles.thoughtCard}>
             <Text style={{color:GOLD,fontSize:10,fontWeight:"800",letterSpacing:1.8,marginBottom:15}}>{isCurrentThought?"POWER THOUGHT · TODAY":"POWER THOUGHT · LATEST"}</Text>
             <Text style={styles.thoughtText}>{thought}</Text>
-            <View style={styles.thoughtFooter}><TouchableOpacity onPress={() => router.push("/mental/thoughts")}><Text style={styles.thoughtLink}>EXPLORE THOUGHTS</Text></TouchableOpacity><TouchableOpacity disabled={!todayThought || !!todayThought.isRead} accessibilityRole="checkbox" accessibilityState={{checked:!!todayThought?.isRead}} onPress={completeThought} style={{flexDirection:"row",alignItems:"center",gap:8,backgroundColor:todayThought?.isRead?"rgba(183,221,240,0.17)":"rgba(183,221,240,0.085)",paddingHorizontal:13,paddingVertical:11,borderRadius:12}}><Ionicons name={todayThought?.isRead?"checkmark-circle":"checkmark-circle-outline"} size={19} color={todayThought?.isRead?"#BFE7F4":GOLD}/><Text style={{color:todayThought?.isRead?"#BFE7F4":GOLD,fontWeight:"800",fontSize:12}}>{todayThought?.isRead?(isCurrentThought?"READ TODAY":"READ"):"MARK AS READ"}</Text></TouchableOpacity></View>
+            <View style={styles.thoughtFooter}><TouchableOpacity onPress={() => router.push("/mental/thoughts")}><Text style={styles.thoughtLink}>EXPLORE THOUGHTS</Text></TouchableOpacity><TouchableOpacity disabled={!todayThought || !!todayThought.isRead} accessibilityRole="checkbox" accessibilityState={{checked:!!todayThought?.isRead}} onPress={completeThought} style={{flexDirection:"row",alignItems:"center",gap:8,backgroundColor:todayThought?.isRead?colors.goldSoft:colors.goldSoft,paddingHorizontal:13,paddingVertical:11,borderRadius:12}}><Ionicons name={todayThought?.isRead?"checkmark-circle":"checkmark-circle-outline"} size={19} color={todayThought?.isRead?colors.gold:GOLD}/><Text style={{color:todayThought?.isRead?"#BFE7F4":GOLD,fontWeight:"800",fontSize:12}}>{todayThought?.isRead?(isCurrentThought?"READ TODAY":"READ"):"MARK AS READ"}</Text></TouchableOpacity></View>
           </View>
         </View>
         <Text style={styles.footer}>TREKSOR · BUILT WITH PURPOSE</Text>
@@ -228,12 +228,12 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 },
   hero: { minHeight: 276, marginHorizontal: -20, marginTop: 0, marginBottom: 26, overflow: "hidden", backgroundColor: colors.surface },
   heroContent: { flex: 1, paddingTop: 88, justifyContent: "flex-end", paddingHorizontal: 24, paddingBottom: 28 },
-  heroTitle: { color: "#F7F5F0", fontSize: 34, lineHeight: 42, fontWeight: "600", letterSpacing: -0.6, includeFontPadding: false, },
+  heroTitle: { ...type.page, color: colors.text },
   heroSub: { color: "#D0C8B9", fontSize: 12, letterSpacing: 0.7, marginTop: 13 },
   sectionCount: { color: GOLD, fontSize: 10, fontWeight: "700", letterSpacing: 1.5 },
   top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 },
   topRight:{flexDirection:"column",alignItems:"flex-end",gap:5},
-  heroGreetingWrap:{position:"absolute",top:14,right:20,zIndex:2,flexDirection:"row",alignItems:"center",gap:7,paddingHorizontal:12,paddingVertical:8,borderRadius:20,backgroundColor:"rgba(183,221,240,0.075)"},
+  heroGreetingWrap:{position:"absolute",top:14,right:20,zIndex:2,flexDirection:"row",alignItems:"center",gap:7,paddingHorizontal:12,paddingVertical:8,borderRadius:20,backgroundColor:colors.glass},
   pulseShell:{width:9,height:9,alignItems:"center",justifyContent:"center"},
   pulseHalo:{position:"absolute",width:9,height:9,borderRadius:5,backgroundColor:"#D7B877"},
   greetingDot:{width:6,height:6,borderRadius:3,backgroundColor:"#FFE4A1"},
@@ -243,16 +243,16 @@ const styles = StyleSheet.create({
   logo: { width: 38, height: 38, borderRadius: 11 },
   brandText: { color: "#FFFFFF", fontSize: 16, fontWeight: "700", letterSpacing: 4.2 },
   brandCaption: { color: "#C6A568", fontSize: 8, fontWeight: "700", letterSpacing: 2.4, marginTop: 3 },
-  profile: { height: 42, width: 42, borderRadius: 21, backgroundColor: "rgba(183,221,240,0.075)", alignItems: "center", justifyContent: "center" },
+  profile: { height: 42, width: 42, borderRadius: 21, backgroundColor: colors.glass, alignItems: "center", justifyContent: "center" },
   profileLetter: { color: GOLD, fontWeight: "800", fontSize: 17 },
   intro: { marginBottom: 34 },
   eyebrow: { color: GOLD, fontSize: 10, fontWeight: "600", letterSpacing: 2.1, marginBottom: 12 },
-  greeting: { color: "#F8F7F5", fontSize: 38, lineHeight: 44, fontWeight: "800", letterSpacing: -1.1 },
+  greeting: { ...type.page, color: colors.text },
   name: { color: GOLD },
   subtitle: { color: "#A9A7A4", fontSize: 14, lineHeight: 21, marginTop: 12 },
   sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 12 },
   sectionEyebrow: { color: "#C6AE84", fontSize: 10, letterSpacing: 2.1, fontWeight: "600", marginBottom: 7 },
-  sectionTitle: { color: "#F5F4F1", fontSize: 22, fontWeight: "600", letterSpacing: -0.2, lineHeight: 29, includeFontPadding: false, },
+  sectionTitle: { ...type.section },
   sectionHint:{color:"#AFA89C",fontSize:11,marginTop:8,letterSpacing:0.2},
   fourBadge: { width: 37, height: 37, borderRadius: 19, borderWidth: 1, borderColor: "#514332", alignItems: "center", justifyContent: "center" },
   fourBadgeText: { color: GOLD, fontSize: 12, fontWeight: "800" },
@@ -272,9 +272,9 @@ const styles = StyleSheet.create({
   pillarDotButton:{width:44,height:44,alignItems:"center",justifyContent:"center"},
   pillarDot:{width:18,height:4,borderRadius:2,backgroundColor:GOLD},
   swipeHint:{color:colors.muted,fontSize:11,textAlign:"center",marginTop:0},
-  tile: { width: "48.3%", minHeight: 230, borderRadius: 13, overflow: "hidden", backgroundColor: "rgba(183,221,240,0.075)" },
+  tile: { width: "48.3%", minHeight: 230, borderRadius: 13, overflow: "hidden", backgroundColor: colors.surface },
   tileTop: { flexDirection: "row", justifyContent: "flex-end", alignItems: "center", padding: 13 },
-  tileIcon: { height: 34, width: 34, borderRadius: 11, backgroundColor: "rgba(183,221,240,0.13)", alignItems: "center", justifyContent: "center" },
+  tileIcon: { height: 34, width: 34, borderRadius: 11, backgroundColor: colors.goldSoft, alignItems: "center", justifyContent: "center" },
   tileIndex: { color: "#FFFFFF", fontSize: 10, fontWeight: "700", opacity: 0.85 },
   tileBottom: { flex: 1, justifyContent: "flex-end", padding: 13 },
   tileTitle: { color: "#F5F4F1", fontSize: 22, fontWeight: "600", letterSpacing: -0.2, lineHeight: 29, includeFontPadding: false, },
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
   thoughtSection: { marginTop: 25 },
   thoughtHeading: { flexDirection: "row", alignItems: "center", gap: 9, marginBottom: 14 },
   thoughtLabel: { color: GOLD, fontSize: 10, fontWeight: "800", letterSpacing: 1.8 },
-  thoughtCard: { borderRadius: 19, backgroundColor: "rgba(183,221,240,0.075)", padding: 20 },
+  thoughtCard: { borderRadius: 19, backgroundColor: colors.surface, padding: 20 },
   quoteMark: { color: GOLD, fontSize: 42, fontWeight: "700", height: 38 },
   thoughtText: { color: "#F4EEE5", fontSize: 19, lineHeight: 29, fontWeight: "500", marginTop: 0 },
   thoughtFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 15, marginTop: 22, paddingTop: 16, borderTopWidth: 1, borderTopColor: colors.border },

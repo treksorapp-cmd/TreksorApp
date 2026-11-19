@@ -1,4 +1,4 @@
-import { colors } from "@/theme/architect";
+import { colors, layout, type } from "@/theme/architect";
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import BodyPageHeading from "@/components/BodyPageHeading"
 import { useAuthStore } from "@/store/auth-store"
@@ -25,7 +25,7 @@ export default function MindJournalScreen(){
  const days=period==="week"?7:period==="month"?30:365
  const chart=Array.from({length:days},(_,i)=>{const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-(days-i-1));const date=localDate(d);return {date,mood:entries.find(e=>e.date===date)?.mood||0}})
  const grouped=period==="year"?Array.from({length:53},(_,i)=>chart.slice(i*7,i*7+7)).filter(group=>group.length>0).map(group=>({date:group[0].date,mood:group.filter(e=>e.mood>0).reduce((sum,e)=>sum+e.mood,0)/Math.max(1,group.filter(e=>e.mood>0).length)})):chart
- return <ScrollView style={styles.screen} contentContainerStyle={[styles.content,{paddingTop:insets.top+12,paddingBottom:insets.bottom+40}]} keyboardShouldPersistTaps="handled">
+ return <ScrollView style={styles.screen} contentContainerStyle={[styles.content,{paddingTop:insets.top + layout.pageTop,paddingBottom:insets.bottom+40}]} keyboardShouldPersistTaps="handled">
   <BodyPageHeading trail="MIND" title="Personal journal" style={{marginHorizontal:-22}} />
   <Text style={styles.subtitle}>Your personal space. Your reflections stay on this device.</Text>
   <View style={styles.card}>
@@ -47,7 +47,7 @@ export default function MindJournalScreen(){
 }
 const styles=StyleSheet.create({
  screen:{flex:1,backgroundColor: colors.background},content:{padding:22,paddingBottom:80},
- eyebrow:{color:"#D7B877",fontSize:11,letterSpacing:3,fontWeight:"700"},heading: {fontSize: 34,color: "#F5F4F1",fontWeight: "600",marginTop:10, lineHeight: 42, letterSpacing: -0.6, includeFontPadding: false, },subtitle:{color:"#A1A1AA",fontSize:13,lineHeight:20,marginTop:7},
+ eyebrow:{...type.eyebrow},heading: { ...type.page, marginTop: 10 },subtitle:{color:"#A1A1AA",fontSize:13,lineHeight:20,marginTop:7},
  card:{backgroundColor: colors.surface,borderRadius:18,borderWidth:1,borderColor:"#38302A",padding:18,marginTop:22},
  section:{color:"#F5F4F1",fontSize:18,lineHeight:25,fontWeight:"600",marginBottom:10},date:{color:"#D7B877",fontSize:13,marginBottom:12},
  moods:{flexDirection:"row",flexWrap:"wrap",gap:7,marginVertical:12},mood:{paddingHorizontal:10,paddingVertical:10,borderRadius:10,backgroundColor: colors.surfaceRaised,borderWidth:1,borderColor:"#414141"},

@@ -1,4 +1,4 @@
-import { colors, navyOverlay } from "@/theme/architect";
+import { colors, navyOverlay, layout } from "@/theme/architect";
 import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
 
@@ -129,7 +129,7 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
     );
   }
 
-  if(!article)return <View style={[styles.container,{paddingTop:insets.top+12}]}><BodyPageHeading title="Article unavailable" trail={pillarTrail} navigation subtitle="Return to your pillar to choose another article." /></View>;
+  if(!article)return <View style={[styles.container,{paddingTop:insets.top + layout.pageTop}]}><BodyPageHeading title="Article unavailable" trail={pillarTrail} navigation subtitle="Return to your pillar to choose another article." /></View>;
 
   const imageUrl = article.image?.startsWith("http") ? article.image : `https://app.treksor.com/${article.image}`;
 
@@ -161,7 +161,7 @@ const handleSpeak = async (title?: string, description?: string, body?: string) 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}
       contentContainerStyle={{paddingBottom:24}}
       >
-        <BodyPageHeading trail={pillarTrail} title={article?.title || "Article"} navigation style={{paddingHorizontal:0,paddingTop:insets.top+12,paddingBottom:20}} />
+        <BodyPageHeading trail={pillarTrail} title={article?.title || "Article"} navigation style={{paddingHorizontal:0,paddingTop:insets.top + layout.pageTop,paddingBottom:20}} />
         {/* Article Image */}
         <Image
           source={{ uri: imageUrl }}

@@ -1,4 +1,4 @@
-import { colors } from "@/theme/architect";
+import { colors, layout, type } from "@/theme/architect";
 import { useContentRefresh } from "@/hooks/useContentRefresh";
 import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
@@ -49,14 +49,14 @@ export default function PowerThoughtsScreen() {
       <View key={thought._id} style={styles.thoughtCard}>
         {/* Outer LinearGradient for the border */}
         <LinearGradient
-          colors={["rgba(205,235,248,0.22)", "rgba(205,235,248,0.08)"]}
+          colors={[colors.goldSoft, colors.surface]}
           start={{ x: 0.2, y: 0 }}
           end={{ x: 0.8, y: 1 }}
           style={styles.borderGradient}
         >
           {/* Inner LinearGradient for the button background */}
           <LinearGradient
-            colors={["rgba(183,221,240,0.10)", "rgba(183,221,240,0.045)"]}
+            colors={[colors.surfaceRaised, colors.surface]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.innerGradient}
@@ -98,7 +98,7 @@ export default function PowerThoughtsScreen() {
         <View style={styles.headerSpacer} />
       </View> */}
 
-      <BodyPageHeading trail="MIND" title="Power thoughts" style={{paddingTop:insets.top+12,paddingBottom:20}} />
+      <BodyPageHeading trail="MIND" title="Power thoughts" style={{paddingTop:insets.top + layout.pageTop,paddingBottom:20}} />
       {/* Thoughts List */}
       <ScrollView
         refreshControl={<RefreshControl refreshing={loading} onRefresh={fetchPowerThoughts} tintColor="#D7B877" />}
@@ -124,7 +124,7 @@ export default function PowerThoughtsScreen() {
 const styles = StyleSheet.create({
   titleArea:{paddingHorizontal:22,paddingBottom:22},
   eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.7},
-  heroTitle: {color: "#F5F4F1",fontSize: 34,fontWeight: "600",letterSpacing: -0.6,marginTop:9, lineHeight: 42, includeFontPadding: false, },
+  heroTitle: { ...type.page, marginTop: 9 },
   container: {
     flex: 1,
     backgroundColor: colors.background,
