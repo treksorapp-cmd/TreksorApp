@@ -2,12 +2,96 @@ import { readBalance } from '@/lib/balance/practice';
 import { recentDays, recordedDay, dayKey } from '@/lib/progress-metrics';
 import { useAuthStore } from '@/store/auth-store';
 import { useWorkoutStore } from '@/store/workout-store';
-import { ownerNow, readGrant } from './connection';
+import { ownerNow, readGrant, readWorkoutGrant } from './connection';
+import { cachedGymCatalogue } from '@/lib/gym-catalogue';
+import { resolveExerciseVideo } from '@/lib/exercise-video';
 
 // Watch writes require an explicit request, a valid per-account sharing grant and an authenticated phone session.
 const EVENT_URL = 'https://niakfwerfqmrmhuypkpd.supabase.co/rest/v1/treksor_sync_events';
 const KEY = 'sb_publishable_WxFupUF8wM6SuEcTXYuqHw_dRoSpLs8';
-export async function handleWatchRequest(command: {kind?: string}) {
+type WatchCommand = {kind?: string; sessionId?: string; exerciseId?: string; setNumber?: number; kg?: number; reps?: number};
+const WATCH_MEDIA_ORIGIN = 'https://niakfwerfqmrmhuypkpd.supabase.co';
+const text = (value: unknown, max: number) => typeof value === 'string' ? value.slice(0,max) : '';
+
+async function workoutAccess() {
+  const owner = ownerNow();
+  if (!owner) return null;
+  const grant = await readWorkoutGrant(owner);
+  return grant && ownerNow() === owner ? {owner,grant} : null;
+}
+async function stillAllowed(owner: string, grant: string) {
+  return ownerNow() === owner && await readWorkoutGrant(owner) === grant;
+}
+function activeSession() {
+  return useWorkoutStore.getState().activeGymWorkout;
+}
+function workoutSnapshot() {
+  const state = useWorkoutStore.getState(), active = state.activeGymWorkout;
+  if (!active) return {workout:null};
+  const library = cachedGymCatalogue(), allSets = state.gymSets || [];
+  const exercises = active.exerciseIds.slice(0,24).map(id => {
+    const exercise = library.find(e => e.id === id);
+    const completed = allSets.filter(s=>s.sessionId===active.id && s.exerciseId===id && Number.isInteger(s.setNumber))
+      .map(s=>({setNumber:s.setNumber!,kg:s.kg,reps:s.reps}));
+    const previous = allSets.filter(s=>s.exerciseId===id && s.sessionId!==active.id).slice(-1)[0];
+    const prescription = active.prescriptions?.[id];
+    return {
+      id, name:text(exercise?.name,90)||'Exercise', metric:exercise?.metric || 'reps',
+      equipment:text(exercise?.equipment,40),
+      targetSets:Math.min(12,Math.max(1,Number(prescription?.sets||exercise?.sets||3))),
+      targetReps:text(prescription?.reps||exercise?.reps||'8-12',16),
+      restSeconds:Math.min(900,Math.max(0,Number(prescription?.rest_seconds??exercise?.rest_seconds??90))),
+      previousKg:previous?.kg ?? null,previousReps:previous?.reps ?? null,completed,
+      hasVideo:!!(exercise?.video_path||exercise?.videoUrl||exercise?.serverId),
+    };
+  });
+  return {workout:{id:active.id,dayName:text(active.dayName,70),startedAt:active.startedAt,
+    restEndsAt:active.restEndsAt||null,exercises}};
+}
+
+export async function handleWatchRequest(command: WatchCommand) {
+  if (command?.kind === 'workout' || command?.kind === 'workout_video' || command?.kind === 'workout_set') {
+    const access = await workoutAccess();
+    if (!access) return {locked:true};
+    const {owner,grant} = access;
+    if (command.kind === 'workout') return stillAllowed(owner,grant) ? workoutSnapshot() : {locked:true};
+    const active = activeSession();
+    if (!active || typeof command.sessionId !== 'string' || command.sessionId !== active.id ||
+        typeof command.exerciseId !== 'string' || !active.exerciseIds.includes(command.exerciseId))
+      return {error:'This session changed on iPhone. Refresh your watch.'};
+    const exercise = cachedGymCatalogue().find(e=>e.id===command.exerciseId);
+    if (command.kind === 'workout_video') {
+      if (!exercise || !(exercise.video_path||exercise.videoUrl||exercise.serverId)) return {error:'No demonstration for this exercise.'};
+      try {
+        const url = await resolveExerciseVideo(exercise.serverId||exercise.id,exercise.video_path,exercise.videoUrl);
+        if (!await stillAllowed(owner,grant) || activeSession()?.id!==active.id) return {locked:true};
+        const media = new URL(url);
+        if (media.origin!==WATCH_MEDIA_ORIGIN || !media.pathname.startsWith('/storage/v1/object/sign/treksor-media/'))
+          return {error:'Watch video is unavailable.'};
+        return {videoUrl:url};
+      } catch {return {error:'Video unavailable. Retry with the iPhone connected.'};}
+    }
+    const number=command.setNumber, kg=command.kg, reps=command.reps;
+    if (!Number.isInteger(number) || number!<1 || number!>12 || typeof kg!=='number' || !Number.isFinite(kg)
+        || kg<0 || kg>1500 || (exercise?.equipment!=='Bodyweight' && kg===0)
+        || !Number.isInteger(reps) || reps!<1 || reps!>300)
+      return {error:'Check sets, kilograms and reps on your watch.'};
+    const desired = Math.min(12,Math.max(1,Number(active.prescriptions?.[command.exerciseId]?.sets||exercise?.sets||3)));
+    if (number!>desired) return {error:'This set is outside your active plan.'};
+    if (!await stillAllowed(owner,grant) || activeSession()?.id!==active.id) return {locked:true};
+    const state=useWorkoutStore.getState();
+    const id = `${active.id}:${command.exerciseId}:${number}`;
+    const existing = state.gymSets.some(row=>row.id===id);
+    if (!existing) {
+      state.completeGymSet({id,sessionId:active.id,exerciseId:command.exerciseId,
+        exerciseName:text(exercise?.name,90)||'Exercise',day:active.day,
+        setNumber:number!,kg:kg!,reps:reps!,recordedAt:new Date().toISOString(),
+        setType:'Working',metric:exercise?.metric||'reps'});
+      const rest = active.prescriptions?.[command.exerciseId]?.rest_seconds ?? exercise?.rest_seconds ?? 90;
+      if (rest>0 && rest<=900) state.setGymRestEnd(new Date(Date.now()+rest*1000).toISOString());
+    }
+    return {saved:true,already:existing};
+  }
   if (command?.kind !== 'progress' && command?.kind !== 'today_complete') throw Error('Update Treksor on your watch.');
   const owner = ownerNow();
   if (!owner) return {locked:true};
