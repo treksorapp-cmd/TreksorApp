@@ -1,5 +1,6 @@
 import JourneyCard from "@/components/JourneyCard";
 import WeeklyHabits from "@/components/WeeklyHabits";
+import DailyWork from "@/components/DailyWork";
 import {getSharedTodayDates} from "@/lib/shared-today";
 import {localDay} from "@/lib/weekly-habits";
 import {useAuthStore} from "@/store/auth-store";
@@ -29,6 +30,7 @@ export default function TodayScreen() {
       <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open Quick Notes and tasks" onPress={()=>router.push("/notes" as any)} style={{flexDirection:"row",alignItems:"center",gap:12,padding:15,borderRadius:14,borderColor:colors.border,borderWidth:1,backgroundColor:colors.surface,marginTop:15}}>
         <Ionicons name="create-outline" size={22} color={colors.gold}/><View style={{flex:1}}><Text style={{color:colors.text,fontWeight:"600",fontSize:15}}>Quick Notes</Text><Text style={{color:colors.muted,fontSize:12,marginTop:4}}>Write it down. Get it done.</Text></View><Ionicons name="chevron-forward" size={19} color={colors.gold}/>
       </TouchableOpacity>
+      <DailyWork />
       <WeeklyHabits />
       <TouchableOpacity accessibilityRole="button" accessibilityLabel="Explore goals and weekly review" activeOpacity={0.82}
         onPress={() => router.push("/progress/journey" as any)}
