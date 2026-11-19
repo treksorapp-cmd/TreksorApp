@@ -42,9 +42,20 @@ function makeBefore(f){
 const parent=fs.mkdtempSync(path.join(os.tmpdir(),'treksor-daily-work-install-')),project=path.join(parent,'TreksorApp');
 try{
  fs.mkdirSync(project);cp.execFileSync('git',['init',project],{stdio:'ignore'});
- cp.execFileSync('git',['fetch','--no-tags',root,'HEAD:refs/remotes/origin/feature/v12-daily-work-activities-progress-20261119'],{cwd:project,stdio:'ignore'});
  fs.symlinkSync(path.join(root,'node_modules'),path.join(project,'node_modules'),'dir');
- for(const f of existing){const dest=path.join(project,f);fs.mkdirSync(path.dirname(dest),{recursive:true});fs.writeFileSync(dest,makeBefore(f));}
+ // Create a local fixture commit with the new version. No network and no
+ // dependency on the checkout's shallow PR merge ref.
+ for(const f of [...existing,...newFiles]){
+   const dest=path.join(project,f);fs.mkdirSync(path.dirname(dest),{recursive:true});
+   fs.writeFileSync(dest,fs.readFileSync(f));
+ }
+ cp.execFileSync('git',['config','user.email','test@treksor.invalid'],{cwd:project});
+ cp.execFileSync('git',['config','user.name','Treksor Test'],{cwd:project});
+ cp.execFileSync('git',['add','--',...existing,...newFiles],{cwd:project});
+ cp.execFileSync('git',['commit','-m','Fixture source snapshot'],{cwd:project,stdio:'ignore'});
+ cp.execFileSync('git',['update-ref','refs/remotes/origin/feature/v12-daily-work-activities-progress-20261119','HEAD'],{cwd:project});
+ for(const f of existing)fs.writeFileSync(path.join(project,f),makeBefore(f));
+ for(const f of newFiles)fs.unlinkSync(path.join(project,f));
  const run=(...args)=>cp.execFileSync(process.execPath,[patch,...args],{cwd:project,encoding:'utf8'});
  assert.match(run('--check'),/COMPATIBLE/);
  for(const f of newFiles)assert(!fs.existsSync(path.join(project,f)),'Dry-run cannot create '+f);
