@@ -16,6 +16,13 @@ export const colors = {
     border: "rgba(245,244,241,0.10)", glass: "rgba(245,244,241,0.045)",
     success: "#ACD6C0", danger: "#E7A3A0", dangerSoft: "rgba(231,163,160,0.10)",
 } as const;
+// The Architect: one vertical rhythm for every authenticated mobile page.
+export const layout = {
+    pageTop: 8,
+    compactTop: 4,
+    pageGutter: 22,
+    sectionSpace: 24,
+} as const;
 export const type = {
     page: { fontSize: 34, lineHeight: 42, fontWeight: "600", letterSpacing: -0.6, color: colors.text, includeFontPadding: false },
     section: { fontSize: 22, lineHeight: 29, fontWeight: "600", letterSpacing: -0.2, color: colors.text, includeFontPadding: false },
