@@ -7,7 +7,7 @@ enum TreksorBrand {
         Color(.sRGB, red: Double((hex >> 16) & 255) / 255,
               green: Double((hex >> 8) & 255) / 255, blue: Double(hex & 255) / 255, opacity: 1)
     }
-    static let background = color(0x02050C)
+    static let background = color(0x05080D)
     static let surface = color(0x111820)
     static let surfaceRaised = color(0x19222C)
     static let text = color(0xF5F4F1)
