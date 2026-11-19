@@ -1,4 +1,4 @@
-import { colors, layout } from "@/theme/architect";
+import { colors, layout, type } from "@/theme/architect";
 import { useContentRefresh } from "@/hooks/useContentRefresh";
 import BodyPageHeading from "@/components/BodyPageHeading";
 "use client";
@@ -124,7 +124,7 @@ export default function PowerThoughtsScreen() {
 const styles = StyleSheet.create({
   titleArea:{paddingHorizontal:22,paddingBottom:22},
   eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:1.7},
-  heroTitle: {color: "#F5F4F1",fontSize: 34,fontWeight: "600",letterSpacing: -0.6,marginTop:9, lineHeight: 42, includeFontPadding: false, },
+  heroTitle: { ...type.page, marginTop: 9 },
   container: {
     flex: 1,
     backgroundColor: colors.background,
