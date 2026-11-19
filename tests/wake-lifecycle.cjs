@@ -60,7 +60,7 @@ function render({ playSound = true, deferred = false } = {}) {
     },
     "@/lib/wake/sounds": { wakeSounds: [{ id: "wake_01", source: 1 }] },
     "@/lib/wake/model": { wakeThemes: { gold: { color: "#D7B877" } } },
-    "@/theme/architect": { colors: {}, type: {} },
+    "@/theme/architect": { colors: {}, type: {}, layout: { pageTop: 8, compactTop: 4 } },
     "./WakePulse": { __esModule: true, default: () => null },
   };
   const module = { exports: {} };
