@@ -2,7 +2,7 @@ import { colors, navyOverlay } from "@/theme/architect";
 "use client";
 
 import { useAuthStore } from "@/store/auth-store";
-import Ionicons from '@/components/ui/BrandIcon';
+import Ionicons, { GUIDE_ICON, HOME_ICON } from '@/components/ui/BrandIcon';
 import { Redirect, Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
@@ -57,7 +57,7 @@ export default function TabLayout() {
           options={{
             title: "Home",
             tabBarIcon: ({ color }) => (
-              <View style={styles.iconContainer}><Ionicons name="home-outline" size={23} color={color} /></View>
+              <View style={styles.iconContainer}><Ionicons name={HOME_ICON} size={23} color={color} /></View>
             ),
           }}
         />
@@ -69,7 +69,7 @@ export default function TabLayout() {
           options={{
             title: "Guide",
             tabBarIcon: ({ color }) => (
-              <View style={styles.iconContainer}><Ionicons name="chatbubble-ellipses-outline" size={23} color={color} /></View>
+              <View style={styles.iconContainer}><Ionicons name={GUIDE_ICON} size={23} color={color} /></View>
             ),
           }}
         />
