@@ -4,7 +4,7 @@ import DailyWork from "@/components/DailyWork";
 import {getSharedTodayDates} from "@/lib/shared-today";
 import {localDay} from "@/lib/weekly-habits";
 import {useAuthStore} from "@/store/auth-store";
-import { colors } from "@/theme/architect";
+import { colors, layout } from "@/theme/architect";
 import Ionicons from '@/components/ui/BrandIcon';
 import { router, useFocusEffect } from "expo-router";
 import React, {useCallback,useState} from "react";
@@ -23,7 +23,7 @@ export default function TodayScreen() {
     return()=>{active=false};
   },[userId,revision]));
   return <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: colors.background }}>
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 18, paddingBottom: 38 }}>
+    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: layout.pageTop, paddingBottom: 38 }}>
       {shared===true&&<View accessibilityRole="text" style={{backgroundColor:colors.surface,borderColor:colors.gold,borderWidth:1,borderRadius:12,padding:13,flexDirection:"row",gap:9,alignItems:"center",marginBottom:10}}><Ionicons name="cloud-done-outline" size={20} color={colors.gold}/><Text style={{color:colors.text,flex:1,fontSize:13}}>Today completion is recorded in your Treksor account. Your private notes remain on this device.</Text></View>}
       <JourneyCard />
       <TouchableOpacity accessibilityRole="button" onPress={()=>setRevision(v=>v+1)} style={{alignSelf:"flex-end",paddingVertical:10,paddingHorizontal:3,flexDirection:"row",gap:6,alignItems:"center"}}><Ionicons name="sync-outline" color={colors.gold} size={15}/><Text style={{color:colors.gold,fontSize:12}}>{syncError?"Retry shared Today":"Refresh shared Today"}</Text></TouchableOpacity>
