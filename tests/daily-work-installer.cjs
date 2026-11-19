@@ -42,7 +42,7 @@ function makeBefore(f){
 const parent=fs.mkdtempSync(path.join(os.tmpdir(),'treksor-daily-work-install-')),project=path.join(parent,'TreksorApp');
 try{
  fs.mkdirSync(project);cp.execFileSync('git',['init',project],{stdio:'ignore'});
- cp.execFileSync('git',['fetch','--no-tags',root,'HEAD'],{cwd:project,stdio:'ignore'});
+ cp.execFileSync('git',['fetch','--no-tags',root,'HEAD:refs/remotes/origin/feature/v12-daily-work-activities-progress-20261119'],{cwd:project,stdio:'ignore'});
  fs.symlinkSync(path.join(root,'node_modules'),path.join(project,'node_modules'),'dir');
  for(const f of existing){const dest=path.join(project,f);fs.mkdirSync(path.dirname(dest),{recursive:true});fs.writeFileSync(dest,makeBefore(f));}
  const run=(...args)=>cp.execFileSync(process.execPath,[patch,...args],{cwd:project,encoding:'utf8'});
