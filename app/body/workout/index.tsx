@@ -1,4 +1,4 @@
-import { colors, navyOverlay, layout } from "@/theme/architect";
+import { colors, navyOverlay, layout, type } from "@/theme/architect";
 import {useReducedMotion} from "@/hooks/useReducedMotion";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import Button from "@/components/ui/Button";
@@ -112,17 +112,17 @@ const styles = StyleSheet.create({
   hero:{minHeight:240,justifyContent:"flex-end",overflow:"hidden"},
   heroContent:{paddingLeft:22,paddingRight:22,paddingBottom:32,justifyContent:"flex-start"},
   eyebrow:{color:"#D7B877",fontSize:11,fontWeight:"700",letterSpacing:2},
-  heroTitle: {color: "#F5F4F1",fontSize: 34,fontWeight: "600",letterSpacing: -0.6,marginTop:7, lineHeight: 42, includeFontPadding: false, },
+  heroTitle: { ...type.page, marginTop: 7 },
   heroSubtitle:{color:"#DDD7CB",fontSize:14,lineHeight:22,marginTop:8},
   content:{paddingHorizontal:20},
   sectionHeading:{flexDirection:"row",justifyContent:"space-between",alignItems:"center",marginBottom:16},
-  sectionTitle: {color: "#F5F4F1",fontSize: 22,fontWeight: "600",marginTop:5, lineHeight: 29, letterSpacing: -0.2, includeFontPadding: false, },
+  sectionTitle: { ...type.section, marginTop: 5 },
   activeTag:{flexDirection:"row",alignItems:"center",gap:7,backgroundColor:"rgba(214,184,116,0.1)",paddingHorizontal:12,paddingVertical:8,borderRadius:20,borderWidth:0},
   pulseShell:{width:9,height:9,alignItems:"center",justifyContent:"center"},
   pulseHalo:{position:"absolute",width:9,height:9,borderRadius:5,backgroundColor:GOLD},
   activeDot:{height:9,width:9,borderRadius:5,backgroundColor:GOLD},
   activeText:{color:"#E8D0A0",fontSize:10,fontWeight:"800",letterSpacing:1},
-  planCard:{backgroundColor:"rgba(184,221,239,0.055)",borderWidth:0,borderRadius:20,padding:20,marginBottom:8},
+  planCard:{backgroundColor:colors.surface,borderWidth:0,borderRadius:20,padding:20,marginBottom:8},
   planStats:{flexDirection:"row",alignItems:"center",gap:26},
   statNumber:{color:"#FFFFFF",fontSize:23,fontWeight:"700"},
   statLabel:{color:"#B8B7B5",fontSize:10,fontWeight:"700",letterSpacing:1,marginTop:6},
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   track:{height:7,borderRadius:7,backgroundColor:"rgba(255,255,255,0.11)",overflow:"hidden"},
   trackFill:{height:"100%",backgroundColor:GOLD,borderRadius:7},
   weekCaption:{color:"#A9A9A8",fontSize:11,marginTop:12},
-  checkIn:{minHeight:54,paddingVertical:14,paddingHorizontal:16,marginTop:5,marginBottom:16,borderRadius:16,backgroundColor:"rgba(188,223,240,0.085)",borderWidth:0,flexDirection:"row",alignItems:"center",justifyContent:"center",gap:10},
+  checkIn:{minHeight:54,paddingVertical:14,paddingHorizontal:16,marginTop:5,marginBottom:16,borderRadius:16,backgroundColor:colors.goldSoft,borderWidth:0,flexDirection:"row",alignItems:"center",justifyContent:"center",gap:10},
   checkInDone:{opacity:0.65},
   checkInText:{color:"#F5F4F1",fontSize:15,lineHeight:22,fontWeight:"600",flexShrink:1,textAlign:"center"},
   intro:{color:"#B9B9B9",fontSize:14,lineHeight:21,marginTop:10,marginBottom:16},
