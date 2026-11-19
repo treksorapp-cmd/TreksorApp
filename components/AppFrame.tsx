@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView, SafeAreaInsetsContext, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useGlobalSearchParams, usePathname, type Href } from 'expo-router';
-import BrandIcon from '@/components/ui/BrandIcon';
+import BrandIcon, { HOME_ICON } from '@/components/ui/BrandIcon';
 import { FixedRouteContext } from '@/lib/navigation-frame-context';
 import { routeTrail } from '@/lib/route-trail';
 import { pillars, type PillarKey } from '@/lib/pillar-navigation';
@@ -16,6 +16,8 @@ export default function AppFrame({children,enabled}:{children:ReactNode;enabled:
   const [headerHeight,setHeaderHeight]=useState(0);
   useEffect(()=>setPicker(false),[pathname]);
   const visible=enabled&&trail.visible;
+  // The Home destination is redundant when the current screen is already Home.
+  const isHome=pathname==='/home'||pathname==='/(tabs)/home'||pathname==='/';
   const destination=trail.pillar?pillars[trail.pillar]:null;
   const navigate=(route:string)=>{setPicker(false);router.dismissTo(route as Href)};
   return <FixedRouteContext.Provider value={visible}>
@@ -28,7 +30,7 @@ export default function AppFrame({children,enabled}:{children:ReactNode;enabled:
           <Text accessibilityRole="header" accessibilityLabel={`Current location: ${trail.label}`} style={s.trail}>{trail.label}</Text>
           <View style={s.actions}>
             <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go back" style={s.icon} onPress={()=>{if(picker)setPicker(false);else if(router.canGoBack())router.back();else navigate(trail.parent)}}><BrandIcon name="arrow-back" size={21} color={colors.text}/></TouchableOpacity>
-            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go to Home" style={s.icon} onPress={()=>navigate(trail.home)}><BrandIcon name="home-outline" size={21} color={colors.text}/></TouchableOpacity>
+            {!isHome && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go to Home" style={s.icon} onPress={()=>navigate(trail.home)}><BrandIcon name={HOME_ICON} size={21} color={colors.text}/></TouchableOpacity>}
             <TouchableOpacity accessibilityRole="button" accessibilityLabel={destination?`Return to ${destination.name}`:'Choose a pillar'} accessibilityState={destination?undefined:{expanded:picker}} style={s.icon} onPress={()=>destination?navigate(destination.route):setPicker(value=>!value)}><BrandIcon name={destination?.icon??'grid-outline'} size={22} color={colors.gold}/></TouchableOpacity>
           </View>
         </View>
