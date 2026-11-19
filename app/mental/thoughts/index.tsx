@@ -49,14 +49,14 @@ export default function PowerThoughtsScreen() {
       <View key={thought._id} style={styles.thoughtCard}>
         {/* Outer LinearGradient for the border */}
         <LinearGradient
-          colors={["rgba(205,235,248,0.22)", "rgba(205,235,248,0.08)"]}
+          colors={[colors.goldSoft, colors.surface]}
           start={{ x: 0.2, y: 0 }}
           end={{ x: 0.8, y: 1 }}
           style={styles.borderGradient}
         >
           {/* Inner LinearGradient for the button background */}
           <LinearGradient
-            colors={["rgba(183,221,240,0.10)", "rgba(183,221,240,0.045)"]}
+            colors={[colors.surfaceRaised, colors.surface]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.innerGradient}
