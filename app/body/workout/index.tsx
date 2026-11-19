@@ -1,4 +1,4 @@
-import { colors, navyOverlay } from "@/theme/architect";
+import { colors, navyOverlay, layout } from "@/theme/architect";
 import {useReducedMotion} from "@/hooks/useReducedMotion";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import Button from "@/components/ui/Button";
@@ -48,7 +48,7 @@ export default function GymScreen() {
         <View style={styles.hero}>
           <ImageBackground source={require("@/assets/images/Gym_2.png")} contentFit="cover" style={StyleSheet.absoluteFill} />
           <LinearGradient colors={[navyOverlay(0.22), navyOverlay(0.68), colors.background]} locations={[0, 0.5, 1]} style={StyleSheet.absoluteFill} />
-          <View style={[styles.heroContent, { paddingTop: insets.top + 12 }]}>
+          <View style={[styles.heroContent, { paddingTop: insets.top + layout.pageTop }]}>
             <BodyPageHeading title="Gym" trail="BODY / WORKOUT" subtitle="Train with intention. Progress with purpose." style={{paddingHorizontal:0}} />
           </View>
         </View>
