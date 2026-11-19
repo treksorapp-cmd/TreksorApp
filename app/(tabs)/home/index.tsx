@@ -225,13 +225,13 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
-  content: { paddingHorizontal: 20, paddingTop: 7, paddingBottom: 28 },
-  hero: { minHeight: 276, marginHorizontal: -20, marginTop: -8, marginBottom: 26, overflow: "hidden", backgroundColor: colors.surface },
+  content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 },
+  hero: { minHeight: 276, marginHorizontal: -20, marginTop: 0, marginBottom: 26, overflow: "hidden", backgroundColor: colors.surface },
   heroContent: { flex: 1, paddingTop: 88, justifyContent: "flex-end", paddingHorizontal: 24, paddingBottom: 28 },
   heroTitle: { color: "#F7F5F0", fontSize: 34, lineHeight: 42, fontWeight: "600", letterSpacing: -0.6, includeFontPadding: false, },
   heroSub: { color: "#D0C8B9", fontSize: 12, letterSpacing: 0.7, marginTop: 13 },
   sectionCount: { color: GOLD, fontSize: 10, fontWeight: "700", letterSpacing: 1.5 },
-  top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 },
+  top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 },
   topRight:{flexDirection:"column",alignItems:"flex-end",gap:5},
   heroGreetingWrap:{position:"absolute",top:14,right:20,zIndex:2,flexDirection:"row",alignItems:"center",gap:7,paddingHorizontal:12,paddingVertical:8,borderRadius:20,backgroundColor:"rgba(183,221,240,0.075)"},
   pulseShell:{width:9,height:9,alignItems:"center",justifyContent:"center"},
