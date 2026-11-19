@@ -11,7 +11,7 @@
     "lint": "expo lint",
     "typecheck": "tsc --noEmit -p tsconfig.mobile.json",
     "test:ui": "node tests/ui-contracts.cjs",
-    "test:integrity": "node tests/source-integrity.cjs && node tests/architect-recovery.cjs && node tests/fixed-header-layout.cjs",
+    "test:integrity": "node tests/source-integrity.cjs && node tests/architect-recovery.cjs && node tests/fixed-header-layout.cjs && node tests/home-landscape-cards.cjs",
     "test:progress": "node tests/progress-sync.cjs && node tests/shared-today.cjs",
     "test:audio": "node tests/audio-lifecycle.cjs",
     "test:dashboard": "node tests/progress-dashboard.cjs",
