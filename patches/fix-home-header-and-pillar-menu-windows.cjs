@@ -37,6 +37,7 @@ transform(frameFile,s=>{
   if(!pickerMarkup.startsWith('{picker&&<View style={s.picker}>')||!pickerMarkup.endsWith('</View>}'))
     abort('No se puede separar el menu de pilares con seguridad.');
   const menuContent=pickerMarkup.slice('{picker&&<View style={s.picker}>'.length,-'</View>}'.length);
+  const originalPickerAndHeader=s.slice(pickerStart,pickerEnd)+headerEnd;
   const chromeRe=/chrome:\{backgroundColor:colors\.background,borderBottomWidth:1,borderBottomColor:colors\.border(?:,zIndex:\d+,elevation:\d+)?\}/;
   if(!chromeRe.test(s))abort('La barra fija no coincide con la version compatible.');
   const pickerStyleRe=/picker:\{[^\n]+\}/;
@@ -54,7 +55,7 @@ transform(frameFile,s=>{
     "        setHeaderHeight(previous=>previous===height?previous:height);\n"+
     "      }}>");
   // Remove the menu from the SafeAreaView. The overlay is a sibling, never a child of chrome.
-  s=s.replace(s.slice(pickerStart,pickerEnd)+headerEnd,
+  s=s.replace(originalPickerAndHeader,
     headerEnd+"\n"+
     '      {visible && picker && headerHeight > 0 && <View pointerEvents="box-none" style={[s.pickerOverlay,{top:headerHeight}]}>\n'+
     '        <View style={s.picker}>'+menuContent+'</View>\n'+
