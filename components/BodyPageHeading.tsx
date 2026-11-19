@@ -1,6 +1,6 @@
 import React from "react";
 import { useFixedRouteHeader } from '@/lib/navigation-frame-context';
-import Ionicons from '@/components/ui/BrandIcon';
+import Ionicons, { HOME_ICON } from '@/components/ui/BrandIcon';
 import { router, useLocalSearchParams, usePathname, type Href } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View, type StyleProp, type ViewStyle } from "react-native";
 import { colors, surface, type } from "@/theme/architect";
@@ -30,7 +30,7 @@ export default function BodyPageHeading({ title, trail, subtitle, pillar, naviga
       <Text style={styles.trail}>{trail.toUpperCase()}</Text>
       {showNavigation && <View style={styles.actions}>
         {goBack && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go back" style={styles.icon} onPress={goBack}><Ionicons name="arrow-back" size={21} color={colors.text}/></TouchableOpacity>}
-        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go to Home" style={styles.icon} onPress={() => router.dismissTo("/(tabs)/home")}><Ionicons name="home-outline" size={21} color={colors.text}/></TouchableOpacity>
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go to Home" style={styles.icon} onPress={() => router.dismissTo("/(tabs)/home")}><Ionicons name={HOME_ICON} size={21} color={colors.text}/></TouchableOpacity>
         {destination && <TouchableOpacity accessibilityRole="button" accessibilityLabel={`Return to ${destination.name}`} style={styles.icon} onPress={() => router.dismissTo(destination.route as Href)}>{key === "mind" ? <Ionicons name="brain" size={22} color={colors.gold}/> : <Ionicons name={destination.icon as "barbell-outline" | "leaf-outline" | "compass-outline"} size={22} color={colors.gold}/>}</TouchableOpacity>}
       </View>}
     </View>}
