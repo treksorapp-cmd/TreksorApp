@@ -1,5 +1,5 @@
 import NutritionArtwork from "@/components/nutrition/NutritionArtwork";
-import {colors} from "@/theme/architect";
+import {colors, layout } from "@/theme/architect";
 import BodyPageHeading from "@/components/BodyPageHeading";
 import { Nutritions } from "@/mock/nutrition";
 import Ionicons from '@/components/ui/BrandIcon';
@@ -41,7 +41,7 @@ export default function SupplementDetails() {
 
   return (
     <View style={styles.screen}>
-      <ScrollView contentContainerStyle={{paddingTop:insets.top+12,paddingBottom:insets.bottom+40}} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={{paddingTop:insets.top + layout.pageTop,paddingBottom:insets.bottom+40}} showsVerticalScrollIndicator={false}>
         <BodyPageHeading trail="BODY / NUTRITION / SUPPLEMENTS" title={supplement.name}/>
         <View style={{paddingHorizontal:22,marginTop:24}}>
           <NutritionArtwork source={supplement.backgroundImage} label={supplement.name}/>
