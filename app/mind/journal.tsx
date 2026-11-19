@@ -1,4 +1,4 @@
-import { colors, layout } from "@/theme/architect";
+import { colors, layout, type } from "@/theme/architect";
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import BodyPageHeading from "@/components/BodyPageHeading"
 import { useAuthStore } from "@/store/auth-store"
@@ -47,7 +47,7 @@ export default function MindJournalScreen(){
 }
 const styles=StyleSheet.create({
  screen:{flex:1,backgroundColor: colors.background},content:{padding:22,paddingBottom:80},
- eyebrow:{color:"#D7B877",fontSize:11,letterSpacing:3,fontWeight:"700"},heading: {fontSize: 34,color: "#F5F4F1",fontWeight: "600",marginTop:10, lineHeight: 42, letterSpacing: -0.6, includeFontPadding: false, },subtitle:{color:"#A1A1AA",fontSize:13,lineHeight:20,marginTop:7},
+ eyebrow:{...type.eyebrow},heading: { ...type.page, marginTop: 10 },subtitle:{color:"#A1A1AA",fontSize:13,lineHeight:20,marginTop:7},
  card:{backgroundColor: colors.surface,borderRadius:18,borderWidth:1,borderColor:"#38302A",padding:18,marginTop:22},
  section:{color:"#F5F4F1",fontSize:18,lineHeight:25,fontWeight:"600",marginBottom:10},date:{color:"#D7B877",fontSize:13,marginBottom:12},
  moods:{flexDirection:"row",flexWrap:"wrap",gap:7,marginVertical:12},mood:{paddingHorizontal:10,paddingVertical:10,borderRadius:10,backgroundColor: colors.surfaceRaised,borderWidth:1,borderColor:"#414141"},
