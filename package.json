@@ -11,13 +11,13 @@
     "lint": "expo lint",
     "typecheck": "tsc --noEmit -p tsconfig.mobile.json",
     "test:ui": "node tests/ui-contracts.cjs",
-    "test:integrity": "node tests/source-integrity.cjs && node tests/architect-recovery.cjs && node tests/fixed-header-layout.cjs && node tests/home-landscape-cards.cjs && node tests/guide-home-style.cjs",
+    "test:integrity": "node tests/source-integrity.cjs && node tests/architect-recovery.cjs && node tests/fixed-header-layout.cjs && node tests/home-landscape-cards.cjs && node tests/guide-home-style.cjs && node tests/daily-work.cjs && node tests/daily-work-installer.cjs",
     "test:progress": "node tests/progress-sync.cjs && node tests/shared-today.cjs",
     "test:audio": "node tests/audio-lifecycle.cjs",
     "test:dashboard": "node tests/progress-dashboard.cjs",
     "test:content": "node tests/content-sync.cjs",
     "test:journey": "node tests/journey-growth.cjs",
-    "release:check": "npm run typecheck && npm run test:integrity && npm run test:progress && npm run test:dashboard && npm run test:journey && npm run test:audio && npm run test:content && npm run test:video && npm run test:clock && npm run test:ecosystem && npm run test:balance && npm run test:mentor && npm run test:discovery && npm run test:training && npm run test:wake && npm run test:watch && npm run test:ui && npm run test:connected && npm run test:retention && npm run test:goals && npm run test:web-parity",
+    "release:check": "npm run typecheck && npm run test:integrity && npm run test:progress && npm run test:daily-work && npm run test:dashboard && npm run test:journey && npm run test:audio && npm run test:content && npm run test:video && npm run test:clock && npm run test:ecosystem && npm run test:balance && npm run test:mentor && npm run test:discovery && npm run test:training && npm run test:wake && npm run test:watch && npm run test:ui && npm run test:connected && npm run test:retention && npm run test:goals && npm run test:web-parity",
     "release:ios": "npm run release:check && npx --yes eas-cli@26.0.0 build --platform ios --profile production --auto-submit",
     "test:video": "node tests/exercise-video-lifecycle.cjs",
     "test:clock": "node tests/workout-clock.cjs",
@@ -32,7 +32,8 @@
     "test:connected": "node tests/connected-journey.cjs",
     "test:retention": "node tests/retention-experiments.cjs",
     "test:goals": "node tests/goal-evidence.cjs",
-    "test:web-parity": "cd web/treksor-community && node --check dist/app.js && node --check dist/portal.js && node --check dist/today.js && node --check dist/groceries.js && node --check dist/events.js && node tests/portal.cjs && node tests/parity.cjs"
+    "test:web-parity": "cd web/treksor-community && node --check dist/app.js && node --check dist/portal.js && node --check dist/today.js && node --check dist/groceries.js && node --check dist/events.js && node tests/portal.cjs && node tests/parity.cjs",
+    "test:daily-work": "node tests/daily-work.cjs"
   },
   "dependencies": {
     "@bacons/apple-targets": "3.0.7",

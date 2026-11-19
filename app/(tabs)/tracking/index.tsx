@@ -1,5 +1,7 @@
 import WalkingSummary from "@/components/WalkingSummary";
 import { useWalks } from "@/hooks/useWalks";
+import { useDailyActivities } from "@/hooks/useDailyActivities";
+import Icon from "@/components/ui/BrandIcon";
 import JourneyDashboard from "@/components/progress/JourneyDashboard";
 import {getJourneyCheckIns} from "@/lib/journey-checkins";
 import {getSharedTodayDates} from "@/lib/shared-today";
@@ -30,6 +32,7 @@ import { colors } from "@/theme/architect";
 
 export default function TrackingScreen() {
   const walks = useWalks();
+  const dailyWork = useDailyActivities();
   const userId = useAuthStore(s => s.user?.id);
   const mentorOwner = useChatStore(s => s.currentUserId);
   const mentorConversation = useChatStore(s => userId ? s.chats[userId] : undefined);
@@ -86,7 +89,7 @@ export default function TrackingScreen() {
   }, []);
 
   const ownExtras = extras.owner === userId;
-  const data = buildProgressOverview({ walks: walks.rows, checkIns, gymSets, reflections, meditations, articles, trackers: trackingData, journalDates: ownExtras ? extras.journalDates : [], dailyCheckInDates:ownExtras?extras.journeyDates:[], momentDates:ownExtras?extras.momentDates:[], visionAnswers: ownExtras ? extras.visionAnswers : null }, period, now);
+  const data = buildProgressOverview({ walks: walks.rows, dailyActivities: dailyWork.entries, checkIns, gymSets, reflections, meditations, articles, trackers: trackingData, journalDates: ownExtras ? extras.journalDates : [], dailyCheckInDates:ownExtras?extras.journeyDates:[], momentDates:ownExtras?extras.momentDates:[], visionAnswers: ownExtras ? extras.visionAnswers : null }, period, now);
   const openLog = (date: string, trackerId?: string) => setLog({ date, trackerId });
   return <SafeAreaView edges={["top"]} style={styles.screen}>
     <StatusBar style="light"/>
@@ -94,6 +97,24 @@ export default function TrackingScreen() {
       <BodyPageHeading trail="YOUR JOURNEY" title="Progress" subtitle="Your days, your growth, your next step." style={styles.heading}/>
       <TouchableOpacity accessibilityRole="button" onPress={()=>router.push("/progress/journey" as any)} style={{paddingVertical:15,flexDirection:"row",alignItems:"center",justifyContent:"space-between",borderBottomColor:colors.border,borderBottomWidth:1}}><Text style={{color:colors.gold,fontSize:14,fontWeight:"600"}}>Goals & weekly review</Text><Text style={{color:colors.gold,fontSize:18}}>›</Text></TouchableOpacity>
       {!ownExtras || !extras.ready ? <View style={styles.loading}>{extras.accountError ? <><Text style={styles.loadingText}>Unable to load your saved progress.</Text><TouchableOpacity accessibilityRole="button" onPress={() => setReload(v => v + 1)} style={styles.retry}><Text style={styles.retryText}>Try again</Text></TouchableOpacity></> : <><ActivityIndicator color={colors.gold}/><Text style={styles.loadingText}>Loading your saved progress…</Text></>}</View> : <><JourneyDashboard data={data} period={period} onPeriod={setPeriod} detailsOpen={detailsOpen} onDetails={()=>setDetailsOpen(value=>!value)} onCheckInSaved={date=>setExtras(s=>({...s,journeyDates:Array.from(new Set([...s.journeyDates,date]))}))}/>{detailsOpen&&<ProgressDashboard compactOverview mentorReplies={mentorReplies} data={data} period={period} onPeriod={setPeriod} trackers={trackingData} today={dayKey(now)} journalLoading={!ownExtras || extras.journalLoading} visionLoading={!ownExtras || extras.visionLoading} journalError={ownExtras && extras.journalError} visionError={ownExtras && extras.visionError} onRetry={() => setReload(v => v + 1)} onRoute={route => router.push(route as any)} onLog={openLog} onCreate={() => setShowAddTracker(true)} onCalendar={() => setShowCalendar(true)}/>}</>}
+      <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open Daily Work to log an activity" onPress={()=>router.push("/(tabs)/today" as any)}
+        style={{backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:17,padding:17,marginTop:20,gap:10}}>
+        <View style={{flexDirection:"row",alignItems:"center",gap:9}}>
+          <Icon name="trail-sign-outline" size={23} color={colors.gold}/>
+          <Text style={{fontSize:18,fontWeight:"600",color:colors.text,flex:1}}>Daily Work</Text>
+          <Icon name="arrow-forward" size={19} color={colors.gold}/>
+        </View>
+        {dailyWork.loading || walks.loading ?
+          <Text style={{fontSize:13,color:colors.muted}}>Loading recorded activities…</Text> :
+          dailyWork.error || walks.error ?
+            <Text style={{fontSize:13,color:colors.danger}}>Some activities could not be loaded. Open Daily Work to retry.</Text> :
+          <View style={{flexDirection:"row",gap:14,alignItems:"center"}}>
+            <View style={{flex:1}}><Text style={{color:colors.text,fontSize:24,fontWeight:"600"}}>{data.dailyWorkCount}</Text><Text style={{color:colors.muted,fontSize:11}}>Activities · {period} days</Text></View>
+            <View style={{flex:1}}><Text style={{color:colors.text,fontSize:24,fontWeight:"600"}}>{data.dailyWorkDays}</Text><Text style={{color:colors.muted,fontSize:11}}>Active days</Text></View>
+            <View style={{flex:1}}><Text style={{color:colors.text,fontSize:24,fontWeight:"600"}}>{data.dailyWorkMinutes}</Text><Text style={{color:colors.muted,fontSize:11}}>Logged minutes</Text></View>
+          </View>}
+        <Text style={{fontSize:11,lineHeight:17,color:colors.muted}}>Walks, dog walks, hiking, trekking, sports and activities you create. Each day counts once toward your overall active days. Duration is optional.</Text>
+      </TouchableOpacity>
       <WalkingSummary rows={walks.rows} now={walks.now} loading={walks.loading} error={walks.error}/>
       <ProgressSyncStatus/>
     </ScrollView>
