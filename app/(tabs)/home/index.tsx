@@ -54,6 +54,10 @@ export default function HomeScreen() {
   const [pillarViewportWidth,setPillarViewportWidth]=useState(width);
   // Measure the rail itself: Home padding must not hide the next card.
   const pillarCardWidth=Math.max(1,Math.min(pillarViewportWidth-PILLAR_INSET-PILLAR_GAP-PILLAR_PEEK,360));
+  // Panoramic editorial cards: keep the entire pillar identity visible without
+  // making visitors scroll through a tall portrait card.
+  // Additional height preserves readability at larger accessibility text sizes.
+  const pillarCardHeight=Math.max(204,Math.round(pillarCardWidth*0.60))+Math.max(0,Math.ceil((fontScale-1)*88));
   const pillarStep=pillarCardWidth+PILLAR_GAP;
   const pillarList=useRef<FlatList<(typeof pillars)[number]>>(null);
   const pillarScroll=useRef(new Animated.Value(0)).current;
@@ -168,9 +172,9 @@ export default function HomeScreen() {
                 opacity:pillarScroll.interpolate({inputRange:[(index-1)*pillarStep,index*pillarStep,(index+1)*pillarStep],outputRange:[0.84,1,0.84],extrapolate:"clamp"}),
                 transform:[{scale:pillarScroll.interpolate({inputRange:[(index-1)*pillarStep,index*pillarStep,(index+1)*pillarStep],outputRange:[0.97,1,0.97],extrapolate:"clamp"})}],
               })}}>
-              <TouchableOpacity activeOpacity={0.88} style={[styles.pillarSlide,{minHeight:Math.max(390,260*fontScale)}]} onPress={()=>router.push(pillar.route)} onFocus={()=>showPillar(index)} accessibilityRole="button" accessibilityLabel={`${pillar.name}, ${index+1} of ${pillars.length}: ${pillar.subtitle}`} accessibilityHint={`Open ${pillar.name}`}>
+              <TouchableOpacity activeOpacity={0.88} style={[styles.pillarSlide,{minHeight:pillarCardHeight}]} onPress={()=>router.push(pillar.route)} onFocus={()=>showPillar(index)} accessibilityRole="button" accessibilityLabel={`${pillar.name}, ${index+1} of ${pillars.length}: ${pillar.subtitle}`} accessibilityHint={`Open ${pillar.name}`}>
                 <ImageBackground source={pillar.image} contentFit="cover" contentPosition={pillar.name==="Mind"?{left:"50%",top:"18%"}:"center"} style={StyleSheet.absoluteFill} transition={reducedMotion?0:180} cachePolicy="memory-disk"/>
-                <LinearGradient colors={[navyOverlay(0.08),navyOverlay(0.3),navyOverlay(0.96)]} locations={[0,0.42,1]} style={StyleSheet.absoluteFill}/>
+                <LinearGradient colors={[navyOverlay(0.04),navyOverlay(0.32),navyOverlay(0.98)]} locations={[0,0.32,1]} style={StyleSheet.absoluteFill}/>
                 <View style={styles.slideTop}>
                   <Text style={styles.slideNumber}>{pillar.index} / 04</Text>
                   <View style={styles.pillarIcon}>{pillar.name==="Mind"?<Ionicons name="brain" color={colors.text} size={20}/>:<Ionicons name={pillar.icon as keyof typeof Ionicons.glyphMap} color={colors.text} size={20}/>}</View>
@@ -246,7 +250,7 @@ const styles = StyleSheet.create({
   greeting: { color: "#F8F7F5", fontSize: 38, lineHeight: 44, fontWeight: "800", letterSpacing: -1.1 },
   name: { color: GOLD },
   subtitle: { color: "#A9A7A4", fontSize: 14, lineHeight: 21, marginTop: 12 },
-  sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 17 },
+  sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 12 },
   sectionEyebrow: { color: "#C6AE84", fontSize: 10, letterSpacing: 2.1, fontWeight: "600", marginBottom: 7 },
   sectionTitle: { color: "#F5F4F1", fontSize: 22, fontWeight: "600", letterSpacing: -0.2, lineHeight: 29, includeFontPadding: false, },
   sectionHint:{color:"#AFA89C",fontSize:11,marginTop:8,letterSpacing:0.2},
@@ -255,14 +259,14 @@ const styles = StyleSheet.create({
   grid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", rowGap: 13 },
   pillarViewport:{marginHorizontal:-PILLAR_INSET},
   pillarRail:{paddingLeft:PILLAR_INSET},
-  pillarSlide:{flex:1,borderRadius:20,overflow:"hidden",backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border},
-  slideTop:{flexDirection:"row",alignItems:"center",justifyContent:"space-between",padding:18},
+  pillarSlide:{flex:1,borderRadius:18,overflow:"hidden",backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border},
+  slideTop:{flexDirection:"row",alignItems:"center",justifyContent:"space-between",paddingHorizontal:16,paddingTop:14},
   slideNumber:{color:"rgba(245,244,241,0.70)",fontSize:10,fontWeight:"700",letterSpacing:1.5},
-  pillarIcon:{width:42,height:42,borderRadius:13,alignItems:"center",justifyContent:"center",backgroundColor:navyOverlay(0.58),borderWidth:1,borderColor:colors.border},
-  slideBottom:{flex:1,justifyContent:"flex-end",padding:22},
-  slideTitle:{color:colors.text,fontSize:32,lineHeight:38,fontWeight:"600",letterSpacing:-0.5},
-  slideCaption:{color:"#D2CDC4",fontSize:14,lineHeight:21,marginTop:6},
-  slideAction:{marginTop:20,paddingTop:16,borderTopWidth:1,borderTopColor:colors.border,flexDirection:"row",alignItems:"center",justifyContent:"space-between"},
+  pillarIcon:{width:36,height:36,borderRadius:12,alignItems:"center",justifyContent:"center",backgroundColor:navyOverlay(0.58),borderWidth:1,borderColor:colors.border},
+  slideBottom:{flex:1,justifyContent:"flex-end",paddingHorizontal:18,paddingBottom:14,paddingTop:12},
+  slideTitle:{color:colors.text,fontSize:26,lineHeight:32,fontWeight:"600",letterSpacing:-0.5},
+  slideCaption:{color:"#E5DED2",fontSize:12,lineHeight:17,marginTop:3},
+  slideAction:{marginTop:9,paddingTop:9,borderTopWidth:1,borderTopColor:colors.border,flexDirection:"row",alignItems:"center",justifyContent:"space-between"},
   slideActionText:{color:GOLD,fontSize:10,fontWeight:"800",letterSpacing:1.7},
   pillarDots:{flexDirection:"row",alignItems:"center",justifyContent:"center",marginTop:4},
   pillarDotButton:{width:44,height:44,alignItems:"center",justifyContent:"center"},
