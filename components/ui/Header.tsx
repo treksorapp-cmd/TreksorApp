@@ -1,6 +1,6 @@
 import React from "react";
 import { useFixedRouteHeader } from "@/lib/navigation-frame-context";
-import Ionicons from '@/components/ui/BrandIcon';
+import Ionicons, { HOME_ICON } from '@/components/ui/BrandIcon';
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
