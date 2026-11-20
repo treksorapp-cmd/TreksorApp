@@ -134,9 +134,9 @@ export default function TrackingScreen() {
       </View>
 
       <TouchableOpacity accessibilityRole="button" accessibilityLabel="Log an activity" accessibilityState={{expanded:showRecorder}} onPress={()=>setShowRecorder(value=>!value)} style={styles.mainAction}>
-        <View style={styles.mainIcon}><Icon name="add" size={23} color={colors.background}/></View>
+        <View style={styles.mainIcon}><Icon name="add" size={23} color={colors.gold}/></View>
         <View style={styles.flex}><Text style={styles.mainText}>Log an activity</Text><Text style={styles.mainCaption}>Walk, hiking, sports or add your own</Text></View>
-        <Icon name={showRecorder?"chevron-up":"chevron-down"} size={20} color={colors.background}/>
+        <Icon name={showRecorder?"chevron-up":"chevron-down"} size={20} color={colors.gold}/>
       </TouchableOpacity>
       {showRecorder&&<DailyWork embedded/>}
 
@@ -212,10 +212,10 @@ const styles = StyleSheet.create({
   dayTileActive:{backgroundColor:colors.gold},
   sharedNote:{fontSize:11,lineHeight:17,color:colors.gold},
   loadingSmall:{flexDirection:"row",alignItems:"center",gap:10,minHeight:47},
-  mainAction:{minHeight:72,flexDirection:"row",alignItems:"center",gap:12,backgroundColor:colors.gold,borderRadius:16,paddingHorizontal:17,marginTop:18},
-  mainIcon:{height:40,width:40,borderRadius:12,backgroundColor:"rgba(5,8,13,0.13)",alignItems:"center",justifyContent:"center"},
-  mainText:{color:colors.background,fontSize:17,fontWeight:"700"},
-  mainCaption:{color:colors.background,fontSize:11,marginTop:4},
+  mainAction:{minHeight:72,flexDirection:"row",alignItems:"center",gap:12,backgroundColor:colors.surfaceRaised,borderColor:colors.gold,borderWidth:1,borderRadius:16,paddingHorizontal:17,marginTop:18},
+  mainIcon:{height:40,width:40,borderRadius:12,backgroundColor:colors.goldSoft,alignItems:"center",justifyContent:"center"},
+  mainText:{color:colors.text,fontSize:17,fontWeight:"700"},
+  mainCaption:{color:colors.secondary,fontSize:11,marginTop:4},
   actions:{borderColor:colors.border,borderWidth:1,borderRadius:16,overflow:"hidden",backgroundColor:colors.surface},
   action:{minHeight:68,flexDirection:"row",alignItems:"center",gap:12,paddingHorizontal:15,borderBottomColor:colors.border,borderBottomWidth:1},
   actionTitle:{fontSize:14,fontWeight:"600",color:colors.text},
