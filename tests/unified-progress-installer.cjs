@@ -8,7 +8,7 @@ const prereqs=['lib/daily-activities.ts','hooks/useDailyActivities.ts','componen
 const latest=Object.fromEntries(names.map(p=>[p,fs.readFileSync(p,'utf8')]));
 function older(p){
  let s=latest[p];
- if(p.includes('/_layout.tsx'))return s.replace('<Tabs.Screen name="today" options={{href:null}} />',
+ if(p.includes('/_layout.tsx'))return s.replace('<Tabs.Screen name="today/index" options={{href:null}} />',
   '<Tabs.Screen name="today" options={{title:"Today",tabBarIcon:({color})=><View style={styles.iconContainer}><Ionicons name="today-outline" size={23} color={color}/></View>}} />');
  if(p.includes('/today/index.tsx'))return 'import React from "react";\nexport default function TodayScreen(){return null;}\n';
  if(p.includes('/tracking/index.tsx')){
