@@ -22,7 +22,7 @@ if(present.length>1)fail('Hay multiples configuraciones de Today; no se altero n
 if(present.length===1) {
  next=next.replace(present[0],'');
  next=next.replace(/\n[ \t]*\{\/\* Legacy Today links redirect into the unified Progress screen\. \*\/\}/,'');
- next=next.replace(/\n{3,}/g,'\n\n');
+ next=next.replace(/\n[ \t]+(?=\n)/g,'\n').replace(/\n{3,}/g,'\n\n');
 }
 if(/<Tabs\.Screen[^>]*name=["']today(?:\/index)?["']/.test(next))
  fail('Existe una configuracion de Today desconocida. No se reemplazara a ciegas.');
