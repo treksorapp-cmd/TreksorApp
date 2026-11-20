@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs');
 const read=p=>fs.readFileSync(p,'utf8');
 const tabs=read('app/(tabs)/_layout.tsx'),today=read('app/(tabs)/today/index.tsx'),
  progress=read('app/(tabs)/tracking/index.tsx'),daily=read('components/DailyWork.tsx'),trail=read('lib/route-trail.ts');
-assert(tabs.includes('<Tabs.Screen name="today" options={{href:null}} />'),'Today must not appear in the bottom tab bar');
+assert(tabs.includes('<Tabs.Screen name="today/index" options={{href:null}} />'),'Expo Router nested Today route must be hidden by its actual screen name');
 assert(!tabs.includes('title:"Today",tabBarIcon'),'No duplicate Today tab');
 for(const name of ['home','chat','tracking','community'])assert(new RegExp('name="'+name+'"').test(tabs),'Missing visible destination '+name);
 assert(today.includes('Redirect href="/(tabs)/tracking"'),'Old Today deep links must lead to Progress');
