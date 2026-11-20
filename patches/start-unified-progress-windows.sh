@@ -2,7 +2,7 @@
 set -euo pipefail
 # One entrypoint for Treksor V1.4 from Git Bash on Windows.
 # Never resets, pulls, removes worktrees, changes tracked user data or publishes.
-BRANCH="fix/v14-today-nested-route-20261120"
+BRANCH="fix/v15-remove-today-tab-20261120"
 TRACK="refs/remotes/origin/$BRANCH"
 SOURCE="$HOME/TreksorApp"
 DEST="$HOME/TreksorDevCompleto"
@@ -27,7 +27,7 @@ fi
 
 TEMP="$(mktemp ../Treksor-progress-XXXXXX.cjs)"
 trap 'rm -f "$TEMP"' EXIT
-git show "$TRACK:patches/apply-unified-progress-windows.cjs" > "$TEMP"
+git show "$TRACK:patches/remove-today-tab-windows.cjs" > "$TEMP"
 node --check "$TEMP"
 node "$TEMP" --check
 node "$TEMP"
@@ -35,7 +35,7 @@ if [ ! -f node_modules/typescript/package.json ]; then
   npm ci
 fi
 echo
-echo "TREKSOR V1.4 LISTO EN: $(pwd)"
+echo "TREKSOR V1.5 LISTO EN: $(pwd)"
 echo "Las pestañas serán Home / Guide / Progress / Community."
 echo "Para abrir el nuevo código, DETENÉ cualquier Expo anterior con Ctrl+C y ejecutá:"
 echo "  cd ~/TreksorDevCompleto"

@@ -66,7 +66,7 @@ function load(file){
  await assert.rejects(activities.saveDailyActivity('corrupt',row('safe','sports','Sports')));
  assert.equal(storage.get('treksor.daily-work.v1.corrupt'),'{unparseable}','Bad storage never overwritten');
  assert.equal((await activities.getDailyActivities('B')).entries.length,1);
- const todayScreen=fs.readFileSync('app/(tabs)/today/index.tsx','utf8'),
+ const todayScreen=fs.readFileSync('app/today.tsx','utf8'),
   progressScreen=fs.readFileSync('app/(tabs)/tracking/index.tsx','utf8'),
   dailyUI=fs.readFileSync('components/DailyWork.tsx','utf8');
  assert(todayScreen.includes('Redirect href="/(tabs)/tracking"'),'Legacy Today route must redirect to the unified Progress tab');
