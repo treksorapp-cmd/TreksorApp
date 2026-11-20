@@ -7,7 +7,7 @@
 const fs=require('node:fs'),path=require('node:path'),os=require('node:os'),cp=require('node:child_process');
 const root=process.cwd();
 const BASE='021e03d945a775d00ef42de5c46969a345b7879d';
-const REVIEW='feature/v14-unified-simple-progress-20261120';
+const REVIEW='fix/v14-today-nested-route-20261120';
 const REMOTE=process.env.TREKSOR_SIMPLE_PROGRESS_REF||'refs/remotes/origin/'+REVIEW;
 const BASE_REF=process.env.TREKSOR_SIMPLE_PROGRESS_BASE||BASE;
 const files=[
@@ -27,7 +27,7 @@ try{ref=command(['rev-parse','--verify',REMOTE+'^{commit}']).trim();base=command
 catch{error('Falta la rama de actualizacion. Ejecuta el git fetch indicado antes de aplicar.');}
 const target=(file)=>command(['show',ref+':'+file]).replace(/\r\n/g,'\n');
 const previous=(file)=>command(['show',base+':'+file]).replace(/\r\n/g,'\n');
-if(!target(files[0]).includes('<Tabs.Screen name="today" options={{href:null}} />')
+if(!target(files[0]).includes('<Tabs.Screen name="today/index" options={{href:null}} />')
  || !target(files[1]).includes('Redirect href="/(tabs)/tracking"')
  || !target(files[2]).includes('<DailyWork embedded/>')
  || !target(files[3]).includes('embedded=false'))
