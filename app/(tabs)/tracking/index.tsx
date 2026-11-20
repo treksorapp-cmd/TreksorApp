@@ -1,3 +1,6 @@
+import JourneyCard from "@/components/JourneyCard";
+import WeeklyHabits from "@/components/WeeklyHabits";
+import DailyWork from "@/components/DailyWork";
 import WalkingSummary from "@/components/WalkingSummary";
 import { useWalks } from "@/hooks/useWalks";
 import { useDailyActivities } from "@/hooks/useDailyActivities";
@@ -43,10 +46,14 @@ export default function TrackingScreen() {
   const meditations = useMediationStore(s => s.mediation);
   const { articles } = useArticleStore();
   const [detailsOpen,setDetailsOpen]=useState(false);
+  const [showRecorder,setShowRecorder]=useState(false);
+  const [showPlan,setShowPlan]=useState(false);
+  const [showHabits,setShowHabits]=useState(false);
+  const [showAdvanced,setShowAdvanced]=useState(false);
   const [period, setPeriod] = useState<7 | 30>(7);
   const [now, setNow] = useState(new Date());
   const [reload, setReload] = useState(0);
-  const [extras, setExtras] = useState<{ owner?: string; ready: boolean; accountError: boolean; journalDates: string[]; journeyDates:string[]; momentDates:string[]; visionAnswers: unknown[] | null; journalLoading: boolean; visionLoading: boolean; journalError: boolean; visionError: boolean }>({ ready: false, accountError: false, journalDates: [], journeyDates:[], momentDates:[], visionAnswers: null, journalLoading: true, visionLoading: true, journalError: false, visionError: false });
+  const [extras, setExtras] = useState<{ owner?: string; ready: boolean; accountError: boolean; journalDates: string[]; journeyDates:string[]; sharedToday:boolean|null; momentDates:string[]; visionAnswers: unknown[] | null; journalLoading: boolean; visionLoading: boolean; journalError: boolean; visionError: boolean }>({ ready: false, accountError: false, journalDates: [], journeyDates:[], sharedToday:null, momentDates:[], visionAnswers: null, journalLoading: true, visionLoading: true, journalError: false, visionError: false });
   const [showAddTracker, setShowAddTracker] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const pendingModalAction = useRef<(() => void) | null>(null);
@@ -62,13 +69,13 @@ export default function TrackingScreen() {
     let active = true;
     setNow(new Date());
     setDetailsOpen(false);
-    setExtras({ owner: userId, ready: false, accountError: false, journalDates: [], journeyDates:[], momentDates:[], visionAnswers: null, journalLoading: true, visionLoading: true, journalError: false, visionError: false });
+    setExtras({ owner: userId, ready: false, accountError: false, journalDates: [], journeyDates:[], sharedToday:null, momentDates:[], visionAnswers: null, journalLoading: true, visionLoading: true, journalError: false, visionError: false });
     void (async () => {
       try { if (userId && !isProgressAccountReady(userId)) await prepareProgressAccount(userId); }
       catch { if (active) setExtras(s => ({ ...s, accountError: true })); return; }
       if (!active) return;
       setExtras(s => ({ ...s, ready: true }));
-    void Promise.allSettled([getJourneyCheckIns(userId||""),getSharedTodayDates(userId||"")]).then(results=>{if(!active)return;const local=results[0].status==="fulfilled"?results[0].value.map(row=>row.date):[];const remote=results[1].status==="fulfilled"?results[1].value:[];setExtras(s=>({...s,journeyDates:[...new Set([...local,...remote])].sort()}))});
+    void Promise.allSettled([getJourneyCheckIns(userId||""),getSharedTodayDates(userId||"")]).then(results=>{if(!active)return;const local=results[0].status==="fulfilled"?results[0].value.map(row=>row.date):[];const remote=results[1].status==="fulfilled"?results[1].value:[];setExtras(s=>({...s,journeyDates:[...new Set([...local,...remote])].sort(),sharedToday:results[1].status==="fulfilled"?remote.includes(dayKey()):null}))});
     void getLifeMoments(userId||"").then(rows=>{if(active)setExtras(s=>({...s,momentDates:rows.map(row=>row.date)}))}).catch(()=>{});
     void getEntries(userId || "").then(entries => {
       if (active) setExtras(s => ({ ...s, journalDates: entries.map(e => e.date), journalLoading: false }));
@@ -91,36 +98,133 @@ export default function TrackingScreen() {
   const ownExtras = extras.owner === userId;
   const data = buildProgressOverview({ walks: walks.rows, dailyActivities: dailyWork.entries, checkIns, gymSets, reflections, meditations, articles, trackers: trackingData, journalDates: ownExtras ? extras.journalDates : [], dailyCheckInDates:ownExtras?extras.journeyDates:[], momentDates:ownExtras?extras.momentDates:[], visionAnswers: ownExtras ? extras.visionAnswers : null }, period, now);
   const openLog = (date: string, trackerId?: string) => setLog({ date, trackerId });
+  const today=dayKey(now);
+  const ownReady=ownExtras&&extras.ready;
+  const statsLoading=!ownReady||dailyWork.loading||walks.loading;
+  const periodSummary=period===7?"7 days":"30 days";
+
   return <SafeAreaView edges={["top"]} style={styles.screen}>
     <StatusBar style="light"/>
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      <BodyPageHeading trail="YOUR JOURNEY" title="Progress" subtitle="Your days, your growth, your next step." style={styles.heading}/>
-      <TouchableOpacity accessibilityRole="button" onPress={()=>router.push("/progress/journey" as any)} style={{paddingVertical:15,flexDirection:"row",alignItems:"center",justifyContent:"space-between",borderBottomColor:colors.border,borderBottomWidth:1}}><Text style={{color:colors.gold,fontSize:14,fontWeight:"600"}}>Goals & weekly review</Text><Text style={{color:colors.gold,fontSize:18}}>›</Text></TouchableOpacity>
-      {!ownExtras || !extras.ready ? <View style={styles.loading}>{extras.accountError ? <><Text style={styles.loadingText}>Unable to load your saved progress.</Text><TouchableOpacity accessibilityRole="button" onPress={() => setReload(v => v + 1)} style={styles.retry}><Text style={styles.retryText}>Try again</Text></TouchableOpacity></> : <><ActivityIndicator color={colors.gold}/><Text style={styles.loadingText}>Loading your saved progress…</Text></>}</View> : <><JourneyDashboard data={data} period={period} onPeriod={setPeriod} detailsOpen={detailsOpen} onDetails={()=>setDetailsOpen(value=>!value)} onCheckInSaved={date=>setExtras(s=>({...s,journeyDates:Array.from(new Set([...s.journeyDates,date]))}))}/>{detailsOpen&&<ProgressDashboard compactOverview mentorReplies={mentorReplies} data={data} period={period} onPeriod={setPeriod} trackers={trackingData} today={dayKey(now)} journalLoading={!ownExtras || extras.journalLoading} visionLoading={!ownExtras || extras.visionLoading} journalError={ownExtras && extras.journalError} visionError={ownExtras && extras.visionError} onRetry={() => setReload(v => v + 1)} onRoute={route => router.push(route as any)} onLog={openLog} onCreate={() => setShowAddTracker(true)} onCalendar={() => setShowCalendar(true)}/>}</>}
-      <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open Daily Work to log an activity" onPress={()=>router.push("/(tabs)/today" as any)}
-        style={{backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:17,padding:17,marginTop:20,gap:10}}>
-        <View style={{flexDirection:"row",alignItems:"center",gap:9}}>
-          <Icon name="trail-sign-outline" size={23} color={colors.gold}/>
-          <Text style={{fontSize:18,fontWeight:"600",color:colors.text,flex:1}}>Daily Work</Text>
-          <Icon name="arrow-forward" size={19} color={colors.gold}/>
+      <BodyPageHeading trail="YOUR JOURNEY" title="Progress" subtitle="Your day and your growth. One place." style={styles.heading}/>
+
+      <View style={styles.summary}>
+        <View style={styles.headingRow}>
+          <View style={styles.flex}>
+            <Text style={styles.eyebrow}>YOUR RHYTHM</Text>
+            <Text style={styles.summaryTitle}>Small steps count.</Text>
+          </View>
+          <View accessibilityRole="tablist" style={styles.periodTabs}>
+            {([7,30] as const).map(value=><TouchableOpacity key={value} accessibilityRole="tab" accessibilityState={{selected:period===value}} onPress={()=>setPeriod(value)} style={[styles.periodOption,period===value&&styles.periodSelected]}>
+              <Text style={[styles.periodLabel,period===value&&styles.periodLabelSelected]}>{value===7?"7D":"30D"}</Text>
+            </TouchableOpacity>)}
+          </View>
         </View>
-        {dailyWork.loading || walks.loading ?
-          <Text style={{fontSize:13,color:colors.muted}}>Loading recorded activities…</Text> :
-          dailyWork.error || walks.error ?
-            <Text style={{fontSize:13,color:colors.danger}}>Some activities could not be loaded. Open Daily Work to retry.</Text> :
-          <View style={{flexDirection:"row",gap:14,alignItems:"center"}}>
-            <View style={{flex:1}}><Text style={{color:colors.text,fontSize:24,fontWeight:"600"}}>{data.dailyWorkCount}</Text><Text style={{color:colors.muted,fontSize:11}}>Activities · {period} days</Text></View>
-            <View style={{flex:1}}><Text style={{color:colors.text,fontSize:24,fontWeight:"600"}}>{data.dailyWorkDays}</Text><Text style={{color:colors.muted,fontSize:11}}>Active days</Text></View>
-            <View style={{flex:1}}><Text style={{color:colors.text,fontSize:24,fontWeight:"600"}}>{data.dailyWorkMinutes}</Text><Text style={{color:colors.muted,fontSize:11}}>Logged minutes</Text></View>
+        {extras.accountError ? <TouchableOpacity accessibilityRole="button" onPress={()=>setReload(v=>v+1)}><Text style={styles.error}>Your saved progress could not load. Tap to retry.</Text></TouchableOpacity> : statsLoading ? <View style={styles.loadingSmall}><ActivityIndicator color={colors.gold}/><Text style={styles.hint}>Updating your progress…</Text></View> :
+          <View style={styles.metrics}>
+            <View style={styles.metric}><Text style={styles.metricValue}>{data.activeDays}</Text><Text style={styles.metricCaption}>Active days</Text></View>
+            <View style={styles.metric}><Text style={styles.metricValue}>{data.dailyWorkCount}</Text><Text style={styles.metricCaption}>Activities</Text></View>
+            <View style={styles.metric}><Text style={styles.metricValue}>{data.dailyWorkMinutes}</Text><Text style={styles.metricCaption}>Minutes logged</Text></View>
           </View>}
-        <Text style={{fontSize:11,lineHeight:17,color:colors.muted}}>Walks, dog walks, hiking, trekking, sports and activities you create. Each day counts once toward your overall active days. Duration is optional.</Text>
+        <Text style={styles.hint}>Last {periodSummary} · based on your saved actions, not estimates.</Text>
+        {period===7&&<View accessibilityLabel="Your activity over the past seven days" style={styles.days}>
+          {data.days.map(day=><View key={day.date} accessible accessibilityLabel={day.date+(day.active?" — activity recorded":" — no recorded activity")} style={[styles.dayTile,day.active&&styles.dayTileActive]}/>)}
+        </View>}
+        {ownReady&&extras.sharedToday===true&&<Text style={styles.sharedNote}>Your completed day is also recorded in your Treksor account.</Text>}
+      </View>
+
+      <TouchableOpacity accessibilityRole="button" accessibilityLabel="Log an activity" accessibilityState={{expanded:showRecorder}} onPress={()=>setShowRecorder(value=>!value)} style={styles.mainAction}>
+        <View style={styles.mainIcon}><Icon name="add" size={23} color={colors.gold}/></View>
+        <View style={styles.flex}><Text style={styles.mainText}>Log an activity</Text><Text style={styles.mainCaption}>Walk, hiking, sports or add your own</Text></View>
+        <Icon name={showRecorder?"chevron-up":"chevron-down"} size={20} color={colors.gold}/>
       </TouchableOpacity>
-      <WalkingSummary rows={walks.rows} now={walks.now} loading={walks.loading} error={walks.error}/>
-      <ProgressSyncStatus/>
+      {showRecorder&&<DailyWork embedded/>}
+
+      <Text style={[styles.sectionTitle,{marginTop:25}]}>Your day</Text>
+      <View style={styles.actions}>
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open daily direction" accessibilityState={{expanded:showPlan}} onPress={()=>setShowPlan(value=>!value)} style={styles.action}>
+          <Icon name="compass-outline" size={22} color={colors.gold}/>
+          <View style={styles.flex}><Text style={styles.actionTitle}>Daily direction</Text><Text style={styles.actionSubtitle}>Your plan and evening reflection</Text></View>
+          <Icon name={showPlan?"chevron-up":"chevron-down"} size={18} color={colors.gold}/>
+        </TouchableOpacity>
+        {showPlan&&<View style={styles.expanded}><JourneyCard/></View>}
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open Quick Notes and tasks" onPress={()=>router.push("/notes" as any)} style={styles.action}>
+          <Icon name="create-outline" size={22} color={colors.gold}/>
+          <View style={styles.flex}><Text style={styles.actionTitle}>Quick Notes</Text><Text style={styles.actionSubtitle}>Notes, tasks and reminders</Text></View>
+          <Icon name="chevron-forward" size={18} color={colors.gold}/>
+        </TouchableOpacity>
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open weekly habits" accessibilityState={{expanded:showHabits}} onPress={()=>setShowHabits(value=>!value)} style={styles.action}>
+          <Icon name="checkmark-circle-outline" size={22} color={colors.gold}/>
+          <View style={styles.flex}><Text style={styles.actionTitle}>Weekly habits</Text><Text style={styles.actionSubtitle}>Build and mark your routines</Text></View>
+          <Icon name={showHabits?"chevron-up":"chevron-down"} size={18} color={colors.gold}/>
+        </TouchableOpacity>
+        {showHabits&&<View style={styles.expanded}><WeeklyHabits/></View>}
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open goals and weekly review" onPress={()=>router.push("/progress/journey" as any)} style={styles.action}>
+          <Icon name="flag-outline" size={22} color={colors.gold}/>
+          <View style={styles.flex}><Text style={styles.actionTitle}>Goals & weekly review</Text><Text style={styles.actionSubtitle}>Reflect on what matters</Text></View>
+          <Icon name="chevron-forward" size={18} color={colors.gold}/>
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity accessibilityRole="button" accessibilityLabel="Explore detailed progress" accessibilityState={{expanded:showAdvanced}} onPress={()=>setShowAdvanced(value=>!value)} style={styles.advancedButton}>
+        <Icon name="stats-chart-outline" size={18} color={colors.gold}/>
+        <Text style={styles.advancedText}>{showAdvanced?"Hide detailed progress":"View detailed progress"}</Text>
+        <Icon name={showAdvanced?"chevron-up":"chevron-down"} size={17} color={colors.gold}/>
+      </TouchableOpacity>
+
+      {showAdvanced&&<View style={styles.advanced}>
+        {!ownReady? <View style={styles.loading}>{extras.accountError ? <TouchableOpacity accessibilityRole="button" onPress={()=>setReload(v=>v+1)}><Text style={styles.error}>Unable to load details · Retry</Text></TouchableOpacity> : <><ActivityIndicator color={colors.gold}/><Text style={styles.loadingText}>Loading detailed progress…</Text></>}</View> :
+          <>
+            <JourneyDashboard data={data} period={period} onPeriod={setPeriod} detailsOpen={detailsOpen} onDetails={()=>setDetailsOpen(value=>!value)} onCheckInSaved={date=>setExtras(s=>({...s,journeyDates:Array.from(new Set([...s.journeyDates,date]))}))}/>
+            {detailsOpen&&<ProgressDashboard compactOverview mentorReplies={mentorReplies} data={data} period={period} onPeriod={setPeriod} trackers={trackingData} today={today} journalLoading={!ownExtras||extras.journalLoading} visionLoading={!ownExtras||extras.visionLoading} journalError={ownExtras&&extras.journalError} visionError={ownExtras&&extras.visionError} onRetry={()=>setReload(v=>v+1)} onRoute={route=>router.push(route as any)} onLog={openLog} onCreate={()=>setShowAddTracker(true)} onCalendar={()=>setShowCalendar(true)}/>}
+          </>}
+        <WalkingSummary rows={walks.rows} now={walks.now} loading={walks.loading} error={walks.error}/>
+        <ProgressSyncStatus/>
+      </View>}
     </ScrollView>
-    <AddTrackerModal visible={showAddTracker} onClose={() => setShowAddTracker(false)}/>
-    <ActivityLogModal visible={!!log} onClose={() => setLog(null)} selectedDate={log?.date ?? dayKey(now)} selectedCategory={log?.trackerId} onDismiss={afterDismiss} onCreate={() => afterClose(() => setLog(null), () => setShowAddTracker(true))}/>
-    <CalendarModal visible={showCalendar} onClose={() => setShowCalendar(false)} onDismiss={afterDismiss} onDateSelect={date => afterClose(() => setShowCalendar(false), () => openLog(date))} selectedDate={log?.date ?? dayKey(now)} maxDate={dayKey(now)}/>
+    <AddTrackerModal visible={showAddTracker} onClose={()=>setShowAddTracker(false)}/>
+    <ActivityLogModal visible={!!log} onClose={()=>setLog(null)} selectedDate={log?.date??today} selectedCategory={log?.trackerId} onDismiss={afterDismiss} onCreate={()=>afterClose(()=>setLog(null),()=>setShowAddTracker(true))}/>
+    <CalendarModal visible={showCalendar} onClose={()=>setShowCalendar(false)} onDismiss={afterDismiss} onDateSelect={date=>afterClose(()=>setShowCalendar(false),()=>openLog(date))} selectedDate={log?.date??today} maxDate={today}/>
   </SafeAreaView>;
 }
-const styles = StyleSheet.create({ loading: { paddingVertical: 40, alignItems: "center", gap: 16 }, loadingText: { color: colors.secondary, fontSize: 15 }, retry: { padding: 14, minHeight: 44 }, retryText: { color: colors.gold, fontWeight: "600" }, screen: { flex: 1, backgroundColor: colors.background }, content: { paddingHorizontal: 20, paddingBottom: 28 }, heading: { paddingHorizontal: 0, paddingTop: layout.compactTop, paddingBottom: 0 } });
+const styles = StyleSheet.create({
+  screen:{flex:1,backgroundColor:colors.background},
+  content:{paddingHorizontal:20,paddingBottom:38},
+  heading:{paddingHorizontal:0,paddingTop:layout.compactTop,paddingBottom:0},
+  flex:{flex:1},
+  eyebrow:{fontSize:10,fontWeight:"700",letterSpacing:1.6,color:colors.gold},
+  sectionTitle:{fontSize:22,lineHeight:29,fontWeight:"600",letterSpacing:-0.2,color:colors.text,marginBottom:10},
+  summary:{backgroundColor:colors.surface,borderColor:colors.border,borderWidth:1,borderRadius:18,padding:17,marginTop:17,gap:12},
+  headingRow:{flexDirection:"row",alignItems:"center",justifyContent:"space-between",gap:12},
+  summaryTitle:{color:colors.text,fontSize:19,fontWeight:"600",marginTop:6},
+  periodTabs:{flexDirection:"row",padding:3,backgroundColor:colors.background,borderRadius:12,borderColor:colors.border,borderWidth:1},
+  periodOption:{minWidth:43,minHeight:36,alignItems:"center",justifyContent:"center",borderRadius:9},
+  periodSelected:{backgroundColor:colors.gold},
+  periodLabel:{color:colors.secondary,fontSize:12,fontWeight:"700"},
+  periodLabelSelected:{color:colors.background},
+  metrics:{flexDirection:"row",alignItems:"flex-start",gap:12,marginVertical:7},
+  metric:{flex:1},
+  metricValue:{fontSize:25,fontWeight:"600",color:colors.text},
+  metricCaption:{fontSize:11,lineHeight:16,color:colors.secondary,marginTop:4},
+  hint:{fontSize:11,lineHeight:17,color:colors.muted},
+  days:{flexDirection:"row",gap:6},
+  dayTile:{flex:1,height:5,borderRadius:4,backgroundColor:colors.surfaceRaised},
+  dayTileActive:{backgroundColor:colors.gold},
+  sharedNote:{fontSize:11,lineHeight:17,color:colors.gold},
+  loadingSmall:{flexDirection:"row",alignItems:"center",gap:10,minHeight:47},
+  mainAction:{minHeight:72,flexDirection:"row",alignItems:"center",gap:12,backgroundColor:colors.surfaceRaised,borderColor:colors.gold,borderWidth:1,borderRadius:16,paddingHorizontal:17,marginTop:18},
+  mainIcon:{height:40,width:40,borderRadius:12,backgroundColor:colors.goldSoft,alignItems:"center",justifyContent:"center"},
+  mainText:{color:colors.text,fontSize:17,fontWeight:"700"},
+  mainCaption:{color:colors.secondary,fontSize:11,marginTop:4},
+  actions:{borderColor:colors.border,borderWidth:1,borderRadius:16,overflow:"hidden",backgroundColor:colors.surface},
+  action:{minHeight:68,flexDirection:"row",alignItems:"center",gap:12,paddingHorizontal:15,borderBottomColor:colors.border,borderBottomWidth:1},
+  actionTitle:{fontSize:14,fontWeight:"600",color:colors.text},
+  actionSubtitle:{fontSize:11,color:colors.secondary,marginTop:4},
+  expanded:{paddingHorizontal:14,paddingBottom:14,borderBottomWidth:1,borderColor:colors.border},
+  advancedButton:{marginTop:19,minHeight:52,flexDirection:"row",alignItems:"center",justifyContent:"center",gap:11,borderColor:colors.border,borderWidth:1,borderRadius:14},
+  advancedText:{color:colors.gold,fontSize:13,fontWeight:"600",flex:1},
+  advanced:{marginTop:10,gap:14},
+  loading:{paddingVertical:40,alignItems:"center",gap:16},
+  loadingText:{color:colors.secondary,fontSize:14},
+  error:{color:colors.danger,fontSize:12,lineHeight:20}
+});

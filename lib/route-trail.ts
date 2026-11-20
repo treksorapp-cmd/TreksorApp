@@ -1,6 +1,6 @@
 import { pillars, resolvePillar } from './pillar-navigation';
 const labels: Record<string,string> = {
-  home:'Home', today:'Today', tracking:'Progress', progress:'Progress', chat:'Guide',
+  home:'Home', today:'Progress', tracking:'Progress', progress:'Progress', chat:'Guide',
   community:'Community', events:'Events', profile:'Profile', edit:'Edit profile',
   body:'Body', workout:'Gym', nutrition:'Nutrition', walks:'Walks',
   mental:'Mind', mind:'Mind', spiritual:'Balance', purpose:'Purpose',

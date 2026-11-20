@@ -10,7 +10,7 @@ import { DAILY_ACTIVITY_OPTIONS, saveDailyActivity, removeDailyActivity, type Da
 import { saveWalk, removeWalk } from '@/lib/walks';
 import { dayKey } from '@/lib/progress-metrics';
 
-export default function DailyWork() {
+export default function DailyWork({embedded=false}:{embedded?:boolean} = {}) {
   const owner=useAuthStore(s=>s.isAuthenticated?s.user?.id||'':'');
   const activities=useDailyActivities(),walks=useWalks();
   const [kind,setKind]=useState<DailyActivityKind|'walk'>('walk');
@@ -61,8 +61,8 @@ export default function DailyWork() {
       })()},
     ]);
   }
-  return <View style={{marginTop:25,gap:12}}>
-    <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12}}>
+  return <View style={{marginTop:embedded?8:25,gap:12}}>
+    {!embedded ? <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:12}}>
       <View style={{flex:1}}>
         <Text style={type.eyebrow}>DAILY WORK</Text>
         <Text style={[type.section,{marginTop:5}]}>Keep moving.</Text>
@@ -70,8 +70,8 @@ export default function DailyWork() {
       <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open Progress" onPress={()=>router.push('/(tabs)/tracking' as any)} style={{padding:10,flexDirection:'row',alignItems:'center',gap:5}}>
         <Text style={{color:colors.gold,fontSize:12,fontWeight:'600'}}>PROGRESS</Text><Icon name="arrow-forward" size={16} color={colors.gold}/>
       </TouchableOpacity>
-    </View>
-    <Text style={type.caption}>Log what you actually completed. Walks, the outdoors, sports, or something entirely yours.</Text>
+    </View> : <Text style={type.card}>What did you do?</Text>}
+    {!embedded&&<Text style={type.caption}>Log what you actually completed. Walks, the outdoors, sports, or something entirely yours.</Text>}
     <View style={[surface.card,{padding:15,gap:13}]}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap:8,paddingVertical:3}}>
         {presets.map(item=><TouchableOpacity key={item.id} accessibilityRole="radio" accessibilityState={{checked:kind===item.id}} onPress={()=>{setKind(item.id);setNotice('')}} style={{minHeight:64,minWidth:92,paddingVertical:10,paddingHorizontal:12,alignItems:'center',justifyContent:'center',gap:5,borderRadius:12,borderColor:kind===item.id?colors.gold:colors.border,borderWidth:1,backgroundColor:kind===item.id?colors.goldSoft:colors.surfaceRaised}}>
@@ -115,6 +115,6 @@ export default function DailyWork() {
         {current.length>5&&<Text style={type.caption}>{current.length-5} more saved in Progress</Text>}
       </View>
     </View>
-    <Text style={[type.caption,{fontSize:11}]}>Manual entries stay on this iPhone. Walks share the existing Body record; each saved day counts once in Progress.</Text>
+    {!embedded && <Text style={[type.caption,{fontSize:11}]}>Manual entries stay on this iPhone. Walks share the existing Body record; each saved day counts once in Progress.</Text>}
   </View>;
 }

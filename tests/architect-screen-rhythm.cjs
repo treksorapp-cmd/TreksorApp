@@ -28,9 +28,10 @@ assert(heading.includes('title: type.page'),'Shared page titles use Architect ty
 assert(heading.includes('marginTop: 6'),'Shared title subtitle separation');
 const progress=read('app/(tabs)/tracking/index.tsx'),community=read('app/(tabs)/community/index.tsx'),
  today=read('app/(tabs)/today/index.tsx'),home=read('app/(tabs)/home/index.tsx');
-assert(progress.includes('paddingTop: layout.compactTop'),'Progress title must not reserve duplicate safe space');
+assert(/paddingTop:\s*layout\.compactTop/.test(progress),'Progress title must not reserve duplicate safe space');
 assert(community.includes('marginTop:layout.compactTop'),'Community title aligns with Progress');
-assert(today.includes('paddingTop: layout.pageTop'),'Today uses same screen rhythm');
+assert(today.includes('Redirect href="/(tabs)/tracking"'),'Today must redirect to Progress instead of creating a second screen');
+assert(progress.includes('paddingTop:layout.compactTop'),'Unified Progress uses the canonical compact top spacing');
 assert(read('components/JourneyCard.tsx').includes('section: { marginTop: 8, gap: 12 }'),'Today does not stack a large empty band');
 assert(home.includes('top: { height: 74, flexDirection: "row"') && home.includes('paddingTop: 15, paddingBottom: 15'),'Brand and avatar must have balanced space within one hero');
 assert(home.includes('heroTitle: { ...type.page, color: colors.text }'),'Home hero uses shared typography');

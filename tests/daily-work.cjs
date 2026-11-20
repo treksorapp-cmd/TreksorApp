@@ -69,7 +69,8 @@ function load(file){
  const todayScreen=fs.readFileSync('app/(tabs)/today/index.tsx','utf8'),
   progressScreen=fs.readFileSync('app/(tabs)/tracking/index.tsx','utf8'),
   dailyUI=fs.readFileSync('components/DailyWork.tsx','utf8');
- assert(todayScreen.includes('<DailyWork />'));
+ assert(todayScreen.includes('Redirect href="/(tabs)/tracking"'),'Legacy Today route must redirect to the unified Progress tab');
+ assert(progressScreen.includes('<DailyWork embedded/>'),'Daily Work logger must be reachable inside Progress');
  assert(progressScreen.includes('dailyActivities: dailyWork.entries'));
  assert(progressScreen.includes('data.dailyWorkCount'));
  assert(dailyUI.includes('saveWalk(owner,'),'Walk button reuses Body walks');
