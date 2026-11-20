@@ -27,7 +27,7 @@ assert(frame.includes('!isHome && <TouchableOpacity'),'Do not show Home button w
 assert(heading.includes('title: type.page'),'Shared page titles use Architect typography');
 assert(heading.includes('marginTop: 6'),'Shared title subtitle separation');
 const progress=read('app/(tabs)/tracking/index.tsx'),community=read('app/(tabs)/community/index.tsx'),
- today=read('app/(tabs)/today/index.tsx'),home=read('app/(tabs)/home/index.tsx');
+ today=read('app/today.tsx'),home=read('app/(tabs)/home/index.tsx');
 assert(/paddingTop:\s*layout\.compactTop/.test(progress),'Progress title must not reserve duplicate safe space');
 assert(community.includes('marginTop:layout.compactTop'),'Community title aligns with Progress');
 assert(today.includes('Redirect href="/(tabs)/tracking"'),'Today must redirect to Progress instead of creating a second screen');
