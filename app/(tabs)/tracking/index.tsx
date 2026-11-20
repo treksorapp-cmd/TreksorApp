@@ -189,8 +189,8 @@ export default function TrackingScreen() {
 }
 const styles = StyleSheet.create({
   screen:{flex:1,backgroundColor:colors.background},
-  content:{paddingHorizontal:20,paddingBottom:38},
-  heading:{paddingHorizontal:0,paddingTop:layout.compactTop,paddingBottom:0},
+  content:{paddingHorizontal:20,paddingTop:0,paddingBottom:38,flexGrow:1},
+  heading:{paddingHorizontal:0,paddingTop:0,paddingBottom:0},
   flex:{flex:1},
   eyebrow:{fontSize:10,fontWeight:"700",letterSpacing:1.6,color:colors.gold},
   sectionTitle:{fontSize:22,lineHeight:29,fontWeight:"600",letterSpacing:-0.2,color:colors.text,marginBottom:10},
