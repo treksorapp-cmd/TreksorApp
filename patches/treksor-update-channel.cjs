@@ -10,7 +10,8 @@ const releases=[
  {id:'primary-tab-labels-community-v5',script:'patches/primary-tab-labels-community-windows.cjs'},
  {id:'nested-pillar-shortcut-v6',script:'patches/pillar-shortcut-windows.cjs'},
  {id:'gold-primary-headings-v7',script:'patches/gold-primary-headings-windows.cjs'},
- {id:'guide-gold-alignment-v8',script:'patches/guide-gold-alignment-windows.cjs'}
+ {id:'guide-gold-alignment-v8',script:'patches/guide-gold-alignment-windows.cjs'},
+ {id:'primary-subtitle-rhythm-v9',script:'patches/primary-subtitle-rhythm-windows.cjs'}
 ];
 const root=process.cwd();
 const git=(...args)=>cp.spawnSync('git',args,{cwd:root,encoding:'utf8'});
