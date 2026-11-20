@@ -1,5 +1,6 @@
 import {useFocusEffect,useLocalSearchParams} from "expo-router";
 import MentorCompanion from "@/components/mentor/MentorCompanion";
+import {guideKeyboardInset} from "@/lib/guide-keyboard";
 import type {MentorMode} from "@/supabase/functions/_shared/mentor";
 import { colors, navyOverlay, type } from "@/theme/architect";
 "use client"
@@ -17,7 +18,6 @@ import {
   Dimensions,
   Keyboard,
   FlatList,
-  KeyboardAvoidingView,
   Platform,
   StyleSheet,
   Text,
@@ -25,13 +25,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 const { width } = Dimensions.get("window")
 const CAMPFIRE_URL = "https://niakfwerfqmrmhuypkpd.supabase.co/storage/v1/object/public/treksor-atmosphere/chat/campfire.png"
 
 export default function ChatScreen() {
-  const insets = useSafeAreaInsets()
   const params=useLocalSearchParams<{intent?:string;draft?:string}>()
   const user = useAuthStore(state => state.user)
   const chats = useChatStore(state => state.chats)
@@ -56,12 +54,43 @@ export default function ChatScreen() {
     setInputText(current=>current.trim()?current:draft.slice(0,500));
   },[params.draft])
   const [campfireAvailable, setCampfireAvailable] = useState(true)
+  const rootRef = useRef<View>(null)
   const [keyboardHeight, setKeyboardHeight] = useState(0)
-  useEffect(() => {
-    const show = Keyboard.addListener(Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow", e => setKeyboardHeight(e.endCoordinates.height))
-    const hide = Keyboard.addListener(Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide", () => setKeyboardHeight(0))
-    return () => { show.remove(); hide.remove() }
+  const [keyboardTop, setKeyboardTop] = useState<number | null>(null)
+  const [viewportBottom, setViewportBottom] = useState(Dimensions.get("screen").height)
+  const measureViewport = useCallback(() => {
+    rootRef.current?.measureInWindow((_x, y, _width, height) => {
+      if (height <= 0) return
+      const bottom = y + height
+      setViewportBottom(previous => Math.abs(previous - bottom) < 1 ? previous : bottom)
+    })
   }, [])
+  useEffect(() => {
+    const show = (event: {endCoordinates: {height: number; screenY: number}}) => {
+      setKeyboardHeight(event.endCoordinates.height)
+      setKeyboardTop(event.endCoordinates.screenY)
+      requestAnimationFrame(measureViewport)
+    }
+    const hide = () => {
+      setKeyboardHeight(0)
+      setKeyboardTop(null)
+      requestAnimationFrame(measureViewport)
+    }
+    const listeners = Platform.OS === "ios"
+      ? [
+          Keyboard.addListener("keyboardWillShow", show),
+          Keyboard.addListener("keyboardWillChangeFrame", show),
+          Keyboard.addListener("keyboardDidShow", show),
+          Keyboard.addListener("keyboardWillHide", hide),
+          Keyboard.addListener("keyboardDidHide", hide),
+        ]
+      : [Keyboard.addListener("keyboardDidShow", show), Keyboard.addListener("keyboardDidHide", hide)]
+    requestAnimationFrame(measureViewport)
+    return () => listeners.forEach(listener => listener.remove())
+  }, [measureViewport])
+  // The tab bar may hide or the navigator may already resize when the keyboard
+  // opens. Only compensate for the portion overlapping the actual chat viewport.
+  const keyboardInset = guideKeyboardInset(viewportBottom, keyboardTop)
   const flatListRef = useRef<FlatList>(null)
 
   useEffect(()=>{
@@ -120,7 +149,7 @@ export default function ChatScreen() {
   )
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : undefined} keyboardVerticalOffset={0}>
+    <View ref={rootRef} onLayout={measureViewport} style={[styles.container, {paddingBottom:keyboardInset}]}>
       <StatusBar style="light" />
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         <ImageBackground source={campfireAvailable ? { uri: CAMPFIRE_URL } : require("@/assets/images/mental-home-bg.jpeg")} onError={() => setCampfireAvailable(false)} contentFit="cover" style={StyleSheet.absoluteFill} />
@@ -145,6 +174,8 @@ export default function ChatScreen() {
         renderItem={renderMessage}
         keyExtractor={(item) => item.id}
         style={styles.messagesList}
+        keyboardDismissMode="interactive"
+        keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.messagesContent}
         showsVerticalScrollIndicator={false}
       />
@@ -171,7 +202,7 @@ export default function ChatScreen() {
       {messages.length>0&&<TouchableOpacity disabled={loading} accessibilityRole="button" onPress={()=>Alert.alert("Delete this conversation?","This removes the conversation and any shared summaries from your Treksor account. Your context notes are managed separately.",[{text:"Cancel",style:"cancel"},{text:"Delete",style:"destructive",onPress:()=>void clearConversation()}])} style={{paddingHorizontal:24,paddingVertical:10}}><Text style={{color:colors.muted,fontSize:12}}>Delete conversation</Text></TouchableOpacity>}
       {/* Input */}
       {typeof params.draft==="string"&&params.draft.length>0&&<Text style={{color:colors.secondary,fontSize:11,paddingHorizontal:22,marginBottom:4}}>Review before sending. Nothing is shared automatically.</Text>}
-      <View style={[styles.inputContainer, { paddingBottom: keyboardHeight > 0 ? 12 : 16, marginBottom: keyboardHeight > 0 ? 12 : 0 }]}>
+      <View style={[styles.inputContainer, { paddingBottom: keyboardHeight > 0 ? 8 : 16 }]}>
           <TextInput
             ref={inputRef}
             style={styles.textInput}
@@ -181,6 +212,7 @@ export default function ChatScreen() {
             value={inputText}
             onChangeText={setInputText}
             multiline
+            selectionColor={colors.gold}
             scrollEnabled
             maxLength={2000}
           />
@@ -198,7 +230,7 @@ export default function ChatScreen() {
             )}
           </TouchableOpacity>
       </View>
-    </KeyboardAvoidingView>
+    </View>
   )
 }
 
@@ -279,6 +311,7 @@ const styles = StyleSheet.create({
   },
   messagesList: {
     flex: 1,
+    minHeight: 0,
   },
   messagesContent: {
     padding: 20,
@@ -377,9 +410,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-end",
     paddingHorizontal: 10,
-    paddingVertical: 15,
+    paddingVertical: 12,
     gap: 12,
     backgroundColor: colors.background,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
   },
   textInput: {
     flex: 1,
