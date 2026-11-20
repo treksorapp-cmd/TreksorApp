@@ -7,7 +7,8 @@ const releases=[
  {id:'progress-safe-area-v2',script:'patches/progress-safe-area-windows.cjs'},
  {id:'primary-tabs-header-v3',script:'patches/primary-tabs-header-windows.cjs'},
  {id:'quick-notes-date-v4',script:'patches/quick-notes-date-windows.cjs'},
- {id:'primary-tab-labels-community-v5',script:'patches/primary-tab-labels-community-windows.cjs'}
+ {id:'primary-tab-labels-community-v5',script:'patches/primary-tab-labels-community-windows.cjs'},
+ {id:'nested-pillar-shortcut-v6',script:'patches/pillar-shortcut-windows.cjs'}
 ];
 const root=process.cwd();
 const git=(...args)=>cp.spawnSync('git',args,{cwd:root,encoding:'utf8'});
