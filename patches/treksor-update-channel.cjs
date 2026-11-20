@@ -11,7 +11,8 @@ const releases=[
  {id:'nested-pillar-shortcut-v6',script:'patches/pillar-shortcut-windows.cjs'},
  {id:'gold-primary-headings-v7',script:'patches/gold-primary-headings-windows.cjs'},
  {id:'guide-gold-alignment-v8',script:'patches/guide-gold-alignment-windows.cjs'},
- {id:'primary-subtitle-rhythm-v9',script:'patches/primary-subtitle-rhythm-windows.cjs'}
+ {id:'primary-subtitle-rhythm-v9',script:'patches/primary-subtitle-rhythm-windows.cjs'},
+ {id:'home-today-progress-route-v10',script:'patches/fix-home-today-progress-windows.cjs'}
 ];
 const root=process.cwd();
 const git=(...args)=>cp.spawnSync('git',args,{cwd:root,encoding:'utf8'});
