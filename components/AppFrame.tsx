@@ -28,7 +28,7 @@ export default function AppFrame({children,enabled}:{children:ReactNode;enabled:
         setHeaderHeight(previous=>previous===height?previous:height);
       }}>
         <View style={s.bar}>
-          <Text accessibilityRole="header" accessibilityLabel={`Current location: ${trail.label}`} style={s.trail}>{trail.label}</Text>
+          {primaryTab ? <View style={s.trail}/> : <Text accessibilityRole="header" accessibilityLabel={`Current location: ${trail.label}`} style={s.trail}>{trail.label}</Text>}
           <View style={s.actions}>
             {!primaryTab && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go back" style={s.icon} onPress={()=>{if(picker)setPicker(false);else if(router.canGoBack())router.back();else navigate(trail.parent)}}><BrandIcon name="arrow-back" size={21} color={colors.text}/></TouchableOpacity>}
             {!primaryTab && !isHome && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go to Home" style={s.icon} onPress={()=>navigate(trail.home)}><BrandIcon name={HOME_ICON} size={21} color={colors.text}/></TouchableOpacity>}
