@@ -13,9 +13,10 @@ type Props = {
     navigation?: boolean;
     onBack?: () => void;
     style?: StyleProp<ViewStyle>;
+    goldTitle?: boolean;
 };
 // Controls occupy a separate row; long titles always retain the full text width.
-export default function BodyPageHeading({ title, trail, subtitle, pillar, navigation, onBack, style }: Props) {
+export default function BodyPageHeading({ title, trail, subtitle, pillar, navigation, onBack, style, goldTitle=false }: Props) {
     const fixed = useFixedRouteHeader();
     const pathname = usePathname();
     const params = useLocalSearchParams<{
@@ -34,13 +35,14 @@ export default function BodyPageHeading({ title, trail, subtitle, pillar, naviga
         {destination && <TouchableOpacity accessibilityRole="button" accessibilityLabel={`Return to ${destination.name}`} style={styles.icon} onPress={() => router.dismissTo(destination.route as Href)}>{key === "mind" ? <Ionicons name="brain" size={22} color={colors.gold}/> : <Ionicons name={destination.icon as "barbell-outline" | "leaf-outline" | "compass-outline"} size={22} color={colors.gold}/>}</TouchableOpacity>}
       </View>}
     </View>}
-    <Text accessibilityRole="header" style={styles.title}>{displayLabel(title)}</Text>
+    <Text accessibilityRole="header" style={[styles.title,goldTitle&&styles.goldTitle]}>{displayLabel(title)}</Text>
     {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
   </View>;
 }
 const styles = StyleSheet.create({
     container: { paddingHorizontal: 22 },
     withFixedHeader: { paddingTop: 0, marginTop: 0 },
+    goldTitle: { color: colors.gold },
     topRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 8 },
     trail: { ...type.eyebrow, flex: 1, minWidth: 0 },
     actions: { flexDirection: "row", gap: 8, flexShrink: 0 },
