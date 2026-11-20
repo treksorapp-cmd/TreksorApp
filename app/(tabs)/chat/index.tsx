@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   guideHeading: { paddingHorizontal:20, paddingTop:0, paddingBottom:16 },
-  guideHeadingTitle: { ...type.pageTitle, color:colors.gold, includeFontPadding:false },
+  guideHeadingTitle: { ...type.page, color:colors.gold, includeFontPadding:false },
   header: {
     flexDirection: "row",
     alignItems: "center",
