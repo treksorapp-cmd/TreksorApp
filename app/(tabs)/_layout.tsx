@@ -62,7 +62,8 @@ export default function TabLayout() {
           }}
         />
 
-        <Tabs.Screen name="today" options={{title:"Today",tabBarIcon:({color})=><View style={styles.iconContainer}><Ionicons name="today-outline" size={23} color={color}/></View>}} />
+        {/* Legacy Today links redirect into the unified Progress screen. */}
+        <Tabs.Screen name="today" options={{href:null}} />
 
         <Tabs.Screen
           name="chat"
