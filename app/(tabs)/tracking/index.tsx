@@ -31,7 +31,7 @@ import { useArticleStore } from "@/store/article-store";
 import { getEntries } from "@/lib/mood-journal";
 import { buildProgressOverview, dayKey } from "@/lib/progress-metrics";
 import { isProgressAccountReady, prepareProgressAccount } from "@/lib/local-progress";
-import { colors, layout } from "@/theme/architect";
+import { colors } from "@/theme/architect";
 
 export default function TrackingScreen() {
   const walks = useWalks();
@@ -103,10 +103,10 @@ export default function TrackingScreen() {
   const statsLoading=!ownReady||dailyWork.loading||walks.loading;
   const periodSummary=period===7?"7 days":"30 days";
 
-  return <SafeAreaView edges={["top"]} style={styles.screen}>
+  return <SafeAreaView edges={[]} style={styles.screen}>
     <StatusBar style="light"/>
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      <BodyPageHeading trail="YOUR JOURNEY" title="Progress" subtitle="Your day and your growth. One place." style={styles.heading}/>
+      <BodyPageHeading trail="YOUR JOURNEY" title="Progress" goldTitle subtitle="Your day and your growth. One place." style={styles.heading} compactSubtitle/>
 
       <View style={styles.summary}>
         <View style={styles.headingRow}>
@@ -189,12 +189,12 @@ export default function TrackingScreen() {
 }
 const styles = StyleSheet.create({
   screen:{flex:1,backgroundColor:colors.background},
-  content:{paddingHorizontal:20,paddingBottom:38},
-  heading:{paddingHorizontal:0,paddingTop:layout.compactTop,paddingBottom:0},
+  content:{paddingHorizontal:20,paddingTop:0,paddingBottom:38,flexGrow:1},
+  heading:{paddingHorizontal:0,paddingTop:0,paddingBottom:0,marginBottom:10},
   flex:{flex:1},
   eyebrow:{fontSize:10,fontWeight:"700",letterSpacing:1.6,color:colors.gold},
   sectionTitle:{fontSize:22,lineHeight:29,fontWeight:"600",letterSpacing:-0.2,color:colors.text,marginBottom:10},
-  summary:{backgroundColor:colors.surface,borderColor:colors.border,borderWidth:1,borderRadius:18,padding:17,marginTop:17,gap:12},
+  summary:{backgroundColor:colors.surface,borderColor:colors.border,borderWidth:1,borderRadius:18,padding:17,marginTop:0,gap:12},
   headingRow:{flexDirection:"row",alignItems:"center",justifyContent:"space-between",gap:12},
   summaryTitle:{color:colors.text,fontSize:19,fontWeight:"600",marginTop:6},
   periodTabs:{flexDirection:"row",padding:3,backgroundColor:colors.background,borderRadius:12,borderColor:colors.border,borderWidth:1},

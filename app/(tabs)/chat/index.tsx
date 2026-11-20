@@ -158,7 +158,7 @@ export default function ChatScreen() {
       </View>
 
 
-      {/* Single Chat title is provided by the tab navigation. */}
+      <View style={styles.guideHeading}><Text accessibilityRole="header" style={styles.guideHeadingTitle}>Guide</Text></View>
       {(messages.length>0||keyboardHeight>0)&&<MentorCompanion compact busy={loading} onShare={sendMessage} onPrompt={(text,nextMode)=>{setInputText(text);setMode(nextMode);inputRef.current?.focus()}}/>}
       {/* Messages */}
       <FlatList
@@ -250,6 +250,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  guideHeading: { paddingHorizontal:20, paddingTop:0, paddingBottom:6 },
+  guideHeadingTitle: { ...type.page, color:colors.gold, includeFontPadding:false },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -314,7 +316,9 @@ const styles = StyleSheet.create({
     minHeight: 0,
   },
   messagesContent: {
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    paddingTop: 0,
     gap: 16,
   },
   messageContainer: {

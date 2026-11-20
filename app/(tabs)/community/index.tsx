@@ -7,7 +7,7 @@ import {router} from 'expo-router';
 import BodyPageHeading from '@/components/BodyPageHeading';
 import CommunityMentors from '@/components/CommunityMentors';
 import CommunityConnections from '@/components/CommunityConnections';
-import {colors,surface,type,layout} from '@/theme/architect';
+import {colors,surface,type} from '@/theme/architect';
 import {CommunityEvent,loadCommunityEvents} from '@/api/community';
 import {cleanPlace,localActivityUrl,upcomingEvents,communityRoute} from '@/lib/community-location';
 import {communityQuestionForWeek} from '@/lib/community-weekly-question';
@@ -24,9 +24,9 @@ export default function Community(){
  function search(){++request.current;setLocating(false);const value=cleanPlace(city);if(value.length<2){setError('Enter a city or destination to begin.');return}Keyboard.dismiss();setSelected(value);setRetry(n=>n+1)}
  async function locate(){const id=++request.current;setLocating(true);setError('');try{const permission=await Location.requestForegroundPermissionsAsync();if(permission.status!=='granted')throw Error('Location access is off. You can enter any city instead.');const position=await within(Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced}),12000);const places=await within(Location.reverseGeocodeAsync(position.coords),10000);const place=places[0];const name=place?.city||place?.subregion;if(!name)throw Error('We could not identify your city. Please type it below.');if(mounted.current&&id===request.current){const value=cleanPlace([name,place.country].filter(Boolean).join(', '));setCity(value);setSelected(value);setRetry(n=>n+1)}}catch(e){if(mounted.current&&id===request.current)setError(e instanceof Error?e.message:'Location is unavailable. Enter a city instead.')}finally{if(mounted.current&&id===request.current)setLocating(false)}}
  function open(url:string){void Linking.openURL(url).catch(()=>Alert.alert('Unable to open link','Please try again when your browser is available.'))}
- return <SafeAreaView edges={['top']} style={s.screen}><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={s.content}>
- <BodyPageHeading trail="CONNECT & EXPLORE" title="Community" style={{marginHorizontal:-20,marginTop:layout.compactTop}}/>
- <Text style={[type.body,{marginTop:10,marginBottom:20}]}>Find a shared activity, meet one person or connect with a mentor. Start where you are. Go at your pace.</Text>
+ return <SafeAreaView edges={[]} style={s.screen}><ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={s.content}>
+ <BodyPageHeading trail="CONNECT & EXPLORE" title="Community" goldTitle style={{marginHorizontal:-20,marginTop:0,marginBottom:2}}/>
+ <Text style={[type.body,{marginTop:0,marginBottom:16,lineHeight:20}]}>Find a shared activity, meet one person or connect with a mentor. Start where you are. Go at your pace.</Text>
  <CommunityMentors/>
  <TouchableOpacity accessibilityRole="button" accessibilityLabel="Explore Treksor events and registrations" onPress={()=>router.push("/community/events" as any)} style={{backgroundColor:colors.surface,borderColor:colors.border,borderWidth:1,borderRadius:16,padding:17,flexDirection:"row",alignItems:"center",gap:12,marginBottom:20}}><Ionicons name="calendar-outline" size={25} color={colors.gold}/><View style={{flex:1}}><Text style={{color:colors.text,fontSize:16,fontWeight:"600"}}>Treksor experiences</Text><Text style={{color:colors.muted,fontSize:12,marginTop:4}}>Events · registration · your feedback</Text></View><Ionicons name="chevron-forward" size={20} color={colors.gold}/></TouchableOpacity>
  <View style={s.searchCard}>

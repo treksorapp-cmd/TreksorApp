@@ -203,9 +203,9 @@ export default function HomeScreen() {
           <View style={{flex:1}}><Text style={styles.todayShortcutEyebrow}>CAPTURE IT QUICKLY</Text><Text style={styles.todayShortcutTitle}>Quick Notes</Text><Text style={styles.todayShortcutHint}>Tasks, reminders & ideas</Text></View>
           <Ionicons name="arrow-forward" size={19} color={colors.gold}/>
         </TouchableOpacity>
-        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open Today daily practice" activeOpacity={0.82} onPress={()=>router.push("/(tabs)/today" as Href)} style={styles.todayShortcut}>
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open daily practice in Progress" activeOpacity={0.82} onPress={()=>router.push("/(tabs)/tracking" as Href)} style={styles.todayShortcut}>
           <View style={styles.todayShortcutIcon}><Ionicons name="today-outline" size={24} color={colors.gold}/></View>
-          <View style={{flex:1}}><Text style={styles.todayShortcutEyebrow}>YOUR DAILY PRACTICE</Text><Text style={styles.todayShortcutTitle}>Today</Text><Text style={styles.todayShortcutHint}>One priority. Three small actions.</Text></View>
+          <View style={{flex:1}}><Text style={styles.todayShortcutEyebrow}>YOUR DAILY PRACTICE</Text><Text style={styles.todayShortcutTitle}>Daily practice</Text><Text style={styles.todayShortcutHint}>Activities, habits and daily direction in Progress</Text></View>
           <Ionicons name="arrow-forward" size={19} color={colors.gold}/>
         </TouchableOpacity>
         <View style={styles.thoughtSection}>
