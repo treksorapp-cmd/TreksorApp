@@ -63,7 +63,7 @@ export default function TabLayout() {
         />
 
         {/* Legacy Today links redirect into the unified Progress screen. */}
-        <Tabs.Screen name="today" options={{href:null}} />
+        <Tabs.Screen name="today/index" options={{href:null}} />
 
         <Tabs.Screen
           name="chat"
