@@ -3,7 +3,6 @@ import MentorCompanion from "@/components/mentor/MentorCompanion";
 import {guideKeyboardInset} from "@/lib/guide-keyboard";
 import type {MentorMode} from "@/supabase/functions/_shared/mentor";
 import { colors, navyOverlay, type } from "@/theme/architect";
-import BodyPageHeading from "@/components/BodyPageHeading";
 "use client"
 
 import { useAuthStore } from "@/store/auth-store"
@@ -159,7 +158,7 @@ export default function ChatScreen() {
       </View>
 
 
-      <BodyPageHeading title="Guide" trail="GUIDE" goldTitle style={{paddingHorizontal:20,marginBottom:16}}/>
+      <View style={styles.guideHeading}><Text accessibilityRole="header" style={styles.guideHeadingTitle}>Guide</Text></View>
       {(messages.length>0||keyboardHeight>0)&&<MentorCompanion compact busy={loading} onShare={sendMessage} onPrompt={(text,nextMode)=>{setInputText(text);setMode(nextMode);inputRef.current?.focus()}}/>}
       {/* Messages */}
       <FlatList
@@ -251,6 +250,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  guideHeading: { paddingHorizontal:20, paddingTop:0, paddingBottom:16 },
+  guideHeadingTitle: { ...type.pageTitle, color:colors.gold, includeFontPadding:false },
   header: {
     flexDirection: "row",
     alignItems: "center",
