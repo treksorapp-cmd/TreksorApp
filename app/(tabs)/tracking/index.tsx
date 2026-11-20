@@ -31,7 +31,7 @@ import { useArticleStore } from "@/store/article-store";
 import { getEntries } from "@/lib/mood-journal";
 import { buildProgressOverview, dayKey } from "@/lib/progress-metrics";
 import { isProgressAccountReady, prepareProgressAccount } from "@/lib/local-progress";
-import { colors, layout } from "@/theme/architect";
+import { colors } from "@/theme/architect";
 
 export default function TrackingScreen() {
   const walks = useWalks();
