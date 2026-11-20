@@ -10,7 +10,7 @@ import {Alert,AppState,Pressable,ScrollView,Text,TextInput,View} from "react-nat
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 type Note={id:string;body:string;done:boolean;createdAt:string;updatedAt:string;kind:"task"|"note";remindAt?:string;notificationId?:string};
-const parseReminder=(date:string,time:string):Date|null=>{if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(date)||!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(time))return null;const [y,m,d]=date.split("-").map(Number),[h,min]=time.split(":").map(Number);const when=new Date(y,m-1,d,h,min);return when.getFullYear()===y&&when.getMonth()===m-1&&when.getDate()===d&&when.getTime()>Date.now()+60000?when:null};
+const parseReminder=(date:string,time:string):Date|null=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(time))return null;const [y,m,d]=date.split("-").map(Number),[h,min]=time.split(":").map(Number);const when=new Date(y,m-1,d,h,min);return when.getFullYear()===y&&when.getMonth()===m-1&&when.getDate()===d&&when.getTime()>Date.now()+60000?when:null};
 const dateInput=(d:Date)=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
 const timeInput=(d:Date)=>String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
 const cancelReminder=async(n:Note)=>{if(n.notificationId)try{await Notifications.cancelScheduledNotificationAsync(n.notificationId)}catch{}};
