@@ -11,7 +11,7 @@
     "lint": "expo lint",
     "typecheck": "tsc --noEmit -p tsconfig.mobile.json",
     "test:ui": "node tests/ui-contracts.cjs",
-    "test:integrity": "node tests/source-integrity.cjs && node tests/architect-recovery.cjs && node tests/fixed-header-layout.cjs && node tests/home-landscape-cards.cjs && node tests/guide-home-style.cjs && node tests/daily-work.cjs && node tests/daily-work-installer.cjs && node tests/community-weekly-question.cjs && node tests/architect-screen-rhythm.cjs && node tests/architect-global-installer.cjs && node tests/home-integrated-hero.cjs",
+    "test:integrity": "node tests/source-integrity.cjs && node tests/architect-recovery.cjs && node tests/fixed-header-layout.cjs && node tests/home-landscape-cards.cjs && node tests/guide-home-style.cjs && node tests/daily-work.cjs && node tests/daily-work-installer.cjs && node tests/community-weekly-question.cjs && node tests/architect-screen-rhythm.cjs && node tests/architect-global-installer.cjs && node tests/home-integrated-hero.cjs && node tests/guide-keyboard.cjs",
     "test:progress": "node tests/progress-sync.cjs && node tests/shared-today.cjs",
     "test:audio": "node tests/audio-lifecycle.cjs",
     "test:dashboard": "node tests/progress-dashboard.cjs",
@@ -36,7 +36,8 @@
     "test:daily-work": "node tests/daily-work.cjs",
     "test:community-weekly": "node tests/community-weekly-question.cjs",
     "test:architect": "node tests/architect-screen-rhythm.cjs && node tests/architect-global-installer.cjs",
-    "test:home-hero": "node tests/home-integrated-hero.cjs"
+    "test:home-hero": "node tests/home-integrated-hero.cjs",
+    "test:guide-keyboard": "node tests/guide-keyboard.cjs"
   },
   "dependencies": {
     "@bacons/apple-targets": "3.0.7",
