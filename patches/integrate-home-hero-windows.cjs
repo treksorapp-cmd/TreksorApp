@@ -88,7 +88,7 @@ change(frame,s=>{
  if(btn.includes('!isHome'))return s;
  if(s.includes('  const isHome='))abort('AppFrame has a custom Home condition.');
  s=exactly(s,'  const visible=enabled&&trail.visible;',
-   "  const visible=enabled&&trail.visible;\n  const isHome=pathname==='/home'||pathname==='/(tabs)/home'||pathname==='/';",frame);
+   "  const visible=enabled&&trail.visible;\n  // The Home destination is redundant when the current screen is already Home.\n  const isHome=pathname==='/home'||pathname==='/(tabs)/home'||pathname==='/';",frame);
  s=exactly(s,btn,'            {!isHome && '+btn.trim()+'}',frame);
  return s;
 });
