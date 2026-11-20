@@ -24,7 +24,7 @@ export const layout = {
     sectionSpace: 24,
 } as const;
 export const type = {
-    page: { fontSize: 34, lineHeight: 42, fontWeight: "600", letterSpacing: -0.6, color: colors.text, includeFontPadding: false },
+    page: { fontSize: 34, lineHeight: 42, fontWeight: "600", letterSpacing: -0.6, color: colors.gold, includeFontPadding: false },
     section: { fontSize: 22, lineHeight: 29, fontWeight: "600", letterSpacing: -0.2, color: colors.text, includeFontPadding: false },
     card: { fontSize: 18, lineHeight: 25, fontWeight: "600", letterSpacing: -0.2, color: colors.text, includeFontPadding: false },
     body: { fontSize: 15, lineHeight: 23, color: colors.secondary },
