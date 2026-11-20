@@ -14,9 +14,10 @@ type Props = {
     onBack?: () => void;
     style?: StyleProp<ViewStyle>;
     goldTitle?: boolean;
+    compactSubtitle?: boolean;
 };
 // Controls occupy a separate row; long titles always retain the full text width.
-export default function BodyPageHeading({ title, trail, subtitle, pillar, navigation, onBack, style, goldTitle=false }: Props) {
+export default function BodyPageHeading({ title, trail, subtitle, pillar, navigation, onBack, style, goldTitle=false, compactSubtitle=false }: Props) {
     const fixed = useFixedRouteHeader();
     const pathname = usePathname();
     const params = useLocalSearchParams<{
@@ -36,13 +37,14 @@ export default function BodyPageHeading({ title, trail, subtitle, pillar, naviga
       </View>}
     </View>}
     <Text accessibilityRole="header" style={[styles.title,goldTitle&&styles.goldTitle]}>{displayLabel(title)}</Text>
-    {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+    {subtitle ? <Text style={[styles.subtitle,compactSubtitle&&styles.compactSubtitle]}>{subtitle}</Text> : null}
   </View>;
 }
 const styles = StyleSheet.create({
     container: { paddingHorizontal: 22 },
     withFixedHeader: { paddingTop: 0, marginTop: 0 },
     goldTitle: { color: colors.gold },
+    compactSubtitle: { marginTop:2, lineHeight:20 },
     topRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 8 },
     trail: { ...type.eyebrow, flex: 1, minWidth: 0 },
     actions: { flexDirection: "row", gap: 8, flexShrink: 0 },
