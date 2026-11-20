@@ -2,17 +2,10 @@
 // Release channel: append future reviewed, idempotent installers to this list.
 // Never checkout, reset, merge, or modify unrelated local files.
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),cp=require('node:child_process');
+// Only the current Home navigation repair is in the active release queue.
+// Earlier visual patches were already applied or superseded in the local app.
+// Replaying them rejects newer files and prevents unrelated repairs.
 const releases=[
- // compact-screen-top-v1 is superseded by the current Progress layout.
- // Do not replay it: its old exact-text guard rejects newer local files.
- {id:'progress-safe-area-v2',script:'patches/progress-safe-area-windows.cjs'},
- {id:'primary-tabs-header-v3',script:'patches/primary-tabs-header-windows.cjs'},
- {id:'quick-notes-date-v4',script:'patches/quick-notes-date-windows.cjs'},
- {id:'primary-tab-labels-community-v5',script:'patches/primary-tab-labels-community-windows.cjs'},
- {id:'nested-pillar-shortcut-v6',script:'patches/pillar-shortcut-windows.cjs'},
- {id:'gold-primary-headings-v7',script:'patches/gold-primary-headings-windows.cjs'},
- {id:'guide-gold-alignment-v8',script:'patches/guide-gold-alignment-windows.cjs'},
- {id:'primary-subtitle-rhythm-v9',script:'patches/primary-subtitle-rhythm-windows.cjs'},
  {id:'home-today-progress-route-v10',script:'patches/fix-home-today-progress-windows.cjs'}
 ];
 const root=process.cwd();
