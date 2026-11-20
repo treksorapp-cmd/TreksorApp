@@ -3,7 +3,8 @@
 // Never checkout, reset, merge, or modify unrelated local files.
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),cp=require('node:child_process');
 const releases=[
- {id:'compact-screen-top-v1',script:'patches/compact-screen-top-windows.cjs'},
+ // compact-screen-top-v1 is superseded by the current Progress layout.
+ // Do not replay it: its old exact-text guard rejects newer local files.
  {id:'progress-safe-area-v2',script:'patches/progress-safe-area-windows.cjs'},
  {id:'primary-tabs-header-v3',script:'patches/primary-tabs-header-windows.cjs'},
  {id:'quick-notes-date-v4',script:'patches/quick-notes-date-windows.cjs'},
