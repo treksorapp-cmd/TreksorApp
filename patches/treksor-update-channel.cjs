@@ -4,7 +4,8 @@
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),cp=require('node:child_process');
 const releases=[
  {id:'compact-screen-top-v1',script:'patches/compact-screen-top-windows.cjs'},
- {id:'progress-safe-area-v2',script:'patches/progress-safe-area-windows.cjs'}
+ {id:'progress-safe-area-v2',script:'patches/progress-safe-area-windows.cjs'},
+ {id:'primary-tabs-header-v3',script:'patches/primary-tabs-header-windows.cjs'}
 ];
 const root=process.cwd();
 const git=(...args)=>cp.spawnSync('git',args,{cwd:root,encoding:'utf8'});
