@@ -103,7 +103,7 @@ export default function TrackingScreen() {
   const statsLoading=!ownReady||dailyWork.loading||walks.loading;
   const periodSummary=period===7?"7 days":"30 days";
 
-  return <SafeAreaView edges={["top"]} style={styles.screen}>
+  return <SafeAreaView edges={[]} style={styles.screen}>
     <StatusBar style="light"/>
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <BodyPageHeading trail="YOUR JOURNEY" title="Progress" subtitle="Your day and your growth. One place." style={styles.heading}/>
