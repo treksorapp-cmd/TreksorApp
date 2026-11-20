@@ -35,7 +35,7 @@ export default function AppFrame({children,enabled}:{children:ReactNode;enabled:
             {!primaryTab && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go back" style={s.icon} onPress={()=>{if(picker)setPicker(false);else if(router.canGoBack())router.back();else navigate(trail.parent)}}><BrandIcon name="arrow-back" size={21} color={colors.text}/></TouchableOpacity>}
             {!primaryTab && !isHome && <TouchableOpacity accessibilityRole="button" accessibilityLabel="Go to Home" style={s.icon} onPress={()=>navigate(trail.home)}><BrandIcon name={HOME_ICON} size={21} color={colors.text}/></TouchableOpacity>}
             <TouchableOpacity accessibilityRole="button" accessibilityLabel="Choose a pillar" accessibilityState={{expanded:picker}} style={s.icon} onPress={()=>setPicker(value=>!value)}><BrandIcon name="grid-outline" size={22} color={colors.gold}/></TouchableOpacity>
-            {showPillarShortcut && <TouchableOpacity accessibilityRole="button" accessibilityLabel={`Return to ${destination.name}`} style={s.icon} onPress={()=>navigate(destination.route)}><BrandIcon name={destination.icon} size={22} color={colors.gold}/></TouchableOpacity>}
+            {showPillarShortcut && destination && <TouchableOpacity accessibilityRole="button" accessibilityLabel={`Return to ${destination.name}`} style={s.icon} onPress={()=>navigate(destination.route)}><BrandIcon name={destination.icon} size={22} color={colors.gold}/></TouchableOpacity>}
           </View>
         </View>
       </SafeAreaView>}
