@@ -101,7 +101,7 @@ export default function TrackingScreen() {
   const today=dayKey(now);
   const ownReady=ownExtras&&extras.ready;
   const statsLoading=!ownReady||dailyWork.loading||walks.loading;
-  const periodSummary=period===7?"week":"30 days";
+  const periodSummary=period===7?"7 days":"30 days";
 
   return <SafeAreaView edges={["top"]} style={styles.screen}>
     <StatusBar style="light"/>
