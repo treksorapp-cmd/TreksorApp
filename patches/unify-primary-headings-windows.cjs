@@ -27,13 +27,13 @@ for(const spec of specs){
  const original=fs.readFileSync(file,'utf8');let next=original;
  for(const [regex,change] of spec.rules){
   const m=next.match(regex);
-  if(!m)throw Error('Formato local distinto en '+spec.file+'. No se modifico ningun archivo.');
+  if(!m){console.log('OMITIDO (estructura diferente): '+spec.file+' / '+regex);continue;}
   const replacement=change(m[0]);if(replacement===m[0])continue;
   next=next.replace(regex,replacement);
  }
  if(next!==original)pending.push({file,relative:spec.file,original,next});
 }
-if(!pending.length){console.log('TITULOS: ya compatibles; ningun cambio necesario.');process.exit(0)}
+if(!pending.length){console.log('TITULOS: no se encontraron cambios seguros. Envia el diagnostico local.');process.exit(0)}
 if(process.argv.includes('--check')){console.log('Revision OK: '+pending.map(x=>x.relative).join(', '));process.exit(0)}
 const backup=path.resolve(root,'..','Treksor-headings-backup-'+Date.now());
 for(const item of pending){const dest=path.join(backup,item.relative);fs.mkdirSync(path.dirname(dest),{recursive:true});fs.writeFileSync(dest,item.original)}
