@@ -14,7 +14,7 @@ if(!helperContent.includes('export function guideKeyboardInset('))fail('Falta el
 const raw=fs.readFileSync(screen),original=raw.toString('utf8'),eol=original.includes('\r\n')?'\r\n':'\n';
 let next=original.replace(/\r\n/g,'\n');
 function replaceOne(oldText,newText,label){
- if(next.includes(newText))return;
+ if(newText && next.includes(newText))return;
  const i=next.indexOf(oldText);
  if(i<0||next.indexOf(oldText,i+oldText.length)>=0)fail('Tu pantalla Guide tiene una estructura diferente: '+label);
  next=next.replace(oldText,newText);
