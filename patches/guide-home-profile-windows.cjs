@@ -101,6 +101,9 @@ for(const i of [6,7]){
  });
 }
 stage(files[8],s=>{
+ // The newer integrated Home hero already includes balanced profile spacing.
+ // Leave its self-contained composition intact when replaying the older Guide patch.
+ if(s.includes('hero: { minHeight: 328') && s.includes('paddingTop: 15, paddingBottom: 15'))return s;
  s=replaceOne(s,
   'content: { paddingHorizontal: 20, paddingTop: 7, paddingBottom: 28 }',
   'content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 }',files[8]);

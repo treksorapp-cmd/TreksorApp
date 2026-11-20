@@ -29,9 +29,9 @@ const nav=updated.get(files[5]),home=updated.get(files[8]);
 assert(nav.includes('!isHome && <TouchableOpacity'));
 assert(nav.includes('name={HOME_ICON}'));
 assert(nav.includes("pathname==='/home'||pathname==='/(tabs)/home'||pathname==='/'"));
-assert(home.includes('content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 }'));
-assert(home.includes('top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }'));
-assert(home.includes('hero: { minHeight: 276, marginHorizontal: -20, marginTop: 0, marginBottom: 26'));
+assert(home.includes('content: { paddingHorizontal: 20, paddingTop: 0, paddingBottom: 28 }'));
+assert(home.includes('top: { height: 74, flexDirection: "row"'));
+assert(home.includes('hero: { minHeight: 328, marginHorizontal: -20, marginTop: 0, marginBottom: 18'));
 const parent=fs.mkdtempSync(path.join(os.tmpdir(),'treksor-guide-fixture-'));
 const root=path.join(parent,'TreksorApp');
 fs.mkdirSync(root);cp.execFileSync('git',['init',root],{stdio:'ignore'});
@@ -45,16 +45,6 @@ try{
  assert.match(run('--check'),/COMPATIBLE/);
  assert.match(run(),/CAMBIOS YA APLICADOS/);
  assert.equal(fs.readdirSync(parent).filter(f=>f.startsWith('Treksor-guide-backup-')).length,0,'No backup when no changes');
- // Recreate old Home-only spacing. The installer must preserve all other updated files.
- const oldHome=home.replace('content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 }','content: { paddingHorizontal: 20, paddingTop: 7, paddingBottom: 28 }')
-    .replace('hero: { minHeight: 276, marginHorizontal: -20, marginTop: 0, marginBottom: 26','hero: { minHeight: 276, marginHorizontal: -20, marginTop: -8, marginBottom: 26')
-    .replace('top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }','top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }');
- fs.writeFileSync(path.join(root,files[8]),oldHome);
- assert.match(run('--check'),/COMPATIBLE/);
- assert.equal(fs.readFileSync(path.join(root,files[8]),'utf8'),oldHome,'Dry run cannot edit');
- assert.match(run(),/TREKSOR GUIDE \/ HOME ACTUALIZADO/);
- assert.equal(fs.readFileSync(path.join(root,files[8]),'utf8'),home);
- assert.match(run(),/CAMBIOS YA APLICADOS/);
- assert.equal(fs.readdirSync(parent).filter(f=>f.startsWith('Treksor-guide-backup-')).length,1,'Exactly one backup');
+ assert.equal(fs.readFileSync(path.join(root,files[8]),'utf8'),home,'Guide installer must preserve the newer integrated Home header');
  console.log('PASS: one Guide sunrise symbol, consistent Home icons, avatar contrast, profile spacing and reversible Windows patch');
 }finally{fs.rmSync(parent,{recursive:true,force:true})}

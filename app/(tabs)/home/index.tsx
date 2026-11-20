@@ -113,6 +113,9 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.screen} edges={hasFixedHeader ? [] : ["top"]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <Animated.View style={[styles.hero,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[12,0]})}]}]}>
+          <ImageBackground source={atmosphereUrl ? {uri:atmosphereUrl} : DAILY_HERO_IMAGES[dailyIndex]} onError={() => { if (atmosphereUrl) {setAtmosphereUrl(null);setAtmosphereMessage(null)} }} contentFit="cover" contentPosition={{left:"50%",top:"58%"}} cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
+          <LinearGradient colors={[navyOverlay(0.96), navyOverlay(0.70), navyOverlay(0.50), colors.background]} locations={[0, 0.22, 0.57, 1]} style={StyleSheet.absoluteFill} />
         <View style={styles.top}>
           <View style={styles.brand}>
             <Image source={require("@/assets/images/appicon-treksor.png")} style={styles.logo} />
@@ -125,12 +128,8 @@ export default function HomeScreen() {
             {user?.avatar?<Image source={{uri:user.avatar.startsWith("http")?user.avatar:`https://app.treksor.com/${user.avatar}`}} style={styles.profileImage} cachePolicy="memory-disk"/>:<Text style={styles.profileLetter}>{firstName.charAt(0).toUpperCase()}</Text>}
           </TouchableOpacity></View>
         </View>
-
-        <Animated.View style={[styles.hero,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[12,0]})}]}]}>
-          <ImageBackground source={atmosphereUrl ? {uri:atmosphereUrl} : DAILY_HERO_IMAGES[dailyIndex]} onError={() => { if (atmosphereUrl) {setAtmosphereUrl(null);setAtmosphereMessage(null)} }} contentFit="cover" contentPosition={{left:"50%",top:"58%"}} cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
-          <LinearGradient colors={[navyOverlay(0.08), navyOverlay(0.45), colors.background]} locations={[0, 0.4, 1]} style={StyleSheet.absoluteFill} />
-          <View style={styles.heroGreetingWrap}><View style={styles.pulseShell}><Animated.View style={[styles.pulseHalo,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.06,0.24]}),transform:[{scale:pulse.interpolate({inputRange:[0,1],outputRange:[1,1.65]})}]}]}/><Animated.View style={[styles.greetingDot,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.70,1]})}]}/></View><Text style={styles.heroGreeting}>{greeting}</Text></View>
           <View style={styles.heroContent}>
+          <View style={styles.heroGreetingWrap}><View style={styles.pulseShell}><Animated.View style={[styles.pulseHalo,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.06,0.24]}),transform:[{scale:pulse.interpolate({inputRange:[0,1],outputRange:[1,1.65]})}]}]}/><Animated.View style={[styles.greetingDot,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.70,1]})}]}/></View><Text style={styles.heroGreeting}>{greeting}</Text></View>
             <Text style={styles.eyebrow}>YOUR DAILY DIRECTION</Text>
             <Text style={styles.heroTitle}>{dailyMessage[0]}{"\n"}<Text style={styles.name}>{dailyMessage[1]}</Text></Text>
             <Text style={styles.heroSub}>{dailyMessage[2]}</Text>
@@ -225,25 +224,25 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
-  content: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 28 },
-  hero: { minHeight: 276, marginHorizontal: -20, marginTop: 0, marginBottom: 26, overflow: "hidden", backgroundColor: colors.surface },
-  heroContent: { flex: 1, paddingTop: 88, justifyContent: "flex-end", paddingHorizontal: 24, paddingBottom: 28 },
+  content: { paddingHorizontal: 20, paddingTop: 0, paddingBottom: 28 },
+  hero: { minHeight: 328, marginHorizontal: -20, marginTop: 0, marginBottom: 18, overflow: "hidden", backgroundColor: colors.surface },
+  heroContent: { flex: 1, paddingTop: 16, justifyContent: "flex-end", paddingHorizontal: 24, paddingBottom: 30 },
   heroTitle: { ...type.page, color: colors.text },
   heroSub: { color: "#D0C8B9", fontSize: 12, letterSpacing: 0.7, marginTop: 13 },
   sectionCount: { color: GOLD, fontSize: 10, fontWeight: "700", letterSpacing: 1.5 },
-  top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 },
-  topRight:{flexDirection:"column",alignItems:"flex-end",gap:5},
-  heroGreetingWrap:{position:"absolute",top:14,right:20,zIndex:2,flexDirection:"row",alignItems:"center",gap:7,paddingHorizontal:12,paddingVertical:8,borderRadius:20,backgroundColor:colors.glass},
+  top: { height: 74, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 24, paddingTop: 15, paddingBottom: 15 },
+  topRight:{alignItems:"center",justifyContent:"center"},
+  heroGreetingWrap:{flexDirection:"row",alignItems:"center",alignSelf:"flex-start",gap:8,marginBottom:17},
   pulseShell:{width:9,height:9,alignItems:"center",justifyContent:"center"},
   pulseHalo:{position:"absolute",width:9,height:9,borderRadius:5,backgroundColor:"#D7B877"},
   greetingDot:{width:6,height:6,borderRadius:3,backgroundColor:"#FFE4A1"},
   heroGreeting:{color:"#D7B877",fontSize:11,fontWeight:"600",letterSpacing:0.55},
-  profileImage:{width:40,height:40,borderRadius:20},
+  profileImage:{width:44,height:44,borderRadius:22},
   brand: { flexDirection: "row", alignItems: "center", gap: 10 },
-  logo: { width: 38, height: 38, borderRadius: 11 },
+  logo: { width: 40, height: 40, borderRadius: 11 },
   brandText: { color: "#FFFFFF", fontSize: 16, fontWeight: "700", letterSpacing: 4.2 },
   brandCaption: { color: "#C6A568", fontSize: 8, fontWeight: "700", letterSpacing: 2.4, marginTop: 3 },
-  profile: { height: 42, width: 42, borderRadius: 21, backgroundColor: colors.glass, alignItems: "center", justifyContent: "center" },
+  profile: { height: 44, width: 44, borderRadius: 22, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surfaceRaised, alignItems: "center", justifyContent: "center" },
   profileLetter: { color: GOLD, fontWeight: "800", fontSize: 17 },
   intro: { marginBottom: 34 },
   eyebrow: { color: GOLD, fontSize: 10, fontWeight: "600", letterSpacing: 2.1, marginBottom: 12 },
