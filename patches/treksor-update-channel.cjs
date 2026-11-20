@@ -6,7 +6,8 @@ const releases=[
  {id:'compact-screen-top-v1',script:'patches/compact-screen-top-windows.cjs'},
  {id:'progress-safe-area-v2',script:'patches/progress-safe-area-windows.cjs'},
  {id:'primary-tabs-header-v3',script:'patches/primary-tabs-header-windows.cjs'},
- {id:'quick-notes-date-v4',script:'patches/quick-notes-date-windows.cjs'}
+ {id:'quick-notes-date-v4',script:'patches/quick-notes-date-windows.cjs'},
+ {id:'primary-tab-labels-community-v5',script:'patches/primary-tab-labels-community-windows.cjs'}
 ];
 const root=process.cwd();
 const git=(...args)=>cp.spawnSync('git',args,{cwd:root,encoding:'utf8'});
