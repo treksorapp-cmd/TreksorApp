@@ -18,8 +18,8 @@ export const colors = {
 } as const;
 // The Architect: one vertical rhythm for every authenticated mobile page.
 export const layout = {
-    pageTop: 8,
-    compactTop: 4,
+    pageTop: 4,
+    compactTop: 0,
     pageGutter: 22,
     sectionSpace: 24,
 } as const;
