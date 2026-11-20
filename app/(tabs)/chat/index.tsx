@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  guideHeading: { paddingHorizontal:20, paddingTop:0, paddingBottom:16 },
+  guideHeading: { paddingHorizontal:20, paddingTop:0, paddingBottom:6 },
   guideHeadingTitle: { ...type.page, color:colors.gold, includeFontPadding:false },
   header: {
     flexDirection: "row",
