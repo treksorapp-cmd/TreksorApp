@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     container: { paddingHorizontal: 22 },
     withFixedHeader: { paddingTop: 0, marginTop: 0 },
     goldTitle: { color: colors.gold },
-    compactSubtitle: { marginTop:2, lineHeight:20 },
+    compactSubtitle: { marginTop:2, lineHeight:20, includeFontPadding:false },
     topRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 8 },
     trail: { ...type.eyebrow, flex: 1, minWidth: 0 },
     actions: { flexDirection: "row", gap: 8, flexShrink: 0 },
