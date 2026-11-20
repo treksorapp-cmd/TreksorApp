@@ -23,7 +23,7 @@ function exactly(s,from,to,file){
  return s.replace(from,to);
 }
 function style(s,key,expected,newValue){
- const pattern=new RegExp('^  '+key+':\\s*\\{[^\\n]*\\},
+ const pattern=new RegExp('^  '+key+':\\s*\\{[^\\n]*\\},$','m');
  const hit=s.match(pattern);
  if(!hit||!expected.test(hit[0]))abort('Home: estilo '+key+' incompatible; conservar version local.');
  return s.replace(hit[0],hit[0].slice(0,hit[0].indexOf('{'))+newValue+',');
