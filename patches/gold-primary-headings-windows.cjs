@@ -6,7 +6,23 @@ if(git.status!==0||git.stdout.trim())throw Error('Ejecutar desde TreksorDevCompl
 const changes=[];
 for(const {file,pairs} of rules){
  const original=fs.readFileSync(file,'utf8');let next=original;
- for(const [old,updated] of pairs){if(next.includes(updated))continue;if(!next.includes(old))throw Error('Version incompatible en '+file+'. No se modifico nada.');next=next.replace(old,updated);}
+ if(file==='app/(tabs)/chat/index.tsx'){
+  // Guide has several locally consolidated versions. Preserve its chat logic and
+  // only add the heading at the known stable root when safe.
+  if(!next.includes('import BodyPageHeading from "@/components/BodyPageHeading";')){
+   const match=next.match(/^import [^\n]+\n/m);
+   if(!match)throw Error('Guide sin imports reconocibles; no se modifico nada.');
+   next=next.replace(match[0],match[0]+'import BodyPageHeading from "@/components/BodyPageHeading";\n');
+  }
+  if(!next.includes('<BodyPageHeading title="Guide"')){
+   const anchor='<StatusBar style="light" />';
+   if(!next.includes(anchor))throw Error('Guide sin ancla de pantalla segura; no se modifico nada.');
+   next=next.replace(anchor,anchor+'\n      <BodyPageHeading title="Guide" trail="GUIDE" goldTitle style={{paddingHorizontal:20,marginBottom:16}}/>');
+  }
+  // Do not touch the local chat messages layout or Mentor logic.
+ }else{
+  for(const [old,updated] of pairs){if(next.includes(updated))continue;if(!next.includes(old))throw Error('Version incompatible en '+file+'. No se modifico nada.');next=next.replace(old,updated);}
+ }
  if(next!==original)changes.push({file,original,next});
 }
 console.log('TITULOS DORADOS: '+changes.length+' archivos por actualizar.');
