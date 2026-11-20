@@ -16,7 +16,7 @@ git fetch origin "+refs/heads/$BRANCH:$TRACK"
 
 if [ -e "$DEST" ]; then
   cd "$DEST"
-  if [ "$(git rev-parse --show-toplevel 2>/dev/null)" != "$(pwd -P)" ]; then
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1 || [ -n "$(git rev-parse --show-prefix 2>/dev/null)" ]; then
     echo "TreksorDevCompleto existe pero no es la raiz de un repositorio Git. No se sobrescribio." >&2
     exit 1
   fi
