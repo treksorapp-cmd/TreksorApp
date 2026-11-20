@@ -32,7 +32,7 @@ assert(progress.includes('paddingTop: layout.compactTop'),'Progress title must n
 assert(community.includes('marginTop:layout.compactTop'),'Community title aligns with Progress');
 assert(today.includes('paddingTop: layout.pageTop'),'Today uses same screen rhythm');
 assert(read('components/JourneyCard.tsx').includes('section: { marginTop: 8, gap: 12 }'),'Today does not stack a large empty band');
-assert(home.includes('top: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }'),'Do not collapse profile-to-hero spacing');
+assert(home.includes('top: { height: 74, flexDirection: "row"') && home.includes('paddingTop: 15, paddingBottom: 15'),'Brand and avatar must have balanced space within one hero');
 assert(home.includes('heroTitle: { ...type.page, color: colors.text }'),'Home hero uses shared typography');
 assert(home.includes('sectionTitle: { ...type.section }'),'Home headings must reuse section scale');
 for(const p of ['app/notes/index.tsx','app/body/nutrition/groceries.tsx','app/community/events.tsx']){
