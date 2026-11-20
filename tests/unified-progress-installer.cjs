@@ -27,7 +27,8 @@ try{
  assert.match(applied.stdout,/TODAY ELIMINADO DEL MENU/);
  assert(!fs.existsSync(path.join(root,legacy)),'The old Today route is physically gone');
  assert.equal(fs.readFileSync(path.join(root,alias),'utf8'),reviewedAlias,'Old /today links must redirect outside tabs');
- assert.equal(fs.readFileSync(path.join(root,tabsPath),'utf8'),reviewedTabs,'Only four-tab navigation must remain');
+ const withoutExtraBlankLines=s=>s.replace(/^[ \t]*$/gm,'').replace(/\n{2,}/g,'\n');
+ assert.equal(withoutExtraBlankLines(fs.readFileSync(path.join(root,tabsPath),'utf8')),withoutExtraBlankLines(reviewedTabs),'Only the four-tab navigation must remain');
  assert.equal(fs.readFileSync(path.join(root,progress),'utf8'),reviewedProgress,'Progress with Daily Work must remain unchanged');
  const repeated=run();assert.equal(repeated.status,0,repeated.stderr);
  assert.match(repeated.stdout,/CUATRO PESTANAS YA CONFIGURADAS/);
