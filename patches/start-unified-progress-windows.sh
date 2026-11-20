@@ -2,7 +2,7 @@
 set -euo pipefail
 # One entrypoint for Treksor V1.4 from Git Bash on Windows.
 # Never resets, pulls, removes worktrees, changes tracked user data or publishes.
-BRANCH="feature/v14-unified-simple-progress-20261120"
+BRANCH="fix/v14-today-nested-route-20261120"
 TRACK="refs/remotes/origin/$BRANCH"
 SOURCE="$HOME/TreksorApp"
 DEST="$HOME/TreksorDevCompleto"
