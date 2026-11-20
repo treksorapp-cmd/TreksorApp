@@ -91,7 +91,14 @@ const ts=require(require.resolve('typescript',{paths:[root]}));
 const oldAst=ts.createSourceFile(screen,original,ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
 const newAst=ts.createSourceFile(screen,next,ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
 const helperAst=ts.createSourceFile(helper,helperContent,ts.ScriptTarget.Latest,true,ts.ScriptKind.TS);
-if(newAst.parseDiagnostics.length>oldAst.parseDiagnostics.length||helperAst.parseDiagnostics.length)fail('Se detecto un problema nuevo de sintaxis.');
+if(newAst.parseDiagnostics.length>oldAst.parseDiagnostics.length||helperAst.parseDiagnostics.length){
+ console.error('Guide fixture syntax diagnostics: '+JSON.stringify({
+   before:oldAst.parseDiagnostics.map(d=>({start:d.start,message:ts.flattenDiagnosticMessageText(d.messageText,' ')})),
+   after:newAst.parseDiagnostics.map(d=>({start:d.start,message:ts.flattenDiagnosticMessageText(d.messageText,' ')})),
+   helper:helperAst.parseDiagnostics.map(d=>({start:d.start,message:ts.flattenDiagnosticMessageText(d.messageText,' ')})),
+ }));
+ fail('Se detecto un problema nuevo de sintaxis.');
+}
 const oldHelper=fs.existsSync(helper)?fs.readFileSync(helper):null;
 if(oldHelper&&oldHelper.toString('utf8').replace(/\r\n/g,'\n').trimEnd()!==helperContent.trimEnd())
  fail('Existe un archivo personalizado '+helper+'.');
