@@ -25,7 +25,7 @@ export default function BodyPageHeading({ title, trail, subtitle, pillar, naviga
     const destination = key ? pillars[key] : undefined;
     const goBack = onBack ?? (typeof router.canGoBack === "function" && router.canGoBack() && !["/body","/mental","/spiritual","/purpose"].includes(pathname) ? () => router.back() : undefined);
     const showNavigation = navigation ?? Boolean(destination);
-    return <View style={[styles.container, style]}>
+    return <View style={[styles.container, fixed && styles.withFixedHeader, style]}>
     {!fixed && <View style={styles.topRow}>
       <Text style={styles.trail}>{trail.toUpperCase()}</Text>
       {showNavigation && <View style={styles.actions}>
@@ -40,6 +40,7 @@ export default function BodyPageHeading({ title, trail, subtitle, pillar, naviga
 }
 const styles = StyleSheet.create({
     container: { paddingHorizontal: 22 },
+    withFixedHeader: { paddingTop: 0, marginTop: 0 },
     topRow: { flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 8 },
     trail: { ...type.eyebrow, flex: 1, minWidth: 0 },
     actions: { flexDirection: "row", gap: 8, flexShrink: 0 },
