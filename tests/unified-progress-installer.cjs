@@ -1,6 +1,8 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path'),cp=require('node:child_process');
 const patch=path.resolve('patches/apply-unified-progress-windows.cjs');
+const shell=cp.spawnSync('bash',['-n','patches/start-unified-progress-windows.sh'],{encoding:'utf8'});
+assert.equal(shell.status,0,'One-command Git Bash updater must parse: '+shell.stderr);
 const names=['app/(tabs)/_layout.tsx','app/(tabs)/today/index.tsx','app/(tabs)/tracking/index.tsx','components/DailyWork.tsx','lib/route-trail.ts'];
 const prereqs=['lib/daily-activities.ts','hooks/useDailyActivities.ts','components/JourneyCard.tsx','components/WeeklyHabits.tsx','lib/progress-metrics.ts'];
 const latest=Object.fromEntries(names.map(p=>[p,fs.readFileSync(p,'utf8')]));
