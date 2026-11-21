@@ -1,3 +1,4 @@
+import BodyPageHeading from "@/components/BodyPageHeading";
 import {useFocusEffect,useLocalSearchParams} from "expo-router";
 import MentorCompanion from "@/components/mentor/MentorCompanion";
 import {guideKeyboardInset} from "@/lib/guide-keyboard";
@@ -15,6 +16,7 @@ import { StatusBar } from "expo-status-bar"
 import { useCallback, useEffect, useRef, useState } from "react"
 import {
   Alert,
+  ActivityIndicator,
   Dimensions,
   Keyboard,
   FlatList,
@@ -41,6 +43,7 @@ export default function ChatScreen() {
   const loadHistory = useChatStore(state => state.loadHistory)
   const messages = currentUserId === user?.id ? chats[currentUserId] || [] : [];
   const [inputText, setInputText] = useState("")
+  const [historyLoadedFor, setHistoryLoadedFor] = useState<string | null>(null)
   const [mode,setMode] = useState<MentorMode>("conversation")
   const clearConversation=useChatStore(s=>s.clearConversation)
   const inputRef=useRef<TextInput>(null)
@@ -58,6 +61,7 @@ export default function ChatScreen() {
   const [keyboardHeight, setKeyboardHeight] = useState(0)
   const [keyboardTop, setKeyboardTop] = useState<number | null>(null)
   const [viewportBottom, setViewportBottom] = useState(Dimensions.get("screen").height)
+  const shouldFollowMessagesRef = useRef(true)
   const measureViewport = useCallback(() => {
     rootRef.current?.measureInWindow((_x, y, _width, height) => {
       if (height <= 0) return
@@ -69,6 +73,7 @@ export default function ChatScreen() {
     const show = (event: {endCoordinates: {height: number; screenY: number}}) => {
       setKeyboardHeight(event.endCoordinates.height)
       setKeyboardTop(event.endCoordinates.screenY)
+      shouldFollowMessagesRef.current = true
       requestAnimationFrame(measureViewport)
     }
     const hide = () => {
@@ -91,29 +96,35 @@ export default function ChatScreen() {
   // The tab bar may hide or the navigator may already resize when the keyboard
   // opens. Only compensate for the portion overlapping the actual chat viewport.
   const keyboardInset = guideKeyboardInset(viewportBottom, keyboardTop)
-  const flatListRef = useRef<FlatList>(null)
+  const flatListRef = useRef<FlatList<Message>>(null)
 
   useEffect(()=>{
     if (user?.id) setUserId(user.id)
   },[setUserId,user?.id])
 
   useFocusEffect(useCallback(() => {
-    if (user?.id && currentUserId === user.id) void loadHistory()
+    let active = true
+    if (user?.id && currentUserId === user.id) {
+      setHistoryLoadedFor(null)
+      void loadHistory().finally(() => {
+        if (active) setHistoryLoadedFor(user.id)
+      })
+    }
+    return () => { active = false }
   }, [currentUserId, user?.id, loadHistory]))
   useEffect(()=>{if(params.intent==="meal"){setInputText("Help me improve a meal with one simple change. Ask about the ingredients, portions, preferences and allergies first.");setMode("meal_ideas")}},[params.intent])
-
-  useEffect(() => {
-    flatListRef.current?.scrollToEnd({ animated: true })
-  }, [messages])
 
   const handleSendMessage = async () => {
     if (inputText.trim() && !loading) {
       const text=inputText.trim()
-      const sent=await sendMessage(text,{mode})
-      if(sent){setInputText(previous=>previous.trim()===text?"":previous);setMode("conversation")}
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true })
-      }, 100)
+      shouldFollowMessagesRef.current = true
+      setInputText("");
+      const sent = await sendMessage(text, {mode});
+      if (sent) {
+        setMode("conversation");
+      } else {
+        setInputText(previous => previous.trim() ? previous : text);
+      }
     }
   }
 
@@ -158,17 +169,18 @@ export default function ChatScreen() {
       </View>
 
 
-      <View style={styles.guideHeading}><Text accessibilityRole="header" style={styles.guideHeadingTitle}>Guide</Text></View>
-      {(messages.length>0||keyboardHeight>0)&&<MentorCompanion compact busy={loading} onShare={sendMessage} onPrompt={(text,nextMode)=>{setInputText(text);setMode(nextMode);inputRef.current?.focus()}}/>}
+
+      <BodyPageHeading trail="YOUR JOURNEY" title="Guide" goldTitle compactSubtitle style={{ marginTop: 0, marginBottom: 6 }} />
+      <MentorCompanion compact showPrompts={messages.length===0&&(historyLoadedFor===user?.id||!user?.id)} busy={loading} onShare={sendMessage} onPrompt={(text,nextMode)=>{setInputText(text);setMode(nextMode);inputRef.current?.focus()}}/>
       {/* Messages */}
       <FlatList
         ref={flatListRef}
-        ListHeaderComponent={messages.length===0&&keyboardHeight===0?<MentorCompanion busy={loading} onShare={sendMessage} onPrompt={(text,nextMode)=>{setInputText(text);setMode(nextMode);inputRef.current?.focus()}}/>:null}
-        ListEmptyComponent={<View style={styles.welcomeAI}>
-          <Text style={styles.welcomeEyebrow}>YOUR SPACE</Text>
-          <Text style={styles.welcomeTitle}>Start wherever you are.</Text>
-          <Text style={styles.welcomeAIText}>Talk about what matters to you. Find clarity, build healthy habits and move forward at your own pace.</Text>
-          <Text style={styles.welcomeNote}>AI support, not professional mental health care.</Text>
+        ListEmptyComponent={historyLoadedFor===user?.id||!user?.id ? <View style={styles.emptyChat}>
+          <Text style={styles.emptyTitle}>Start wherever you are.</Text>
+          <Text style={styles.emptyCopy}>Choose a prompt above, or ask Guide below.</Text>
+        </View> : <View style={styles.historyLoading}>
+          <ActivityIndicator color={colors.gold} />
+          <Text style={styles.historyLoadingText}>Loading your conversation…</Text>
         </View>}
         data={messages}
         renderItem={renderMessage}
@@ -177,6 +189,21 @@ export default function ChatScreen() {
         keyboardDismissMode="interactive"
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.messagesContent}
+        onLayout={() => {
+          if (messages.length > 0 && shouldFollowMessagesRef.current) {
+            requestAnimationFrame(() => flatListRef.current?.scrollToEnd({ animated: false }))
+          }
+        }}
+        onContentSizeChange={() => {
+          if (messages.length > 0 && shouldFollowMessagesRef.current) {
+            requestAnimationFrame(() => flatListRef.current?.scrollToEnd({ animated: false }))
+          }
+        }}
+        onScroll={event => {
+          const {contentOffset, contentSize, layoutMeasurement} = event.nativeEvent
+          shouldFollowMessagesRef.current = contentSize.height - layoutMeasurement.height - contentOffset.y <= 80
+        }}
+        scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
       />
 
@@ -240,11 +267,11 @@ const styles = StyleSheet.create({
   premiumHeaderCenter: { flexDirection: "row", alignItems: "center", gap: 8 },
   premiumHeaderTitle: { ...type.page },
   beta: { color: "#161008", fontSize: 10, fontWeight: "800", backgroundColor: "#D7B877", paddingHorizontal: 9, paddingVertical: 4, borderRadius: 9 },
-  welcomeAI: { backgroundColor: navyOverlay(0.72), marginHorizontal: 20, marginTop: 24, padding: 22, borderRadius: 18, borderWidth: 1, borderColor: colors.border },
-  welcomeEyebrow: { color: "#D7B877", fontSize: 10, fontWeight: "700", letterSpacing: 2.4, marginBottom: 12 },
-  welcomeTitle: { ...type.section, marginBottom: 12 },
-  welcomeNote: { color: "#A9A397", fontSize: 11, lineHeight: 16, marginTop: 18 },
-  welcomeAIText: { color: "#F0F0F0", fontSize: 14, lineHeight: 22 },
+  emptyChat: { paddingHorizontal: 24, paddingTop: 24, alignItems: "center" },
+  emptyTitle: { ...type.section, textAlign: "center" },
+  emptyCopy: { color: colors.secondary, fontSize: 13, lineHeight: 20, textAlign: "center", marginTop: 7 },
+  historyLoading: { paddingTop: 28, alignItems: "center", gap: 10 },
+  historyLoadingText: { color: colors.secondary, fontSize: 12, lineHeight: 18 },
 
   container: {
     flex: 1,

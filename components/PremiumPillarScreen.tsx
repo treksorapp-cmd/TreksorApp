@@ -13,16 +13,13 @@ type Action = {
 };
 type Props = {
     title: string;
-    headline: string;
     subtitle: string;
     image: number;
     actions: Action[];
-    align?: "bottom" | "middle";
 };
-export default function PremiumPillarScreen({ title, headline, subtitle, image, actions }: Props) {
+export default function PremiumPillarScreen({ title, subtitle, image, actions }: Props) {
     const trail = title === "Body" ? "YOUR FOUNDATION" : title === "Mind" ? "CLARITY & GROWTH" : title === "Balance" ? "STILLNESS & PRESENCE" : "DIRECTION & INTENTION";
-    const copy = headline === headline.toUpperCase() ? headline.toLowerCase().split("\n").map(line => line.charAt(0).toUpperCase() + line.slice(1)).join("\n") : headline;
-    return <PillarMenuScreen title={title} trail={trail} image={image} headline={copy} subtitle={subtitle}>
+    return <PillarMenuScreen title={title} trail={trail} image={image} subtitle={subtitle} compactHeader>
     <PillarUpdates pillar={title}/>
     {actions.map(action => <Button borderless key={action.label} onPress={() => router.push(action.href)} iconName={action.icon}>{action.label}</Button>)}
     <View style={styles.bridge}>

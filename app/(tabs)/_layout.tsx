@@ -66,6 +66,7 @@ export default function TabLayout() {
           name="chat"
           options={{
             title: "Guide",
+        headerTitleStyle: { color: "#D7B877", fontWeight: "600" },
             tabBarIcon: ({ color }) => (
               <View style={styles.iconContainer}><Ionicons name={GUIDE_ICON} size={23} color={color} /></View>
             ),

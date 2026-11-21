@@ -4,7 +4,6 @@ import { pillars as pillarIdentity } from "@/lib/pillar-navigation";
 import {useReducedMotion} from "@/hooks/useReducedMotion";
 import { scheduleTodaysPowerThought } from "@/lib/daily-thought-notification";
 import { playCompletionFeedback } from "@/lib/completion-feedback";
-import { useAuthStore } from "@/store/auth-store";
 import { usePowerThoughtStore } from "@/store/thought-store";
 import Ionicons from '@/components/ui/BrandIcon';
 import { Image, ImageBackground } from "expo-image";
@@ -76,13 +75,11 @@ export default function HomeScreen() {
     });
     return()=>cancelAnimationFrame(frame);
   },[pillarStep,pillarViewportWidth,pillarScroll]);
-  const user = useAuthStore(state => state.user);
   const powerThoughts = usePowerThoughtStore(state => state.powerThoughts);
   const fetchPowerThoughts = usePowerThoughtStore(state => state.fetchPowerThoughts);
   const markRead = usePowerThoughtStore(state => state.markPowerThoughtAsRead);
   useContentRefresh(fetchPowerThoughts);
 
-  const firstName = user?.name?.trim().split(" ")[0] || "Explorer";
   const [now,setNow]=useState(()=>new Date());
   const [atmosphereUrl,setAtmosphereUrl]=useState<string | null>(null);
   const [atmosphereMessage,setAtmosphereMessage]=useState<readonly [string,string,string] | null>(null);
@@ -97,13 +94,13 @@ export default function HomeScreen() {
     pillarList.current?.scrollToOffset({offset:index*pillarStep,animated:!reducedMotion});
   };
   const pulse=useRef(new Animated.Value(0)).current;
-  useEffect(()=>{if(reducedMotion){pulse.setValue(0);return;}const loop=Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true}),Animated.timing(pulse,{toValue:0,duration:1450,easing:Easing.inOut(Easing.sin),useNativeDriver:true})]));loop.start();return()=>loop.stop()},[pulse,reducedMotion]);
+  useEffect(()=>{if(reducedMotion){pulse.setValue(0);return;}const loop=Animated.loop(Animated.sequence([Animated.timing(pulse,{toValue:1,duration:1500,easing:Easing.inOut(Easing.sin),useNativeDriver:true}),Animated.timing(pulse,{toValue:0,duration:1500,easing:Easing.inOut(Easing.sin),useNativeDriver:true})]));loop.start();return()=>loop.stop()},[pulse,reducedMotion]);
   useEffect(()=>{Animated.timing(reveal,{toValue:1,duration:reducedMotion?0:480,easing:Easing.out(Easing.cubic),useNativeDriver:true}).start()},[reveal,reducedMotion]);
-  useEffect(()=>{const refresh=()=>setNow(new Date());const timer=setInterval(refresh,60000);const sub=AppState.addEventListener("change",v=>{if(v==="active")refresh()});return()=>{clearInterval(timer);sub.remove()}},[]);
+  useEffect(()=>{const refresh=()=>setNow(new Date());const timer=setInterval(refresh,15000);const sub=AppState.addEventListener("change",v=>{if(v==="active")refresh()});return()=>{clearInterval(timer);sub.remove()}},[]);
   const hour = now.getHours();
   const dailyIndex=Math.floor(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000)%DAILY_MESSAGES.length;
   const dailyMessage=atmosphereUrl&&atmosphereMessage?atmosphereMessage:DAILY_MESSAGES[dailyIndex];
-  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const greeting = hour >= 5 && hour < 12 ? "Good morning" : hour >= 12 && hour < 17 ? "Good afternoon" : hour >= 17 && hour < 21 ? "Good evening" : "Good night";
   const todayThought = powerThoughts?.find(item => item.isToday) || powerThoughts?.[0];
   const isCurrentThought = !!todayThought?.isToday;
   useEffect(() => { if (todayThought?.isToday && todayThought.thought) void scheduleTodaysPowerThought(todayThought.thought, todayThought._id).catch(console.warn); }, [todayThought?._id, todayThought?.isToday, todayThought?.thought]);
@@ -116,20 +113,10 @@ export default function HomeScreen() {
         <Animated.View style={[styles.hero,{opacity:reveal,transform:[{translateY:reveal.interpolate({inputRange:[0,1],outputRange:[12,0]})}]}]}>
           <ImageBackground source={atmosphereUrl ? {uri:atmosphereUrl} : DAILY_HERO_IMAGES[dailyIndex]} onError={() => { if (atmosphereUrl) {setAtmosphereUrl(null);setAtmosphereMessage(null)} }} contentFit="cover" contentPosition={{left:"50%",top:"58%"}} cachePolicy="memory-disk" transition={350} style={StyleSheet.absoluteFill} />
           <LinearGradient colors={[navyOverlay(0.96), navyOverlay(0.70), navyOverlay(0.50), colors.background]} locations={[0, 0.22, 0.57, 1]} style={StyleSheet.absoluteFill} />
-        <View style={styles.top}>
-          <View style={styles.brand}>
-            <Image source={require("@/assets/images/appicon-treksor.png")} style={styles.logo} />
-            <View>
-              <Text style={styles.brandText}>TREKSOR</Text>
-              <Text style={styles.brandCaption}>BUILT WITH PURPOSE</Text>
-            </View>
-          </View>
-          <View style={styles.topRight}><TouchableOpacity onPress={() => router.push("/profile")} style={styles.profile} accessibilityLabel="Open profile">
-            {user?.avatar?<Image source={{uri:user.avatar.startsWith("http")?user.avatar:`https://app.treksor.com/${user.avatar}`}} style={styles.profileImage} cachePolicy="memory-disk"/>:<Text style={styles.profileLetter}>{firstName.charAt(0).toUpperCase()}</Text>}
-          </TouchableOpacity></View>
-        </View>
+          <Animated.View pointerEvents="none" style={[styles.greetingWrap,!reducedMotion&&{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.92,1]}),transform:[{scale:pulse.interpolate({inputRange:[0,1],outputRange:[1,1.045]})}]}]}>
+            <Animated.Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85} style={styles.heroGreeting}>{greeting}</Animated.Text>
+          </Animated.View>
           <View style={styles.heroContent}>
-          <View style={styles.heroGreetingWrap}><View style={styles.pulseShell}><Animated.View style={[styles.pulseHalo,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.06,0.24]}),transform:[{scale:pulse.interpolate({inputRange:[0,1],outputRange:[1,1.65]})}]}]}/><Animated.View style={[styles.greetingDot,{opacity:pulse.interpolate({inputRange:[0,1],outputRange:[0.70,1]})}]}/></View><Text style={styles.heroGreeting}>{greeting}</Text></View>
             <Text style={styles.eyebrow}>YOUR DAILY DIRECTION</Text>
             <Text style={styles.heroTitle}>{dailyMessage[0]}{"\n"}<Text style={styles.name}>{dailyMessage[1]}</Text></Text>
             <Text style={styles.heroSub}>{dailyMessage[2]}</Text>
@@ -230,20 +217,8 @@ const styles = StyleSheet.create({
   heroTitle: { ...type.page, color: colors.text },
   heroSub: { color: "#D0C8B9", fontSize: 12, letterSpacing: 0.7, marginTop: 13 },
   sectionCount: { color: GOLD, fontSize: 10, fontWeight: "700", letterSpacing: 1.5 },
-  top: { height: 74, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 24, paddingTop: 15, paddingBottom: 15 },
-  topRight:{alignItems:"center",justifyContent:"center"},
-  heroGreetingWrap:{flexDirection:"row",alignItems:"center",alignSelf:"flex-start",gap:8,marginBottom:17},
-  pulseShell:{width:9,height:9,alignItems:"center",justifyContent:"center"},
-  pulseHalo:{position:"absolute",width:9,height:9,borderRadius:5,backgroundColor:"#D7B877"},
-  greetingDot:{width:6,height:6,borderRadius:3,backgroundColor:"#FFE4A1"},
-  heroGreeting:{color:"#D7B877",fontSize:11,fontWeight:"600",letterSpacing:0.55},
-  profileImage:{width:44,height:44,borderRadius:22},
-  brand: { flexDirection: "row", alignItems: "center", gap: 10 },
-  logo: { width: 40, height: 40, borderRadius: 11 },
-  brandText: { color: "#FFFFFF", fontSize: 16, fontWeight: "700", letterSpacing: 4.2 },
-  brandCaption: { color: "#C6A568", fontSize: 8, fontWeight: "700", letterSpacing: 2.4, marginTop: 3 },
-  profile: { height: 44, width: 44, borderRadius: 22, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surfaceRaised, alignItems: "center", justifyContent: "center" },
-  profileLetter: { color: GOLD, fontWeight: "800", fontSize: 17 },
+  greetingWrap:{position:"absolute",top:17,right:24,zIndex:2,maxWidth:"58%",alignSelf:"flex-end"},
+  heroGreeting:{...type.caption,color:GOLD,fontSize:15,fontWeight:"600",letterSpacing:0.35,textShadowColor:"rgba(0,0,0,0.35)",textShadowOffset:{width:0,height:1},textShadowRadius:3},
   intro: { marginBottom: 34 },
   eyebrow: { color: GOLD, fontSize: 10, fontWeight: "600", letterSpacing: 2.1, marginBottom: 12 },
   greeting: { ...type.page, color: colors.text },

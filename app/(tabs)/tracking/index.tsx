@@ -133,14 +133,16 @@ export default function TrackingScreen() {
         {ownReady&&extras.sharedToday===true&&<Text style={styles.sharedNote}>Your completed day is also recorded in your Treksor account.</Text>}
       </View>
 
+      <Text style={[styles.sectionTitle,{marginTop:22}]}>Activity & evolution</Text>
       <TouchableOpacity accessibilityRole="button" accessibilityLabel="Log an activity" accessibilityState={{expanded:showRecorder}} onPress={()=>setShowRecorder(value=>!value)} style={styles.mainAction}>
         <View style={styles.mainIcon}><Icon name="add" size={23} color={colors.gold}/></View>
         <View style={styles.flex}><Text style={styles.mainText}>Log an activity</Text><Text style={styles.mainCaption}>Walk, hiking, sports or add your own</Text></View>
         <Icon name={showRecorder?"chevron-up":"chevron-down"} size={20} color={colors.gold}/>
       </TouchableOpacity>
       {showRecorder&&<DailyWork embedded/>}
+      <WalkingSummary rows={walks.rows} now={walks.now} loading={walks.loading} error={walks.error}/>
 
-      <Text style={[styles.sectionTitle,{marginTop:25}]}>Your day</Text>
+      <Text style={[styles.sectionTitle,{marginTop:18}]}>Habits & goals</Text>
       <View style={styles.actions}>
         <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open daily direction" accessibilityState={{expanded:showPlan}} onPress={()=>setShowPlan(value=>!value)} style={styles.action}>
           <Icon name="compass-outline" size={22} color={colors.gold}/>
@@ -166,6 +168,13 @@ export default function TrackingScreen() {
         </TouchableOpacity>
       </View>
 
+      <Text style={[styles.sectionTitle,{marginTop:25}]}>Smartwatch & health</Text>
+      <TouchableOpacity accessibilityRole="button" accessibilityLabel="Review smartwatch and health connections" onPress={()=>router.push("/progress/connections" as any)} style={styles.action}>
+        <Icon name="heart-circle-outline" size={23} color={colors.gold}/>
+        <View style={styles.flex}><Text style={styles.actionTitle}>Connected movement</Text><Text style={styles.actionSubtitle}>Review Apple Health, Apple Watch and Garmin availability and saved imports</Text></View>
+        <Icon name="chevron-forward" size={18} color={colors.gold}/>
+      </TouchableOpacity>
+
       <TouchableOpacity accessibilityRole="button" accessibilityLabel="Explore detailed progress" accessibilityState={{expanded:showAdvanced}} onPress={()=>setShowAdvanced(value=>!value)} style={styles.advancedButton}>
         <Icon name="stats-chart-outline" size={18} color={colors.gold}/>
         <Text style={styles.advancedText}>{showAdvanced?"Hide detailed progress":"View detailed progress"}</Text>
@@ -178,7 +187,6 @@ export default function TrackingScreen() {
             <JourneyDashboard data={data} period={period} onPeriod={setPeriod} detailsOpen={detailsOpen} onDetails={()=>setDetailsOpen(value=>!value)} onCheckInSaved={date=>setExtras(s=>({...s,journeyDates:Array.from(new Set([...s.journeyDates,date]))}))}/>
             {detailsOpen&&<ProgressDashboard compactOverview mentorReplies={mentorReplies} data={data} period={period} onPeriod={setPeriod} trackers={trackingData} today={today} journalLoading={!ownExtras||extras.journalLoading} visionLoading={!ownExtras||extras.visionLoading} journalError={ownExtras&&extras.journalError} visionError={ownExtras&&extras.visionError} onRetry={()=>setReload(v=>v+1)} onRoute={route=>router.push(route as any)} onLog={openLog} onCreate={()=>setShowAddTracker(true)} onCalendar={()=>setShowCalendar(true)}/>}
           </>}
-        <WalkingSummary rows={walks.rows} now={walks.now} loading={walks.loading} error={walks.error}/>
         <ProgressSyncStatus/>
       </View>}
     </ScrollView>

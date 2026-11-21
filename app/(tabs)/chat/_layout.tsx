@@ -15,7 +15,7 @@ export default function HomeLayout() {
         name="index"
          options={{
           headerShown:true,
-          header:()=><Header title="Guide" showBackButton={false} showAvatar={false} />
+          headerShown: false
         }}
       />
     </Stack>
