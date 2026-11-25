@@ -24,6 +24,7 @@ async function hydrate() {
   })));
 }
 async function backup(userId: string) {
+  await usePowerThoughtStore.getState().flushReadState();
   const workout = useWorkoutStore.getState();
   // These account caches stay on the device; journal and vision text never enter a cloud payload.
   await AsyncStorage.setItem(CACHE + userId, JSON.stringify({

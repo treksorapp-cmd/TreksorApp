@@ -1,3 +1,5 @@
+import UnreadBadge from "@/components/UnreadBadge";
+import { useNotificationStore } from "@/store/notification-store";
 import {usePillarUpdates,PillarUpdate} from "@/store/pillar-updates-store";
 import {useAuthStore} from "@/store/auth-store";
 import {useContentRefresh} from "@/hooks/useContentRefresh";
@@ -14,20 +16,22 @@ const label=(item:PillarUpdate)=>({article:"READ & REFLECT",thought:"POWER THOUG
 const icon=(item:PillarUpdate):React.ComponentProps<typeof Ionicons>["name"]=>kind(item)==="article"?"reader-outline":kind(item)==="thought"?"sparkles-outline":kind(item)==="video"?"play-outline":"barbell-outline";
 export default function PillarUpdates({pillar,compact=false}:{pillar:string;compact?:boolean}){
  const {items,seen,refresh,markSeen,owner}=usePillarUpdates(),account=useAuthStore(s=>s.user?.id);useContentRefresh(refresh);
- const updates=owner===account?items.filter(item=>item.pillar===pillar&&!seen.includes(item.id)):[];
+ const notificationState=useNotificationStore();
+ const receipts=notificationState.owner===account?notificationState.read:{};
+ const updates=owner===account?items.filter(item=>item.pillar===pillar&&!(kind(item)==="thought"||kind(item)==="article"?receipts[item.id.split(":").slice(0,2).join(":")]:seen.includes(item.id))):[];
  const [expanded,setExpanded]=useState(false),appear=useRef(new Animated.Value(1)).current;
  const signature=updates[0]?.id;
  useEffect(()=>{let alive=true;AccessibilityInfo.isReduceMotionEnabled().then(reduce=>{if(alive&&!reduce&&signature){appear.setValue(.6);Animated.timing(appear,{toValue:1,duration:650,useNativeDriver:true}).start()}});return()=>{alive=false;appear.stopAnimation()}},[signature,appear]);
  if(!updates.length)return null;
- if(compact)return <View accessibilityLabel={`${updates.length} unseen updates in ${pillar}`} style={s.badge}><View style={s.dot}/><Text style={s.badgeText}>{updates.length} NEW {updates.length===1?"DISCOVERY":"DISCOVERIES"}</Text><Ionicons name="chevron-forward" size={11} color={colors.gold}/></View>;
+ if(compact)return <View accessibilityLabel={`${updates.length} unseen updates in ${pillar}`} style={s.badge}><UnreadBadge dot/><Text style={s.badgeText}>{updates.length} NEW {updates.length===1?"DISCOVERY":"DISCOVERIES"}</Text><Ionicons name="chevron-forward" size={11} color={colors.gold}/></View>;
  const featured=updates[0],remaining=updates.slice(1,expanded?undefined:3);
  const open=(item:PillarUpdate)=>{void markSeen([item.id]).catch(()=>{});router.push(item.href as any)};
  return <Animated.View style={[s.shell,{opacity:appear}]}>
-  <View style={s.header}><View><Text style={s.eyebrow}>FRESH IN {pillar.toUpperCase()}</Text><Text style={s.heading}>Something for your next step.</Text></View><View style={s.count}><Text style={s.countText}>{updates.length}</Text></View></View>
+  <View style={s.header}><View><Text style={s.eyebrow}>FRESH IN {pillar.toUpperCase()}</Text><Text style={s.heading}>Something for your next step.</Text></View><UnreadBadge count={updates.length}/></View>
   <TouchableOpacity onPress={()=>open(featured)} activeOpacity={.88} accessibilityRole="button" accessibilityLabel={`Open ${featured.title}`} style={s.feature}>
    <Image source={featured.image?{uri:featured.image}:art[pillar]||art.Mind} contentFit="cover" transition={180} style={StyleSheet.absoluteFill}/>
    <LinearGradient colors={[navyOverlay(0.15),navyOverlay(0.88),colors.surface]} locations={[0,.55,1]} style={StyleSheet.absoluteFill}/>
-   <View style={s.featureTop}><View style={s.chip}><Ionicons name={icon(featured)} size={13} color={colors.gold}/><Text style={s.chipText}>{label(featured)}</Text></View><View style={s.newChip}><View style={s.dot}/><Text style={s.chipText}>NEW</Text></View></View>
+   <View style={s.featureTop}><View style={s.chip}><Ionicons name={icon(featured)} size={13} color={colors.gold}/><Text style={s.chipText}>{label(featured)}</Text></View><View style={s.newChip}><UnreadBadge dot/><Text style={s.chipText}>NEW</Text></View></View>
    <View style={{marginTop:35}}><Text style={s.featureTitle} numberOfLines={3}>{featured.title}</Text>{!!featured.summary&&<Text style={s.summary} numberOfLines={2}>{featured.summary}</Text>}<View style={s.featureBottom}><Text style={s.invite}>{kind(featured)==="article"?"A new perspective awaits":kind(featured)==="thought"?"Take a thought with you":"Bring it into your next session"}</Text><View style={s.arrow}><Ionicons name="arrow-forward" size={19} color="#14120C"/></View></View></View>
   </TouchableOpacity>
   {remaining.map(item=><TouchableOpacity key={item.id} onPress={()=>open(item)} accessibilityRole="button" style={s.row}><View style={s.rowIcon}><Ionicons name={icon(item)} size={19} color={colors.gold}/></View><View style={{flex:1}}><Text style={s.rowKind}>{label(item)}</Text><Text style={s.rowTitle} numberOfLines={2}>{item.title}</Text></View><Ionicons name="chevron-forward" color="#9B998F" size={17}/></TouchableOpacity>)}

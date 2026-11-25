@@ -2,8 +2,10 @@ import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
+import { useNotificationInbox } from './useNotificationInbox';
 
 export function useNotifications() {
+    useNotificationInbox();
     const [pushToken, setPushToken] = useState<Notifications.ExpoPushToken | undefined>();
     const [notification, setNotification] = useState<Notifications.Notification | undefined>();
 
@@ -15,7 +17,9 @@ export function useNotifications() {
         Notifications.setNotificationHandler({
             handleNotification: async () => ({
                 shouldPlaySound: true,
-                shouldSetBadge: true,
+                // The foreground inbox writes the exact count. The OS handles
+                // the badge in the push payload when the app is closed.
+                shouldSetBadge: false,
                 shouldShowBanner: true,
                 shouldShowList: true,
             }),
@@ -23,13 +27,23 @@ export function useNotifications() {
 
         async function registerForPushNotification() {
             try {
+                // Set up Android notification channel
+                if (Platform.OS === 'android') {
+                    await Notifications.setNotificationChannelAsync("default", {
+                        name: 'default',
+                        importance: Notifications.AndroidImportance.MAX,
+                        vibrationPattern: [0, 250, 250, 250],
+                        lightColor: '#FF231F7C',
+                        showBadge: true
+                    });
+                }
                 // Check existing permissions
                 const { status: existingStatus } = await Notifications.getPermissionsAsync();
                 let finalStatus = existingStatus;
 
                 // Request permissions if not granted
                 if (existingStatus !== 'granted') {
-                    const { status } = await Notifications.requestPermissionsAsync();
+                    const { status } = await Notifications.requestPermissionsAsync({ios:{allowAlert:true,allowSound:true,allowBadge:true}});
                     finalStatus = status;
                 }
 
@@ -44,15 +58,7 @@ export function useNotifications() {
                     projectId: Constants.expoConfig?.extra?.eas?.projectId,
                 });
 
-                // Set up Android notification channel
-                if (Platform.OS === 'android') {
-                    await Notifications.setNotificationChannelAsync("default", {
-                        name: 'default',
-                        importance: Notifications.AndroidImportance.MAX,
-                        vibrationPattern: [0, 250, 250, 250],
-                        lightColor: '#FF231F7C'
-                    });
-                }
+
 
                 return token;
             } catch (error) {
@@ -65,7 +71,7 @@ export function useNotifications() {
         registerForPushNotification()
             .then((token) => {
                 if (token) {
-                    console.log("Push token obtained:", token.data);
+
                     setPushToken(token);
                 } else {
                     console.warn("Failed to get push token");
@@ -81,16 +87,16 @@ export function useNotifications() {
         });
 
         responseListener.current = Notifications.addNotificationResponseReceivedListener((resp) => {
-            console.log("Notification response:", resp);
+            // Navigation and unread state are handled by useNotificationInbox.
         });
 
         // Cleanup
         return () => {
             if (notificationListener.current) {
-                Notifications.removeNotificationSubscription(notificationListener.current);
+                notificationListener.current.remove();
             }
             if (responseListener.current) {
-                Notifications.removeNotificationSubscription(responseListener.current);
+                responseListener.current.remove();
             }
         };
     }, []);

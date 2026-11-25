@@ -1,3 +1,4 @@
+import NotificationBell from "@/components/NotificationBell";
 import { ReactNode, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Image } from 'expo-image';
@@ -42,6 +43,7 @@ export default function AppFrame({children,enabled}:{children:ReactNode;enabled:
           </TouchableOpacity>
           {!primaryScreen&&<Text numberOfLines={1} accessibilityRole="header" accessibilityLabel={`Current location: ${trail.label}`} style={s.trail}>{trail.label}</Text>}
           <View style={s.actions}>
+            <NotificationBell/>
             <TouchableOpacity accessibilityRole="button" accessibilityLabel="Choose a pillar" accessibilityState={{expanded:picker}} style={s.icon} onPress={()=>setPicker(value=>!value)}><BrandIcon name="grid-outline" size={22} color={colors.gold}/></TouchableOpacity>
             <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open profile" style={s.avatarButton} onPress={()=>navigate('/profile')}>{avatar?<Image source={{uri:avatar}} style={s.avatar} contentFit="cover" cachePolicy="memory-disk"/>:<Text style={s.avatarLetter}>{firstName.charAt(0).toUpperCase()}</Text>}</TouchableOpacity>
           </View>
@@ -60,7 +62,7 @@ const s=StyleSheet.create({
   root:{flex:1,backgroundColor:colors.background},content:{flex:1,minHeight:0},
   chrome:{backgroundColor:colors.background,borderBottomWidth:1,borderBottomColor:colors.border,zIndex:40,elevation:40},
   bar:{paddingHorizontal:12,paddingVertical:3,flexDirection:'row',alignItems:'center',gap:5,minHeight:50},
-  identity:{flexDirection:'row',alignItems:'center',gap:8,minHeight:44,minWidth:160,paddingVertical:5,flexShrink:1},mainIdentity:{flex:1},logo:{width:34,height:34,borderRadius:9},
+  identity:{flexDirection:'row',alignItems:'center',gap:8,minHeight:44,minWidth:90,paddingVertical:5,flexShrink:1},mainIdentity:{flex:1},logo:{width:34,height:34,borderRadius:9},
   brandText:{flex:1,minWidth:0},brandName:{...type.caption,fontSize:14.5,lineHeight:16,color:colors.text,fontWeight:'800',letterSpacing:1.3},brandCaption:{fontSize:10.5,lineHeight:12,color:colors.secondary,letterSpacing:0.5,fontWeight:'600'},
   trail:{...type.caption,color:colors.gold,flex:1,minWidth:0,marginHorizontal:3,fontWeight:'600',flexShrink:1},back:{width:34,height:42,alignItems:'center',justifyContent:'center'},
   actions:{flexDirection:'row',gap:3,marginLeft:'auto'},icon:{...surface.icon,width:38,height:40},avatarButton:{width:38,height:40,alignItems:'center',justifyContent:'center'},avatar:{width:32,height:32,borderRadius:16},avatarLetter:{width:32,height:32,borderRadius:16,overflow:'hidden',textAlign:'center',textAlignVertical:'center',backgroundColor:colors.surface,color:colors.gold,fontWeight:'700',paddingTop:7},

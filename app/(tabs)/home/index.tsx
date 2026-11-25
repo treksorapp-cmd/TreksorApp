@@ -1,3 +1,4 @@
+import UnreadBadge from "@/components/UnreadBadge";
 import { useContentRefresh } from "@/hooks/useContentRefresh";
 import { colors, navyOverlay, type } from "@/theme/architect";
 import { pillars as pillarIdentity } from "@/lib/pillar-navigation";
@@ -200,7 +201,7 @@ export default function HomeScreen() {
           <View style={styles.thoughtCard}>
             <Text style={{color:GOLD,fontSize:10,fontWeight:"800",letterSpacing:1.8,marginBottom:15}}>{isCurrentThought?"POWER THOUGHT · TODAY":"POWER THOUGHT · LATEST"}</Text>
             <Text style={styles.thoughtText}>{thought}</Text>
-            <View style={styles.thoughtFooter}><TouchableOpacity onPress={() => router.push("/mental/thoughts")}><Text style={styles.thoughtLink}>EXPLORE THOUGHTS</Text></TouchableOpacity><TouchableOpacity disabled={!todayThought || !!todayThought.isRead} accessibilityRole="checkbox" accessibilityState={{checked:!!todayThought?.isRead}} onPress={completeThought} style={{flexDirection:"row",alignItems:"center",gap:8,backgroundColor:todayThought?.isRead?colors.goldSoft:colors.goldSoft,paddingHorizontal:13,paddingVertical:11,borderRadius:12}}><Ionicons name={todayThought?.isRead?"checkmark-circle":"checkmark-circle-outline"} size={19} color={todayThought?.isRead?colors.gold:GOLD}/><Text style={{color:todayThought?.isRead?"#BFE7F4":GOLD,fontWeight:"800",fontSize:12}}>{todayThought?.isRead?(isCurrentThought?"READ TODAY":"READ"):"MARK AS READ"}</Text></TouchableOpacity></View>
+            <View style={styles.thoughtFooter}>{todayThought && !todayThought.isRead && <UnreadBadge dot label="unread Power Thought"/>}<TouchableOpacity onPress={() => router.push("/mental/thoughts")}><Text style={styles.thoughtLink}>EXPLORE THOUGHTS</Text></TouchableOpacity><TouchableOpacity disabled={!todayThought || !!todayThought.isRead} accessibilityRole="checkbox" accessibilityState={{checked:!!todayThought?.isRead}} onPress={completeThought} style={{flexDirection:"row",alignItems:"center",gap:8,backgroundColor:todayThought?.isRead?colors.goldSoft:colors.goldSoft,paddingHorizontal:13,paddingVertical:11,borderRadius:12}}><Ionicons name={todayThought?.isRead?"checkmark-circle":"checkmark-circle-outline"} size={19} color={todayThought?.isRead?colors.gold:GOLD}/><Text style={{color:todayThought?.isRead?"#BFE7F4":GOLD,fontWeight:"800",fontSize:12}}>{todayThought?.isRead?(isCurrentThought?"READ TODAY":"READ"):"MARK AS READ"}</Text></TouchableOpacity></View>
           </View>
         </View>
         <Text style={styles.footer}>TREKSOR · BUILT WITH PURPOSE</Text>

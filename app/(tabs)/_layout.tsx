@@ -1,3 +1,4 @@
+import { useNotificationStore } from "@/store/notification-store";
 import { colors, navyOverlay } from "@/theme/architect";
 "use client";
 
@@ -13,7 +14,11 @@ import {
 } from "react-native";
 
 export default function TabLayout() {
-  const { isAuthenticated, isVerified } = useAuthStore();
+  const { isAuthenticated, isVerified, user } = useAuthStore();
+  const inbox = useNotificationStore();
+  const unread = inbox.ready && inbox.owner === user?.id ? inbox.items.filter(i=>!i.read) : [];
+  const contentCount = unread.filter(i=>i.kind === "thought" || i.kind === "article").length;
+  const reminderCount = unread.filter(i=>i.kind === "reminder").length;
 
   if (!isAuthenticated || !isVerified) return <Redirect href="/(auth)" />;
 
@@ -56,6 +61,8 @@ export default function TabLayout() {
           name="home"
           options={{
             title: "Home",
+            tabBarBadge: contentCount || undefined,
+            tabBarBadgeStyle:{backgroundColor:colors.danger,color:colors.background},
             tabBarIcon: ({ color }) => (
               <View style={styles.iconContainer}><Ionicons name={HOME_ICON} size={23} color={color} /></View>
             ),
@@ -77,6 +84,8 @@ export default function TabLayout() {
           name="tracking"
           options={{
             title: "Progress",
+            tabBarBadge: reminderCount || undefined,
+            tabBarBadgeStyle:{backgroundColor:colors.danger,color:colors.background},
             tabBarIcon: ({ color }) => (
               <View style={styles.iconContainer}><Ionicons name="analytics-outline" size={23} color={color} /></View>
             ),

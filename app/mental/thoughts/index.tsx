@@ -1,3 +1,4 @@
+import UnreadBadge from "@/components/UnreadBadge";
 import { colors, layout, type } from "@/theme/architect";
 import { useContentRefresh } from "@/hooks/useContentRefresh";
 import BodyPageHeading from "@/components/BodyPageHeading";
@@ -25,7 +26,7 @@ import {
 const { width } = Dimensions.get("window");
 
 export default function PowerThoughtsScreen() {
-  const { powerThoughts, loading, error, fetchPowerThoughts } = usePowerThoughtStore();
+  const { powerThoughts, loading, error, fetchPowerThoughts, markPowerThoughtAsRead } = usePowerThoughtStore();
   useContentRefresh(fetchPowerThoughts);
   const insets = useSafeAreaInsets();
   const handleBackPress = () => {
@@ -63,6 +64,7 @@ export default function PowerThoughtsScreen() {
           >
             <View style={styles.card}>
               <View style={styles.cardHeader}>
+                {!thought.isRead && <UnreadBadge dot label="unread Power Thought"/>}
                 {thought?.isToday ? 
                 <Text style={[styles.dateText,thought.isToday && {textAlign: "center"}]}>TODAY'S THOUGHT</Text>:
                 <Text style={[styles.dateText,thought.isToday && {textAlign: "center"}]}>{thought.date}</Text>}
@@ -70,6 +72,7 @@ export default function PowerThoughtsScreen() {
 
               <Text style={[styles.thoughtText,thought.isToday && {textAlign: "center"}]}>{thought.thought}</Text>
               <View style={styles.cardFooter}>
+              <TouchableOpacity accessibilityRole="checkbox" accessibilityState={{checked:!!thought.isRead}} accessibilityLabel="Mark Power Thought as read" disabled={!!thought.isRead} onPress={()=>markPowerThoughtAsRead(thought._id)} style={{padding:12}}><Text style={{color:colors.gold,fontWeight:"700",fontSize:12}}>{thought.isRead ? "READ ✓" : "MARK AS READ"}</Text></TouchableOpacity>
               <TouchableOpacity
                   style={styles.shareButton}
                   onPress={() => handleShare(thought)}
@@ -156,8 +159,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   cardFooter: {
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
+    flexDirection:"row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginTop: 8,
   },
   dateText: {

@@ -1,3 +1,4 @@
+import { safeNoticeRoute } from "@/lib/notification-inbox";
 import {create} from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useAuthStore} from "@/store/auth-store";
@@ -16,7 +17,7 @@ export const usePillarUpdates=create<{owner?:string;items:PillarUpdate[];seen:st
    const [r,raw]=await Promise.all([fetch("https://treksor-admin-production.up.railway.app/api/public/pillar-updates",{signal:controller.signal}),AsyncStorage.getItem(`treksor.pillar-updates.${account}`)]);
    if(!r.ok)return;
    const data=await r.json(),parsed=JSON.parse(raw||"[]"),seen=Array.isArray(parsed)?parsed.filter(id=>typeof id==="string"):[];
-   const items:Array<PillarUpdate>=Array.isArray(data.items)?data.items.filter((item:any)=>typeof item.id==="string"&&typeof item.title==="string"&&typeof item.pillar==="string"&&typeof item.href==="string"&&/^\/(?:body|mental|spiritual|purpose|\(tabs\))\//.test(item.href)):[];
+   const items:Array<PillarUpdate>=Array.isArray(data.items)?data.items.filter((item:any)=>typeof item.id==="string"&&typeof item.title==="string"&&typeof item.pillar==="string"&&typeof item.href==="string"&&!!safeNoticeRoute(item.href)):[];
    if(useAuthStore.getState().user?.id===account){lastRefresh=Date.now();set({owner:account,items,seen:Array.from(new Set([...seen,...get().seen]))})}
   }catch{}finally{clearTimeout(timer);if(requestOwner===account)request=null}})();request=task;return task;
  },

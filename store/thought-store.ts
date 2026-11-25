@@ -5,6 +5,9 @@ import { PowerThought } from "@/types/powerThought";
 import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+let readWrites: Promise<unknown> = Promise.resolve();
+let epoch = 0;
+
 interface PowerThoughtState {
   powerThoughts: PowerThought[]
   loading: boolean;
@@ -12,6 +15,7 @@ interface PowerThoughtState {
   fetchPowerThoughts: () => Promise<void>;
   markPowerThoughtAsRead: (id: string) => void;
   clearData: () => void;
+  flushReadState: () => Promise<unknown>;
 }
 
 export const usePowerThoughtStore = create<PowerThoughtState>()(
@@ -23,6 +27,7 @@ export const usePowerThoughtStore = create<PowerThoughtState>()(
 
       fetchPowerThoughts: async () => {
         if (get().loading) return;
+        const version = epoch;
         set({ loading: true, error: null });
         try {
           const response = await axios.get(`${CONTENT_FEED}?type=thoughts`, { timeout: 12000 });
@@ -37,11 +42,15 @@ export const usePowerThoughtStore = create<PowerThoughtState>()(
             const dateKey = raw.slice(0,10);
             return { ...item, _id: id, date: raw, isToday: dateKey === (payload.publicationDate || localDay) };
           });
+          await readWrites.catch(() => {});
           const readMap = await AsyncStorage.getItem("treksor.thoughts.read.v1").then(v=>v?JSON.parse(v):{}).catch(()=>({}));
           const unique = Array.from(new Map(current.map(item=>[item._id,item])).values());
           unique.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
-          set({ loading:false, powerThoughts:unique.map(item=>({...item,isRead:readMap[item._id]===localDay})) });
+          if(version !== epoch) return;
+          const justRead = new Set(get().powerThoughts.filter(item=>item.isRead).map(item=>item._id));
+          set({ loading:false, powerThoughts:unique.map(item=>({...item,isRead:!!readMap[item._id] || justRead.has(item._id)})) });
         } catch (error) {
+          if(version !== epoch) return;
           console.error("Thought sync failed",error);
           set({ loading:false, error:"Unable to load today's thought" });
         }
@@ -50,10 +59,20 @@ export const usePowerThoughtStore = create<PowerThoughtState>()(
         const today = new Date();
         const localDay = publicationDay(today);
         set(state=>({powerThoughts:state.powerThoughts.map(item=>item._id===id?{...item,isRead:true}:item)}));
-        void AsyncStorage.getItem("treksor.thoughts.read.v1").then(raw=>raw?JSON.parse(raw):{}).catch(()=>({})).then(map=>AsyncStorage.setItem("treksor.thoughts.read.v1",JSON.stringify({...map,[id]:localDay}))).catch(console.warn);
+        const version = epoch;
+        readWrites = readWrites.catch(()=>{}).then(async()=>{
+          if(version !== epoch) return;
+          const raw = await AsyncStorage.getItem("treksor.thoughts.read.v1");
+          const map = raw ? JSON.parse(raw) : {};
+          if(version !== epoch) return;
+          await AsyncStorage.setItem("treksor.thoughts.read.v1",JSON.stringify({...map,[id]:localDay}));
+        });
+        void readWrites.catch(()=>set({error:"Could not save read status. Please try again."}));
       },
 
+      flushReadState: () => readWrites,
       clearData: () => {
+        epoch++;
         set({
           powerThoughts:[],
           loading: false,

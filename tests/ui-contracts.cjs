@@ -23,6 +23,7 @@ const mocks={
  'expo-router':{router,Redirect,Stack:wrap,Tabs:wrap,usePathname:()=>pathname,useLocalSearchParams:()=>params},
  'react-native-toast-message':()=>null,
  '@/store/auth-store':{useAuthStore:()=>auth},
+ '@/store/notification-store':{useNotificationStore:()=>({owner:'A',ready:true,items:[{kind:'thought',read:false},{kind:'article',read:false},{kind:'reminder',read:false},{kind:'article',read:true}]})},
  'react-native-safe-area-context':{SafeAreaView:wrap,useSafeAreaInsets:()=>({top:44,bottom:34,left:0,right:0})},
  'expo-image':{Image:media,ImageBackground:media},'expo-linear-gradient':{LinearGradient:wrap},'expo-blur':{BlurView:wrap},
  'expo-status-bar':{StatusBar:()=>null},
@@ -62,10 +63,13 @@ for(const state of [{isAuthenticated:false,isVerified:false},{isAuthenticated:tr
  assert.equal(TabsLayout().type,Redirect);
  assert.equal(TabsLayout().props.href,'/(auth)');
 }
-auth={isAuthenticated:true,isVerified:true,isChangePassword:false};
+auth={isAuthenticated:true,isVerified:true,isChangePassword:false,user:{id:'A'}};
 assert.equal(AuthLayout().props.href,'/(tabs)/home');
 const tabs=React.Children.toArray(TabsLayout().props.children).find(child=>child.type===wrap);
 assert.equal(tabs.props.initialRouteName,'home');
+const tabScreens=React.Children.toArray(tabs.props.children);
+assert.equal(tabScreens.find(s=>s.props.name==='home').props.options.tabBarBadge,2);
+assert.equal(tabScreens.find(s=>s.props.name==='tracking').props.options.tabBarBadge,1);
 const indexScreen=React.Children.toArray(tabs.props.children).find(child=>child.props.name==='index');
 assert.equal(indexScreen.props.options.href,null);
 assert.equal(indexScreen.props.redirect,undefined,'The index redirect must remain reachable');

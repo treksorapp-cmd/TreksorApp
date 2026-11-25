@@ -5,5 +5,6 @@ export interface Article {
     description: string
     body: string
     image: string
+    date?: string
     isRead?: boolean
 }

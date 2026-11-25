@@ -32,10 +32,11 @@ const mocks={
  await articles.getState().fetchArticles('category=all');assert(articles.getState().articles['All Articles'].find(a=>a._id==='mind').isRead);
  await articles.getState().fetchArticles('category=Spiritual');assert.equal(articles.getState().articles.Spiritual[0]._id,'balance');
  fail=true;await articles.getState().fetchArticles('category=all');assert(articles.getState().error);assert.equal(articles.getState().articles['All Articles'].length,2);
- fail=false;articleRows=[];await articles.getState().fetchArticles('category=all');assert.equal(articles.getState().articles['All Articles'].length,0,'Unpublished content removed on refresh');
+ fail=false;articleRows=[];await articles.getState().fetchArticles('category=all');assert.equal(articles.getState().articles['All Articles'].length,0,'Unpublished content removed on refresh');assert.equal(Object.values(articles.getState().articles).flat().length,0,'No stale pillar copy keeps an unread badge alive');
  // Render after asynchronous arrival: no mount-time animation array may hide cards.
  const React=require('react'),RN=require('react-native-web');const {renderToStaticMarkup}=require('react-dom/server');
  const screen=load('app/mental/thoughts/index.tsx',{
+  '@/components/UnreadBadge':()=>null,
   '@/theme/architect':load('theme/architect.ts',{}),
   '@/hooks/useContentRefresh':{useContentRefresh:()=>{}},'@/components/BodyPageHeading':()=>null,
   '@/store/thought-store':{usePowerThoughtStore:()=>thoughts.getState()},'react-native':RN,

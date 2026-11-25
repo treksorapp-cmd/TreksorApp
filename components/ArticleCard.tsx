@@ -1,3 +1,4 @@
+import UnreadBadge from "@/components/UnreadBadge";
 import { Article } from "@/types/article";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -49,6 +50,7 @@ const ArticleCard = ({
             </View>
 
             <View style={styles.textContent}>
+              {!item.isRead && <UnreadBadge dot label="unread article"/>}
               <Text style={styles.articleTitle}>
                 {item.title}
               </Text>

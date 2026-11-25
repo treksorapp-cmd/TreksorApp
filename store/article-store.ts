@@ -2,11 +2,17 @@ import { matchesCategory } from "@/lib/content-publication";
 import { api } from "@/api/axios";
 import axios from "axios";
 const CONTENT_FEED = "https://treksor-admin-production.up.railway.app/api/public/content";
-import { countRead, errorHandler } from "@/lib/utils";
 import { Article } from "@/types/article";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+
+let epoch = 0;
+const unreadCount = (articles: Record<string, Article[]>) => {
+  const unique = new Map<string, boolean>();
+  Object.values(articles).flat().forEach(a=>unique.set(a._id,!!a.isRead || !!unique.get(a._id)));
+  return [...unique.values()].filter(read=>!read).length;
+};
 
 export interface fetchArticleRequest {
   id: string;
@@ -41,6 +47,7 @@ export const useArticleStore = create<ArticleState>()(
       error: null,
 
       fetchArticles: async (query) => {
+        const version = epoch;
         set({ loading: true, error: null });
         const params = new URLSearchParams(query);
         const category = params.get("category") || "default";
@@ -56,20 +63,26 @@ export const useArticleStore = create<ArticleState>()(
           if (results[1].status === "rejected") throw new Error("Dashboard content unavailable");
           if (!Array.isArray(editorial) || !Array.isArray(legacy)) throw new Error("Invalid article feed");
           const unique = Array.from(new Map([...legacy, ...editorial].map(article => [article._id, article])).values());
+          if(version !== epoch) return;
           set(state => {
             const records = unique.map(article => ({ ...article, isRead: Object.values(state.articles).flat().some(old => old._id === article._id && old.isRead) }));
             const next = { ...state.articles, [key]: records.filter(article => matchesCategory(article.category, category)) };
             // The dashboard returns the full editorial catalogue: populate every pillar
             // immediately, rather than leaving a stale category cache behind.
             for (const pillar of ["Body", "Mind", "Mental", "Balance", "Spiritual", "Purpose"]) {
-              const previous = (state.articles[pillar] || []).filter(article => !editorial.some(item => item._id === article._id));
+              const previous = (category === "all" ? [] : state.articles[pillar] || []).filter(article => !editorial.some(item => item._id === article._id));
               const current = records.filter(article => matchesCategory(article.category, pillar));
               next[pillar] = Array.from(new Map([...previous, ...current].map(article => [article._id, article])).values());
             }
-            if (category === "all") next["All Articles"] = records;
-            return { loading: false, articles: next };
+            if (category === "all") {
+              // A full refresh is authoritative for every cached category.
+              for (const cached of Object.keys(next)) next[cached] = records.filter(article=>matchesCategory(article.category,cached));
+              next["All Articles"] = records;
+            }
+            return { loading: false, articles: next, unreadArticlesCount: unreadCount(next) };
           });
         } catch (error) {
+          if(version !== epoch) return;
           set({ loading: false, error: "Unable to load articles" });
           console.error("Article sync failed", error);
         }
@@ -85,24 +98,16 @@ export const useArticleStore = create<ArticleState>()(
       },
 
       clearData: () => {
-        set({ articles: {}, loading: false, error: null });
+        epoch++;
+        set({ articles: {}, unreadArticlesCount: 0, loading: false, error: null });
       },
 
-      getUnreadArticlesCount: () => { 
-
-        const { articles } = useArticleStore.getState();
-      
-        const allArticles = articles['All Articles'] || [];
-        const allArticlesRead = allArticles ? countRead(allArticles) : 0;
-      
-        set({ unreadArticlesCount: allArticles.length - allArticlesRead });
-      },
+      getUnreadArticlesCount: () => set({unreadArticlesCount:unreadCount(get().articles)}),
 
       markArticleAsRead: (type: string, id: string) => {
         set(state => {
           const articles = Object.fromEntries(Object.entries(state.articles).map(([key, list]) => [key, list.map(article => article._id === id ? { ...article, isRead: true } : article)]));
-          const all = articles["All Articles"] || [];
-          return { articles, unreadArticlesCount: all.length - countRead(all) };
+          return { articles, unreadArticlesCount: unreadCount(articles) };
         });
       },
 
