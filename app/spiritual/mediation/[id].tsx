@@ -23,6 +23,7 @@ export default function MeditationDetailScreen() {
     const sound = useRef<Audio.Sound | null>(null);
     const download = useRef<FileSystem.DownloadResumable | null>(null);
     const temporaryFile = useRef<string | null>(null);
+    const cancelDownloadWatchdog = useRef<(() => void) | null>(null);
     const session = useRef(0);
     const busyRef = useRef(false);
     const [busy, setBusy] = useState(false);
@@ -40,6 +41,8 @@ export default function MeditationDetailScreen() {
         setPlayback({ position: 0, duration: 0 });
         return () => {
             session.current += 1;
+            cancelDownloadWatchdog.current?.();
+            cancelDownloadWatchdog.current = null;
             const task = download.current;
             const partial = temporaryFile.current;
             download.current = null;
@@ -88,12 +91,24 @@ export default function MeditationDetailScreen() {
                 temporaryFile.current = partial;
                 const mediaUrl = await meditationAudio(meditation.id,meditation.audioUrl);
                 if(version !== session.current) return;
+                let timer: ReturnType<typeof setTimeout> | undefined;
+                let rejectStall: (error: Error) => void = () => {};
+                let lastBytes = 0;
+                const stalled = new Promise<never>((_, reject) => { rejectStall = reject; });
+                const arm = () => { clearTimeout(timer); timer = setTimeout(() => rejectStall(new Error("Audio download stalled")), 30000); };
+                const cancel = () => { clearTimeout(timer); rejectStall(new Error("Audio download cancelled")); };
                 const task = FileSystem.createDownloadResumable(mediaUrl, partial, {}, p => {
+                    if (version === session.current && p.totalBytesWritten > lastBytes) { lastBytes = p.totalBytesWritten; arm(); }
                     if (version === session.current)
                         setProgress(p.totalBytesExpectedToWrite > 0 ? Math.min(100, Math.round(p.totalBytesWritten / p.totalBytesExpectedToWrite * 100)) : null);
                 });
                 download.current = task;
-                const result = await task.downloadAsync();
+                cancelDownloadWatchdog.current = cancel;
+                arm();
+                let result;
+                try { result = await Promise.race([task.downloadAsync(), stalled]); }
+                catch (e) { if (version === session.current) void task.pauseAsync().catch(() => {}); throw e; }
+                finally { clearTimeout(timer); if (cancelDownloadWatchdog.current === cancel) cancelDownloadWatchdog.current = null; }
                 if (version !== session.current)
                     return;
                 download.current = null;
