@@ -62,21 +62,22 @@ const uiMocks = {
   '@/components/ui/BrandIcon': ({ name }) => React.createElement('span', { 'aria-hidden': true, 'data-icon': name }, name === 'watch-outline' ? '◷' : name === 'chevron-forward' ? '›' : '✓'),
 };
 const Summary = loader(uiMocks)('components/progress/ProgressSummary.tsx').default;
-let periodChosen, sourceChosen, eventChosen, connections = 0, detail = 0, retries = 0;
+let eventChosen, connections = 0, detail = 0, retries = 0;
 const health = { loading: false, error: false, hasSnapshot: true, savedAt: '2026-11-28T08:00:00Z', sources: [{ id: 'com.apple.health', name: 'Apple Watch' }, { id: 'com.garmin.connect', name: 'Garmin' }], sourceId: 'com.apple.health' };
-const props = { summary, sessions: data.sessions, period: 7, onPeriod: value => periodChosen = value, loading: false, error: false,
+const props = { summary, period: 7, loading: false, error: false,
   onRetry: () => retries++, health, onConnections: () => connections++, onEvent: value => eventChosen = value,
-  onDetails: () => detail++, onSource: value => sourceChosen = value };
+  onDetails: () => detail++ };
 const html = renderToStaticMarkup(React.createElement(Summary, props));
-assert(html.includes('Treksor sessions') && html.includes('Imported workouts'));
-assert(html.includes('Each day counts once'));
+assert(!html.includes('Treksor sessions') && !html.includes('Imported workouts'), 'Source-specific workout counts belong in details');
+assert(html.includes('active days') && html.includes('Health · imported'));
+assert(!html.includes('Recording source') && !html.includes('role="tab"'), 'Configuration belongs in details');
 assert(!html.includes('Heart rate') && !html.includes('Strava'));
 const emptyHTML = renderToStaticMarkup(React.createElement(Summary, { ...props, health: { ...health, hasSnapshot: false, sources: [] } }));
-assert(emptyHTML.includes('Connect your watch') && emptyHTML.includes('—'), 'Absent import must not appear as zero workouts');
+assert(emptyHTML.includes('Connect a watch') && !emptyHTML.includes('imported workouts'), 'Absent import offers setup, never a zero-workout metric');
 const errorHTML = renderToStaticMarkup(React.createElement(Summary, { ...props, health: { ...health, error: true } }));
-assert(errorHTML.includes('could not refresh') && errorHTML.includes('Showing available data'));
+assert(errorHTML.includes('needs a refresh') && errorHTML.includes('Some records are unavailable'));
 const loadingHTML = renderToStaticMarkup(React.createElement(Summary, { ...props, loading: true }));
-assert(loadingHTML.includes('Updating your progress') && !loadingHTML.includes('days with'));
+assert(loadingHTML.includes('Updating progress') && !loadingHTML.includes('active days'));
 function nodes(tree, predicate, result = []) {
   if (!tree || typeof tree !== 'object') return result;
   if (predicate(tree)) result.push(tree);
@@ -84,10 +85,6 @@ function nodes(tree, predicate, result = []) {
   return result;
 }
 const tree = Summary(props);
-nodes(tree, n => n.props?.accessibilityLabel === 'Last 30 days')[0].props.onPress();
-assert.equal(periodChosen, 30);
-nodes(tree, n => n.props?.accessibilityRole === 'tab').at(-1).props.onPress();
-assert.equal(sourceChosen, 'com.garmin.connect');
 nodes(tree, n => n.props?.accessibilityLabel === 'Review smartwatch and health connections')[0].props.onPress();
 assert.equal(connections, 1);
 const recentButtons = nodes(tree, n => n.props?.onPress && nodes(n, c => c.props?.children === summary.recent[0].title).length);
@@ -146,16 +143,10 @@ if (process.env.TREKSOR_QA_DIR) {
   const directory = process.env.TREKSOR_QA_DIR;
   fs.mkdirSync(directory, { recursive: true });
   width = 390; fontScale = 1;
-  const actions = React.createElement(RN.View, { style: { gap: 14 } },
-    React.createElement(RN.View, { style: { flexDirection: 'row', gap: 12 } },
-      React.createElement(RN.Text, { style: { flex: 1, backgroundColor: '#D7B877', color: '#05080D', textAlign: 'center', padding: 16, borderRadius: 14, fontSize: 16 } }, '+  Log activity'),
-      React.createElement(RN.Text, { style: { color: '#D7B877', padding: 16, fontSize: 14 } }, 'Notes')),
-    React.createElement(RN.View, { style: { paddingVertical: 16, gap: 7 } },
-      React.createElement(RN.Text, { style: { color: '#D7B877', fontSize: 12, letterSpacing: 1.4 } }, 'YOUR NEXT STEP'),
-      React.createElement(RN.Text, { style: { color: '#F5F4F1', fontSize: 16 } }, 'Return to your daily direction')));
+  const actions = React.createElement(RN.Text, { style: { backgroundColor: '#D7B877', color: '#05080D', textAlign: 'center', padding: 16, borderRadius: 14, fontSize: 16 } }, '+  Log activity');
   const page = React.createElement(RN.View, { style: { maxWidth: 430, marginHorizontal: 'auto', padding: 20, backgroundColor: '#05080D' } },
     React.createElement(RN.Text, { style: { color: '#D7B877', fontSize: 34, fontWeight: '600', paddingTop: 18 } }, 'Progress'),
-    React.createElement(RN.Text, { style: { color: '#A5AAAF', fontSize: 15, marginTop: 8, marginBottom: 22 } }, 'Your effort, made clear.'),
+
     React.createElement(Summary, { ...props, health: { ...health, sources: health.sources.slice(0, 1) } }, actions));
   const markup = renderToStaticMarkup(page);
   const sheet = RN.StyleSheet.getSheet();

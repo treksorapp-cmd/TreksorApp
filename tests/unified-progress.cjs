@@ -14,7 +14,7 @@ assert(progress.includes('setPeriod(value)')&&progress.includes('([7,30] as cons
 assert(progress.includes('accessibilityLabel="Log an activity"')&&progress.includes('accessibilityState={{expanded:showRecorder}}'),'Activity entry should be one obvious action');
 assert(progress.includes('<JourneyCard/>'),'Daily plan and evening reflection must remain accessible');
 assert(progress.includes('<WeeklyHabits/>'),'Weekly habit editing and completion must remain accessible');
-assert(progress.includes('router.push("/notes" as any)'),'Quick Notes must remain one tap away');
+assert(progress.includes('router.push("/notes" as any)'),'Quick Notes must remain available in Plan & habits');
 assert(progress.includes('router.push("/progress/journey" as any)'),'Goals and weekly review must remain accessible');
 assert(progress.includes('<JourneyDashboard')&&progress.includes('<ProgressDashboard'),'Advanced progress and check-in must remain available by choice');
 assert(progress.includes('<ProgressSyncStatus/>'),'Sync status must remain accessible');

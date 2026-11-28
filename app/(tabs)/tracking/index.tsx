@@ -25,7 +25,6 @@ import ActivityLogModal from "@/components/ActivityLogModal";
 import AddTrackerModal from "@/components/AddTrackerModal";
 import CalendarModal from "@/components/ui/CalendarModal";
 import { useAuthStore } from "@/store/auth-store";
-import { useChatStore } from "@/store/chat-store";
 import { useTrackingStore } from "@/store/tracking-store";
 import { useWorkoutStore } from "@/store/workout-store";
 import { useMySpaceStore } from "@/store/myspace-store";
@@ -43,9 +42,6 @@ export default function TrackingScreen() {
   const walks = useWalks();
   const dailyWork = useDailyActivities();
   const userId = useAuthStore(s => s.user?.id);
-  const mentorOwner = useChatStore(s => s.currentUserId);
-  const mentorConversation = useChatStore(s => userId ? s.chats[userId] : undefined);
-  const mentorReplies = userId && mentorOwner === userId && mentorConversation ? mentorConversation.filter(message=>message.role==="assistant").length : null;
   const trackingData = useTrackingStore(s => s.trackingData);
   const { checkIns, gymSets } = useWorkoutStore();
   const reflections = useMySpaceStore(s => s.myspaces);
@@ -119,40 +115,36 @@ export default function TrackingScreen() {
   return <SafeAreaView edges={[]} style={styles.screen}>
     <StatusBar style="light"/>
     <ScrollView ref={scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={statsLoading} onRefresh={refresh} tintColor={colors.gold}/>}>
-      <BodyPageHeading trail="YOUR JOURNEY" title="Progress" goldTitle subtitle="Your effort, made clear." style={styles.heading} compactSubtitle/>
+      <BodyPageHeading trail="YOUR JOURNEY" title="Progress" goldTitle style={styles.heading}/>
       {!showAdvanced ? <>
-        <ProgressSummary summary={summary} sessions={data.sessions} period={period} onPeriod={setPeriod}
+        <ProgressSummary summary={summary} period={period}
           loading={statsLoading} unavailable={!ownReady&&extras.accountError} error={extras.accountError||extras.activityError||extras.journalError||!!dailyWork.error||!!walks.error}
-          onRetry={refresh} health={health} onSource={health.selectSource}
+          onRetry={refresh} health={health}
           onConnections={openConnections} onEvent={openEvent} onDetails={()=>openDetails("activity")}>
-          <View style={styles.quickActions}>
-            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Log an activity" accessibilityState={{expanded:showRecorder}} onPress={()=>setShowRecorder(value=>!value)} style={styles.mainAction}>
-              <Icon name={showRecorder?"close":"add"} size={22} color={colors.background}/><Text style={styles.mainText}>Log activity</Text>
-            </TouchableOpacity>
-            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open Quick Notes and tasks" onPress={()=>router.push("/notes" as any)} style={styles.notesAction}><Icon name="create-outline" color={colors.gold} size={20}/><Text style={styles.link}>Notes</Text></TouchableOpacity>
-          </View>
-          {showRecorder&&<DailyWork embedded/>}
-          <TouchableOpacity accessibilityRole="button" onPress={()=>openDetails("plan")} style={styles.nextStep}>
-            <Icon name="compass-outline" size={21} color={colors.gold}/><View style={styles.flex}><Text style={styles.eyebrow}>YOUR NEXT STEP</Text><Text style={styles.actionTitle}>Return to your daily direction</Text></View><Icon name="chevron-forward" size={18} color={colors.gold}/>
+          <TouchableOpacity accessibilityRole="button" accessibilityLabel="Log an activity" accessibilityState={{expanded:showRecorder}} onPress={()=>setShowRecorder(value=>!value)} style={styles.mainAction}>
+            <Icon name={showRecorder?"close":"add"} size={22} color={colors.background}/><Text style={styles.mainText}>{showRecorder?"Close activity log":"Log activity"}</Text>
           </TouchableOpacity>
+          {showRecorder&&<DailyWork embedded/>}
         </ProgressSummary>
-        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Explore detailed progress" onPress={()=>openDetails("activity")} style={styles.detailsButton}><Icon name="stats-chart-outline" color={colors.gold} size={20}/><View style={styles.flex}><Text style={styles.actionTitle}>Explore your progress</Text><Text style={styles.caption}>Pillars, check-ins, goals & habits</Text></View><Icon name="chevron-forward" color={colors.gold} size={18}/></TouchableOpacity>
       </> : <>
         <TouchableOpacity accessibilityRole="button" accessibilityLabel="Back to progress overview" onPress={closeDetails} style={styles.back}><Icon name="chevron-back" color={colors.gold} size={20}/><Text style={styles.link}>Overview</Text></TouchableOpacity>
         <View accessibilityRole="tablist" style={styles.detailTabs}>{([['activity','Activity'],['wellbeing','Wellbeing'],['plan','Plan & habits']] as const).map(([value,label])=><TouchableOpacity key={value} accessibilityRole="tab" accessibilityState={{selected:detailTab===value}} onPress={()=>setDetailTab(value)} style={[styles.detailTab,detailTab===value&&styles.selected]}><Text style={[styles.label,detailTab===value&&styles.selectedText]}>{label}</Text></TouchableOpacity>)}</View>
         <View style={styles.periodRow}><Text style={styles.caption}>Last {period} days</Text><View style={styles.quickActions}>{([7,30] as const).map(value=><TouchableOpacity key={value} accessibilityRole="button" accessibilityLabel={'Show last '+value+' days'} accessibilityState={{selected:period===value}} onPress={()=>setPeriod(value)} style={styles.periodButton}><Text style={[styles.label,period===value&&styles.link]}>{value}D</Text></TouchableOpacity>)}</View></View>
         {!ownReady ? <View style={styles.loading}>{extras.accountError ? <TouchableOpacity accessibilityRole="button" onPress={refresh}><Text style={styles.error}>Unable to load details · Retry</Text></TouchableOpacity> : <><ActivityIndicator color={colors.gold}/><Text style={styles.caption}>Loading detailed progress…</Text></>}</View> : <>
           {detailTab==="activity"&&<>
-            <View style={styles.detailNote}><Text style={styles.actionTitle}>Your recorded movement</Text><Text style={styles.label}>{data.dailyWorkCount} activities · {data.dailyWorkMinutes} minutes logged manually</Text><Text style={styles.caption}>Treksor and imported workout totals remain separate because the same session may be recorded in both.</Text>
+            <View style={styles.detailNote}><Text style={styles.actionTitle}>Your recorded movement</Text>
+              <Text style={styles.label}>{data.sessions} Treksor sessions · {health.loading||!health.hasSnapshot?'—':summary.watch.sessions} imported workouts</Text><Text style={styles.label}>{data.dailyWorkCount} activities · {data.dailyWorkMinutes} minutes logged manually</Text><Text style={styles.caption}>Treksor and imported workout totals remain separate because the same session may be recorded in both.</Text>
+              {health.sources.length>1&&<View accessibilityRole="tablist" style={styles.detailTabs}>{health.sources.map(source=><TouchableOpacity key={source.id} accessibilityRole="tab" accessibilityState={{selected:health.sourceId===source.id}} onPress={()=>health.selectSource(source.id)} style={[styles.detailTab,health.sourceId===source.id&&styles.selected]}><Text style={styles.label}>{source.name}</Text></TouchableOpacity>)}</View>}
               <TouchableOpacity accessibilityRole="button" onPress={openConnections} style={styles.back}><Text style={styles.link}>Imported workout history</Text></TouchableOpacity>
             </View>
-            <ProgressDashboard compactOverview mentorReplies={mentorReplies} data={data} period={period} onPeriod={setPeriod} trackers={trackingData} today={today} journalLoading={!ownExtras||extras.journalLoading} visionLoading={!ownExtras||extras.visionLoading} journalError={ownExtras&&extras.journalError} visionError={ownExtras&&extras.visionError} onRetry={refresh} onRoute={route=>route==="/(tabs)/today"?(closeDetails(),setShowRecorder(true)):router.push(route as any)} onLog={openLog} onCreate={()=>setShowAddTracker(true)} onCalendar={()=>setShowCalendar(true)}/>
+            <ProgressDashboard compactOverview data={data} period={period} onPeriod={setPeriod} trackers={trackingData} today={today} journalLoading={!ownExtras||extras.journalLoading} visionLoading={!ownExtras||extras.visionLoading} journalError={ownExtras&&extras.journalError} visionError={ownExtras&&extras.visionError} onRetry={refresh} onRoute={route=>route==="/(tabs)/today"?(closeDetails(),setShowRecorder(true)):router.push(route as any)} onLog={openLog} onCreate={()=>setShowAddTracker(true)} onCalendar={()=>setShowCalendar(true)}/>
             <WalkingSummary rows={walks.rows} now={walks.now} loading={walks.loading} error={walks.error}/>
           </>}
           {detailTab==="wellbeing"&&<JourneyDashboard focused data={data} period={period} onPeriod={setPeriod} detailsOpen={false} onDetails={()=>setDetailTab("activity")} onCheckInSaved={date=>setExtras(s=>({...s,journeyDates:Array.from(new Set([...s.journeyDates,date]))}))}/>}
           {detailTab==="plan"&&<>
             <JourneyCard/>
             <WeeklyHabits/>
+            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open Quick Notes and tasks" onPress={()=>router.push("/notes" as any)} style={styles.detailsButton}><Icon name="create-outline" color={colors.gold} size={20}/><Text style={styles.link}>Quick Notes</Text></TouchableOpacity>
             <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open goals and weekly review" onPress={()=>router.push("/progress/journey" as any)} style={styles.detailsButton}><Icon name="flag-outline" size={22} color={colors.gold}/><View style={styles.flex}><Text style={styles.actionTitle}>Goals & weekly review</Text><Text style={styles.caption}>Reflect on what matters</Text></View><Icon name="chevron-forward" size={18} color={colors.gold}/></TouchableOpacity>
             {extras.sharedToday===true&&<Text style={styles.caption}>Your completed day is recorded in your Treksor account.</Text>}
           </>}
@@ -175,8 +167,6 @@ const styles = StyleSheet.create({
   quickActions:{flexDirection:"row",flexWrap:"wrap",gap:10},
   mainAction:{minHeight:52,flexGrow:1,flexDirection:"row",alignItems:"center",justifyContent:"center",gap:10,backgroundColor:colors.gold,borderRadius:14,padding:14},
   mainText:{color:colors.background,fontSize:16,fontWeight:"600"},
-  notesAction:{minHeight:52,flexDirection:"row",alignItems:"center",justifyContent:"center",gap:8,padding:14,borderRadius:14,borderWidth:1,borderColor:colors.border},
-  nextStep:{minHeight:78,flexDirection:"row",alignItems:"center",gap:12,paddingVertical:16},
   actionTitle:{color:colors.text,fontSize:16,lineHeight:24,fontWeight:"600"},
   detailsButton:{minHeight:76,flexDirection:"row",alignItems:"center",gap:12,padding:16,marginTop:18,borderRadius:16,borderWidth:1,borderColor:colors.border},
   back:{minHeight:44,flexDirection:"row",alignItems:"center",gap:8},

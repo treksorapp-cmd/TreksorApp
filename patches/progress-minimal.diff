@@ -1,0 +1,383 @@
+diff --git a/app/(tabs)/tracking/index.tsx b/app/(tabs)/tracking/index.tsx
+index d46b4e5..f9a8461 100644
+--- a/app/(tabs)/tracking/index.tsx
++++ b/app/(tabs)/tracking/index.tsx
+@@ -25,7 +25,6 @@ import ActivityLogModal from "@/components/ActivityLogModal";
+ import AddTrackerModal from "@/components/AddTrackerModal";
+ import CalendarModal from "@/components/ui/CalendarModal";
+ import { useAuthStore } from "@/store/auth-store";
+-import { useChatStore } from "@/store/chat-store";
+ import { useTrackingStore } from "@/store/tracking-store";
+ import { useWorkoutStore } from "@/store/workout-store";
+ import { useMySpaceStore } from "@/store/myspace-store";
+@@ -43,9 +42,6 @@ export default function TrackingScreen() {
+   const walks = useWalks();
+   const dailyWork = useDailyActivities();
+   const userId = useAuthStore(s => s.user?.id);
+-  const mentorOwner = useChatStore(s => s.currentUserId);
+-  const mentorConversation = useChatStore(s => userId ? s.chats[userId] : undefined);
+-  const mentorReplies = userId && mentorOwner === userId && mentorConversation ? mentorConversation.filter(message=>message.role==="assistant").length : null;
+   const trackingData = useTrackingStore(s => s.trackingData);
+   const { checkIns, gymSets } = useWorkoutStore();
+   const reflections = useMySpaceStore(s => s.myspaces);
+@@ -119,40 +115,36 @@ export default function TrackingScreen() {
+   return <SafeAreaView edges={[]} style={styles.screen}>
+     <StatusBar style="light"/>
+     <ScrollView ref={scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={statsLoading} onRefresh={refresh} tintColor={colors.gold}/>}>
+-      <BodyPageHeading trail="YOUR JOURNEY" title="Progress" goldTitle subtitle="Your effort, made clear." style={styles.heading} compactSubtitle/>
++      <BodyPageHeading trail="YOUR JOURNEY" title="Progress" goldTitle style={styles.heading}/>
+       {!showAdvanced ? <>
+-        <ProgressSummary summary={summary} sessions={data.sessions} period={period} onPeriod={setPeriod}
++        <ProgressSummary summary={summary} period={period}
+           loading={statsLoading} unavailable={!ownReady&&extras.accountError} error={extras.accountError||extras.activityError||extras.journalError||!!dailyWork.error||!!walks.error}
+-          onRetry={refresh} health={health} onSource={health.selectSource}
++          onRetry={refresh} health={health}
+           onConnections={openConnections} onEvent={openEvent} onDetails={()=>openDetails("activity")}>
+-          <View style={styles.quickActions}>
+-            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Log an activity" accessibilityState={{expanded:showRecorder}} onPress={()=>setShowRecorder(value=>!value)} style={styles.mainAction}>
+-              <Icon name={showRecorder?"close":"add"} size={22} color={colors.background}/><Text style={styles.mainText}>Log activity</Text>
+-            </TouchableOpacity>
+-            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open Quick Notes and tasks" onPress={()=>router.push("/notes" as any)} style={styles.notesAction}><Icon name="create-outline" color={colors.gold} size={20}/><Text style={styles.link}>Notes</Text></TouchableOpacity>
+-          </View>
+-          {showRecorder&&<DailyWork embedded/>}
+-          <TouchableOpacity accessibilityRole="button" onPress={()=>openDetails("plan")} style={styles.nextStep}>
+-            <Icon name="compass-outline" size={21} color={colors.gold}/><View style={styles.flex}><Text style={styles.eyebrow}>YOUR NEXT STEP</Text><Text style={styles.actionTitle}>Return to your daily direction</Text></View><Icon name="chevron-forward" size={18} color={colors.gold}/>
++          <TouchableOpacity accessibilityRole="button" accessibilityLabel="Log an activity" accessibilityState={{expanded:showRecorder}} onPress={()=>setShowRecorder(value=>!value)} style={styles.mainAction}>
++            <Icon name={showRecorder?"close":"add"} size={22} color={colors.background}/><Text style={styles.mainText}>{showRecorder?"Close activity log":"Log activity"}</Text>
+           </TouchableOpacity>
++          {showRecorder&&<DailyWork embedded/>}
+         </ProgressSummary>
+-        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Explore detailed progress" onPress={()=>openDetails("activity")} style={styles.detailsButton}><Icon name="stats-chart-outline" color={colors.gold} size={20}/><View style={styles.flex}><Text style={styles.actionTitle}>Explore your progress</Text><Text style={styles.caption}>Pillars, check-ins, goals & habits</Text></View><Icon name="chevron-forward" color={colors.gold} size={18}/></TouchableOpacity>
+       </> : <>
+         <TouchableOpacity accessibilityRole="button" accessibilityLabel="Back to progress overview" onPress={closeDetails} style={styles.back}><Icon name="chevron-back" color={colors.gold} size={20}/><Text style={styles.link}>Overview</Text></TouchableOpacity>
+         <View accessibilityRole="tablist" style={styles.detailTabs}>{([['activity','Activity'],['wellbeing','Wellbeing'],['plan','Plan & habits']] as const).map(([value,label])=><TouchableOpacity key={value} accessibilityRole="tab" accessibilityState={{selected:detailTab===value}} onPress={()=>setDetailTab(value)} style={[styles.detailTab,detailTab===value&&styles.selected]}><Text style={[styles.label,detailTab===value&&styles.selectedText]}>{label}</Text></TouchableOpacity>)}</View>
+         <View style={styles.periodRow}><Text style={styles.caption}>Last {period} days</Text><View style={styles.quickActions}>{([7,30] as const).map(value=><TouchableOpacity key={value} accessibilityRole="button" accessibilityLabel={'Show last '+value+' days'} accessibilityState={{selected:period===value}} onPress={()=>setPeriod(value)} style={styles.periodButton}><Text style={[styles.label,period===value&&styles.link]}>{value}D</Text></TouchableOpacity>)}</View></View>
+         {!ownReady ? <View style={styles.loading}>{extras.accountError ? <TouchableOpacity accessibilityRole="button" onPress={refresh}><Text style={styles.error}>Unable to load details · Retry</Text></TouchableOpacity> : <><ActivityIndicator color={colors.gold}/><Text style={styles.caption}>Loading detailed progress…</Text></>}</View> : <>
+           {detailTab==="activity"&&<>
+-            <View style={styles.detailNote}><Text style={styles.actionTitle}>Your recorded movement</Text><Text style={styles.label}>{data.dailyWorkCount} activities · {data.dailyWorkMinutes} minutes logged manually</Text><Text style={styles.caption}>Treksor and imported workout totals remain separate because the same session may be recorded in both.</Text>
++            <View style={styles.detailNote}><Text style={styles.actionTitle}>Your recorded movement</Text>
++              <Text style={styles.label}>{data.sessions} Treksor sessions · {health.loading||!health.hasSnapshot?'—':summary.watch.sessions} imported workouts</Text><Text style={styles.label}>{data.dailyWorkCount} activities · {data.dailyWorkMinutes} minutes logged manually</Text><Text style={styles.caption}>Treksor and imported workout totals remain separate because the same session may be recorded in both.</Text>
++              {health.sources.length>1&&<View accessibilityRole="tablist" style={styles.detailTabs}>{health.sources.map(source=><TouchableOpacity key={source.id} accessibilityRole="tab" accessibilityState={{selected:health.sourceId===source.id}} onPress={()=>health.selectSource(source.id)} style={[styles.detailTab,health.sourceId===source.id&&styles.selected]}><Text style={styles.label}>{source.name}</Text></TouchableOpacity>)}</View>}
+               <TouchableOpacity accessibilityRole="button" onPress={openConnections} style={styles.back}><Text style={styles.link}>Imported workout history</Text></TouchableOpacity>
+             </View>
+-            <ProgressDashboard compactOverview mentorReplies={mentorReplies} data={data} period={period} onPeriod={setPeriod} trackers={trackingData} today={today} journalLoading={!ownExtras||extras.journalLoading} visionLoading={!ownExtras||extras.visionLoading} journalError={ownExtras&&extras.journalError} visionError={ownExtras&&extras.visionError} onRetry={refresh} onRoute={route=>route==="/(tabs)/today"?(closeDetails(),setShowRecorder(true)):router.push(route as any)} onLog={openLog} onCreate={()=>setShowAddTracker(true)} onCalendar={()=>setShowCalendar(true)}/>
++            <ProgressDashboard compactOverview data={data} period={period} onPeriod={setPeriod} trackers={trackingData} today={today} journalLoading={!ownExtras||extras.journalLoading} visionLoading={!ownExtras||extras.visionLoading} journalError={ownExtras&&extras.journalError} visionError={ownExtras&&extras.visionError} onRetry={refresh} onRoute={route=>route==="/(tabs)/today"?(closeDetails(),setShowRecorder(true)):router.push(route as any)} onLog={openLog} onCreate={()=>setShowAddTracker(true)} onCalendar={()=>setShowCalendar(true)}/>
+             <WalkingSummary rows={walks.rows} now={walks.now} loading={walks.loading} error={walks.error}/>
+           </>}
+           {detailTab==="wellbeing"&&<JourneyDashboard focused data={data} period={period} onPeriod={setPeriod} detailsOpen={false} onDetails={()=>setDetailTab("activity")} onCheckInSaved={date=>setExtras(s=>({...s,journeyDates:Array.from(new Set([...s.journeyDates,date]))}))}/>}
+           {detailTab==="plan"&&<>
+             <JourneyCard/>
+             <WeeklyHabits/>
++            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open Quick Notes and tasks" onPress={()=>router.push("/notes" as any)} style={styles.detailsButton}><Icon name="create-outline" color={colors.gold} size={20}/><Text style={styles.link}>Quick Notes</Text></TouchableOpacity>
+             <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open goals and weekly review" onPress={()=>router.push("/progress/journey" as any)} style={styles.detailsButton}><Icon name="flag-outline" size={22} color={colors.gold}/><View style={styles.flex}><Text style={styles.actionTitle}>Goals & weekly review</Text><Text style={styles.caption}>Reflect on what matters</Text></View><Icon name="chevron-forward" size={18} color={colors.gold}/></TouchableOpacity>
+             {extras.sharedToday===true&&<Text style={styles.caption}>Your completed day is recorded in your Treksor account.</Text>}
+           </>}
+@@ -175,8 +167,6 @@ const styles = StyleSheet.create({
+   quickActions:{flexDirection:"row",flexWrap:"wrap",gap:10},
+   mainAction:{minHeight:52,flexGrow:1,flexDirection:"row",alignItems:"center",justifyContent:"center",gap:10,backgroundColor:colors.gold,borderRadius:14,padding:14},
+   mainText:{color:colors.background,fontSize:16,fontWeight:"600"},
+-  notesAction:{minHeight:52,flexDirection:"row",alignItems:"center",justifyContent:"center",gap:8,padding:14,borderRadius:14,borderWidth:1,borderColor:colors.border},
+-  nextStep:{minHeight:78,flexDirection:"row",alignItems:"center",gap:12,paddingVertical:16},
+   actionTitle:{color:colors.text,fontSize:16,lineHeight:24,fontWeight:"600"},
+   detailsButton:{minHeight:76,flexDirection:"row",alignItems:"center",gap:12,padding:16,marginTop:18,borderRadius:16,borderWidth:1,borderColor:colors.border},
+   back:{minHeight:44,flexDirection:"row",alignItems:"center",gap:8},
+diff --git a/components/progress/ProgressDashboard.tsx b/components/progress/ProgressDashboard.tsx
+index 21df32a..85ed163 100644
+--- a/components/progress/ProgressDashboard.tsx
++++ b/components/progress/ProgressDashboard.tsx
+@@ -8,10 +8,9 @@ import type { TrackingCategory } from "@/types/tracking";
+ import { colors, surface, type, navyOverlay } from "@/theme/architect";
+ 
+ type Overview = ReturnType<typeof buildProgressOverview>;
+-type Detail = "activity" | "body" | "mind" | "balance" | "purpose" | "mentor" | "reading" | "sources";
++type Detail = "activity" | "body" | "mind" | "balance" | "purpose" | "sources";
+ interface Props {
+   compactOverview?: boolean;
+-  mentorReplies?: number | null;
+   data: Overview; period: 7 | 30; onPeriod: (period: 7 | 30) => void;
+   trackers: TrackingCategory[]; today: string;
+   journalLoading: boolean; visionLoading: boolean; journalError: boolean; visionError: boolean;
+@@ -43,8 +42,6 @@ export default function ProgressDashboard(props: Props) {
+     mind: { title: "Space for reflection", source: "Mind / My space · Profile / My journal", body: `Entries saved in the last ${period} days. My space and Purpose / Goals & reflections use the same notebook, so each reflection is counted once. Personal journal contributes one entry per saved date.`, note: "Your writing and moods stay private on this device. More entries do not mean better mental health. Daily check-in mood, focus and energy ratings appear separately above. They are self-reports, not a mental-health score.", action: "Open personal journal", route: "/mind/journal" },
+     balance: { title: "A practice, not a performance", source: "Balance / Meditations", body: `${data.meditation.completed} of ${data.meditation.total} distinct practices are marked complete. The bar is completed practices divided by the available meditation library.`, note: "Each practice counts once, even if you replay it. These records do not measure listening minutes, session frequency or wellbeing.", action: "Explore Balance", route: "/spiritual" },
+     purpose: { title: "Clarity takes shape", source: "Purpose / Vision & reflection", body: "Each non-empty, saved answer counts toward the 10 prompts on your vision board. Draft answers count only after you save the board.", note: "This shows how much of your vision you have written, not how many life goals you have achieved. Your answers stay private on this device; only the completed-prompt count can sync.", action: "Open vision board", route: "/purpose/vision-board" },
+-    mentor: { title: "A conversation, not a score", source: "Guide · latest loaded chat", body: props.mentorReplies == null ? "Open Guide to load your latest conversation." : `You received ${props.mentorReplies} replies in the loaded Guide conversation.`, note: "The number of replies is not a growth score. Private notes are not shared automatically.", action: "Open Guide", route: "/(tabs)/chat" },
+-    reading: { title: "Your learning library", source: "Articles / Mark as read", body: `${data.reading.completed} of ${data.reading.total} articles currently saved in the app are marked read. An article shown in multiple categories is counted once.`, note: "This is all-time library completion, not reading time. The total can change when new articles load. Reading does not inflate your training or meditation progress.", action: "Explore articles", route: "/article" },
+     sources: { title: "Your numbers have a source", source: "Recorded in Treksor", body: "Training: sessions and sets you save. Daily Work: completed walks and other activities you log, including your own. Mind: saved reflections and journal dates. Balance: practices you mark complete. Purpose: saved vision prompts. Personal trackers: checkmarks you enter for scheduled dates.", note: "App records update this screen. Some progress summaries sync to your web profile; Daily Work is currently saved only on this iPhone. Journal text, moods and vision answers stay on this device. The overview also reads your saved Apple Health import. Its workout counts remain separate from Treksor sessions; review and refresh the import in Connections.", action: "Got it", route: "" },
+   };
+   const info = detail ? detailContent[detail] : null;
+@@ -101,8 +98,6 @@ export default function ProgressDashboard(props: Props) {
+       <View style={styles.flex}><Text style={styles.trailTitle}>{event.title}</Text><Text style={styles.caption}>{event.source}</Text><Text style={styles.trailDate}>{displayDay(event.date)}</Text></View><Ionicons name="chevron-forward" size={16} color={colors.muted}/>
+     </TouchableOpacity>)}{data.events.length > 5 && <TouchableOpacity accessibilityRole="button" onPress={() => setShowAll(v => !v)} style={styles.moreButton}><Text style={styles.link}>{showAll ? "Show less" : `View all ${data.events.length} actions`}</Text></TouchableOpacity>}</View>
+ 
+-    <TouchableOpacity accessibilityRole="button" onPress={() => setDetail("mentor")} style={styles.learningCard}><Ionicons name="chatbubble-ellipses-outline" size={24} color={colors.gold}/><View style={styles.flex}><Text style={styles.cardTitle}>Guide</Text><Text style={styles.body}>{props.mentorReplies == null ? "Open Guide to see your conversation" : `${props.mentorReplies} replies in the loaded conversation`}</Text><Text style={styles.caption}>Conversation, not a growth score</Text></View><Ionicons name="chevron-forward" size={18} color={colors.gold}/></TouchableOpacity>
+-    <TouchableOpacity accessibilityRole="button" onPress={() => setDetail("reading")} style={styles.learningCard}><Ionicons name="library-outline" size={24} color={colors.gold}/><View style={styles.flex}><Text style={styles.cardTitle}>Keep learning</Text><Text style={styles.body}>{data.reading.total ? `${data.reading.completed} / ${data.reading.total} saved articles marked read` : "Your reading library starts here"}</Text><Text style={styles.caption}>All time · Articles in the app</Text></View><Ionicons name="chevron-forward" size={18} color={colors.gold}/></TouchableOpacity>
+     <TouchableOpacity accessibilityRole="button" onPress={() => setDetail("sources")} style={styles.sourcesButton}><Ionicons name="git-network-outline" size={20} color={colors.gold}/><Text style={styles.link}>Data sources & how it works</Text><Ionicons name="chevron-forward" size={17} color={colors.gold}/></TouchableOpacity>
+ 
+     <Modal visible={!!info} transparent animationType="slide" onRequestClose={() => setDetail(null)}><View style={[styles.modalBackdrop, { paddingTop: insets.top + 24 }]}><View style={[styles.sheet, { paddingBottom: insets.bottom + 20 }]}>
+diff --git a/components/progress/ProgressSummary.tsx b/components/progress/ProgressSummary.tsx
+index 0e9a848..4afb9ea 100644
+--- a/components/progress/ProgressSummary.tsx
++++ b/components/progress/ProgressSummary.tsx
+@@ -1,5 +1,5 @@
+ import React from 'react';
+-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
++import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+ import Icon from '@/components/ui/BrandIcon';
+ import { dayDate, displayDay } from '@/lib/progress-metrics';
+ import { buildProgressSummary, type RecentProgress } from '@/lib/progress-summary';
+@@ -7,72 +7,48 @@ import { colors, type } from '@/theme/architect';
+ 
+ type Props = {
+   children?: React.ReactNode; unavailable?: boolean;
+-  summary: ReturnType<typeof buildProgressSummary>; sessions: number; period: 7 | 30;
+-  onPeriod: (value: 7 | 30) => void; loading: boolean; error: boolean; onRetry: () => void;
+-  health: { loading: boolean; error: boolean; hasSnapshot: boolean; savedAt: string | null; sources: { id: string; name: string }[]; sourceId: string };
+-  onConnections: () => void; onEvent: (event: RecentProgress) => void;
+-  onDetails: () => void; onSource: (id: string) => void;
++  summary: ReturnType<typeof buildProgressSummary>; period: 7 | 30;
++  loading: boolean; error: boolean; onRetry: () => void;
++  health: { loading: boolean; error: boolean; hasSnapshot: boolean; savedAt: string | null };
++  onConnections: () => void; onEvent: (event: RecentProgress) => void; onDetails: () => void;
+ };
+ 
+-export default function ProgressSummary({ children, unavailable=false, summary, sessions, period, onPeriod, loading, error, onRetry, health, onConnections, onEvent, onDetails, onSource }: Props) {
+-  const { fontScale, width } = useWindowDimensions();
+-  const stacked = fontScale > 1.25 || width < 350;
+-  const selected = health.sources.find(source => source.id === health.sourceId);
++export default function ProgressSummary({ children, unavailable=false, summary, period, loading, error, onRetry, health, onConnections, onEvent, onDetails }: Props) {
+   const at = health.savedAt ? new Date(health.savedAt) : null;
+-  const importDate = at && Number.isFinite(+at) ? at.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : null;
+-  const healthLabel = health.loading ? 'Checking saved import…' : health.error ? 'Import could not refresh' : health.hasSnapshot ? 'Apple Health · ' + (importDate ? 'imported ' + importDate : 'saved import') : 'Connect your watch';
+-  const partial = error || health.error;
++  const imported = at && Number.isFinite(+at) ? at.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : null;
++  const healthLabel = health.loading ? 'Checking health data…' : health.error ? 'Health data needs a refresh' : health.hasSnapshot ? 'Health · ' + (imported ? 'imported ' + imported : 'saved import') : 'Connect a watch';
+   return <>
+     <View style={s.summary}>
+-      <View style={[s.headingRow, stacked && s.stacked]}>
+-        <Text style={s.eyebrow}>YOUR LAST {period} DAYS</Text>
+-        <View accessibilityRole="tablist" style={s.periodTabs}>
+-          {([7, 30] as const).map(value => <TouchableOpacity key={value} accessibilityRole="tab" accessibilityLabel={'Last ' + value + ' days'} accessibilityState={{ selected: period === value }} onPress={() => onPeriod(value)} style={[s.periodOption, period === value && s.periodSelected]}><Text style={[s.periodLabel, period === value && s.periodLabelSelected]}>{value}D</Text></TouchableOpacity>)}
+-        </View>
+-      </View>
+-      {unavailable ? <Text style={s.caption}>Your saved progress is unavailable. Retry below.</Text> : loading ? <View style={s.loading}><ActivityIndicator color={colors.gold}/><Text style={s.caption}>Updating your progress…</Text></View> : <>
+-        <View accessible accessibilityLabel={summary.activeDays + ' of ' + period + ' days with recorded activity'} style={s.scoreRow}><Text style={s.score}>{summary.activeDays}<Text style={s.denominator}> / {period}</Text></Text><Text style={s.scoreLabel}>days with{'\n'}recorded activity</Text></View>
++      <Text style={s.eyebrow}>LAST {period} DAYS</Text>
++      {unavailable ? <Text style={s.caption}>Progress is unavailable. Retry below.</Text> : loading ? <View style={s.loading}><ActivityIndicator color={colors.gold}/><Text style={s.caption}>Updating progress…</Text></View> : <>
++        <View accessible accessibilityLabel={summary.activeDays + ' of ' + period + ' days with recorded activity'} style={s.scoreRow}><Text style={s.score}>{summary.activeDays}<Text style={s.denominator}> / {period}</Text></Text><Text style={s.scoreLabel}>active days</Text></View>
+         <View style={s.days}>{summary.days.map(day => <View key={day.date} style={s.day} accessible accessibilityLabel={displayDay(day.date) + ': ' + (day.active ? 'activity recorded' : 'no record')}><View style={[s.dayBar, day.active && s.dayActive]}/>{period === 7 && <Text style={s.dayLabel}>{dayDate(day.date)?.toLocaleDateString(undefined, { weekday: 'narrow' })}</Text>}</View>)}</View>
+-        <View style={[s.metrics, stacked && s.stacked]}>
+-          <View style={s.metric}><Text style={s.metricValue}>{sessions}</Text><Text style={s.label}>Treksor sessions</Text></View>
+-          <View style={s.metric}><Text style={s.metricValue}>{health.loading || !health.hasSnapshot ? '—' : summary.watch.sessions}</Text><Text style={s.label}>Imported workouts</Text></View>
+-        </View>
+       </>}
+-      {partial && <TouchableOpacity accessibilityRole="button" onPress={onRetry} style={s.retry}><Text accessibilityRole="alert" style={s.error}>Some records could not refresh. Showing available data. Retry</Text></TouchableOpacity>}
+-      <TouchableOpacity accessibilityRole="button" accessibilityLabel="Review smartwatch and health connections" onPress={onConnections} style={s.connection}><Icon name="watch-outline" color={colors.gold} size={20}/><View style={s.flex}><Text style={s.link}>{healthLabel}</Text>{health.hasSnapshot && <Text style={s.caption}>{selected?.name || 'No workouts in saved import'} · refresh in Connections</Text>}</View><Icon name="chevron-forward" color={colors.gold} size={17}/></TouchableOpacity>
+-      {health.sources.length > 1 && <View><Text style={s.caption}>Recording source</Text><View accessibilityRole="tablist" style={s.sources}>{health.sources.map(source => <TouchableOpacity key={source.id} accessibilityRole="tab" accessibilityState={{ selected: health.sourceId === source.id }} onPress={() => onSource(source.id)} style={[s.source, health.sourceId === source.id && s.sourceSelected]}><Text style={s.label}>{source.name}</Text></TouchableOpacity>)}</View></View>}
+-      <Text style={s.caption}>Each day counts once. Workout sources are shown separately.</Text>
++      {(error || health.error) && <TouchableOpacity accessibilityRole="button" onPress={onRetry} style={s.retry}><Text accessibilityRole="alert" style={s.error}>Some records are unavailable · Retry</Text></TouchableOpacity>}
+     </View>
+     <View style={s.actions}>{children}</View>
+     <View style={s.sectionHeading}><Text style={s.title}>Recent activity</Text><TouchableOpacity accessibilityRole="button" onPress={onDetails} style={s.textButton}><Text style={s.link}>View details</Text></TouchableOpacity></View>
+-    <View style={s.activity}>
+-      {unavailable ? <Text style={s.empty}>Refresh your records to see recent activity.</Text> : loading ? <Text style={s.empty}>Loading your activity…</Text> : summary.recent.length ? summary.recent.slice(0, 3).map((event, index) => <TouchableOpacity key={event.id} accessibilityRole="button" onPress={() => onEvent(event)} style={[s.event, index > 0 && s.eventBorder]}><View style={s.eventIcon}><Icon name={event.id.startsWith('health:') ? 'watch-outline' : 'checkmark-outline'} color={colors.gold} size={18}/></View><View style={s.flex}><Text style={s.eventTitle}>{event.title}</Text><Text style={s.caption}>{event.source}</Text><Text style={s.caption}>{displayDay(event.date)}</Text></View><Icon name="chevron-forward" color={colors.muted} size={16}/></TouchableOpacity>) : <View style={s.empty}><Text style={s.eventTitle}>Your next action starts here.</Text><Text style={s.caption}>Log an activity or review your watch import. Your records will appear here.</Text></View>}
++    <View>
++      {unavailable ? <Text style={s.empty}>Refresh to see your activity.</Text> : loading ? <Text style={s.empty}>Loading activity…</Text> : summary.recent.length ? summary.recent.slice(0, 3).map(event => <TouchableOpacity key={event.id} accessibilityRole="button" accessibilityLabel={event.title + '. ' + event.source + '. ' + displayDay(event.date)} onPress={() => onEvent(event)} style={s.event}><View style={s.flex}><Text style={s.eventTitle}>{event.title}</Text><Text style={s.caption}>{dayDate(event.date)?.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} · {event.source.split(' · ')[0]}</Text></View><Icon name="chevron-forward" color={colors.muted} size={16}/></TouchableOpacity>) : <Text style={s.empty}>Your activities will appear here.</Text>}
+     </View>
++    <TouchableOpacity accessibilityRole="button" accessibilityLabel="Review smartwatch and health connections" onPress={onConnections} style={s.connection}><Icon name="watch-outline" color={colors.muted} size={20}/><Text accessibilityLiveRegion="polite" style={s.healthStatus}>{healthLabel}</Text><Icon name="chevron-forward" color={colors.muted} size={17}/></TouchableOpacity>
+   </>;
+ }
+ 
+ const s = StyleSheet.create({
+-  actions: { marginTop: 16 },
+-  summary: { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, borderRadius: 22, padding: 20, gap: 16 },
+-  headingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+-  stacked: { flexDirection: 'column', alignItems: 'stretch' },
+-  eyebrow: { ...type.eyebrow, fontSize: 12, flexShrink: 1 },
+-  periodTabs: { flexDirection: 'row', alignSelf: 'flex-start', backgroundColor: colors.background, borderRadius: 12, padding: 3 },
+-  periodOption: { minWidth: 48, minHeight: 44, justifyContent: 'center', alignItems: 'center', borderRadius: 9 },
+-  periodSelected: { backgroundColor: colors.gold }, periodLabel: { fontSize: 14, fontWeight: '600', color: colors.secondary }, periodLabelSelected: { color: colors.background },
+-  scoreRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 18 },
++  summary: { backgroundColor: colors.surface, borderColor: 'rgba(215,184,119,0.18)', borderWidth: 1, borderRadius: 22, padding: 20, gap: 16 },
++  eyebrow: { ...type.eyebrow, fontSize: 12 },
++  scoreRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline', gap: 12 },
+   score: { color: colors.gold, fontSize: 54, lineHeight: 66, fontWeight: '600', fontVariant: ['tabular-nums'] },
+-  denominator: { fontSize: 23, color: colors.muted, fontWeight: '400' }, scoreLabel: { ...type.body, fontSize: 16 },
++  denominator: { fontSize: 23, color: colors.muted, fontWeight: '400' }, scoreLabel: { color: colors.secondary, fontSize: 16, lineHeight: 24 },
+   days: { flexDirection: 'row', gap: 4 }, day: { flex: 1, gap: 7, alignItems: 'center' }, dayBar: { width: '100%', height: 6, borderRadius: 3, backgroundColor: colors.surfaceRaised }, dayActive: { backgroundColor: colors.gold }, dayLabel: { color: colors.muted, fontSize: 12 },
+-  metrics: { flexDirection: 'row', gap: 18 }, metric: { flex: 1, gap: 4 }, metricValue: { color: colors.text, fontSize: 26, fontWeight: '600', fontVariant: ['tabular-nums'] },
+-  label: { color: colors.secondary, fontSize: 14, lineHeight: 21 }, caption: { color: colors.muted, fontSize: 12, lineHeight: 19 },
+-  connection: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 52, paddingTop: 14, borderTopWidth: 1, borderTopColor: colors.border },
++  caption: { color: colors.muted, fontSize: 12, lineHeight: 19, flexShrink: 1 },
++  actions: { marginTop: 16 },
++  healthStatus: { color: colors.muted, fontSize: 14, lineHeight: 21, flexShrink: 1 },
++  connection: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: 8, minHeight: 52, marginTop: 18 },
+   link: { color: colors.gold, fontSize: 14, fontWeight: '600', lineHeight: 21 }, flex: { flex: 1, minWidth: 0 },
+-  sources: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 }, source: { minHeight: 44, justifyContent: 'center', padding: 10, borderRadius: 10, borderWidth: 1, borderColor: colors.border }, sourceSelected: { borderColor: colors.gold, backgroundColor: colors.goldSoft },
+   loading: { minHeight: 130, justifyContent: 'center', alignItems: 'center', gap: 10 }, retry: { minHeight: 44, justifyContent: 'center' }, error: { color: colors.danger, fontSize: 14, lineHeight: 21 },
+-  sectionHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginTop: 20 }, title: { ...type.card, flexShrink: 1 }, textButton: { minHeight: 44, justifyContent: 'center' },
+-  activity: { borderWidth: 1, borderColor: colors.border, borderRadius: 18, backgroundColor: colors.surface, paddingHorizontal: 16 },
+-  event: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 15 }, eventBorder: { borderTopWidth: 1, borderTopColor: colors.border },
+-  eventIcon: { width: 34, height: 34, borderRadius: 11, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.goldSoft }, eventTitle: { color: colors.text, fontSize: 15, lineHeight: 22, fontWeight: '600' },
+-  empty: { paddingVertical: 22, color: colors.muted, fontSize: 15, lineHeight: 23 },
++  sectionHeading: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginTop: 20 }, title: { ...type.card, flexShrink: 1 }, textButton: { minHeight: 44, justifyContent: 'center' },
++  event: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: colors.border }, eventTitle: { color: colors.text, fontSize: 15, lineHeight: 22, fontWeight: '600' },
++  empty: { paddingVertical: 20, color: colors.muted, fontSize: 14, lineHeight: 22 },
+ });
+diff --git a/docs/progress-clarity.md b/docs/progress-clarity.md
+index e4334ac..6453aa4 100644
+--- a/docs/progress-clarity.md
++++ b/docs/progress-clarity.md
+@@ -1,15 +1,25 @@
+-# Progress — concise overview
++# Progress — minimal overview
+ 
+-The default Progress view contains one 7/30-day summary, an activity recorder,
+-Quick Notes, daily direction and three recent entries. Details replace the
+-overview instead of expanding another dashboard beneath it. Activity, Wellbeing,
+-and Plan & habits preserve the existing pillar metrics, check-ins, charts,
+-trackers, calendar corrections, daily plan, weekly habits and goals.
++The main view has three elements: active days over the selected period, a single
++Log activity button, and the three most recent activities. The default is seven
++days. View details is the only gateway to the expanded view. Health import status
++is a quiet footer with the actual import date and a connection link.
+ 
+-The shared Architect palette and fixed navigation remain in place. The summary
+-supports narrow screens, larger text, minimum 44-point controls and readable
+-labels. Loading, missing imports, failed reads and a genuinely empty import are
+-different states.
++Notes and daily direction move into Plan & habits. Period selection, individual
++workout counts, source selection and explanations move into Activity details.
++The duplicate Explore your progress link is removed. Guide response counts and
++article-count cards are removed from Progress; their original app destinations
++remain available. Private check-ins, charts, trackers, calendar corrections,
++weekly habits and goals remain available through the three detail tabs.
++
++The shared Architect palette, fixed navigation, existing type sizes and control
++heights remain in place. The main figure stays 54/66, its denominator 23, page
++headings 34/42, section headings 18/25, body labels 16/24 and metadata 12/19.
++Visual simplification comes from removing duplicate blocks and borders, not
++shrinking the interface. Gold is reserved for emphasis and actions. The summary
++uses one main number, plain activity rows and minimum 44-point controls. Loading,
++failed reads and absent imports remain distinct without permanent explanatory
++paragraphs on the main screen. Only three recent items render by default.
+ 
+ ## Data and watch behavior
+ 
+@@ -46,23 +56,24 @@ Daily Work; journey; connected journey; goals; UI contracts.
+ 
+ The managed browser preview relay was unavailable. React Native Web render
+ checks pass, but browser layout inspection and physical iPhone/Apple Watch tests
+-remain pending. GitHub publication was blocked by automatic approval review. No iOS build, App Store release or automatic update of a local
++remain pending. No iOS build, App Store release or automatic update of a local
+ Windows Expo checkout has been performed.
+ 
+ ## Apply to the active Windows checkout
+ 
+-Download Treksor-Progress-Update.cjs and run it with Node and --apply from
+-C:/Users/xcite/TreksorDevCompleto. The standalone installer contains the reviewed
+-patch; it does not fetch or publish any repository branch.
+-The installer checks the repository and every patch hunk, saves a backup, and
+-validates the resulting local checkout. It does not switch branches, reset local
+-work, touch stored user records, or overwrite conflicting changes. A local
+-smartwatch change that overlaps this patch must be reconciled before installing.
++Fetch feature/progress-clarity-20261128 and pipe its
++scripts/apply-progress-clarity.cjs into node with --apply from the current
++TreksorDevCompleto checkout. No manual file download is required. The installer
++supports both the stable base and the earlier Progress redesign. It checks every
++patch hunk before writing, saves a backup and validates the resulting checkout.
++It preserves the current branch and all stored user records, and refuses
++conflicting changes. Repeat runs are safe. Validation failures restore the
++previous files.
+ 
+-Restart the existing Treksor Dev Expo session after a successful installation.
+-In the iPhone, verify the subtitle “Your effort, made clear.”, 7D/30D selection,
+-activity creation/deletion, Notes, all three detail tabs, return from Connections,
+-and the selected watch source. Compare a workout recorded on both phone and watch:
+-one active day, separate source counts. Also check no import, empty import,
+-revoked Health permissions, offline refresh, larger system text, account changes,
++After successful installation, restart the current Expo session. On the iPhone,
++verify the single active-days summary, Log activity, three recent records, and
++one View details link. Verify recording/deletion, all three detail tabs, Notes,
++7/30-day selection, source selection and returning from Connections. An app/watch
++overlap must contribute one active day, with source counts kept separate in
++details. Also check empty imports, offline refresh, larger text, account changes
+ and deletion of an imported snapshot.
+diff --git a/tests/progress-clarity.cjs b/tests/progress-clarity.cjs
+index 1d1eddc..9fd2f78 100644
+--- a/tests/progress-clarity.cjs
++++ b/tests/progress-clarity.cjs
+@@ -62,21 +62,22 @@ const uiMocks = {
+   '@/components/ui/BrandIcon': ({ name }) => React.createElement('span', { 'aria-hidden': true, 'data-icon': name }, name === 'watch-outline' ? '◷' : name === 'chevron-forward' ? '›' : '✓'),
+ };
+ const Summary = loader(uiMocks)('components/progress/ProgressSummary.tsx').default;
+-let periodChosen, sourceChosen, eventChosen, connections = 0, detail = 0, retries = 0;
++let eventChosen, connections = 0, detail = 0, retries = 0;
+ const health = { loading: false, error: false, hasSnapshot: true, savedAt: '2026-11-28T08:00:00Z', sources: [{ id: 'com.apple.health', name: 'Apple Watch' }, { id: 'com.garmin.connect', name: 'Garmin' }], sourceId: 'com.apple.health' };
+-const props = { summary, sessions: data.sessions, period: 7, onPeriod: value => periodChosen = value, loading: false, error: false,
++const props = { summary, period: 7, loading: false, error: false,
+   onRetry: () => retries++, health, onConnections: () => connections++, onEvent: value => eventChosen = value,
+-  onDetails: () => detail++, onSource: value => sourceChosen = value };
++  onDetails: () => detail++ };
+ const html = renderToStaticMarkup(React.createElement(Summary, props));
+-assert(html.includes('Treksor sessions') && html.includes('Imported workouts'));
+-assert(html.includes('Each day counts once'));
++assert(!html.includes('Treksor sessions') && !html.includes('Imported workouts'), 'Source-specific workout counts belong in details');
++assert(html.includes('active days') && html.includes('Health · imported'));
++assert(!html.includes('Recording source') && !html.includes('role="tab"'), 'Configuration belongs in details');
+ assert(!html.includes('Heart rate') && !html.includes('Strava'));
+ const emptyHTML = renderToStaticMarkup(React.createElement(Summary, { ...props, health: { ...health, hasSnapshot: false, sources: [] } }));
+-assert(emptyHTML.includes('Connect your watch') && emptyHTML.includes('—'), 'Absent import must not appear as zero workouts');
++assert(emptyHTML.includes('Connect a watch') && !emptyHTML.includes('imported workouts'), 'Absent import offers setup, never a zero-workout metric');
+ const errorHTML = renderToStaticMarkup(React.createElement(Summary, { ...props, health: { ...health, error: true } }));
+-assert(errorHTML.includes('could not refresh') && errorHTML.includes('Showing available data'));
++assert(errorHTML.includes('needs a refresh') && errorHTML.includes('Some records are unavailable'));
+ const loadingHTML = renderToStaticMarkup(React.createElement(Summary, { ...props, loading: true }));
+-assert(loadingHTML.includes('Updating your progress') && !loadingHTML.includes('days with'));
++assert(loadingHTML.includes('Updating progress') && !loadingHTML.includes('active days'));
+ function nodes(tree, predicate, result = []) {
+   if (!tree || typeof tree !== 'object') return result;
+   if (predicate(tree)) result.push(tree);
+@@ -84,10 +85,6 @@ function nodes(tree, predicate, result = []) {
+   return result;
+ }
+ const tree = Summary(props);
+-nodes(tree, n => n.props?.accessibilityLabel === 'Last 30 days')[0].props.onPress();
+-assert.equal(periodChosen, 30);
+-nodes(tree, n => n.props?.accessibilityRole === 'tab').at(-1).props.onPress();
+-assert.equal(sourceChosen, 'com.garmin.connect');
+ nodes(tree, n => n.props?.accessibilityLabel === 'Review smartwatch and health connections')[0].props.onPress();
+ assert.equal(connections, 1);
+ const recentButtons = nodes(tree, n => n.props?.onPress && nodes(n, c => c.props?.children === summary.recent[0].title).length);
+@@ -146,16 +143,10 @@ if (process.env.TREKSOR_QA_DIR) {
+   const directory = process.env.TREKSOR_QA_DIR;
+   fs.mkdirSync(directory, { recursive: true });
+   width = 390; fontScale = 1;
+-  const actions = React.createElement(RN.View, { style: { gap: 14 } },
+-    React.createElement(RN.View, { style: { flexDirection: 'row', gap: 12 } },
+-      React.createElement(RN.Text, { style: { flex: 1, backgroundColor: '#D7B877', color: '#05080D', textAlign: 'center', padding: 16, borderRadius: 14, fontSize: 16 } }, '+  Log activity'),
+-      React.createElement(RN.Text, { style: { color: '#D7B877', padding: 16, fontSize: 14 } }, 'Notes')),
+-    React.createElement(RN.View, { style: { paddingVertical: 16, gap: 7 } },
+-      React.createElement(RN.Text, { style: { color: '#D7B877', fontSize: 12, letterSpacing: 1.4 } }, 'YOUR NEXT STEP'),
+-      React.createElement(RN.Text, { style: { color: '#F5F4F1', fontSize: 16 } }, 'Return to your daily direction')));
++  const actions = React.createElement(RN.Text, { style: { backgroundColor: '#D7B877', color: '#05080D', textAlign: 'center', padding: 16, borderRadius: 14, fontSize: 16 } }, '+  Log activity');
+   const page = React.createElement(RN.View, { style: { maxWidth: 430, marginHorizontal: 'auto', padding: 20, backgroundColor: '#05080D' } },
+     React.createElement(RN.Text, { style: { color: '#D7B877', fontSize: 34, fontWeight: '600', paddingTop: 18 } }, 'Progress'),
+-    React.createElement(RN.Text, { style: { color: '#A5AAAF', fontSize: 15, marginTop: 8, marginBottom: 22 } }, 'Your effort, made clear.'),
++
+     React.createElement(Summary, { ...props, health: { ...health, sources: health.sources.slice(0, 1) } }, actions));
+   const markup = renderToStaticMarkup(page);
+   const sheet = RN.StyleSheet.getSheet();
+diff --git a/tests/unified-progress.cjs b/tests/unified-progress.cjs
+index d105680..14a0afb 100644
+--- a/tests/unified-progress.cjs
++++ b/tests/unified-progress.cjs
+@@ -14,7 +14,7 @@ assert(progress.includes('setPeriod(value)')&&progress.includes('([7,30] as cons
+ assert(progress.includes('accessibilityLabel="Log an activity"')&&progress.includes('accessibilityState={{expanded:showRecorder}}'),'Activity entry should be one obvious action');
+ assert(progress.includes('<JourneyCard/>'),'Daily plan and evening reflection must remain accessible');
+ assert(progress.includes('<WeeklyHabits/>'),'Weekly habit editing and completion must remain accessible');
+-assert(progress.includes('router.push("/notes" as any)'),'Quick Notes must remain one tap away');
++assert(progress.includes('router.push("/notes" as any)'),'Quick Notes must remain available in Plan & habits');
+ assert(progress.includes('router.push("/progress/journey" as any)'),'Goals and weekly review must remain accessible');
+ assert(progress.includes('<JourneyDashboard')&&progress.includes('<ProgressDashboard'),'Advanced progress and check-in must remain available by choice');
+ assert(progress.includes('<ProgressSyncStatus/>'),'Sync status must remain accessible');
