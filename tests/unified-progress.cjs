@@ -9,7 +9,7 @@ for(const name of ['home','chat','tracking','community'])assert(new RegExp('name
 assert(today.includes('Redirect href="/(tabs)/tracking"'),'Old Today deep links must lead to Progress');
 assert(trail.includes("today:'Progress', tracking:'Progress'"),'Fixed route label must match unified navigation');
 assert(progress.includes('<DailyWork embedded/>'),'Activity recording must happen inside Progress');
-assert(progress.includes('data.dailyWorkCount')&&progress.includes('data.dailyWorkMinutes')&&progress.includes('data.activeDays'),'Progress summary must reflect actual saved records');
+assert(progress.includes('data.dailyWorkCount')&&progress.includes('data.dailyWorkMinutes')&&progress.includes('buildProgressSummary(data,health.rows,health.sourceId,period,now)'),'Progress summary must use app records and saved watch imports for the same period');
 assert(progress.includes('setPeriod(value)')&&progress.includes('([7,30] as const)'),'Retain week/month selection');
 assert(progress.includes('accessibilityLabel="Log an activity"')&&progress.includes('accessibilityState={{expanded:showRecorder}}'),'Activity entry should be one obvious action');
 assert(progress.includes('<JourneyCard/>'),'Daily plan and evening reflection must remain accessible');
@@ -28,5 +28,5 @@ assert(daily.includes("embedded=false")&&daily.includes("!embedded ? <View"),'Ac
 assert(daily.includes('saveWalk(owner,')&&daily.includes('saveDailyActivity(owner,'),'Preserve both save paths and never invent tracking');
 assert(daily.includes('removeWalk(owner,')&&daily.includes('removeDailyActivity(owner,'),'Preserve deletion correction');
 assert(daily.includes('Add your own'),'Custom activities must remain');
-assert(progress.includes('styles.summary')&&progress.includes('styles.mainAction'),'Preserve The Architect premium structure');
+assert(progress.includes('<ProgressSummary')&&progress.includes('styles.mainAction'),'Preserve the concise overview and activity action');
 console.log('PASS: four destinations; one unified Progress + Today redirect; daily activity, plan, notes, habits, goals, detailed metrics, sync and existing storage all accessible');

@@ -1,0 +1,831 @@
+diff --git a/app/(tabs)/tracking/index.tsx b/app/(tabs)/tracking/index.tsx
+index 73a0a64..d46b4e5 100644
+--- a/app/(tabs)/tracking/index.tsx
++++ b/app/(tabs)/tracking/index.tsx
+@@ -1,3 +1,6 @@
++import ProgressSummary from "@/components/progress/ProgressSummary";
++import { useProgressHealth } from "@/hooks/useProgressHealth";
++import { buildProgressSummary } from "@/lib/progress-summary";
+ import JourneyCard from "@/components/JourneyCard";
+ import WeeklyHabits from "@/components/WeeklyHabits";
+ import DailyWork from "@/components/DailyWork";
+@@ -10,7 +13,7 @@ import {getJourneyCheckIns} from "@/lib/journey-checkins";
+ import {getSharedTodayDates} from "@/lib/shared-today";
+ import {getLifeMoments} from "@/lib/life-moments";
+ import React, { useCallback, useEffect, useRef, useState } from "react";
+-import { ActivityIndicator, AppState, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
++import { ActivityIndicator, AppState, Platform, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+ import { SafeAreaView } from "react-native-safe-area-context";
+ import { router, useFocusEffect } from "expo-router";
+ import { StatusBar } from "expo-status-bar";
+@@ -31,9 +34,12 @@ import { useArticleStore } from "@/store/article-store";
+ import { getEntries } from "@/lib/mood-journal";
+ import { buildProgressOverview, dayKey } from "@/lib/progress-metrics";
+ import { isProgressAccountReady, prepareProgressAccount } from "@/lib/local-progress";
+-import { colors } from "@/theme/architect";
++import { colors, layout, type } from "@/theme/architect";
+ 
+ export default function TrackingScreen() {
++  const health = useProgressHealth();
++  const scroll = useRef<ScrollView>(null);
++  const [detailTab, setDetailTab] = useState<"activity" | "wellbeing" | "plan">("activity");
+   const walks = useWalks();
+   const dailyWork = useDailyActivities();
+   const userId = useAuthStore(s => s.user?.id);
+@@ -45,15 +51,12 @@ export default function TrackingScreen() {
+   const reflections = useMySpaceStore(s => s.myspaces);
+   const meditations = useMediationStore(s => s.mediation);
+   const { articles } = useArticleStore();
+-  const [detailsOpen,setDetailsOpen]=useState(false);
+   const [showRecorder,setShowRecorder]=useState(false);
+-  const [showPlan,setShowPlan]=useState(false);
+-  const [showHabits,setShowHabits]=useState(false);
+   const [showAdvanced,setShowAdvanced]=useState(false);
+   const [period, setPeriod] = useState<7 | 30>(7);
+   const [now, setNow] = useState(new Date());
+   const [reload, setReload] = useState(0);
+-  const [extras, setExtras] = useState<{ owner?: string; ready: boolean; accountError: boolean; journalDates: string[]; journeyDates:string[]; sharedToday:boolean|null; momentDates:string[]; visionAnswers: unknown[] | null; journalLoading: boolean; visionLoading: boolean; journalError: boolean; visionError: boolean }>({ ready: false, accountError: false, journalDates: [], journeyDates:[], sharedToday:null, momentDates:[], visionAnswers: null, journalLoading: true, visionLoading: true, journalError: false, visionError: false });
++  const [extras, setExtras] = useState<{ owner?: string; ready: boolean; accountError: boolean; activityError:boolean; journalDates: string[]; journeyDates:string[]; sharedToday:boolean|null; momentDates:string[]; visionAnswers: unknown[] | null; journalLoading: boolean; visionLoading: boolean; journalError: boolean; visionError: boolean }>({ ready: false, accountError: false, activityError:false, journalDates: [], journeyDates:[], sharedToday:null, momentDates:[], visionAnswers: null, journalLoading: true, visionLoading: true, journalError: false, visionError: false });
+   const [showAddTracker, setShowAddTracker] = useState(false);
+   const [showCalendar, setShowCalendar] = useState(false);
+   const pendingModalAction = useRef<(() => void) | null>(null);
+@@ -68,15 +71,14 @@ export default function TrackingScreen() {
+   useFocusEffect(useCallback(() => {
+     let active = true;
+     setNow(new Date());
+-    setDetailsOpen(false);
+-    setExtras({ owner: userId, ready: false, accountError: false, journalDates: [], journeyDates:[], sharedToday:null, momentDates:[], visionAnswers: null, journalLoading: true, visionLoading: true, journalError: false, visionError: false });
++    setExtras({ owner: userId, ready: false, accountError: false, activityError:false, journalDates: [], journeyDates:[], sharedToday:null, momentDates:[], visionAnswers: null, journalLoading: true, visionLoading: true, journalError: false, visionError: false });
+     void (async () => {
+       try { if (userId && !isProgressAccountReady(userId)) await prepareProgressAccount(userId); }
+       catch { if (active) setExtras(s => ({ ...s, accountError: true })); return; }
+       if (!active) return;
+       setExtras(s => ({ ...s, ready: true }));
+-    void Promise.allSettled([getJourneyCheckIns(userId||""),getSharedTodayDates(userId||"")]).then(results=>{if(!active)return;const local=results[0].status==="fulfilled"?results[0].value.map(row=>row.date):[];const remote=results[1].status==="fulfilled"?results[1].value:[];setExtras(s=>({...s,journeyDates:[...new Set([...local,...remote])].sort(),sharedToday:results[1].status==="fulfilled"?remote.includes(dayKey()):null}))});
+-    void getLifeMoments(userId||"").then(rows=>{if(active)setExtras(s=>({...s,momentDates:rows.map(row=>row.date)}))}).catch(()=>{});
++    void Promise.allSettled([getJourneyCheckIns(userId||""),getSharedTodayDates(userId||"")]).then(results=>{if(!active)return;const local=results[0].status==="fulfilled"?results[0].value.map(row=>row.date):[];const remote=results[1].status==="fulfilled"?results[1].value:[];setExtras(s=>({...s,journeyDates:[...new Set([...local,...remote])].sort(),activityError:results.some(result=>result.status==="rejected"),sharedToday:results[1].status==="fulfilled"?remote.includes(dayKey()):null}))});
++    void getLifeMoments(userId||"").then(rows=>{if(active)setExtras(s=>({...s,momentDates:rows.map(row=>row.date)}))}).catch(()=>{if(active)setExtras(s=>({...s,activityError:true}))});
+     void getEntries(userId || "").then(entries => {
+       if (active) setExtras(s => ({ ...s, journalDates: entries.map(e => e.date), journalLoading: false }));
+     }).catch(() => { if (active) setExtras(s => ({ ...s, journalError: true, journalLoading: false })); });
+@@ -96,99 +98,67 @@ export default function TrackingScreen() {
+   }, []);
+ 
+   const ownExtras = extras.owner === userId;
+-  const data = buildProgressOverview({ walks: walks.rows, dailyActivities: dailyWork.entries, checkIns, gymSets, reflections, meditations, articles, trackers: trackingData, journalDates: ownExtras ? extras.journalDates : [], dailyCheckInDates:ownExtras?extras.journeyDates:[], momentDates:ownExtras?extras.momentDates:[], visionAnswers: ownExtras ? extras.visionAnswers : null }, period, now);
++  const ownReady=ownExtras&&extras.ready;
++  const data = buildProgressOverview({ walks: walks.rows, dailyActivities: dailyWork.entries, checkIns:ownReady?checkIns:{}, gymSets:ownReady?gymSets:[], reflections:ownReady?reflections:[], meditations:ownReady?meditations:[], articles:ownReady?articles:{}, trackers:ownReady?trackingData:[], journalDates: ownExtras ? extras.journalDates : [], dailyCheckInDates:ownExtras?extras.journeyDates:[], momentDates:ownExtras?extras.momentDates:[], visionAnswers: ownExtras ? extras.visionAnswers : null }, period, now);
+   const openLog = (date: string, trackerId?: string) => setLog({ date, trackerId });
+   const today=dayKey(now);
+-  const ownReady=ownExtras&&extras.ready;
+-  const statsLoading=!ownReady||dailyWork.loading||walks.loading;
+-  const periodSummary=period===7?"7 days":"30 days";
++  const statsLoading=(!ownReady && !extras.accountError)||dailyWork.loading||walks.loading||(ownReady&&extras.journalLoading);
++  const summary=buildProgressSummary(data,health.rows,health.sourceId,period,now);
++  const refresh=()=>{setReload(v=>v+1);void health.refresh();void dailyWork.reload();void walks.reload()};
++  const openDetails=(tab:typeof detailTab)=>{setDetailTab(tab);setShowAdvanced(true);scroll.current?.scrollTo({y:0,animated:false})};
++  const closeDetails=()=>{setShowAdvanced(false);scroll.current?.scrollTo({y:0,animated:false})};
++  const openConnections=()=>router.push(("/progress/connections?source="+encodeURIComponent(health.sourceId)+"&period="+period) as any);
++  const openEvent=(event:typeof summary.recent[number])=>{
++    if(event.route==="/progress/connections")openConnections();
++    else if(event.trackerId)openLog(event.date,event.trackerId);
++    else if(event.route==="/(tabs)/today"){setShowRecorder(true);scroll.current?.scrollTo({y:0,animated:true})}
++    else if(event.route==="/(tabs)/tracking")openDetails("wellbeing");
++    else if(event.route)router.push(event.route as any);
++  };
+ 
+   return <SafeAreaView edges={[]} style={styles.screen}>
+     <StatusBar style="light"/>
+-    <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+-      <BodyPageHeading trail="YOUR JOURNEY" title="Progress" goldTitle subtitle="Your day and your growth. One place." style={styles.heading} compactSubtitle/>
+-
+-      <View style={styles.summary}>
+-        <View style={styles.headingRow}>
+-          <View style={styles.flex}>
+-            <Text style={styles.eyebrow}>YOUR RHYTHM</Text>
+-            <Text style={styles.summaryTitle}>Small steps count.</Text>
+-          </View>
+-          <View accessibilityRole="tablist" style={styles.periodTabs}>
+-            {([7,30] as const).map(value=><TouchableOpacity key={value} accessibilityRole="tab" accessibilityState={{selected:period===value}} onPress={()=>setPeriod(value)} style={[styles.periodOption,period===value&&styles.periodSelected]}>
+-              <Text style={[styles.periodLabel,period===value&&styles.periodLabelSelected]}>{value===7?"7D":"30D"}</Text>
+-            </TouchableOpacity>)}
++    <ScrollView ref={scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={statsLoading} onRefresh={refresh} tintColor={colors.gold}/>}>
++      <BodyPageHeading trail="YOUR JOURNEY" title="Progress" goldTitle subtitle="Your effort, made clear." style={styles.heading} compactSubtitle/>
++      {!showAdvanced ? <>
++        <ProgressSummary summary={summary} sessions={data.sessions} period={period} onPeriod={setPeriod}
++          loading={statsLoading} unavailable={!ownReady&&extras.accountError} error={extras.accountError||extras.activityError||extras.journalError||!!dailyWork.error||!!walks.error}
++          onRetry={refresh} health={health} onSource={health.selectSource}
++          onConnections={openConnections} onEvent={openEvent} onDetails={()=>openDetails("activity")}>
++          <View style={styles.quickActions}>
++            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Log an activity" accessibilityState={{expanded:showRecorder}} onPress={()=>setShowRecorder(value=>!value)} style={styles.mainAction}>
++              <Icon name={showRecorder?"close":"add"} size={22} color={colors.background}/><Text style={styles.mainText}>Log activity</Text>
++            </TouchableOpacity>
++            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open Quick Notes and tasks" onPress={()=>router.push("/notes" as any)} style={styles.notesAction}><Icon name="create-outline" color={colors.gold} size={20}/><Text style={styles.link}>Notes</Text></TouchableOpacity>
+           </View>
+-        </View>
+-        {extras.accountError ? <TouchableOpacity accessibilityRole="button" onPress={()=>setReload(v=>v+1)}><Text style={styles.error}>Your saved progress could not load. Tap to retry.</Text></TouchableOpacity> : statsLoading ? <View style={styles.loadingSmall}><ActivityIndicator color={colors.gold}/><Text style={styles.hint}>Updating your progress…</Text></View> :
+-          <View style={styles.metrics}>
+-            <View style={styles.metric}><Text style={styles.metricValue}>{data.activeDays}</Text><Text style={styles.metricCaption}>Active days</Text></View>
+-            <View style={styles.metric}><Text style={styles.metricValue}>{data.dailyWorkCount}</Text><Text style={styles.metricCaption}>Activities</Text></View>
+-            <View style={styles.metric}><Text style={styles.metricValue}>{data.dailyWorkMinutes}</Text><Text style={styles.metricCaption}>Minutes logged</Text></View>
+-          </View>}
+-        <Text style={styles.hint}>Last {periodSummary} · based on your saved actions, not estimates.</Text>
+-        {period===7&&<View accessibilityLabel="Your activity over the past seven days" style={styles.days}>
+-          {data.days.map(day=><View key={day.date} accessible accessibilityLabel={day.date+(day.active?" — activity recorded":" — no recorded activity")} style={[styles.dayTile,day.active&&styles.dayTileActive]}/>)}
+-        </View>}
+-        {ownReady&&extras.sharedToday===true&&<Text style={styles.sharedNote}>Your completed day is also recorded in your Treksor account.</Text>}
+-      </View>
+-
+-      <Text style={[styles.sectionTitle,{marginTop:22}]}>Activity & evolution</Text>
+-      <TouchableOpacity accessibilityRole="button" accessibilityLabel="Log an activity" accessibilityState={{expanded:showRecorder}} onPress={()=>setShowRecorder(value=>!value)} style={styles.mainAction}>
+-        <View style={styles.mainIcon}><Icon name="add" size={23} color={colors.gold}/></View>
+-        <View style={styles.flex}><Text style={styles.mainText}>Log an activity</Text><Text style={styles.mainCaption}>Walk, hiking, sports or add your own</Text></View>
+-        <Icon name={showRecorder?"chevron-up":"chevron-down"} size={20} color={colors.gold}/>
+-      </TouchableOpacity>
+-      {showRecorder&&<DailyWork embedded/>}
+-      <WalkingSummary rows={walks.rows} now={walks.now} loading={walks.loading} error={walks.error}/>
+-
+-      <Text style={[styles.sectionTitle,{marginTop:18}]}>Habits & goals</Text>
+-      <View style={styles.actions}>
+-        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open daily direction" accessibilityState={{expanded:showPlan}} onPress={()=>setShowPlan(value=>!value)} style={styles.action}>
+-          <Icon name="compass-outline" size={22} color={colors.gold}/>
+-          <View style={styles.flex}><Text style={styles.actionTitle}>Daily direction</Text><Text style={styles.actionSubtitle}>Your plan and evening reflection</Text></View>
+-          <Icon name={showPlan?"chevron-up":"chevron-down"} size={18} color={colors.gold}/>
+-        </TouchableOpacity>
+-        {showPlan&&<View style={styles.expanded}><JourneyCard/></View>}
+-        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open Quick Notes and tasks" onPress={()=>router.push("/notes" as any)} style={styles.action}>
+-          <Icon name="create-outline" size={22} color={colors.gold}/>
+-          <View style={styles.flex}><Text style={styles.actionTitle}>Quick Notes</Text><Text style={styles.actionSubtitle}>Notes, tasks and reminders</Text></View>
+-          <Icon name="chevron-forward" size={18} color={colors.gold}/>
+-        </TouchableOpacity>
+-        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open weekly habits" accessibilityState={{expanded:showHabits}} onPress={()=>setShowHabits(value=>!value)} style={styles.action}>
+-          <Icon name="checkmark-circle-outline" size={22} color={colors.gold}/>
+-          <View style={styles.flex}><Text style={styles.actionTitle}>Weekly habits</Text><Text style={styles.actionSubtitle}>Build and mark your routines</Text></View>
+-          <Icon name={showHabits?"chevron-up":"chevron-down"} size={18} color={colors.gold}/>
+-        </TouchableOpacity>
+-        {showHabits&&<View style={styles.expanded}><WeeklyHabits/></View>}
+-        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open goals and weekly review" onPress={()=>router.push("/progress/journey" as any)} style={styles.action}>
+-          <Icon name="flag-outline" size={22} color={colors.gold}/>
+-          <View style={styles.flex}><Text style={styles.actionTitle}>Goals & weekly review</Text><Text style={styles.actionSubtitle}>Reflect on what matters</Text></View>
+-          <Icon name="chevron-forward" size={18} color={colors.gold}/>
+-        </TouchableOpacity>
+-      </View>
+-
+-      <Text style={[styles.sectionTitle,{marginTop:25}]}>Smartwatch & health</Text>
+-      <TouchableOpacity accessibilityRole="button" accessibilityLabel="Review smartwatch and health connections" onPress={()=>router.push("/progress/connections" as any)} style={styles.action}>
+-        <Icon name="heart-circle-outline" size={23} color={colors.gold}/>
+-        <View style={styles.flex}><Text style={styles.actionTitle}>Connected movement</Text><Text style={styles.actionSubtitle}>Review Apple Health, Apple Watch and Garmin availability and saved imports</Text></View>
+-        <Icon name="chevron-forward" size={18} color={colors.gold}/>
+-      </TouchableOpacity>
+-
+-      <TouchableOpacity accessibilityRole="button" accessibilityLabel="Explore detailed progress" accessibilityState={{expanded:showAdvanced}} onPress={()=>setShowAdvanced(value=>!value)} style={styles.advancedButton}>
+-        <Icon name="stats-chart-outline" size={18} color={colors.gold}/>
+-        <Text style={styles.advancedText}>{showAdvanced?"Hide detailed progress":"View detailed progress"}</Text>
+-        <Icon name={showAdvanced?"chevron-up":"chevron-down"} size={17} color={colors.gold}/>
+-      </TouchableOpacity>
+-
+-      {showAdvanced&&<View style={styles.advanced}>
+-        {!ownReady? <View style={styles.loading}>{extras.accountError ? <TouchableOpacity accessibilityRole="button" onPress={()=>setReload(v=>v+1)}><Text style={styles.error}>Unable to load details · Retry</Text></TouchableOpacity> : <><ActivityIndicator color={colors.gold}/><Text style={styles.loadingText}>Loading detailed progress…</Text></>}</View> :
+-          <>
+-            <JourneyDashboard data={data} period={period} onPeriod={setPeriod} detailsOpen={detailsOpen} onDetails={()=>setDetailsOpen(value=>!value)} onCheckInSaved={date=>setExtras(s=>({...s,journeyDates:Array.from(new Set([...s.journeyDates,date]))}))}/>
+-            {detailsOpen&&<ProgressDashboard compactOverview mentorReplies={mentorReplies} data={data} period={period} onPeriod={setPeriod} trackers={trackingData} today={today} journalLoading={!ownExtras||extras.journalLoading} visionLoading={!ownExtras||extras.visionLoading} journalError={ownExtras&&extras.journalError} visionError={ownExtras&&extras.visionError} onRetry={()=>setReload(v=>v+1)} onRoute={route=>router.push(route as any)} onLog={openLog} onCreate={()=>setShowAddTracker(true)} onCalendar={()=>setShowCalendar(true)}/>}
++          {showRecorder&&<DailyWork embedded/>}
++          <TouchableOpacity accessibilityRole="button" onPress={()=>openDetails("plan")} style={styles.nextStep}>
++            <Icon name="compass-outline" size={21} color={colors.gold}/><View style={styles.flex}><Text style={styles.eyebrow}>YOUR NEXT STEP</Text><Text style={styles.actionTitle}>Return to your daily direction</Text></View><Icon name="chevron-forward" size={18} color={colors.gold}/>
++          </TouchableOpacity>
++        </ProgressSummary>
++        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Explore detailed progress" onPress={()=>openDetails("activity")} style={styles.detailsButton}><Icon name="stats-chart-outline" color={colors.gold} size={20}/><View style={styles.flex}><Text style={styles.actionTitle}>Explore your progress</Text><Text style={styles.caption}>Pillars, check-ins, goals & habits</Text></View><Icon name="chevron-forward" color={colors.gold} size={18}/></TouchableOpacity>
++      </> : <>
++        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Back to progress overview" onPress={closeDetails} style={styles.back}><Icon name="chevron-back" color={colors.gold} size={20}/><Text style={styles.link}>Overview</Text></TouchableOpacity>
++        <View accessibilityRole="tablist" style={styles.detailTabs}>{([['activity','Activity'],['wellbeing','Wellbeing'],['plan','Plan & habits']] as const).map(([value,label])=><TouchableOpacity key={value} accessibilityRole="tab" accessibilityState={{selected:detailTab===value}} onPress={()=>setDetailTab(value)} style={[styles.detailTab,detailTab===value&&styles.selected]}><Text style={[styles.label,detailTab===value&&styles.selectedText]}>{label}</Text></TouchableOpacity>)}</View>
++        <View style={styles.periodRow}><Text style={styles.caption}>Last {period} days</Text><View style={styles.quickActions}>{([7,30] as const).map(value=><TouchableOpacity key={value} accessibilityRole="button" accessibilityLabel={'Show last '+value+' days'} accessibilityState={{selected:period===value}} onPress={()=>setPeriod(value)} style={styles.periodButton}><Text style={[styles.label,period===value&&styles.link]}>{value}D</Text></TouchableOpacity>)}</View></View>
++        {!ownReady ? <View style={styles.loading}>{extras.accountError ? <TouchableOpacity accessibilityRole="button" onPress={refresh}><Text style={styles.error}>Unable to load details · Retry</Text></TouchableOpacity> : <><ActivityIndicator color={colors.gold}/><Text style={styles.caption}>Loading detailed progress…</Text></>}</View> : <>
++          {detailTab==="activity"&&<>
++            <View style={styles.detailNote}><Text style={styles.actionTitle}>Your recorded movement</Text><Text style={styles.label}>{data.dailyWorkCount} activities · {data.dailyWorkMinutes} minutes logged manually</Text><Text style={styles.caption}>Treksor and imported workout totals remain separate because the same session may be recorded in both.</Text>
++              <TouchableOpacity accessibilityRole="button" onPress={openConnections} style={styles.back}><Text style={styles.link}>Imported workout history</Text></TouchableOpacity>
++            </View>
++            <ProgressDashboard compactOverview mentorReplies={mentorReplies} data={data} period={period} onPeriod={setPeriod} trackers={trackingData} today={today} journalLoading={!ownExtras||extras.journalLoading} visionLoading={!ownExtras||extras.visionLoading} journalError={ownExtras&&extras.journalError} visionError={ownExtras&&extras.visionError} onRetry={refresh} onRoute={route=>route==="/(tabs)/today"?(closeDetails(),setShowRecorder(true)):router.push(route as any)} onLog={openLog} onCreate={()=>setShowAddTracker(true)} onCalendar={()=>setShowCalendar(true)}/>
++            <WalkingSummary rows={walks.rows} now={walks.now} loading={walks.loading} error={walks.error}/>
++          </>}
++          {detailTab==="wellbeing"&&<JourneyDashboard focused data={data} period={period} onPeriod={setPeriod} detailsOpen={false} onDetails={()=>setDetailTab("activity")} onCheckInSaved={date=>setExtras(s=>({...s,journeyDates:Array.from(new Set([...s.journeyDates,date]))}))}/>}
++          {detailTab==="plan"&&<>
++            <JourneyCard/>
++            <WeeklyHabits/>
++            <TouchableOpacity accessibilityRole="button" accessibilityLabel="Open goals and weekly review" onPress={()=>router.push("/progress/journey" as any)} style={styles.detailsButton}><Icon name="flag-outline" size={22} color={colors.gold}/><View style={styles.flex}><Text style={styles.actionTitle}>Goals & weekly review</Text><Text style={styles.caption}>Reflect on what matters</Text></View><Icon name="chevron-forward" size={18} color={colors.gold}/></TouchableOpacity>
++            {extras.sharedToday===true&&<Text style={styles.caption}>Your completed day is recorded in your Treksor account.</Text>}
+           </>}
+-        <ProgressSyncStatus/>
+-      </View>}
++        </>}
++        <View style={styles.sync}><ProgressSyncStatus/></View>
++      </>}
+     </ScrollView>
+     <AddTrackerModal visible={showAddTracker} onClose={()=>setShowAddTracker(false)}/>
+     <ActivityLogModal visible={!!log} onClose={()=>setLog(null)} selectedDate={log?.date??today} selectedCategory={log?.trackerId} onDismiss={afterDismiss} onCreate={()=>afterClose(()=>setLog(null),()=>setShowAddTracker(true))}/>
+@@ -197,42 +167,23 @@ export default function TrackingScreen() {
+ }
+ const styles = StyleSheet.create({
+   screen:{flex:1,backgroundColor:colors.background},
+-  content:{paddingHorizontal:20,paddingTop:0,paddingBottom:38,flexGrow:1},
+-  heading:{paddingHorizontal:0,paddingTop:0,paddingBottom:0,marginBottom:10},
+-  flex:{flex:1},
+-  eyebrow:{fontSize:10,fontWeight:"700",letterSpacing:1.6,color:colors.gold},
+-  sectionTitle:{fontSize:22,lineHeight:29,fontWeight:"600",letterSpacing:-0.2,color:colors.text,marginBottom:10},
+-  summary:{backgroundColor:colors.surface,borderColor:colors.border,borderWidth:1,borderRadius:18,padding:17,marginTop:0,gap:12},
+-  headingRow:{flexDirection:"row",alignItems:"center",justifyContent:"space-between",gap:12},
+-  summaryTitle:{color:colors.text,fontSize:19,fontWeight:"600",marginTop:6},
+-  periodTabs:{flexDirection:"row",padding:3,backgroundColor:colors.background,borderRadius:12,borderColor:colors.border,borderWidth:1},
+-  periodOption:{minWidth:43,minHeight:36,alignItems:"center",justifyContent:"center",borderRadius:9},
+-  periodSelected:{backgroundColor:colors.gold},
+-  periodLabel:{color:colors.secondary,fontSize:12,fontWeight:"700"},
+-  periodLabelSelected:{color:colors.background},
+-  metrics:{flexDirection:"row",alignItems:"flex-start",gap:12,marginVertical:7},
+-  metric:{flex:1},
+-  metricValue:{fontSize:25,fontWeight:"600",color:colors.text},
+-  metricCaption:{fontSize:11,lineHeight:16,color:colors.secondary,marginTop:4},
+-  hint:{fontSize:11,lineHeight:17,color:colors.muted},
+-  days:{flexDirection:"row",gap:6},
+-  dayTile:{flex:1,height:5,borderRadius:4,backgroundColor:colors.surfaceRaised},
+-  dayTileActive:{backgroundColor:colors.gold},
+-  sharedNote:{fontSize:11,lineHeight:17,color:colors.gold},
+-  loadingSmall:{flexDirection:"row",alignItems:"center",gap:10,minHeight:47},
+-  mainAction:{minHeight:72,flexDirection:"row",alignItems:"center",gap:12,backgroundColor:colors.surfaceRaised,borderColor:colors.gold,borderWidth:1,borderRadius:16,paddingHorizontal:17,marginTop:18},
+-  mainIcon:{height:40,width:40,borderRadius:12,backgroundColor:colors.goldSoft,alignItems:"center",justifyContent:"center"},
+-  mainText:{color:colors.text,fontSize:17,fontWeight:"700"},
+-  mainCaption:{color:colors.secondary,fontSize:11,marginTop:4},
+-  actions:{borderColor:colors.border,borderWidth:1,borderRadius:16,overflow:"hidden",backgroundColor:colors.surface},
+-  action:{minHeight:68,flexDirection:"row",alignItems:"center",gap:12,paddingHorizontal:15,borderBottomColor:colors.border,borderBottomWidth:1},
+-  actionTitle:{fontSize:14,fontWeight:"600",color:colors.text},
+-  actionSubtitle:{fontSize:11,color:colors.secondary,marginTop:4},
+-  expanded:{paddingHorizontal:14,paddingBottom:14,borderBottomWidth:1,borderColor:colors.border},
+-  advancedButton:{marginTop:19,minHeight:52,flexDirection:"row",alignItems:"center",justifyContent:"center",gap:11,borderColor:colors.border,borderWidth:1,borderRadius:14},
+-  advancedText:{color:colors.gold,fontSize:13,fontWeight:"600",flex:1},
+-  advanced:{marginTop:10,gap:14},
+-  loading:{paddingVertical:40,alignItems:"center",gap:16},
+-  loadingText:{color:colors.secondary,fontSize:14},
+-  error:{color:colors.danger,fontSize:12,lineHeight:20}
++  content:{paddingHorizontal:20,paddingTop:layout.compactTop,paddingBottom:38,flexGrow:1},
++  heading:{paddingHorizontal:0,paddingTop:0,paddingBottom:0,marginBottom:16},
++  flex:{flex:1,minWidth:0}, eyebrow:{...type.eyebrow,fontSize:12},
++  caption:{color:colors.muted,fontSize:12,lineHeight:19}, label:{color:colors.secondary,fontSize:14,lineHeight:21},
++  link:{color:colors.gold,fontSize:14,fontWeight:"600",lineHeight:21},
++  quickActions:{flexDirection:"row",flexWrap:"wrap",gap:10},
++  mainAction:{minHeight:52,flexGrow:1,flexDirection:"row",alignItems:"center",justifyContent:"center",gap:10,backgroundColor:colors.gold,borderRadius:14,padding:14},
++  mainText:{color:colors.background,fontSize:16,fontWeight:"600"},
++  notesAction:{minHeight:52,flexDirection:"row",alignItems:"center",justifyContent:"center",gap:8,padding:14,borderRadius:14,borderWidth:1,borderColor:colors.border},
++  nextStep:{minHeight:78,flexDirection:"row",alignItems:"center",gap:12,paddingVertical:16},
++  actionTitle:{color:colors.text,fontSize:16,lineHeight:24,fontWeight:"600"},
++  detailsButton:{minHeight:76,flexDirection:"row",alignItems:"center",gap:12,padding:16,marginTop:18,borderRadius:16,borderWidth:1,borderColor:colors.border},
++  back:{minHeight:44,flexDirection:"row",alignItems:"center",gap:8},
++  detailTabs:{flexDirection:"row",flexWrap:"wrap",gap:8,marginTop:8},
++  detailTab:{minHeight:48,justifyContent:"center",alignItems:"center",flexGrow:1,padding:12,borderRadius:12,borderWidth:1,borderColor:colors.border},
++  selected:{backgroundColor:colors.goldSoft,borderColor:colors.gold},selectedText:{color:colors.gold},
++  periodRow:{flexDirection:"row",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8,marginTop:8},periodButton:{padding:12,minHeight:44,minWidth:44},
++  detailNote:{backgroundColor:colors.surface,borderWidth:1,borderColor:colors.border,borderRadius:16,padding:18,gap:8,marginTop:12},
++  loading:{paddingVertical:40,alignItems:"center",gap:16},error:{color:colors.danger,fontSize:14,lineHeight:21},sync:{marginTop:24}
+ });
+diff --git a/app/progress/connections.tsx b/app/progress/connections.tsx
+index 3e0889e..aa736ef 100644
+--- a/app/progress/connections.tsx
++++ b/app/progress/connections.tsx
+@@ -1,7 +1,7 @@
+ import WatchSharing from "@/components/watch/WatchSharing";
+ import React,{useCallback,useEffect,useState} from "react";
+ import {Alert,Linking,ScrollView,StyleSheet,Text,TouchableOpacity,View} from "react-native";
+-import {useFocusEffect} from "expo-router";
++import {useFocusEffect,useLocalSearchParams} from "expo-router";
+ import {useSafeAreaInsets} from "react-native-safe-area-context";
+ import Ionicons from '@/components/ui/BrandIcon';
+ import BodyPageHeading from "@/components/BodyPageHeading";
+@@ -12,11 +12,13 @@ import {activityOverview,HealthWorkout,normalizeWorkouts,sourceLabel} from "@/li
+ import {deleteHealthSnapshot,getHealthSnapshot,saveHealthSnapshot} from "@/api/health-snapshot";
+ const web="https://treksor-community.oceanicman.chatgpt.site/#/connections";
+ export default function Connections(){
++ const params=useLocalSearchParams<{source?:string;period?:string}>();
+  const owner=useAuthStore(s=>s.user?.id),insets=useSafeAreaInsets(),availability=healthAvailability();
+  const [saved,setSaved]=useState<{owner:string;rows:HealthWorkout[];at:string}|null>(null),[preview,setPreview]=useState<{owner:string;rows:HealthWorkout[]}|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(""),[source,setSource]=useState(""),[period,setPeriod]=useState<7|30>(7);
+  const owned=owner&&saved?.owner===owner?saved:null,draft=owner&&preview?.owner===owner?preview:null,rows=draft?.rows??owned?.rows??[];
+  const sources=[...new Map(rows.map(row=>[row.sourceId,row])).values()],selected=sources.find(row=>row.sourceId===source)?.sourceId||sources[0]?.sourceId||"",overview=activityOverview(rows,selected,period);
+- useEffect(()=>{setSaved(null);setPreview(null);setSource("");setError("")},[owner]);
++ useEffect(()=>{setSource(typeof params.source==="string"?params.source:"");setPeriod(params.period==="30"?30:7)},[params.source,params.period]);
++ useEffect(()=>{setSaved(null);setPreview(null);setError("")},[owner]);
+  const load=useCallback(async()=>{if(!owner)return;try{const value=await getHealthSnapshot(owner);if(useAuthStore.getState().user?.id===owner){setSaved(value?{owner,rows:value.snapshot.workouts,at:value.updatedAt}:null);setError("")}}catch{if(useAuthStore.getState().user?.id===owner)setError("Saved records could not be refreshed. They may be out of date. Try again.")}},[owner]);
+  useFocusEffect(useCallback(()=>{void load();return()=>setPreview(null)},[load]));
+  async function perform(action:()=>Promise<void>){if(busy)return;setBusy(true);setError("");try{await action()}catch(e){if(useAuthStore.getState().user?.id===owner)setError(e instanceof Error?e.message:"Please try again.")}finally{setBusy(false)}}
+diff --git a/components/progress/JourneyDashboard.tsx b/components/progress/JourneyDashboard.tsx
+index 85c7a04..6fc98b9 100644
+--- a/components/progress/JourneyDashboard.tsx
++++ b/components/progress/JourneyDashboard.tsx
+@@ -16,8 +16,8 @@ import {buildProgressOverview,dayKey} from "@/lib/progress-metrics";
+ import { colors, navyOverlay } from "@/theme/architect";
+ type Field="mood"|"focus"|"energy";
+ const fields:{key:Field;title:string;low:string;high:string;icon:React.ComponentProps<typeof Ionicons>["name"]}[]=[{key:"mood",title:"Mood",low:"Very low",high:"Very good",icon:"heart-outline"},{key:"focus",title:"Focus",low:"Scattered",high:"Clear",icon:"locate-outline"},{key:"energy",title:"Energy",low:"Very low",high:"Energised",icon:"flash-outline"}];
+-type Props={data:ReturnType<typeof buildProgressOverview>;period:7|30;onPeriod:(period:7|30)=>void;onCheckInSaved:(date:string)=>void;onDetails:()=>void;detailsOpen:boolean};
+-export default function JourneyDashboard({data,period,onPeriod,onCheckInSaved,onDetails,detailsOpen}:Props){
++type Props={focused?:boolean;data:ReturnType<typeof buildProgressOverview>;period:7|30;onPeriod:(period:7|30)=>void;onCheckInSaved:(date:string)=>void;onDetails:()=>void;detailsOpen:boolean};
++export default function JourneyDashboard({focused=false,data,period,onPeriod,onCheckInSaved,onDetails,detailsOpen}:Props){
+  const account=useAuthStore(s=>s.user?.id),name=useAuthStore(s=>s.user?.name?.split(" ")[0]||"Explorer"),sets=useWorkoutStore(s=>s.gymSets)||[],sessions=useWorkoutStore(s=>s.checkIns)||{},reflections=useMySpaceStore(s=>s.myspaces)||[],insets=useSafeAreaInsets();
+  const [saved,setSaved]=useState<{owner?:string;checks:JourneyCheckIn[];journal:JournalEntry[];moments:LifeMoment[];travel:boolean}>({checks:[],journal:[],moments:[],travel:false}),[loading,setLoading]=useState(true),[error,setError]=useState(""),[field,setField]=useState<Field>("mood"),[modal,setModal]=useState(false),[saving,setSaving]=useState(false),[values,setValues]=useState<Record<Field,number|null>>({mood:null,focus:null,energy:null});
+  useEffect(()=>{setModal(false);setValues({mood:null,focus:null,energy:null});setSaved(previous=>previous.owner===account?previous:{owner:account,checks:[],journal:[],moments:[],travel:false})},[account]);
+@@ -30,16 +30,16 @@ export default function JourneyDashboard({data,period,onPeriod,onCheckInSaved,on
+  async function toggleTravel(enabled:boolean){if(!account)return;try{await saveTravelMode(account,enabled);if(useAuthStore.getState().user?.id===account)setSaved(previous=>previous.owner===account?{...previous,travel:enabled}:{owner:account,checks:[],journal:[],moments:[],travel:enabled})}catch{Alert.alert("Unable to save travel mode","Please retry.")}}
+  const next=!todayEntry?{title:"Take a moment to check in",body:"Mood, focus and energy. Three quick ratings, just for you.",action:"CHECK IN",run:openCheckIn}:travel?{title:"Keep a moment from today",body:"A new place, a conversation, a quiet morning. Growth comes with you.",action:"SAVE A MOMENT",run:()=>router.push("/mind/moments")}:data.sessions===0?{title:"Make room for movement",body:"Open your routine when you are ready. Your recorded sets will build your baseline.",action:"OPEN MY PLAN",run:()=>router.push("/body/workout/my-plan")}:{title:"Notice what is changing",body:"Put one thought into words and return to it as your story grows.",action:"WRITE A REFLECTION",run:()=>router.push("/mental/myspace")};
+  return <>
+-  <LinearGradient colors={[colors.surfaceRaised,colors.surface]} style={s.hero}><View style={s.between}><Text style={s.eyebrow}>YOUR LIFE, IN PROGRESS</Text><Ionicons name={travel?"airplane-outline":"sparkles-outline"} color={colors.gold} size={22}/></View><Text style={s.greeting}>{travel?"Your journey goes with you.":`Keep becoming, ${name}.`}</Text><Text style={s.copy}>{data.activeDays?`You made space for yourself on ${data.activeDays} of the last ${period} days.`:"One small action is enough to begin your story."}</Text><View style={{flexDirection:"row",flexWrap:"wrap",gap:5,marginTop:20}}>{data.days.map(day=><View key={day.date} accessibilityLabel={`${day.date}: ${day.active?"recorded activity":"no record"}`} style={{width:period===7?27:8,height:period===7?8:8,borderRadius:4,backgroundColor:day.active?colors.gold:colors.surfaceRaised}}/>)}</View><Text style={s.small}>Recorded activity · days without a record are left open</Text><View style={[s.between,{marginTop:18}]}><Text style={s.small}>{totalSessions} training sessions · {reflections.length} reflections saved</Text><View style={s.segment}>{([7,30] as const).map(p=><TouchableOpacity key={p} onPress={()=>onPeriod(p)} accessibilityRole="tab" accessibilityState={{selected:p===period}} style={[s.tab,p===period&&s.selected]}><Text style={{color:p===period?"#17120B":colors.text,fontSize:11,fontWeight:"700"}}>{p}D</Text></TouchableOpacity>)}</View></View></LinearGradient>
++  {!focused&&<LinearGradient colors={[colors.surfaceRaised,colors.surface]} style={s.hero}><View style={s.between}><Text style={s.eyebrow}>YOUR LIFE, IN PROGRESS</Text><Ionicons name={travel?"airplane-outline":"sparkles-outline"} color={colors.gold} size={22}/></View><Text style={s.greeting}>{travel?"Your journey goes with you.":`Keep becoming, ${name}.`}</Text><Text style={s.copy}>{data.activeDays?`You made space for yourself on ${data.activeDays} of the last ${period} days.`:"One small action is enough to begin your story."}</Text><View style={{flexDirection:"row",flexWrap:"wrap",gap:5,marginTop:20}}>{data.days.map(day=><View key={day.date} accessibilityLabel={`${day.date}: ${day.active?"recorded activity":"no record"}`} style={{width:period===7?27:8,height:period===7?8:8,borderRadius:4,backgroundColor:day.active?colors.gold:colors.surfaceRaised}}/>)}</View><Text style={s.small}>Recorded activity · days without a record are left open</Text><View style={[s.between,{marginTop:18}]}><Text style={s.small}>{totalSessions} training sessions · {reflections.length} reflections saved</Text><View style={s.segment}>{([7,30] as const).map(p=><TouchableOpacity key={p} onPress={()=>onPeriod(p)} accessibilityRole="tab" accessibilityState={{selected:p===period}} style={[s.tab,p===period&&s.selected]}><Text style={{color:p===period?"#17120B":colors.text,fontSize:11,fontWeight:"700"}}>{p}D</Text></TouchableOpacity>)}</View></View></LinearGradient>}
+   {!!error&&<TouchableOpacity onPress={load}><Text accessibilityRole="alert" style={{color:"#E0B890",marginTop:14,lineHeight:21}}>{error}</Text></TouchableOpacity>}
+   <View style={s.section}><View style={s.between}><View><Text style={s.title}>How you are feeling</Text><Text style={s.small}>Your own ratings · last {period} days</Text></View><TouchableOpacity onPress={openCheckIn} style={s.pill}><Text style={s.link}>{todayEntry?"Edit today":"Check in"}</Text></TouchableOpacity></View><View style={s.metrics}>{fields.map(item=><TouchableOpacity key={item.key} onPress={()=>setField(item.key)} style={[s.metric,field===item.key&&{borderColor:"rgba(215,184,119,.6)"}]}><Ionicons name={item.icon} color={colors.gold} size={21}/><Text style={s.metricValue}>{loading||!own?"—":insight[item.key].value?.toFixed(1)??"—"}<Text style={{fontSize:12,color:colors.muted}}> /5</Text></Text><Text style={s.metricLabel}>{item.title}</Text></TouchableOpacity>)}</View><Text style={[s.link,{marginTop:18}]}>{fields.find(item=>item.key===field)!.title} over time</Text><View style={s.chart}><View style={{height:98,justifyContent:"space-between",paddingBottom:16}}>{[5,3,1].map(n=><Text key={n} style={{fontSize:10,color:colors.muted}}>{n}</Text>)}</View><View style={{flex:1,flexDirection:"row",gap:period===7?8:3,alignItems:"flex-end",height:105}}>{series.map((item,i)=><View key={item.date} style={{flex:1,alignItems:"center",height:100,justifyContent:"flex-end"}}><View accessibilityLabel={`${item.date}: ${item[field]===null?"not recorded":item[field]+" of 5"}`} style={{width:"100%",maxWidth:27,height:item[field]===null?3:Math.max(8,item[field]!/5*80),backgroundColor:item[field]===null?colors.surfaceRaised:colors.gold,borderRadius:4}}/><Text style={{fontSize:9,color:colors.muted,height:17,marginTop:5}}>{period===7||i%5===0?Number(item.date.slice(-2)):""}</Text></View>)}</View></View><Text style={s.small}>{metric.days?`${metric.days} recorded ${metric.days===1?"day":"days"} · average ${metric.value?.toFixed(1)} / 5`:"No ratings yet. Check in to start your personal baseline."}</Text><Text style={[s.small,{marginTop:8}]}>1 = {fields.find(item=>item.key===field)!.low.toLowerCase()} · 5 = {fields.find(item=>item.key===field)!.high.toLowerCase()}. Missing days are not scored. These are self-reports, not medical measurements.</Text></View>
+-  <TouchableOpacity onPress={()=>router.push("/body/workout/progress")} style={s.section}><View style={s.between}><Text style={s.title}>Movement, made visible</Text><Ionicons name="arrow-forward" color={colors.gold} size={21}/></View><Text style={s.small}>Completed training recorded in Treksor · {period} days</Text><View style={s.metrics}>{[[String(data.sessions),"Sessions"],[String(insight.sets),"Sets"],[Math.round(insight.volume).toLocaleString(),"Volume · kg"]].map(([value,label])=><View key={label} style={{flex:1}}><Text style={s.metricValue}>{value}</Text><Text style={s.metricLabel}>{label}</Text></View>)}</View><Text style={[s.copy,{fontSize:13,marginTop:15}]}>{insight.volumeChange===null?"Keep recording to build a comparison with the previous period.":`${insight.volumeChange>=0?"+":""}${insight.volumeChange.toFixed(0)}% training volume versus the previous ${period} days.`}</Text><Text style={s.small}>Volume = external kg × completed reps. Bodyweight and timed sets count as sets; they add no external-load volume.</Text></TouchableOpacity>
+-  <ConnectedMovement/>
+-  <View style={s.next}><Text style={s.eyebrow}>ONE NEXT STEP</Text><Text style={[s.title,{marginTop:10}]}>{next.title}</Text><Text style={s.copy}>{next.body}</Text><TouchableOpacity onPress={next.run} style={s.button}><Text style={s.buttonText}>{next.action}</Text><Ionicons name="arrow-forward" color="#17120B" size={19}/></TouchableOpacity></View>
++  {!focused&&<TouchableOpacity onPress={()=>router.push("/body/workout/progress")} style={s.section}><View style={s.between}><Text style={s.title}>Movement, made visible</Text><Ionicons name="arrow-forward" color={colors.gold} size={21}/></View><Text style={s.small}>Completed training recorded in Treksor · {period} days</Text><View style={s.metrics}>{[[String(data.sessions),"Sessions"],[String(insight.sets),"Sets"],[Math.round(insight.volume).toLocaleString(),"Volume · kg"]].map(([value,label])=><View key={label} style={{flex:1}}><Text style={s.metricValue}>{value}</Text><Text style={s.metricLabel}>{label}</Text></View>)}</View><Text style={[s.copy,{fontSize:13,marginTop:15}]}>{insight.volumeChange===null?"Keep recording to build a comparison with the previous period.":`${insight.volumeChange>=0?"+":""}${insight.volumeChange.toFixed(0)}% training volume versus the previous ${period} days.`}</Text><Text style={s.small}>Volume = external kg × completed reps. Bodyweight and timed sets count as sets; they add no external-load volume.</Text></TouchableOpacity>}
++  {!focused&&<ConnectedMovement/>}
++  {!focused&&<View style={s.next}><Text style={s.eyebrow}>ONE NEXT STEP</Text><Text style={[s.title,{marginTop:10}]}>{next.title}</Text><Text style={s.copy}>{next.body}</Text><TouchableOpacity onPress={next.run} style={s.button}><Text style={s.buttonText}>{next.action}</Text><Ionicons name="arrow-forward" color="#17120B" size={19}/></TouchableOpacity></View>}
+   <View style={s.section}><View style={s.between}><View style={{flex:1,paddingRight:12}}><Text style={s.title}>Away from your routine?</Text><Text style={s.small}>Travel mode brings memories and reflection to the foreground.</Text></View><Switch value={travel} onValueChange={toggleTravel} trackColor={{false:colors.surfaceRaised,true:"#8D7444"}} thumbColor={travel?colors.gold:"#D3D0C8"}/></View>{travel&&<Text style={[s.copy,{fontSize:13}]}>Explore, rest, connect. A different rhythm is still part of your journey.</Text>}</View>
+   <TouchableOpacity onPress={()=>router.push("/mind/moments")} style={[s.section,{flexDirection:"row",alignItems:"center",gap:14}]}><View style={s.icon}><Ionicons name="images-outline" size={25} color={colors.gold}/></View><View style={{flex:1}}><Text style={s.title}>The moments behind the numbers</Text><Text style={s.small}>{moments.length?`${moments.length} saved moments · open your dates and photos`:"A calendar for photos, holidays and small wins."}</Text><Text style={[s.link,{marginTop:8}]}>Open life moments</Text></View></TouchableOpacity>
+-  <TouchableOpacity onPress={()=>router.push("/progress/connections")} style={[s.section,{flexDirection:"row",alignItems:"center",gap:13}]}><Ionicons name="heart-circle-outline" color={colors.gold} size={30}/><View style={{flex:1}}><Text style={s.title}>Your connected life</Text><Text style={s.small}>Apple Watch, Garmin & Strava · sources and setup</Text></View><Ionicons name="information-circle-outline" color={colors.gold} size={21}/></TouchableOpacity>
+-  <TouchableOpacity onPress={onDetails} style={[s.pill,{alignItems:"center",padding:16,marginTop:17}]}><Text style={s.link}>{detailsOpen?"HIDE ACTIVITY DETAILS":"EXPLORE HABITS & PILLAR DETAILS"} <Ionicons name={detailsOpen?"chevron-up":"chevron-down"} size={14} color={colors.gold}/></Text></TouchableOpacity>
++  {!focused&&<TouchableOpacity onPress={()=>router.push("/progress/connections")} style={[s.section,{flexDirection:"row",alignItems:"center",gap:13}]}><Ionicons name="heart-circle-outline" color={colors.gold} size={30}/><View style={{flex:1}}><Text style={s.title}>Your connected life</Text><Text style={s.small}>Apple Watch, Garmin & Strava · sources and setup</Text></View><Ionicons name="information-circle-outline" color={colors.gold} size={21}/></TouchableOpacity>}
++  {!focused&&<TouchableOpacity onPress={onDetails} style={[s.pill,{alignItems:"center",padding:16,marginTop:17}]}><Text style={s.link}>{detailsOpen?"HIDE ACTIVITY DETAILS":"EXPLORE HABITS & PILLAR DETAILS"} <Ionicons name={detailsOpen?"chevron-up":"chevron-down"} size={14} color={colors.gold}/></Text></TouchableOpacity>}
+   <Modal visible={modal} transparent animationType="slide" onRequestClose={()=>setModal(false)}><View style={s.backdrop}><ScrollView keyboardShouldPersistTaps="handled" style={[s.sheet,{paddingBottom:insets.bottom+25}]} contentContainerStyle={{padding:22,gap:14}}><View style={s.between}><Text style={s.title}>Your daily check-in</Text><TouchableOpacity onPress={()=>setModal(false)} style={{padding:10}}><Ionicons name="close" color={colors.text} size={24}/></TouchableOpacity></View><Text style={s.copy}>How are you today? Pick what feels true right now.</Text>{fields.map(item=><View key={item.key} style={{marginTop:13}}><Text style={s.title}>{item.title}</Text><View style={{flexDirection:"row",gap:9,marginTop:12}}>{[1,2,3,4,5].map(value=><TouchableOpacity key={value} accessibilityRole="radio" accessibilityState={{checked:values[item.key]===value}} accessibilityLabel={`${item.title} ${value} of 5`} onPress={()=>setValues(previous=>({...previous,[item.key]:value}))} style={{flex:1,paddingVertical:16,alignItems:"center",borderRadius:12,backgroundColor:values[item.key]===value?colors.gold:colors.surfaceRaised}}><Text style={{fontSize:17,fontWeight:"700",color:values[item.key]===value?"#17120B":"white"}}>{value}</Text></TouchableOpacity>)}</View><View style={s.between}><Text style={s.small}>{item.low}</Text><Text style={s.small}>{item.high}</Text></View></View>)}<Text style={s.small}>Stored privately on this phone. Your check-in ratings are never included in shared moments.</Text><TouchableOpacity disabled={saving||Object.values(values).some(value=>value===null)} onPress={save} style={[s.button,{opacity:saving||Object.values(values).some(value=>value===null)?0.45:1}]}><Text style={s.buttonText}>{saving?"SAVING…":"SAVE TODAY'S CHECK-IN"}</Text></TouchableOpacity></ScrollView></View></Modal>
+ 
+  </>;
+diff --git a/components/progress/ProgressDashboard.tsx b/components/progress/ProgressDashboard.tsx
+index 859e0ef..21df32a 100644
+--- a/components/progress/ProgressDashboard.tsx
++++ b/components/progress/ProgressDashboard.tsx
+@@ -45,7 +45,7 @@ export default function ProgressDashboard(props: Props) {
+     purpose: { title: "Clarity takes shape", source: "Purpose / Vision & reflection", body: "Each non-empty, saved answer counts toward the 10 prompts on your vision board. Draft answers count only after you save the board.", note: "This shows how much of your vision you have written, not how many life goals you have achieved. Your answers stay private on this device; only the completed-prompt count can sync.", action: "Open vision board", route: "/purpose/vision-board" },
+     mentor: { title: "A conversation, not a score", source: "Guide · latest loaded chat", body: props.mentorReplies == null ? "Open Guide to load your latest conversation." : `You received ${props.mentorReplies} replies in the loaded Guide conversation.`, note: "The number of replies is not a growth score. Private notes are not shared automatically.", action: "Open Guide", route: "/(tabs)/chat" },
+     reading: { title: "Your learning library", source: "Articles / Mark as read", body: `${data.reading.completed} of ${data.reading.total} articles currently saved in the app are marked read. An article shown in multiple categories is counted once.`, note: "This is all-time library completion, not reading time. The total can change when new articles load. Reading does not inflate your training or meditation progress.", action: "Explore articles", route: "/article" },
+-    sources: { title: "Your numbers have a source", source: "Recorded in Treksor", body: "Training: sessions and sets you save. Daily Work: completed walks and other activities you log, including your own. Mind: saved reflections and journal dates. Balance: practices you mark complete. Purpose: saved vision prompts. Personal trackers: checkmarks you enter for scheduled dates.", note: "App records update this screen. Some progress summaries sync to your web profile; Daily Work is currently saved only on this iPhone. Journal text, moods and vision answers stay on this device. Smartwatch and Apple Health data are not connected yet.", action: "Got it", route: "" },
++    sources: { title: "Your numbers have a source", source: "Recorded in Treksor", body: "Training: sessions and sets you save. Daily Work: completed walks and other activities you log, including your own. Mind: saved reflections and journal dates. Balance: practices you mark complete. Purpose: saved vision prompts. Personal trackers: checkmarks you enter for scheduled dates.", note: "App records update this screen. Some progress summaries sync to your web profile; Daily Work is currently saved only on this iPhone. Journal text, moods and vision answers stay on this device. The overview also reads your saved Apple Health import. Its workout counts remain separate from Treksor sessions; review and refresh the import in Connections.", action: "Got it", route: "" },
+   };
+   const info = detail ? detailContent[detail] : null;
+   const issue = (detail === "mind" && props.journalError) || (detail === "purpose" && props.visionError);
+diff --git a/components/progress/ProgressSummary.tsx b/components/progress/ProgressSummary.tsx
+new file mode 100644
+index 0000000..0e9a848
+--- /dev/null
++++ b/components/progress/ProgressSummary.tsx
+@@ -0,0 +1,78 @@
++import React from 'react';
++import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
++import Icon from '@/components/ui/BrandIcon';
++import { dayDate, displayDay } from '@/lib/progress-metrics';
++import { buildProgressSummary, type RecentProgress } from '@/lib/progress-summary';
++import { colors, type } from '@/theme/architect';
++
++type Props = {
++  children?: React.ReactNode; unavailable?: boolean;
++  summary: ReturnType<typeof buildProgressSummary>; sessions: number; period: 7 | 30;
++  onPeriod: (value: 7 | 30) => void; loading: boolean; error: boolean; onRetry: () => void;
++  health: { loading: boolean; error: boolean; hasSnapshot: boolean; savedAt: string | null; sources: { id: string; name: string }[]; sourceId: string };
++  onConnections: () => void; onEvent: (event: RecentProgress) => void;
++  onDetails: () => void; onSource: (id: string) => void;
++};
++
++export default function ProgressSummary({ children, unavailable=false, summary, sessions, period, onPeriod, loading, error, onRetry, health, onConnections, onEvent, onDetails, onSource }: Props) {
++  const { fontScale, width } = useWindowDimensions();
++  const stacked = fontScale > 1.25 || width < 350;
++  const selected = health.sources.find(source => source.id === health.sourceId);
++  const at = health.savedAt ? new Date(health.savedAt) : null;
++  const importDate = at && Number.isFinite(+at) ? at.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : null;
++  const healthLabel = health.loading ? 'Checking saved import…' : health.error ? 'Import could not refresh' : health.hasSnapshot ? 'Apple Health · ' + (importDate ? 'imported ' + importDate : 'saved import') : 'Connect your watch';
++  const partial = error || health.error;
++  return <>
++    <View style={s.summary}>
++      <View style={[s.headingRow, stacked && s.stacked]}>
++        <Text style={s.eyebrow}>YOUR LAST {period} DAYS</Text>
++        <View accessibilityRole="tablist" style={s.periodTabs}>
++          {([7, 30] as const).map(value => <TouchableOpacity key={value} accessibilityRole="tab" accessibilityLabel={'Last ' + value + ' days'} accessibilityState={{ selected: period === value }} onPress={() => onPeriod(value)} style={[s.periodOption, period === value && s.periodSelected]}><Text style={[s.periodLabel, period === value && s.periodLabelSelected]}>{value}D</Text></TouchableOpacity>)}
++        </View>
++      </View>
++      {unavailable ? <Text style={s.caption}>Your saved progress is unavailable. Retry below.</Text> : loading ? <View style={s.loading}><ActivityIndicator color={colors.gold}/><Text style={s.caption}>Updating your progress…</Text></View> : <>
++        <View accessible accessibilityLabel={summary.activeDays + ' of ' + period + ' days with recorded activity'} style={s.scoreRow}><Text style={s.score}>{summary.activeDays}<Text style={s.denominator}> / {period}</Text></Text><Text style={s.scoreLabel}>days with{'\n'}recorded activity</Text></View>
++        <View style={s.days}>{summary.days.map(day => <View key={day.date} style={s.day} accessible accessibilityLabel={displayDay(day.date) + ': ' + (day.active ? 'activity recorded' : 'no record')}><View style={[s.dayBar, day.active && s.dayActive]}/>{period === 7 && <Text style={s.dayLabel}>{dayDate(day.date)?.toLocaleDateString(undefined, { weekday: 'narrow' })}</Text>}</View>)}</View>
++        <View style={[s.metrics, stacked && s.stacked]}>
++          <View style={s.metric}><Text style={s.metricValue}>{sessions}</Text><Text style={s.label}>Treksor sessions</Text></View>
++          <View style={s.metric}><Text style={s.metricValue}>{health.loading || !health.hasSnapshot ? '—' : summary.watch.sessions}</Text><Text style={s.label}>Imported workouts</Text></View>
++        </View>
++      </>}
++      {partial && <TouchableOpacity accessibilityRole="button" onPress={onRetry} style={s.retry}><Text accessibilityRole="alert" style={s.error}>Some records could not refresh. Showing available data. Retry</Text></TouchableOpacity>}
++      <TouchableOpacity accessibilityRole="button" accessibilityLabel="Review smartwatch and health connections" onPress={onConnections} style={s.connection}><Icon name="watch-outline" color={colors.gold} size={20}/><View style={s.flex}><Text style={s.link}>{healthLabel}</Text>{health.hasSnapshot && <Text style={s.caption}>{selected?.name || 'No workouts in saved import'} · refresh in Connections</Text>}</View><Icon name="chevron-forward" color={colors.gold} size={17}/></TouchableOpacity>
++      {health.sources.length > 1 && <View><Text style={s.caption}>Recording source</Text><View accessibilityRole="tablist" style={s.sources}>{health.sources.map(source => <TouchableOpacity key={source.id} accessibilityRole="tab" accessibilityState={{ selected: health.sourceId === source.id }} onPress={() => onSource(source.id)} style={[s.source, health.sourceId === source.id && s.sourceSelected]}><Text style={s.label}>{source.name}</Text></TouchableOpacity>)}</View></View>}
++      <Text style={s.caption}>Each day counts once. Workout sources are shown separately.</Text>
++    </View>
++    <View style={s.actions}>{children}</View>
++    <View style={s.sectionHeading}><Text style={s.title}>Recent activity</Text><TouchableOpacity accessibilityRole="button" onPress={onDetails} style={s.textButton}><Text style={s.link}>View details</Text></TouchableOpacity></View>
++    <View style={s.activity}>
++      {unavailable ? <Text style={s.empty}>Refresh your records to see recent activity.</Text> : loading ? <Text style={s.empty}>Loading your activity…</Text> : summary.recent.length ? summary.recent.slice(0, 3).map((event, index) => <TouchableOpacity key={event.id} accessibilityRole="button" onPress={() => onEvent(event)} style={[s.event, index > 0 && s.eventBorder]}><View style={s.eventIcon}><Icon name={event.id.startsWith('health:') ? 'watch-outline' : 'checkmark-outline'} color={colors.gold} size={18}/></View><View style={s.flex}><Text style={s.eventTitle}>{event.title}</Text><Text style={s.caption}>{event.source}</Text><Text style={s.caption}>{displayDay(event.date)}</Text></View><Icon name="chevron-forward" color={colors.muted} size={16}/></TouchableOpacity>) : <View style={s.empty}><Text style={s.eventTitle}>Your next action starts here.</Text><Text style={s.caption}>Log an activity or review your watch import. Your records will appear here.</Text></View>}
++    </View>
++  </>;
++}
++
++const s = StyleSheet.create({
++  actions: { marginTop: 16 },
++  summary: { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, borderRadius: 22, padding: 20, gap: 16 },
++  headingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
++  stacked: { flexDirection: 'column', alignItems: 'stretch' },
++  eyebrow: { ...type.eyebrow, fontSize: 12, flexShrink: 1 },
++  periodTabs: { flexDirection: 'row', alignSelf: 'flex-start', backgroundColor: colors.background, borderRadius: 12, padding: 3 },
++  periodOption: { minWidth: 48, minHeight: 44, justifyContent: 'center', alignItems: 'center', borderRadius: 9 },
++  periodSelected: { backgroundColor: colors.gold }, periodLabel: { fontSize: 14, fontWeight: '600', color: colors.secondary }, periodLabelSelected: { color: colors.background },
++  scoreRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 18 },
++  score: { color: colors.gold, fontSize: 54, lineHeight: 66, fontWeight: '600', fontVariant: ['tabular-nums'] },
++  denominator: { fontSize: 23, color: colors.muted, fontWeight: '400' }, scoreLabel: { ...type.body, fontSize: 16 },
++  days: { flexDirection: 'row', gap: 4 }, day: { flex: 1, gap: 7, alignItems: 'center' }, dayBar: { width: '100%', height: 6, borderRadius: 3, backgroundColor: colors.surfaceRaised }, dayActive: { backgroundColor: colors.gold }, dayLabel: { color: colors.muted, fontSize: 12 },
++  metrics: { flexDirection: 'row', gap: 18 }, metric: { flex: 1, gap: 4 }, metricValue: { color: colors.text, fontSize: 26, fontWeight: '600', fontVariant: ['tabular-nums'] },
++  label: { color: colors.secondary, fontSize: 14, lineHeight: 21 }, caption: { color: colors.muted, fontSize: 12, lineHeight: 19 },
++  connection: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 52, paddingTop: 14, borderTopWidth: 1, borderTopColor: colors.border },
++  link: { color: colors.gold, fontSize: 14, fontWeight: '600', lineHeight: 21 }, flex: { flex: 1, minWidth: 0 },
++  sources: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 }, source: { minHeight: 44, justifyContent: 'center', padding: 10, borderRadius: 10, borderWidth: 1, borderColor: colors.border }, sourceSelected: { borderColor: colors.gold, backgroundColor: colors.goldSoft },
++  loading: { minHeight: 130, justifyContent: 'center', alignItems: 'center', gap: 10 }, retry: { minHeight: 44, justifyContent: 'center' }, error: { color: colors.danger, fontSize: 14, lineHeight: 21 },
++  sectionHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginTop: 20 }, title: { ...type.card, flexShrink: 1 }, textButton: { minHeight: 44, justifyContent: 'center' },
++  activity: { borderWidth: 1, borderColor: colors.border, borderRadius: 18, backgroundColor: colors.surface, paddingHorizontal: 16 },
++  event: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 15 }, eventBorder: { borderTopWidth: 1, borderTopColor: colors.border },
++  eventIcon: { width: 34, height: 34, borderRadius: 11, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.goldSoft }, eventTitle: { color: colors.text, fontSize: 15, lineHeight: 22, fontWeight: '600' },
++  empty: { paddingVertical: 22, color: colors.muted, fontSize: 15, lineHeight: 23 },
++});
+diff --git a/docs/progress-clarity.md b/docs/progress-clarity.md
+new file mode 100644
+index 0000000..e4334ac
+--- /dev/null
++++ b/docs/progress-clarity.md
+@@ -0,0 +1,68 @@
++# Progress — concise overview
++
++The default Progress view contains one 7/30-day summary, an activity recorder,
++Quick Notes, daily direction and three recent entries. Details replace the
++overview instead of expanding another dashboard beneath it. Activity, Wellbeing,
++and Plan & habits preserve the existing pillar metrics, check-ins, charts,
++trackers, calendar corrections, daily plan, weekly habits and goals.
++
++The shared Architect palette and fixed navigation remain in place. The summary
++supports narrow screens, larger text, minimum 44-point controls and readable
++labels. Loading, missing imports, failed reads and a genuinely empty import are
++different states.
++
++## Data and watch behavior
++
++- All app activity still uses buildProgressOverview and the existing stores.
++  Sets recorded by the Treksor watch companion feed that same workout store.
++- useProgressHealth reads the account's existing, explicitly saved
++  health_snapshots import. It does not request HealthKit permissions, read the
++  watch live, upload health data, or grant access to Guide or Community.
++- Active days are the union of dated app actions and workouts from one selected
++  imported source. A day counts once across app and watch.
++- Treksor sessions and imported workouts are shown separately. They are never
++  summed into a combined session count: overlap alone cannot prove that two
++  recordings represent the same workout.
++- Repeated HealthKit UUIDs are normalized by the existing snapshot API. When
++  multiple recording sources exist, the user selects one. Opening Connections
++  carries that source and the current period into the workout history.
++- Same-day gym sets are grouped into one training row in the compact timeline;
++  the original set records remain available in workout progress.
++- The import timestamp stays visible. Returning from Connections, foregrounding
++  the app, or pulling to refresh reloads the saved account snapshot. Refresh
++  failures retain only the same account's last successful data and show an error.
++  Deleted imports disappear after a successful refresh. Late responses cannot
++  replace a newer request or expose another account.
++- Native Apple Health import still requires the existing compatible iPhone build
++  and explicit review/save in Connections. Direct Garmin cloud, Strava, live heart
++  rate and background health import are not implemented by this change.
++
++## Validation
++
++Passed: mobile TypeScript; Progress clarity calculations, UI handlers and async
++account isolation; dashboard; unified Progress and installer regression tests;
++progress/account synchronization; Apple Health; watch companion, workout and gym;
++Daily Work; journey; connected journey; goals; UI contracts.
++
++The managed browser preview relay was unavailable. React Native Web render
++checks pass, but browser layout inspection and physical iPhone/Apple Watch tests
++remain pending. GitHub publication was blocked by automatic approval review. No iOS build, App Store release or automatic update of a local
++Windows Expo checkout has been performed.
++
++## Apply to the active Windows checkout
++
++Download Treksor-Progress-Update.cjs and run it with Node and --apply from
++C:/Users/xcite/TreksorDevCompleto. The standalone installer contains the reviewed
++patch; it does not fetch or publish any repository branch.
++The installer checks the repository and every patch hunk, saves a backup, and
++validates the resulting local checkout. It does not switch branches, reset local
++work, touch stored user records, or overwrite conflicting changes. A local
++smartwatch change that overlaps this patch must be reconciled before installing.
++
++Restart the existing Treksor Dev Expo session after a successful installation.
++In the iPhone, verify the subtitle “Your effort, made clear.”, 7D/30D selection,
++activity creation/deletion, Notes, all three detail tabs, return from Connections,
++and the selected watch source. Compare a workout recorded on both phone and watch:
++one active day, separate source counts. Also check no import, empty import,
++revoked Health permissions, offline refresh, larger system text, account changes,
++and deletion of an imported snapshot.
+diff --git a/hooks/useProgressHealth.ts b/hooks/useProgressHealth.ts
+new file mode 100644
+index 0000000..588d6cc
+--- /dev/null
++++ b/hooks/useProgressHealth.ts
+@@ -0,0 +1,46 @@
++import { useCallback, useEffect, useRef, useState } from 'react';
++import { AppState } from 'react-native';
++import { useFocusEffect } from 'expo-router';
++import { getHealthSnapshot } from '@/api/health-snapshot';
++import { useAuthStore } from '@/store/auth-store';
++
++type Snapshot = Awaited<ReturnType<typeof getHealthSnapshot>>;
++type State = { owner?: string; snapshot: Snapshot; loading: boolean; error: boolean };
++
++// Reads only a previously consented account snapshot. Opening Progress never
++// requests HealthKit access and never uploads health data.
++export function useProgressHealth() {
++  const owner = useAuthStore(s => s.user?.id);
++  const [state, setState] = useState<State>({ snapshot: null, loading: true, error: false });
++  const [choice, setChoice] = useState({ owner, sourceId: '' });
++  const generation = useRef(0);
++  const mounted = useRef(false);
++  useEffect(() => { mounted.current = true; return () => { mounted.current = false; ++generation.current; }; }, []);
++  const refresh = useCallback(async () => {
++    const request = ++generation.current;
++    if (!owner) { setState({ owner, snapshot: null, loading: false, error: false }); return; }
++    setState(previous => ({ owner, snapshot: previous.owner === owner ? previous.snapshot : null, loading: true, error: false }));
++    const current = () => mounted.current && request === generation.current && useAuthStore.getState().user?.id === owner;
++    try {
++      const snapshot = await getHealthSnapshot(owner);
++      if (current()) setState({ owner, snapshot, loading: false, error: false });
++    } catch {
++      if (current()) setState(previous => ({ ...previous, loading: false, error: true }));
++    }
++  }, [owner]);
++  useFocusEffect(useCallback(() => { void refresh(); return () => { ++generation.current; }; }, [refresh]));
++  useEffect(() => {
++    const subscription = AppState.addEventListener('change', status => { if (status === 'active') void refresh(); });
++    return () => subscription.remove();
++  }, [refresh]);
++  const own = state.owner === owner;
++  const snapshot = own ? state.snapshot : null;
++  const rows = snapshot?.snapshot.workouts || [];
++  const sources = [...new Map(rows.map(row => [row.sourceId, { id: row.sourceId, name: row.sourceName }])).values()];
++  const sourceId = choice.owner === owner && sources.some(source => source.id === choice.sourceId) ? choice.sourceId : sources[0]?.id || '';
++  return {
++    rows, sources, sourceId, selectSource: (id: string) => setChoice({ owner, sourceId: id }),
++    savedAt: snapshot?.snapshot.capturedAt || null, hasSnapshot: !!snapshot,
++    loading: !own || state.loading, error: own && state.error, refresh,
++  };
++}
+diff --git a/lib/progress-summary.ts b/lib/progress-summary.ts
+new file mode 100644
+index 0000000..e6f9086
+--- /dev/null
++++ b/lib/progress-summary.ts
+@@ -0,0 +1,37 @@
++import { activityOverview, type HealthWorkout } from '@/lib/ecosystem/activity';
++import { type buildProgressOverview, recordedDay } from '@/lib/progress-metrics';
++
++type Overview = ReturnType<typeof buildProgressOverview>;
++export type RecentProgress = {
++  id: string; date: string; title: string; source: string; route?: string; trackerId?: string;
++};
++
++// A calendar day is shared evidence. Workout counts stay source-specific: a
++// timestamp overlap cannot establish whether two recordings are one workout.
++export function buildProgressSummary(data: Overview, workouts: HealthWorkout[], sourceId: string, period: 7 | 30, now = new Date()) {
++  const watch = activityOverview(workouts, sourceId, period, now);
++  const watchDates = new Set(watch.days.filter(day => day.minutes > 0).map(day => day.date));
++  const days = data.days.map(day => ({ ...day, active: day.active || watchDates.has(day.date) }));
++  const recent: RecentProgress[] = [];
++  const trainingDays = new Map<string, { sessions: number; sets: number }>();
++  for (const event of data.events) {
++    if (event.kind === 'session' || event.kind === 'set') {
++      const day = trainingDays.get(event.date) || { sessions: 0, sets: 0 };
++      if (event.kind === 'session') day.sessions++; else day.sets++;
++      trainingDays.set(event.date, day);
++    } else recent.push({ ...event });
++  }
++  for (const [date, value] of trainingDays) recent.push({
++    id: 'training:' + date, date, title: 'Training recorded',
++    source: 'Treksor · ' + value.sessions + (value.sessions === 1 ? ' session' : ' sessions') + ' · ' + value.sets + (value.sets === 1 ? ' set' : ' sets'),
++    route: '/body/workout/progress',
++  });
++  for (const workout of watch.rows) {
++    const date = recordedDay(workout.start);
++    if (date) recent.push({ id: 'health:' + workout.id, date,
++      title: workout.kind + ' · ' + Math.round(workout.durationSeconds / 60) + ' min',
++      source: workout.sourceName + ' · Apple Health', route: '/progress/connections' });
++  }
++  recent.sort((a, b) => b.date.localeCompare(a.date) || a.id.localeCompare(b.id));
++  return { days, activeDays: days.filter(day => day.active).length, watch, recent };
++}
+diff --git a/package.json b/package.json
+index e5d30b6..1592416 100644
+--- a/package.json
++++ b/package.json
+@@ -17,7 +17,7 @@
+     "test:dashboard": "node tests/progress-dashboard.cjs",
+     "test:content": "node tests/content-sync.cjs",
+     "test:journey": "node tests/journey-growth.cjs",
+-    "release:check": "npm run typecheck && npm run test:notifications && npm run test:integrity && npm run test:progress && npm run test:daily-work && npm run test:unified-progress && npm run test:dashboard && npm run test:journey && npm run test:audio && npm run test:content && npm run test:video && npm run test:clock && npm run test:ecosystem && npm run test:balance && npm run test:mentor && npm run test:discovery && npm run test:training && npm run test:wake && npm run test:watch && npm run test:ui && npm run test:connected && npm run test:retention && npm run test:goals && npm run test:web-parity",
++    "release:check": "npm run typecheck && npm run test:notifications && npm run test:integrity && npm run test:progress && npm run test:daily-work && npm run test:unified-progress && npm run test:dashboard && npm run test:progress-clarity && npm run test:journey && npm run test:audio && npm run test:content && npm run test:video && npm run test:clock && npm run test:ecosystem && npm run test:balance && npm run test:mentor && npm run test:discovery && npm run test:training && npm run test:wake && npm run test:watch && npm run test:ui && npm run test:connected && npm run test:retention && npm run test:goals && npm run test:web-parity",
+     "release:ios": "npm run release:check && npx --yes eas-cli@26.0.0 build --platform ios --profile production --auto-submit",
+     "test:video": "node tests/exercise-video-lifecycle.cjs",
+     "test:clock": "node tests/workout-clock.cjs",
+@@ -39,7 +39,8 @@
+     "test:home-hero": "node tests/home-integrated-hero.cjs",
+     "test:guide-keyboard": "node tests/guide-keyboard.cjs",
+     "test:unified-progress": "node tests/unified-progress.cjs && node tests/unified-progress-installer.cjs",
+-    "test:notifications": "node tests/notification-badges.cjs && node tests/notification-runtime.cjs"
++    "test:notifications": "node tests/notification-badges.cjs && node tests/notification-runtime.cjs",
++    "test:progress-clarity": "node tests/progress-clarity.cjs"
+   },
+   "dependencies": {
+     "@bacons/apple-targets": "3.0.7",
+diff --git a/tests/progress-clarity.cjs b/tests/progress-clarity.cjs
+new file mode 100644
+index 0000000..1d1eddc
+--- /dev/null
++++ b/tests/progress-clarity.cjs
+@@ -0,0 +1,164 @@
++const assert = require('node:assert/strict');
++const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm'), ts = require('typescript');
++const React = require('react'), RN = require('react-native-web');
++const { renderToStaticMarkup } = require('react-dom/server');
++process.env.TZ = 'Australia/Brisbane';
++function loader(mocks = {}) {
++  const cache = new Map();
++  function load(file) {
++    file = path.resolve(file);
++    if (cache.has(file)) return cache.get(file);
++    const module = { exports: {} };
++    const requireFile = name => {
++      if (name in mocks) return mocks[name];
++      if (name.startsWith('@/')) {
++        const base = name.slice(2);
++        for (const ext of ['.ts', '.tsx']) if (fs.existsSync(base + ext)) return load(base + ext);
++      }
++      return require(name);
++    };
++    const code = ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true } }).outputText;
++    vm.runInNewContext(code, { module, exports: module.exports, require: requireFile, Date, Set, Map, Promise, console }, { filename: file });
++    cache.set(file, module.exports);
++    return module.exports;
++  }
++  return load;
++}
++const load = loader();
++const { buildProgressOverview } = load('lib/progress-metrics.ts');
++const { normalizeWorkouts } = load('lib/ecosystem/activity.ts');
++const { buildProgressSummary } = load('lib/progress-summary.ts');
++const now = new Date('2026-11-28T08:00:00Z');
++const input = { checkIns: { a: ['2026-11-27T00:00:00Z'], b: ['2026-11-27T00:00:00Z'] }, gymSets: [
++  { id: 'set1', exerciseName: 'Row', kg: 10, reps: 8, recordedAt: '2026-11-27T00:00:00Z' },
++  { id: 'set2', exerciseName: 'Press', kg: 12, reps: 8, recordedAt: '2026-11-27T00:00:00Z' },
++], reflections: [], journalDates: ['2026-11-25'], trackers: [], meditations: [], articles: {}, visionAnswers: [] };
++const workout = (id, start, sourceId = 'com.apple.health') => ({
++  id, sourceId, sourceName: sourceId.includes('garmin') ? 'Garmin' : 'Apple Watch',
++  start, end: new Date(Date.parse(start) + 1800000).toISOString(), durationSeconds: 1800,
++  distanceMeters: 4000, kind: 'Run',
++});
++const a = workout('00000000-0000-0000-0000-000000000001', '2026-11-27T00:00:00Z');
++const b = workout('00000000-0000-0000-0000-000000000002', '2026-11-27T14:30:00Z'); // Nov 28 in Brisbane
++const old = workout('00000000-0000-0000-0000-000000000003', '2026-11-10T00:00:00Z');
++const mirrored = workout('00000000-0000-0000-0000-000000000004', a.start, 'com.garmin.connect');
++const rows = normalizeWorkouts([a, a, b, old, mirrored], now);
++const data = buildProgressOverview(input, 7, now);
++const summary = buildProgressSummary(data, rows, 'com.apple.health', 7, now);
++assert.equal(data.sessions, 1, 'Duplicate Treksor completions count once');
++assert.equal(summary.activeDays, 3, 'Overlap counts one day; watch-only day is included');
++assert.equal(summary.watch.sessions, 2, 'One source, unique HealthKit UUIDs, current period');
++assert.equal(summary.watch.minutes, 60);
++assert.equal(summary.recent.filter(row => row.id.startsWith('training:')).length, 1, 'Sets collapse into one daily training row');
++assert(summary.recent.some(row => row.date === '2026-11-28' && row.id.startsWith('health:')));
++assert.equal(buildProgressSummary(buildProgressOverview(input, 30, now), rows, 'com.apple.health', 30, now).watch.sessions, 3);
++assert.equal(buildProgressSummary(data, rows, 'com.garmin.connect', 7, now).watch.sessions, 1, 'Sources never accumulate');
++assert.equal(buildProgressSummary(data, [], '', 7, now).activeDays, 2, 'Phone-only records remain complete');
++assert.equal(JSON.stringify(data), JSON.stringify(buildProgressOverview(input, 7, now)), 'Summary does not mutate stored evidence');
++
++let width = 390, fontScale = 1;
++const uiMocks = {
++  'react-native': { ...RN, useWindowDimensions: () => ({ width, height: 844, scale: 1, fontScale }) },
++  '@/components/ui/BrandIcon': ({ name }) => React.createElement('span', { 'aria-hidden': true, 'data-icon': name }, name === 'watch-outline' ? '◷' : name === 'chevron-forward' ? '›' : '✓'),
++};
++const Summary = loader(uiMocks)('components/progress/ProgressSummary.tsx').default;
++let periodChosen, sourceChosen, eventChosen, connections = 0, detail = 0, retries = 0;
++const health = { loading: false, error: false, hasSnapshot: true, savedAt: '2026-11-28T08:00:00Z', sources: [{ id: 'com.apple.health', name: 'Apple Watch' }, { id: 'com.garmin.connect', name: 'Garmin' }], sourceId: 'com.apple.health' };
++const props = { summary, sessions: data.sessions, period: 7, onPeriod: value => periodChosen = value, loading: false, error: false,
++  onRetry: () => retries++, health, onConnections: () => connections++, onEvent: value => eventChosen = value,
++  onDetails: () => detail++, onSource: value => sourceChosen = value };
++const html = renderToStaticMarkup(React.createElement(Summary, props));
++assert(html.includes('Treksor sessions') && html.includes('Imported workouts'));
++assert(html.includes('Each day counts once'));
++assert(!html.includes('Heart rate') && !html.includes('Strava'));
++const emptyHTML = renderToStaticMarkup(React.createElement(Summary, { ...props, health: { ...health, hasSnapshot: false, sources: [] } }));
++assert(emptyHTML.includes('Connect your watch') && emptyHTML.includes('—'), 'Absent import must not appear as zero workouts');
++const errorHTML = renderToStaticMarkup(React.createElement(Summary, { ...props, health: { ...health, error: true } }));
++assert(errorHTML.includes('could not refresh') && errorHTML.includes('Showing available data'));
++const loadingHTML = renderToStaticMarkup(React.createElement(Summary, { ...props, loading: true }));
++assert(loadingHTML.includes('Updating your progress') && !loadingHTML.includes('days with'));
++function nodes(tree, predicate, result = []) {
++  if (!tree || typeof tree !== 'object') return result;
++  if (predicate(tree)) result.push(tree);
++  React.Children.forEach(tree.props?.children, child => nodes(child, predicate, result));
++  return result;
++}
++const tree = Summary(props);
++nodes(tree, n => n.props?.accessibilityLabel === 'Last 30 days')[0].props.onPress();
++assert.equal(periodChosen, 30);
++nodes(tree, n => n.props?.accessibilityRole === 'tab').at(-1).props.onPress();
++assert.equal(sourceChosen, 'com.garmin.connect');
++nodes(tree, n => n.props?.accessibilityLabel === 'Review smartwatch and health connections')[0].props.onPress();
++assert.equal(connections, 1);
++const recentButtons = nodes(tree, n => n.props?.onPress && nodes(n, c => c.props?.children === summary.recent[0].title).length);
++recentButtons[0].props.onPress();
++assert.equal(eventChosen.id, summary.recent[0].id);
++nodes(tree, n => n.props?.onPress && nodes(n, c => c.props?.children === 'View details').length)[0].props.onPress();
++assert.equal(detail, 1);
++const failed = Summary({ ...props, error: true });
++nodes(failed, n => n.props?.onPress && nodes(n, c => c.props?.accessibilityRole === 'alert').length)[0].props.onPress();
++assert.equal(retries, 1);
++width = 320; fontScale = 1.5;
++assert(renderToStaticMarkup(React.createElement(Summary, props)).includes('Recent activity'));
++
++// Exercise actual hook lifecycle, including stale requests, account changes,
++// deleted imports, failed refreshes and offline retention for the same account.
++async function testHealthLifecycle() {
++  let owner = 'a', slots = [], cursor = 0, scheduled = [], pending = [];
++  const same = (a, b) => a && b && a.length === b.length && a.every((x, i) => Object.is(x, b[i]));
++  const hooks = {
++    useState(initial) { const i = cursor++; if (!(i in slots)) slots[i] = typeof initial === 'function' ? initial() : initial; return [slots[i], next => { slots[i] = typeof next === 'function' ? next(slots[i]) : next; }]; },
++    useRef(initial) { const i = cursor++; return slots[i] ||= { current: initial }; },
++    useCallback(callback, deps) { const i = cursor++; if (!same(slots[i]?.deps, deps)) slots[i] = { deps, callback }; return slots[i].callback; },
++    useEffect(callback, deps) { const i = cursor++; if (!same(slots[i]?.deps, deps)) { const previous = slots[i]; slots[i] = { deps }; scheduled.push(() => { previous?.cleanup?.(); slots[i].cleanup = callback(); }); } },
++  };
++  const auth = selector => selector({ user: { id: owner } });
++  auth.getState = () => ({ user: { id: owner } });
++  const { useProgressHealth } = loader({
++    react: hooks,
++    'react-native': { AppState: { addEventListener: () => ({ remove() {} }) } },
++    'expo-router': { useFocusEffect: callback => hooks.useEffect(callback, [callback]) },
++    '@/store/auth-store': { useAuthStore: auth },
++    '@/api/health-snapshot': { getHealthSnapshot: key => new Promise((resolve, reject) => pending.push({ key, resolve, reject })) },
++  })('hooks/useProgressHealth.ts');
++  const render = () => { cursor = 0; const result = useProgressHealth(); const effects = scheduled; scheduled = []; effects.forEach(effect => effect()); return result; };
++  const flush = () => new Promise(setImmediate);
++  const snapshot = { snapshot: { version: 1, capturedAt: now.toISOString(), workouts: rows }, updatedAt: now.toISOString() };
++  render(); assert.equal(pending[0].key, 'a');
++  owner = 'b'; assert.equal(render().rows.length, 0);
++  pending.shift().resolve(snapshot); await flush(); assert.equal(render().rows.length, 0, 'Previous account response is discarded');
++  pending.shift().resolve(snapshot); await flush();
++  assert.equal(render().rows.length, rows.length);
++  render().selectSource('com.garmin.connect'); assert.equal(render().sourceId, 'com.garmin.connect');
++  const retry = render().refresh(); pending.shift().reject(new Error('offline')); await retry;
++  assert.equal(render().rows.length, rows.length, 'Offline refresh preserves own last snapshot');
++  assert.equal(render().error, true);
++  const deletion = render().refresh(); pending.shift().resolve(null); await deletion;
++  assert.equal(render().hasSnapshot, false); assert.equal(render().rows.length, 0, 'Deleted import is removed on refresh');
++  const slow = render().refresh(), fast = render().refresh();
++  pending[1].resolve(null); await fast; pending[0].resolve(snapshot); await slow; pending = [];
++  assert.equal(render().hasSnapshot, false, 'Old same-account request cannot restore deleted records');
++  owner = undefined; render(); assert.equal(render().rows.length, 0);
++  assert.equal(render().loading, false, 'Signed-out state completes loading');
++}
++
++if (process.env.TREKSOR_QA_DIR) {
++  const directory = process.env.TREKSOR_QA_DIR;
++  fs.mkdirSync(directory, { recursive: true });
++  width = 390; fontScale = 1;
++  const actions = React.createElement(RN.View, { style: { gap: 14 } },
++    React.createElement(RN.View, { style: { flexDirection: 'row', gap: 12 } },
++      React.createElement(RN.Text, { style: { flex: 1, backgroundColor: '#D7B877', color: '#05080D', textAlign: 'center', padding: 16, borderRadius: 14, fontSize: 16 } }, '+  Log activity'),
++      React.createElement(RN.Text, { style: { color: '#D7B877', padding: 16, fontSize: 14 } }, 'Notes')),
++    React.createElement(RN.View, { style: { paddingVertical: 16, gap: 7 } },
++      React.createElement(RN.Text, { style: { color: '#D7B877', fontSize: 12, letterSpacing: 1.4 } }, 'YOUR NEXT STEP'),
++      React.createElement(RN.Text, { style: { color: '#F5F4F1', fontSize: 16 } }, 'Return to your daily direction')));
++  const page = React.createElement(RN.View, { style: { maxWidth: 430, marginHorizontal: 'auto', padding: 20, backgroundColor: '#05080D' } },
++    React.createElement(RN.Text, { style: { color: '#D7B877', fontSize: 34, fontWeight: '600', paddingTop: 18 } }, 'Progress'),
++    React.createElement(RN.Text, { style: { color: '#A5AAAF', fontSize: 15, marginTop: 8, marginBottom: 22 } }, 'Your effort, made clear.'),
++    React.createElement(Summary, { ...props, health: { ...health, sources: health.sources.slice(0, 1) } }, actions));
++  const markup = renderToStaticMarkup(page);
++  const sheet = RN.StyleSheet.getSheet();
++  fs.writeFileSync(path.join(directory, 'index.html'), '<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Treksor Progress — component QA</title><style>' + sheet.textContent + 'body{margin:0;background:#05080D;color:#f5f4f1;font-family:Arial,sans-serif}</style></head><body>' + markup + '</body></html>');
++}
++testHealthLifecycle().then(() => console.log('PASS: concise Progress; local dates; 7/30-day periods; source separation; real actions; missing/loading/error states; refresh and account isolation')).catch(error => { console.error(error); process.exitCode = 1; });
+diff --git a/tests/unified-progress.cjs b/tests/unified-progress.cjs
+index 07129d3..d105680 100644
+--- a/tests/unified-progress.cjs
++++ b/tests/unified-progress.cjs
+@@ -9,7 +9,7 @@ for(const name of ['home','chat','tracking','community'])assert(new RegExp('name
+ assert(today.includes('Redirect href="/(tabs)/tracking"'),'Old Today deep links must lead to Progress');
+ assert(trail.includes("today:'Progress', tracking:'Progress'"),'Fixed route label must match unified navigation');
+ assert(progress.includes('<DailyWork embedded/>'),'Activity recording must happen inside Progress');
+-assert(progress.includes('data.dailyWorkCount')&&progress.includes('data.dailyWorkMinutes')&&progress.includes('data.activeDays'),'Progress summary must reflect actual saved records');
++assert(progress.includes('data.dailyWorkCount')&&progress.includes('data.dailyWorkMinutes')&&progress.includes('buildProgressSummary(data,health.rows,health.sourceId,period,now)'),'Progress summary must use app records and saved watch imports for the same period');
+ assert(progress.includes('setPeriod(value)')&&progress.includes('([7,30] as const)'),'Retain week/month selection');
+ assert(progress.includes('accessibilityLabel="Log an activity"')&&progress.includes('accessibilityState={{expanded:showRecorder}}'),'Activity entry should be one obvious action');
+ assert(progress.includes('<JourneyCard/>'),'Daily plan and evening reflection must remain accessible');
+@@ -28,5 +28,5 @@ assert(daily.includes("embedded=false")&&daily.includes("!embedded ? <View"),'Ac
+ assert(daily.includes('saveWalk(owner,')&&daily.includes('saveDailyActivity(owner,'),'Preserve both save paths and never invent tracking');
+ assert(daily.includes('removeWalk(owner,')&&daily.includes('removeDailyActivity(owner,'),'Preserve deletion correction');
+ assert(daily.includes('Add your own'),'Custom activities must remain');
+-assert(progress.includes('styles.summary')&&progress.includes('styles.mainAction'),'Preserve The Architect premium structure');
++assert(progress.includes('<ProgressSummary')&&progress.includes('styles.mainAction'),'Preserve the concise overview and activity action');
+ console.log('PASS: four destinations; one unified Progress + Today redirect; daily activity, plan, notes, habits, goals, detailed metrics, sync and existing storage all accessible');

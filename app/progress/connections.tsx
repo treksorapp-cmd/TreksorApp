@@ -1,7 +1,7 @@
 import WatchSharing from "@/components/watch/WatchSharing";
 import React,{useCallback,useEffect,useState} from "react";
 import {Alert,Linking,ScrollView,StyleSheet,Text,TouchableOpacity,View} from "react-native";
-import {useFocusEffect} from "expo-router";
+import {useFocusEffect,useLocalSearchParams} from "expo-router";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import Ionicons from '@/components/ui/BrandIcon';
 import BodyPageHeading from "@/components/BodyPageHeading";
@@ -12,11 +12,13 @@ import {activityOverview,HealthWorkout,normalizeWorkouts,sourceLabel} from "@/li
 import {deleteHealthSnapshot,getHealthSnapshot,saveHealthSnapshot} from "@/api/health-snapshot";
 const web="https://treksor-community.oceanicman.chatgpt.site/#/connections";
 export default function Connections(){
+ const params=useLocalSearchParams<{source?:string;period?:string}>();
  const owner=useAuthStore(s=>s.user?.id),insets=useSafeAreaInsets(),availability=healthAvailability();
  const [saved,setSaved]=useState<{owner:string;rows:HealthWorkout[];at:string}|null>(null),[preview,setPreview]=useState<{owner:string;rows:HealthWorkout[]}|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(""),[source,setSource]=useState(""),[period,setPeriod]=useState<7|30>(7);
  const owned=owner&&saved?.owner===owner?saved:null,draft=owner&&preview?.owner===owner?preview:null,rows=draft?.rows??owned?.rows??[];
  const sources=[...new Map(rows.map(row=>[row.sourceId,row])).values()],selected=sources.find(row=>row.sourceId===source)?.sourceId||sources[0]?.sourceId||"",overview=activityOverview(rows,selected,period);
- useEffect(()=>{setSaved(null);setPreview(null);setSource("");setError("")},[owner]);
+ useEffect(()=>{setSource(typeof params.source==="string"?params.source:"");setPeriod(params.period==="30"?30:7)},[params.source,params.period]);
+ useEffect(()=>{setSaved(null);setPreview(null);setError("")},[owner]);
  const load=useCallback(async()=>{if(!owner)return;try{const value=await getHealthSnapshot(owner);if(useAuthStore.getState().user?.id===owner){setSaved(value?{owner,rows:value.snapshot.workouts,at:value.updatedAt}:null);setError("")}}catch{if(useAuthStore.getState().user?.id===owner)setError("Saved records could not be refreshed. They may be out of date. Try again.")}},[owner]);
  useFocusEffect(useCallback(()=>{void load();return()=>setPreview(null)},[load]));
  async function perform(action:()=>Promise<void>){if(busy)return;setBusy(true);setError("");try{await action()}catch(e){if(useAuthStore.getState().user?.id===owner)setError(e instanceof Error?e.message:"Please try again.")}finally{setBusy(false)}}

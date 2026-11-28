@@ -17,7 +17,7 @@
     "test:dashboard": "node tests/progress-dashboard.cjs",
     "test:content": "node tests/content-sync.cjs",
     "test:journey": "node tests/journey-growth.cjs",
-    "release:check": "npm run typecheck && npm run test:notifications && npm run test:integrity && npm run test:progress && npm run test:daily-work && npm run test:unified-progress && npm run test:dashboard && npm run test:journey && npm run test:audio && npm run test:content && npm run test:video && npm run test:clock && npm run test:ecosystem && npm run test:balance && npm run test:mentor && npm run test:discovery && npm run test:training && npm run test:wake && npm run test:watch && npm run test:ui && npm run test:connected && npm run test:retention && npm run test:goals && npm run test:web-parity",
+    "release:check": "npm run typecheck && npm run test:notifications && npm run test:integrity && npm run test:progress && npm run test:daily-work && npm run test:unified-progress && npm run test:dashboard && npm run test:progress-clarity && npm run test:journey && npm run test:audio && npm run test:content && npm run test:video && npm run test:clock && npm run test:ecosystem && npm run test:balance && npm run test:mentor && npm run test:discovery && npm run test:training && npm run test:wake && npm run test:watch && npm run test:ui && npm run test:connected && npm run test:retention && npm run test:goals && npm run test:web-parity",
     "release:ios": "npm run release:check && npx --yes eas-cli@26.0.0 build --platform ios --profile production --auto-submit",
     "test:video": "node tests/exercise-video-lifecycle.cjs",
     "test:clock": "node tests/workout-clock.cjs",
@@ -39,7 +39,8 @@
     "test:home-hero": "node tests/home-integrated-hero.cjs",
     "test:guide-keyboard": "node tests/guide-keyboard.cjs",
     "test:unified-progress": "node tests/unified-progress.cjs && node tests/unified-progress-installer.cjs",
-    "test:notifications": "node tests/notification-badges.cjs && node tests/notification-runtime.cjs"
+    "test:notifications": "node tests/notification-badges.cjs && node tests/notification-runtime.cjs",
+    "test:progress-clarity": "node tests/progress-clarity.cjs"
   },
   "dependencies": {
     "@bacons/apple-targets": "3.0.7",
